@@ -1,5 +1,4 @@
 import React, {useEffect, useRef} from 'react'
-import {useLocation} from 'react-router-dom'
 import {
   DrawerComponent,
   ScrollTopComponent,
@@ -7,9 +6,10 @@ import {
   ToggleComponent,
 } from '../../assets/ts/components'
 import {KTIcon} from '../../helpers'
+import { useRouter } from 'next/router'
 
 export function ScrollTop() {
-  const {pathname} = useLocation()
+  const {pathname} = useRouter()
   const isFirstRun = useRef(true)
 
   const pluginsReinitialization = () => {

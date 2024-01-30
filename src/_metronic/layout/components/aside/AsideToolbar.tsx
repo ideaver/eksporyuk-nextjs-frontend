@@ -1,10 +1,10 @@
-import {useAuth} from '../../../../app/modules/auth'
+// import {useAuth} from '../../../../app/modules/auth'
 import {KTIcon, toAbsoluteUrl} from '../../../helpers'
 import {HeaderUserMenu, Search} from '../../../partials'
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 const AsideToolbar = () => {
-  const {currentUser} = useAuth()
+  // const {currentUser} = useAuth()
 
   return (
     <>
@@ -24,7 +24,7 @@ const AsideToolbar = () => {
             <div className='flex-grow-1 me-2'>
               {/*begin::Username*/}
               <a href='#' className='text-white text-hover-primary fs-6 fw-bold'>
-                {currentUser?.first_name} {currentUser?.last_name}
+              NAMA GWEH
               </a>
               {/*end::Username*/}
 
