@@ -21,6 +21,9 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.mjs", "src"],
+  "exclude": ["node_modules"],
+  "resolutions": {
+    "jackspeak": "2.1.1"
+  }
 }
