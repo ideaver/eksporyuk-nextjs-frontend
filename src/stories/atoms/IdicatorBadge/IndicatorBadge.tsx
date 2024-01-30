@@ -14,7 +14,7 @@ interface IndicatorBadgeProps {
   /**
    * What badge color to use
    */
-  badgeColor:
+  badgeColor?:
     | "success"
     | "danger";
   /**

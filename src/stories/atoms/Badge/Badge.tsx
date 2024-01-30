@@ -14,7 +14,7 @@ interface BadgeProps {
   /**
    * What badge color to use
    */
-  badgeColor:
+  badgeColor?:
     | "primary"
     | "secondary"
     | "success"

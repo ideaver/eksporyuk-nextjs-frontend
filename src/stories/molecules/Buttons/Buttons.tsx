@@ -26,7 +26,7 @@ interface ButtonsProps {
   /**
    * What badge color to use
    */
-  buttonColor:
+  buttonColor?:
     | "primary"
     | "secondary"
     | "success"
