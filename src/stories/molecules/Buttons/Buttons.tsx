@@ -4,6 +4,10 @@ import { KTIcon } from "../../../_metronic/helpers";
 
 interface ButtonsProps {
   /**
+   *  ClassNames for custom styles
+   */
+  classNames?: string;
+  /**
    * Button Type
    */
   mode?: "normal" | "light" | "link";
@@ -60,6 +64,7 @@ export const Buttons = ({
   showLabel = true,
   circleButton = false,
   label,
+  classNames,
   ...props
 }: ButtonsProps) => {
   const btnSizeHandle = (size: string): string => {
@@ -93,9 +98,9 @@ export const Buttons = ({
     showLabel: boolean,
     circleButton: boolean
   ): string => {
-      if (showIcon && !showLabel && circleButton) {
-        return "btn-icon btn-circle";
-      }
+    if (showIcon && !showLabel && circleButton) {
+      return "btn-icon btn-circle";
+    }
     if (showIcon && !showLabel) {
       return "btn-icon";
     }
@@ -105,6 +110,7 @@ export const Buttons = ({
   return (
     <button
       className={clsx(
+        classNames,
         "btn",
         btnTypeHandler(showIcon, showLabel, circleButton),
         btnModeHandler(mode, buttonColor),

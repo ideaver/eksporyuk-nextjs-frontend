@@ -4,6 +4,10 @@ import { KTIcon } from "../../../_metronic/helpers";
 
 interface BadgeProps {
   /**
+   *  ClassNames for custom styles
+   */
+  classNames?: string;
+  /**
    * Badge Type
    */
   lightBadge?: boolean;
@@ -45,6 +49,7 @@ export const Badge = ({
   badgeColor = "primary",
   label,
   icon,
+  classNames,
   ...props
 }: BadgeProps) => {
   const isLightBadge = lightBadge ? "badge-light" : "badge";
@@ -52,7 +57,7 @@ export const Badge = ({
     size === "medium" ? "fs-7" : size === "large" ? "fs-6" : "fs-8";
   return (
     <span
-      className={clsx(
+      className={clsx(classNames,
         `badge ${isLightBadge}-${badgeColor} ${badgeSize}`,
         "fw-bold my-2"
       )}

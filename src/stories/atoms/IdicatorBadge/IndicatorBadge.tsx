@@ -3,6 +3,10 @@ import clsx from "clsx";
 import { KTIcon } from "../../../_metronic/helpers";
 
 interface IndicatorBadgeProps {
+    /**
+   *  ClassNames for custom styles
+   */
+    classNames?: string;
   /**
    * Badge Type
    */
@@ -40,6 +44,7 @@ export const IndicatorBadge = ({
   badgeColor = "success",
   label,
   indicator = "up",
+  classNames,
   ...props
 }: IndicatorBadgeProps) => {
   const isLightBadge = lightBadge ? "badge-light" : "badge";
@@ -48,7 +53,7 @@ export const IndicatorBadge = ({
     const indicatorIcon = indicator === "up" ? "arrow-up" : "arrow-down";
   return (
     <span
-      className={clsx(
+      className={clsx( classNames,
         `badge ${isLightBadge}-${badgeColor} ${badgeSize}`,
         "fw-bold my-2"
       )}
