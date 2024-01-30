@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { KTIcon } from "../../../_metronic/helpers";
 
-interface BadgeProps {
+interface IndicatorBadgeProps {
   /**
    * Badge Type
    */
@@ -11,13 +11,8 @@ interface BadgeProps {
    * What badge color to use
    */
   badgeColor:
-    | "primary"
-    | "secondary"
     | "success"
-    | "danger"
-    | "warning"
-    | "info"
-    | "dark";
+    | "danger";
   /**
    * How large should the button be?
    */
@@ -27,9 +22,9 @@ interface BadgeProps {
    */
   label: string;
   /**
-   * Icon Name for show Icon
+   * Indicator for up or down
    */
-  icon?: string;
+  indicator?: "up" | "down";
   /**
    * Optional click handler
    */
@@ -37,19 +32,20 @@ interface BadgeProps {
 }
 
 /**
- * Badge component for user interaction
+ * Primary UI component for user interaction
  */
-export const Badge = ({
+export const IndicatorBadge = ({
   lightBadge = true,
   size = "medium",
-  badgeColor = "primary",
+  badgeColor = "success",
   label,
-  icon,
+  indicator = "up",
   ...props
-}: BadgeProps) => {
+}: IndicatorBadgeProps) => {
   const isLightBadge = lightBadge ? "badge-light" : "badge";
   const badgeSize =
     size === "medium" ? "fs-7" : size === "large" ? "fs-6" : "fs-8";
+    const indicatorIcon = indicator === "up" ? "arrow-up" : "arrow-down";
   return (
     <span
       className={clsx(
@@ -58,13 +54,11 @@ export const Badge = ({
       )}
       {...props}
     >
-      {label}
-      {icon && (
         <KTIcon
-          iconName={icon}
-          className={`svg-icon svg-icon-${badgeColor} ms-3`}
+          iconName={indicatorIcon}
+          className={`svg-icon svg-icon-${lightBadge ? badgeColor : 'light'} me-1`}
         />
-      )}
+      {label} %
     </span>
   );
 };
