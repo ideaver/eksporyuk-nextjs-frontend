@@ -8,9 +8,13 @@ interface ButtonsProps {
    */
   classNames?: string;
   /**
-   * Button Type
+   * Button Mode
    */
   mode?: "normal" | "light" | "link";
+  /**
+   * Button Type
+   */
+  type?: "submit" | "reset" | "button";
   /**
    * Create Button with circle style, only works with Icon Button (no label)
    */
@@ -47,6 +51,10 @@ interface ButtonsProps {
    */
   icon?: string;
   /**
+   * Disabled Button
+   */
+  disabled?: boolean;
+  /**
    * Optional click handler
    */
   onClick?: () => void;
@@ -57,13 +65,15 @@ interface ButtonsProps {
  */
 export const Buttons = ({
   mode = "normal",
+  type = "button",
   size = "medium",
   buttonColor = "primary",
   icon = "plus-square",
-  showIcon = true,
+  showIcon = false,
   showLabel = true,
   circleButton = false,
   label,
+  disabled,
   classNames,
   ...props
 }: ButtonsProps) => {
@@ -109,6 +119,8 @@ export const Buttons = ({
 
   return (
     <button
+    disabled={disabled}
+      type={type}
       className={clsx(
         classNames,
         "btn",

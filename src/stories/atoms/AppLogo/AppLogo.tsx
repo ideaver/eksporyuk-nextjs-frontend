@@ -10,6 +10,10 @@ interface AppLogoProps {
    */
   classNames?: string;
   /**
+   *  Sizing
+   */
+  size?: "small" | "medium" | "large";
+  /**
    * Optional click handler
    */
   urlPath?: string;
@@ -18,13 +22,25 @@ interface AppLogoProps {
 /**
  * AppLogo Atom for user interaction
  */
-export const AppLogo = ({ classNames, urlPath = "/" }: AppLogoProps) => {
+export const AppLogo = ({ classNames, urlPath = "/", size }: AppLogoProps) => {
+  const sizeHandler = (size: string | undefined) => {
+    switch (size) {
+      case "small":
+        return "h-30px";
+      case "medium":
+        return "h-40px";
+      case "large":
+        return "h-50px";
+      default:
+        return "h-75px";
+    }
+  };
   return (
-    <Link href={urlPath} className={classNames}>
+    <Link href={urlPath}>
       <img
         alt="Logo"
         src={"./images/logo/EksporYukLogo.png"}
-        className="h-75px"
+        className={clsx(sizeHandler(size), classNames)}
       />
     </Link>
   );

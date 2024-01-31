@@ -59,6 +59,10 @@ interface TextFieldProps {
    * Input Placeholder
    */
   placeholder?: string;
+  /**
+   * Props for Input
+   */
+  props?: any;
 }
 
 /**
@@ -79,6 +83,7 @@ export const TextField = ({
   preffixIconTooltip,
   suffixIconTooltip,
   classNames,
+  props,
 }: TextFieldProps) => {
   const inputSizeHandler = (size: string): string => {
     switch (size) {
@@ -142,11 +147,10 @@ export const TextField = ({
           suffixIcon && "pe-15",
           classNames
         )}
-        name="search"
         id="field"
         placeholder={placeholder}
-        data-kt-search-element="input"
         disabled={disabled}
+        {...props}
       />
 
       {suffixIcon && (
@@ -169,7 +173,7 @@ export const TextField = ({
             onClick={onClickSuffixIcon}
             title={suffixIconTooltip}
           >
-            <KTIcon iconName="setting-4" className="fs-2 text-lg-1" />
+            <KTIcon iconName={suffixIcon} className="fs-2 text-lg-1" />
           </div>
         </div>
       )}
