@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { KTIcon } from "../../../_metronic/helpers";
+import { KTIcon } from "@/_metronic/helpers";
 
 interface ButtonsProps {
   /**
