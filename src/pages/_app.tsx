@@ -1,7 +1,6 @@
 import type { AppProps } from "next/app";
 import { Inter } from "next/font/google";
 import Head from "next/head";
-import "./globals.css";
 import "@/_metronic/assets/sass/style.scss";
 import "@/_metronic/assets/sass/plugins.scss";
 import "@/_metronic/assets/sass/style.react.scss";

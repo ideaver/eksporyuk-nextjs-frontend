@@ -1,12 +1,20 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import clsx from "clsx";
-import { KTIcon } from "../../../_metronic/helpers";
+import { KTIcon } from "@/_metronic/helpers";
 
 interface ButtonsProps {
   /**
-   * Button Type
+   *  ClassNames for custom styles
+   */
+  classNames?: string;
+  /**
+   * Button Mode
    */
   mode?: "normal" | "light" | "link";
+  /**
+   * Button Type
+   */
+  type?: "submit" | "reset" | "button";
   /**
    * Create Button with circle style, only works with Icon Button (no label)
    */
@@ -22,7 +30,7 @@ interface ButtonsProps {
   /**
    * What badge color to use
    */
-  buttonColor:
+  buttonColor?:
     | "primary"
     | "secondary"
     | "success"
@@ -35,13 +43,17 @@ interface ButtonsProps {
    */
   size?: "small" | "medium" | "large";
   /**
-   * Button contents
+   * Children elements
    */
-  label: string;
+  children?: ReactNode;
   /**
    * Button Icon name
    */
   icon?: string;
+  /**
+   * Disabled Button
+   */
+  disabled?: boolean;
   /**
    * Optional click handler
    */
@@ -53,13 +65,16 @@ interface ButtonsProps {
  */
 export const Buttons = ({
   mode = "normal",
+  type = "button",
   size = "medium",
   buttonColor = "primary",
   icon = "plus-square",
-  showIcon = true,
+  showIcon = false,
   showLabel = true,
   circleButton = false,
-  label,
+  children,
+  disabled,
+  classNames,
   ...props
 }: ButtonsProps) => {
   const btnSizeHandle = (size: string): string => {
@@ -93,9 +108,9 @@ export const Buttons = ({
     showLabel: boolean,
     circleButton: boolean
   ): string => {
-      if (showIcon && !showLabel && circleButton) {
-        return "btn-icon btn-circle";
-      }
+    if (showIcon && !showLabel && circleButton) {
+      return "btn-icon btn-circle";
+    }
     if (showIcon && !showLabel) {
       return "btn-icon";
     }
@@ -104,7 +119,10 @@ export const Buttons = ({
 
   return (
     <button
+    disabled={disabled}
+      type={type}
       className={clsx(
+        classNames,
         "btn",
         btnTypeHandler(showIcon, showLabel, circleButton),
         btnModeHandler(mode, buttonColor),
@@ -118,7 +136,7 @@ export const Buttons = ({
           className={`svg-icon fs-1 ${showLabel && "me-1"}`}
         />
       )}
-      {showLabel && label}
+      {showLabel && children}
     </button>
   );
 };
