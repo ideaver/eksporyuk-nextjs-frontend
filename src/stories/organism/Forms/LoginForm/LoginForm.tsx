@@ -114,13 +114,14 @@ export const LoginForm = ({ disabled, onClick }: LoginFormProps) => {
       </div>
       <div className="d-grid mb-10">
         <Buttons
-          label="Login"
           type="button"
           disabled={disabled || !formik.isValid || !formik.dirty}
           onClick={() =>
             onClick && onClick(formik.values.email, formik.values.password)
           }
-        />
+        >
+          Login
+        </Buttons>
       </div>
       <div className="text-gray-500 text-center fw-semibold fs-6">
         Belum punya akun?{" "}

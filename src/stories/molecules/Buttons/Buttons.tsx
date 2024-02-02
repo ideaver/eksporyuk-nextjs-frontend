@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import clsx from "clsx";
 import { KTIcon } from "@/_metronic/helpers";
 
@@ -43,9 +43,9 @@ interface ButtonsProps {
    */
   size?: "small" | "medium" | "large";
   /**
-   * Button contents
+   * Children elements
    */
-  label: string;
+  children?: ReactNode;
   /**
    * Button Icon name
    */
@@ -72,7 +72,7 @@ export const Buttons = ({
   showIcon = false,
   showLabel = true,
   circleButton = false,
-  label,
+  children,
   disabled,
   classNames,
   ...props
@@ -136,7 +136,7 @@ export const Buttons = ({
           className={`svg-icon fs-1 ${showLabel && "me-1"}`}
         />
       )}
-      {showLabel && label}
+      {showLabel && children}
     </button>
   );
 };
