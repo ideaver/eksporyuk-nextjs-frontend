@@ -154,7 +154,15 @@ export const Alert = ({
           {label}
         </span>
         {linkAlert && (
-          <Link href={linkAlert} className={clsx("fw-bold", mode === "normal" && alertColor == "primary" ? "text-light" : "text-primary ")}>
+          <Link
+            href={linkAlert}
+            className={clsx(
+              "fw-bold",
+              mode === "normal" && alertColor == "primary"
+                ? "text-light"
+                : "text-primary "
+            )}
+          >
             {linkLabel}
           </Link>
         )}
@@ -177,11 +185,12 @@ export const Alert = ({
       {showAlertButton && (
         <Buttons
           onClick={onAlertButtonClick}
-          label={buttonLabel}
           showIcon={false}
           buttonColor={alertColor}
           classNames="ms-5"
-        />
+        >
+          {buttonLabel}
+        </Buttons>
       )}
       {newAlert && <span className="ms-5 fw-bold">New</span>}
     </div>
