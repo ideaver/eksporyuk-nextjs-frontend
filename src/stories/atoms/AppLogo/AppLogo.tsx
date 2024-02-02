@@ -17,12 +17,21 @@ interface AppLogoProps {
    * Optional click handler
    */
   urlPath?: string;
+  /**
+   * App Logo Type
+   */
+  type?: "default" | "white";
 }
 
 /**
  * AppLogo Atom for user interaction
  */
-export const AppLogo = ({ classNames, urlPath = "/", size }: AppLogoProps) => {
+export const AppLogo = ({
+  classNames,
+  urlPath = "/",
+  size,
+  type = "default",
+}: AppLogoProps) => {
   const sizeHandler = (size: string | undefined) => {
     switch (size) {
       case "small":
@@ -39,7 +48,9 @@ export const AppLogo = ({ classNames, urlPath = "/", size }: AppLogoProps) => {
     <Link href={urlPath}>
       <img
         alt="Logo"
-        src={"./images/logo/EksporYukLogo.png"}
+        src={`./images/logo/${
+          type === "default" ? "EksporYukLogo.png" : "logo-white.png"
+        }`}
         className={clsx(sizeHandler(size), classNames)}
       />
     </Link>
