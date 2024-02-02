@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { RegisterData } from "@/types/auth/auth-types";
 
 const RegisterSchema = Yup.object().shape({
   email: Yup.string()
@@ -41,13 +42,6 @@ const RegisterSchema = Yup.object().shape({
   acceptTerms: Yup.bool().required("Anda harus menerima Syarat & Ketentuan"),
 });
 
-interface RegisterData {
-  firstName: string | undefined;
-  lastName: string | undefined;
-  email: string | undefined;
-  password: string | undefined;
-  phoneNumber: string | undefined;
-}
 
 interface RegisterFormProps {
   /**
@@ -57,11 +51,11 @@ interface RegisterFormProps {
   /**
    * TnC Url
    */
-  tncUrl?: string;
+  tncOnClick?: () => void;
   /**
    * Login url
    */
-  loginUrl?: string;
+  loginOnClick?: () => void;
   /**
    * Optional click handler
    */
@@ -74,8 +68,8 @@ interface RegisterFormProps {
 export const RegisterForm = ({
   disabled,
   onClick,
-  tncUrl = "/",
-  loginUrl = "/",
+  tncOnClick,
+  loginOnClick,
 }: RegisterFormProps) => {
   const [visiblePassword, setVisiblePassword] = useState(false);
 
@@ -271,9 +265,13 @@ export const RegisterForm = ({
           />
           <span className="fw-bold text-gray-700">
             Saya Menyetujui
-            <Link href={tncUrl} target="_blank" className="ms-1 link-primary">
+            <Buttons
+              mode="link"
+              onClick={tncOnClick}
+              classNames="ms-1 link-primary p-0"
+            >
               Syarat & Ketentuan
-            </Link>{" "}
+            </Buttons>{" "}
             yang berlaku
           </span>
         </label>
@@ -303,9 +301,9 @@ export const RegisterForm = ({
       </div>
       <div className="text-gray-500 text-center fw-semibold fs-6">
         Sudah punya akun?{" "}
-        <Link href={loginUrl} className="link-primary">
+        <Buttons mode="link" onClick={loginOnClick} classNames="link-primary">
           Login
-        </Link>
+        </Buttons>
       </div>
       {/* end::Form group */}
     </form>

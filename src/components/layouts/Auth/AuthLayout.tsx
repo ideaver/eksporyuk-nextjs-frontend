@@ -1,25 +1,12 @@
 import { AppLogo } from "@/stories/atoms/AppLogo/AppLogo";
-import { LoginForm } from "@/stories/organism/Forms/LoginForm/LoginForm";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
 
-const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+interface AuthLayoutProps {
+  children?: React.ReactNode;
+}
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Add your login logic here
-  };
-
+const AuthLayout = ({ children }: AuthLayoutProps) => {
   useEffect(() => {
     const root = document.getElementById("root");
     if (root) {
@@ -39,13 +26,7 @@ const LoginPage: React.FC = () => {
         {/* begin::Form */}
         <div className="d-flex flex-center flex-column flex-lg-row-fluid">
           {/* begin::Wrapper */}
-          <div className="w-lg-500px p-10">
-            <LoginForm
-              onClick={(value) => {
-                console.log(value);
-              }}
-            />
-          </div>
+          <div className="w-lg-500px p-10">{children}</div>
           {/* end::Wrapper */}
         </div>
         {/* end::Form */}
@@ -54,13 +35,13 @@ const LoginPage: React.FC = () => {
         <div className="d-flex flex-center flex-wrap px-5">
           {/* begin::Links */}
           <div className="d-flex fw-semibold text-primary fs-base">
-            <a href="#" className="px-5" target="_blank">
+            <Link href="#" className="px-5" target="_blank">
               Syarat & Ketentuan
-            </a>
+            </Link>
 
-            <a href="#" className="px-5" target="_blank">
+            <Link href="#" className="px-5" target="_blank">
               Contact Us
-            </a>
+            </Link>
           </div>
           {/* end::Links */}
         </div>
@@ -96,17 +77,17 @@ const LoginPage: React.FC = () => {
           {/* begin::Text */}
           <div className="text-white fs-base text-center">
             Sudah ada,{" "}
-            <a href="#" className="opacity-75-hover text-warning fw-bold me-1">
+            <span className="opacity-75-hover text-warning fw-bold me-1">
               2600+ Orang
-            </a>
+            </span>
             yang bergabung di komunitas{" "}
-            <a href="#" className="opacity-75-hover text-warning fw-bold me-1">
+            <span className="opacity-75-hover text-warning fw-bold me-1">
               EksporYuk
-            </a>
+            </span>
             sejak dibuka bulan Februari 2022. Jadilah bagian dari mereka dan dan
-            <a href="#" className="opacity-75-hover text-warning fw-bold me-1">
+            <span className="opacity-75-hover text-warning fw-bold me-1">
               mulailah perjalanan Anda menuju kesuksesan ekspor.
-            </a>
+            </span>
           </div>
           {/* end::Text */}
         </div>
@@ -117,4 +98,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default AuthLayout;

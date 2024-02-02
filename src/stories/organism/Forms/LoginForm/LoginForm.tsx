@@ -27,11 +27,11 @@ interface LoginFormProps {
   /**
    * Forgot Password Url
    */
-  forgotPasswordUrl?: string;
+  forgotPasswordOnClick?: () => void;
   /**
    * Register url
    */
-  registerUrl?: string;
+  registerOnClick?: () => void;
   /**
    * Optional click handler
    */
@@ -44,8 +44,8 @@ interface LoginFormProps {
 export const LoginForm = ({
   disabled,
   onClick,
-  forgotPasswordUrl = "/",
-  registerUrl = "/",
+  forgotPasswordOnClick,
+  registerOnClick,
 }: LoginFormProps) => {
   const [visiblePassword, setVisiblePassword] = useState(false);
 
@@ -119,9 +119,9 @@ export const LoginForm = ({
         <div />
 
         {/* begin::Link */}
-        <Link href={forgotPasswordUrl} className="link-primary">
+        <Buttons mode="link" onClick={forgotPasswordOnClick} classNames="link-primary">
           Lupa Password?
-        </Link>
+        </Buttons>
         {/* end::Link */}
       </div>
       <div className="d-grid mb-10">
@@ -137,9 +137,9 @@ export const LoginForm = ({
       </div>
       <div className="text-gray-500 text-center fw-semibold fs-6">
         Belum punya akun?{" "}
-        <Link href={registerUrl} className="link-primary">
+        <Buttons mode="link" onClick={registerOnClick} classNames="link-primary">
           Daftar Sekarang
-        </Link>
+        </Buttons>
       </div>
       {/* end::Form group */}
     </form>
