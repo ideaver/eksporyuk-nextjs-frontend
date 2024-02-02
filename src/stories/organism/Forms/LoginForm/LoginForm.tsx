@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { KTIcon } from "@/_metronic/helpers";
 import { AppLogo } from "@/stories/atoms/AppLogo/AppLogo";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import Link from "next/link";
@@ -26,6 +25,14 @@ interface LoginFormProps {
    */
   disabled?: boolean;
   /**
+   * Forgot Password Url
+   */
+  forgotPasswordUrl?: string;
+  /**
+   * Register url
+   */
+  registerUrl?: string;
+  /**
    * Optional click handler
    */
   onClick?: (email: string | undefined, password: string | undefined) => void;
@@ -34,7 +41,12 @@ interface LoginFormProps {
 /**
  * LoginForm Molecule Component
  */
-export const LoginForm = ({ disabled, onClick }: LoginFormProps) => {
+export const LoginForm = ({
+  disabled,
+  onClick,
+  forgotPasswordUrl = "/",
+  registerUrl = "/",
+}: LoginFormProps) => {
   const [visiblePassword, setVisiblePassword] = useState(false);
 
   const formik = useFormik({
@@ -107,7 +119,7 @@ export const LoginForm = ({ disabled, onClick }: LoginFormProps) => {
         <div />
 
         {/* begin::Link */}
-        <Link href="/auth/forgot-password" className="link-primary">
+        <Link href={forgotPasswordUrl} className="link-primary">
           Lupa Password?
         </Link>
         {/* end::Link */}
@@ -125,7 +137,7 @@ export const LoginForm = ({ disabled, onClick }: LoginFormProps) => {
       </div>
       <div className="text-gray-500 text-center fw-semibold fs-6">
         Belum punya akun?{" "}
-        <Link href="/auth/registration" className="link-primary">
+        <Link href={registerUrl} className="link-primary">
           Daftar Sekarang
         </Link>
       </div>
