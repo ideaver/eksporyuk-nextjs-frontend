@@ -6,7 +6,7 @@ const memberAffiliatorMenus = {
     {
       section: "Menu Member",
       items: [
-        { title: "Dashboard Member", to: "/", icon: "category" },
+        { title: "Dashboard Member", to: "/home", icon: "category" },
         { title: "Order Saya", to: "/dwde", icon: "basket" },
         { title: "Langganan", to: "/dwde", icon: "timer" },
         { title: "Katalog Produk", to: "/dwde", icon: "cube-2" },
@@ -14,7 +14,7 @@ const memberAffiliatorMenus = {
           title: "Komunitas",
           to: "/dwde",
           icon: "abstract-39",
-          subItems: [{ title: "Komunitas 1", to: "/dwde", icon: "cube-2" }],
+          subItems: [{ title: "Komunitas 1", to: "/dwde/d", icon: "cube-2" }],
         },
       ],
     },

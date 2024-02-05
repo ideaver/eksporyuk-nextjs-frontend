@@ -25,7 +25,6 @@ const AsideMenu: React.FC<Props> = ({ asideMenuCSSClasses }) => {
         scrollRef.current.scrollTop = 0;
       }
     }, 50);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

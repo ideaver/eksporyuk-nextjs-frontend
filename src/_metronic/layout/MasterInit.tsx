@@ -27,16 +27,20 @@ export function MasterInit() {
       MenuComponent.bootstrap();
       ScrollComponent.bootstrap();
       SwapperComponent.bootstrap();
+    if(typeof window !== undefined) {
       document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
         Tab.getOrCreateInstance(tab);
       });
+    }
     }, 500);
   };
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      pluginsInitialization();
+      if (typeof window !== undefined) {
+        pluginsInitialization();
+      }
     }
   }, [config]);
 

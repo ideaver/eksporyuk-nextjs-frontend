@@ -20,7 +20,6 @@ const AsideMenuItem: FC<Props & WithChildren> = ({
 }) => {
   const { pathname } = useRouter();
   const isActive = checkIsActive(pathname, to);
-
   return (
     <div className="menu-item">
       <Link

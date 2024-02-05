@@ -13,26 +13,21 @@ import { ThemeModeProvider } from "@/_metronic/partials";
 import { LayoutProvider, LayoutSplashScreen } from "@/_metronic/layout/core";
 import { Suspense, useEffect, useState } from "react";
 import { I18nProvider } from "@/_metronic/i18n/i18nProvider";
-// Remove the static import of MasterInit
+import { MasterLayout } from "@/components/layouts/Master/MasterLayout";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [isClient, setIsClient] = useState(false);
-  const [MasterInit, setMasterInit] = useState<any>(null);
-
-  useEffect(() => {
-    setIsClient(typeof window !== "undefined");
-  }, []);
-
-  useEffect(() => {
-    if (isClient) {
-      import("@/_metronic/layout/MasterInit").then((module: any) => {
-        setMasterInit(module.default);
-      });
+  const MasterInit = dynamic(
+    () =>
+      import("@/_metronic/layout/MasterInit").then(
+        (module) => module.MasterInit
+      ),
+    {
+      ssr: false,
     }
-  }, [isClient]);
-
+  );
   return (
     <>
       <style jsx global>{`
@@ -47,8 +42,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <I18nProvider>
           <LayoutProvider>
             <ThemeModeProvider>
-              <Component {...pageProps} />
-              {MasterInit && <MasterInit />}
+              <MasterLayout>
+                {" "}
+                {/* TODO: Make this work with auth */}
+                <Component {...pageProps} />
+              </MasterLayout>
+
+              <MasterInit />
             </ThemeModeProvider>
           </LayoutProvider>
         </I18nProvider>
