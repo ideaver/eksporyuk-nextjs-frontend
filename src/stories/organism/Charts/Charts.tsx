@@ -6,48 +6,66 @@ import { useThemeMode } from '@/_metronic/partials'
 
 interface ChartProps {
     classNames?: string;
-    /**
-     * Button Type
-    */
-    type?: 'submit' | 'dropdown' | 'button';
     showLabel?: boolean;
     /**
-     * What dropdown button color to use
+     * What labelColorBG to use
     */
     labelColorBG?:
-        | "danger-subtle"
-        | "primary"
-        | "secondary"
-        | "success"
-        | "warning"
-        | "info"
-        | "light"
-        | "dark";
-
-    size?:
-    | 'small'
-    | 'medium'
-    | 'large';
-
+    | "danger-subtle"
+    | "success-subtle";
+    /**
+      * What textColor to use 
+    */
+    textColor?:
+    | 'danger'
+    | 'success';
     children?: React.ReactNode;
     /**
-      * Button Icon name
+      * What Label Icon to use
     */
-    icon?: string;
-    /**
-      * Label Icon name
-    */
-    labelIcon?: string;
+    labelIcon?:
+    | "arrow-up"
+    | "arrow-down";
+
+    // labelChartColor?: 
+    // | "danger"
+    // | "success"
+    // | "primary"
+    // | "warning"
+    // | "info"
+    // | "dark"
+    // | "light";
+
+    // borderChartColor?: | "danger"
+    // | "success"
+    // | "primary"
+    // | "warning"
+    // | "info"
+    // | "dark"
+    // | "light";
+    // baseChartColor?: 
+    // | "danger"
+    // | "success"
+    // | "primary"
+    // | "warning"
+    // | "info"
+    // | "dark"
+    // | "light";
+    // lightChartColor?: 
+    // | "danger"
+    // | "success"
+    // | "primary"
+    // | "warning"
+    // | "info"
+    // | "dark"
+    // | "light";
 }
 
 export const Charts = ({
-    type = "button",
-    showLabel = true,
     labelColorBG = "danger-subtle",
-    size = "small",
+    textColor = "danger",
     children,
-    icon = "bi bi-bar-chart",
-    labelIcon = "bi bi-arrow-down",
+    labelIcon = "arrow-down",
     classNames,
 }: ChartProps) => {
 
@@ -81,51 +99,46 @@ export const Charts = ({
     const labelColorHandler = (mode: string, labelColorBG: string): string => {
         switch (mode) {
             case "danger":
-            return `bg-${labelColorBG}`;
-            case "primary":
-            return `bg-${labelColorBG}`;
-            case "secondary":
-            return `bg-${labelColorBG}`;
+                return `bg-${labelColorBG}`;
             case "success":
-            return `bg-${labelColorBG}`;
-            case "warning":
-            return `bg-${labelColorBG}`;
-            case "info":
-            return `bg-${labelColorBG}`;
-            case "light":
-            return `bg-${labelColorBG}`;
-            case "dark":
-            return `bg-${labelColorBG}`;
+                return `bg-${labelColorBG}`;
             default:
                 return `bg-${labelColorBG}`;
         }
-        
+
     }
 
-    
-
-    const fontSizeHandle = (size: string): string => {
-        switch (size) {
-            case "small":
-                return "fs-7";
-            case "medium":
-                return "fs-5";
-            case "large":
-                return "fs-3";
+    const textColorHandler = (mode: string, textColor: string): string => {
+        switch (mode) {
+            case "danger":
+                return `text-${textColor}`;
+            case "success":
+                return `text-${textColor}`;
             default:
-                return "fs-1";
+                return `text-${textColor}`;
+        }
+    }
+
+    const iconHandler = (mode: string, labelIcon: string): string => {
+        switch (mode) {
+            case "danger":
+                return `bi bi-${labelIcon}`;
+            case "primary":
+                return `bi bi-${labelIcon}`;
+            default:
+                return `bi bi-${labelIcon}`;
         }
     }
 
     return (
         <div className={`card ${classNames}`}>
             {/* begin::Header */}
-            <div className='card-header border-0 pt-5'>
+            <div className='card-header border-0 pb-0'>
                 <div className='card-title flex-row items-center text-center my-auto flex'>
-                    <div
-                     className='card-label fw-bold mb-1' style={{ fontSize: "50px" }} >2</div>
-                    <div
-                     className={`fw-bold fs-7 rounded text-danger border p-2 ${labelColorHandler(mode, labelColorBG)}`}><i className="bi bi-arrow-down text-danger"></i> 40%</div>
+                    <div className='card-label fw-bold mb-1' style={{ fontSize: "50px" }}>2</div>
+                    <span className={`fw-bold fs-7 rounded border p-2 ${labelColorHandler(mode, labelColorBG)} ${textColorHandler(mode, textColor)}`}>
+                        <i className={`bi ${iconHandler(mode, labelIcon)} ${textColorHandler(mode, textColor)}`}></i> 40%
+                    </span>
                 </div>
 
 
@@ -165,7 +178,7 @@ export const Charts = ({
 }
 
 function getChartOptions(height: number): ApexOptions {
-    const labelColor = getCSSVariableValue('--bs-gray-500')
+    const labelColor = getCSSVariableValue('--bs-danger-500')
     const borderColor = getCSSVariableValue('--bs-gray-200')
     const baseColor = getCSSVariableValue('--bs-info')
     const lightColor = getCSSVariableValue('--bs-info-light')
@@ -174,7 +187,7 @@ function getChartOptions(height: number): ApexOptions {
         series: [
             {
                 name: 'Net Profit',
-                data: [30, 40, 40, 90, 90, 70, 70],
+                data: [30, 40, 90, 70],
             },
         ],
         chart: {
@@ -203,7 +216,7 @@ function getChartOptions(height: number): ApexOptions {
             colors: [baseColor],
         },
         xaxis: {
-            categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+            categories: ['May', 'Jun', 'Jul', 'Aug'],
             axisBorder: {
                 show: false,
             },

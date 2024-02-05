@@ -17,9 +17,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Display: Story = {
-    render: (args) => (
-            <Charts {...args} />
-    ),
+    render: (args) => <Charts {...args} />,
     args: {
+        labelIcon: "arrow-up",
+        labelColorBG: "success-subtle",
     },
 };
