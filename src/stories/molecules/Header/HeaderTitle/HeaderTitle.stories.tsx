@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AsideToolbar } from "./AsideToolbar";
+import clsx from "clsx";
+import { HeaderTitle } from "./HeaderTitle";
+
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: "Organism/Aside/AsideToolbar",
-  component: AsideToolbar,
+  title: "Molecules/Header/HeaderTitle",
+  component: HeaderTitle,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",
@@ -12,34 +14,21 @@ const meta = {
   tags: ["autodocs"],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   render: (args) => (
-    // <div className="aside">
-    <div
-      className="aside-toolbar flex-column-auto bg-dark"
-      id="kt_aside_toolbar"
-    >
-      <AsideToolbar></AsideToolbar>
+    <div className="toolbar d-flex align-items-stretch">
+      {/* begin::Toolbar container */}
+      <div
+        className={` py-6 py-lg-0 d-flex flex-column flex-lg-row align-items-lg-stretch justify-content-lg-between`}
+      >
+        <HeaderTitle {...args} />
+      </div>
     </div>
-    // </div>
   ),
-} satisfies Meta<typeof AsideToolbar>;
+} satisfies Meta<typeof HeaderTitle>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const ActiveItem: Story = {
   args: {
-    buttonColor: "primary",
-  },
-};
-export const Display: Story = {
-  render: (args) => (
-    <div className="aside">
-      <div className="aside-toolbar flex-column-auto" id="kt_aside_toolbar">
-        <AsideToolbar></AsideToolbar>
-      </div>
-    </div>
-  ),
-  args: {
-    buttonColor: "primary",
   },
 };

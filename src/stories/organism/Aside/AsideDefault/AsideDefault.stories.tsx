@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import clsx from "clsx";
 import { AsideDefault } from "./AsideDefault";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: "Organism/AsideMenu/AsideDefault",
+  title: "Organism/Aside/AsideDefault",
   component: AsideDefault,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ["autodocs"],

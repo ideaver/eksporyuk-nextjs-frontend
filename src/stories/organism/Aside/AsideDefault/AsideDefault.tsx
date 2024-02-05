@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useLayout } from "@/_metronic/layout/core";
 import { FC } from "react";
-import { AsideToolbar } from "../AsideMenuItems/AsideToolbar/AsideToolbar";
 import { AsideMenu } from "../AsideMenu/AsideMenu/AsideMenu";
+import { AsideToolbar } from "../AsideToolbar/AsideToolbar";
 const AsideDefault: FC = () => {
   const { classes } = useLayout();
 
