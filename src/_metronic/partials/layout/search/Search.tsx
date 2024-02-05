@@ -171,7 +171,7 @@ const Search: FC = () => {
                   className='d-flex text-dark text-hover-primary align-items-center mb-5'
                 >
                   <div className='symbol symbol-40px me-4'>
-                    <Image src={toAbsoluteUrl('/media/avatars/300-6.jpg')} alt='' />
+                    <Image src={toAbsoluteUrl('/media/avatars/300-6.jpg')} width={300} height={300} alt='' />
                   </div>
 
                   <div className='d-flex flex-column justify-content-start fw-bold'>
@@ -185,7 +185,7 @@ const Search: FC = () => {
                   className='d-flex text-dark text-hover-primary align-items-center mb-5'
                 >
                   <div className='symbol symbol-40px me-4'>
-                    <Image src={toAbsoluteUrl('/media/avatars/300-2.jpg')} alt='' />
+                    <Image src={toAbsoluteUrl('/media/avatars/300-2.jpg')} width={300} height={300} alt='' />
                   </div>
 
                   <div className='d-flex flex-column justify-content-start fw-bold'>
@@ -199,7 +199,7 @@ const Search: FC = () => {
                   className='d-flex text-dark text-hover-primary align-items-center mb-5'
                 >
                   <div className='symbol symbol-40px me-4'>
-                    <Image src={toAbsoluteUrl('/media/avatars/300-9.jpg')} alt='' />
+                    <Image src={toAbsoluteUrl('/media/avatars/300-9.jpg')} width={300} height={300} alt='' />
                   </div>
 
                   <div className='d-flex flex-column justify-content-start fw-bold'>
@@ -213,7 +213,7 @@ const Search: FC = () => {
                   className='d-flex text-dark text-hover-primary align-items-center mb-5'
                 >
                   <div className='symbol symbol-40px me-4'>
-                    <Image src={toAbsoluteUrl('/media/avatars/300-14.jpg')} alt='' />
+                    <Image src={toAbsoluteUrl('/media/avatars/300-14.jpg')} width={300} height={300} alt='' />
                   </div>
 
                   <div className='d-flex flex-column justify-content-start fw-bold'>
@@ -227,7 +227,7 @@ const Search: FC = () => {
                   className='d-flex text-dark text-hover-primary align-items-center mb-5'
                 >
                   <div className='symbol symbol-40px me-4'>
-                    <Image src={toAbsoluteUrl('/media/avatars/300-11.jpg')} alt='' />
+                    <Image src={toAbsoluteUrl('/media/avatars/300-11.jpg')} width={300} height={300} alt='' />
                   </div>
 
                   <div className='d-flex flex-column justify-content-start fw-bold'>
@@ -252,6 +252,7 @@ const Search: FC = () => {
                       <Image
                         className='w-20px h-20px'
                         src={toAbsoluteUrl('/media/svg/brand-logos/volicity-9.svg')}
+                        width={300} height={300}
                         alt=''
                       />
                     </span>
@@ -272,6 +273,7 @@ const Search: FC = () => {
                       <Image
                         className='w-20px h-20px'
                         src={toAbsoluteUrl('/media/svg/brand-logos/tvit.svg')}
+                        width={300} height={300}
                         alt=''
                       />
                     </span>
@@ -292,6 +294,7 @@ const Search: FC = () => {
                       <Image
                         className='w-20px h-20px'
                         src={toAbsoluteUrl('/media/svg/misc/infography.svg')}
+                        width={300} height={300}
                         alt=''
                       />
                     </span>
@@ -312,6 +315,7 @@ const Search: FC = () => {
                       <Image
                         className='w-20px h-20px'
                         src={toAbsoluteUrl('/media/svg/brand-logos/leaf.svg')}
+                        width={300} height={300}
                         alt=''
                       />
                     </span>
@@ -332,6 +336,7 @@ const Search: FC = () => {
                       <Image
                         className='w-20px h-20px'
                         src={toAbsoluteUrl('/media/svg/brand-logos/tower.svg')}
+                        width={300} height={300}
                         alt=''
                       />
                     </span>
