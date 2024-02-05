@@ -1,5 +1,5 @@
-import { AsideMenuItemWithSub } from "@/_metronic/layout/components/aside/AsideMenuItemWithSub";
-import { AsideMenuItem } from "../../AsideMenuItems/AsideMenuItem/AsideMenuItem";
+import { AsideMenuItem } from "@/stories/molecules/Aside/AsideMenuItems/AsideMenuItem/AsideMenuItem";
+import { AsideMenuItemWithSub } from "@/stories/molecules/Aside/AsideMenuItems/AsideMenuItemWithSub/AsideMenuItemWithSub";
 
 const memberAffiliatorMenus = {
   menus: [
