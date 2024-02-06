@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import ApexCharts, { ApexOptions } from 'apexcharts'
 import { getCSS, getCSSVariableValue } from '@/_metronic/assets/ts/_utils'
 import { useThemeMode } from '@/_metronic/partials'
+import { Dropdown } from '@/stories/molecules/Forms/Dropdown/Dropdown'
 
 interface ChartProps {
     /**
@@ -204,53 +205,11 @@ export const Charts = ({
 
                 {/* begin::Toolbar */}
                 <div className='card-toolbar' data-kt-buttons='true'>
-                    <div className='mt-5 pt-5'>
-                        <button
-                            className="btn btn-secondary btn-sm mt-5"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            {selectedValue}
-                            <span className="bi bi-chevron-down ps-5"></span>
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-secondary dropdown-menu-end w-50">
-                            <li>
-                                <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={() => handleDropdownChange('Hari Ini')}
-                                >
-                                    Hari Ini
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={() => handleDropdownChange('Bulan Ini')}
-                                >
-                                    Bulan Ini
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={() => handleDropdownChange('Sepanjang Waktu')}
-                                >
-                                    Sepanjang Waktu
-                                </a>
-                            </li>
-                        </ul>
-                        {/* Render konten sesuai dengan nilai yang dipilih */}
-                        <div>
-                            {selectedValue === 'Hari Ini'}
-                            {selectedValue === 'Bulan Ini'}
-                            {selectedValue === 'Sepanjang Waktu'}
-                        </div>
-
-
-                    </div>
+                    <Dropdown styleType='solid'  onValueChange={() => {}} options={[
+                        { value: '1', label: 'Hari Ini' },
+                        { value: '2', label: 'Minggu Ini' },
+                        { value: '3', label: 'Bulan Ini' },
+                    ]}/>
 
                 </div>
                 {/* end::Toolbar */}
