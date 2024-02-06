@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ApexCharts, { ApexOptions } from 'apexcharts'
 import { getCSS, getCSSVariableValue } from '@/_metronic/assets/ts/_utils'
 import { useThemeMode } from '@/_metronic/partials'
@@ -59,6 +59,8 @@ interface ChartProps {
     // | "info"
     // | "dark"
     // | "light";
+
+    onClick?: () => void;
 }
 
 export const Charts = ({
@@ -67,6 +69,7 @@ export const Charts = ({
     children,
     labelIcon = "arrow-down",
     classNames,
+    onClick,
 }: ChartProps) => {
 
     const chartRef = useRef<HTMLDivElement | null>(null)
@@ -75,14 +78,11 @@ export const Charts = ({
         if (!chartRef.current) {
             return
         }
-
         const height = parseInt(getCSS(chartRef.current, 'height'))
-
         const chart = new ApexCharts(chartRef.current, getChartOptions(height))
         if (chart) {
             chart.render()
         }
-
         return chart
     }
 
@@ -130,6 +130,13 @@ export const Charts = ({
         }
     }
 
+    const [selectedValue, setSelectedValue] = useState('Hari Ini');
+
+    // Fungsi untuk menangani perubahan nilai pada dropdown
+    const handleDropdownChange = (value: React.SetStateAction<string>) => {
+        setSelectedValue(value);
+    };
+
     return (
         <div className={`card ${classNames}`}>
             {/* begin::Header */}
@@ -148,15 +155,46 @@ export const Charts = ({
                         <button
                             className="btn btn-secondary btn-sm mt-5"
                             data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Hari Ini
+                            aria-expanded="false"
+                        >
+                            {selectedValue}
                             <span className="bi bi-chevron-down ps-5"></span>
                         </button>
-                        <ul className="dropdown-menu dropdown-menu-secondary dropdown-menu-start">
-                            <li><a className="dropdown-item" href="#">Hari Ini</a></li>
-                            <li><a className="dropdown-item" href="#">Bulan Ini</a></li>
-                            <li><a className="dropdown-item" href="#">Sepanjang Waktu</a></li>
+                        <ul className="dropdown-menu dropdown-menu-secondary dropdown-menu-end w-50">
+                            <li>
+                                <a
+                                    className="dropdown-item"
+                                    href="#"
+                                    onClick={() => handleDropdownChange('Hari Ini')}
+                                >
+                                    Hari Ini
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    className="dropdown-item"
+                                    href="#"
+                                    onClick={() => handleDropdownChange('Bulan Ini')}
+                                >
+                                    Bulan Ini
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    className="dropdown-item"
+                                    href="#"
+                                    onClick={() => handleDropdownChange('Sepanjang Waktu')}
+                                >
+                                    Sepanjang Waktu
+                                </a>
+                            </li>
                         </ul>
+                        {/* Render konten sesuai dengan nilai yang dipilih */}
+                        <div>
+                            {selectedValue === 'Hari Ini'}
+                            {selectedValue === 'Bulan Ini'}
+                            {selectedValue === 'Sepanjang Waktu'}
+                        </div>
 
 
                     </div>
