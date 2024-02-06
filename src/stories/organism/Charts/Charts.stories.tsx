@@ -21,5 +21,7 @@ export const Display: Story = {
     args: {
         labelIcon: "arrow-up",
         labelColorBG: "success-subtle",
+        dataSeries: [30, 40, 90, 70], 
+        categoriesXAxis: ["Feb", "Mar", "Apr", "May"],
     },
 };

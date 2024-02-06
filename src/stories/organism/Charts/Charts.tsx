@@ -5,6 +5,24 @@ import { getCSS, getCSSVariableValue } from '@/_metronic/assets/ts/_utils'
 import { useThemeMode } from '@/_metronic/partials'
 
 interface ChartProps {
+    /**
+      * What Name Series to use
+    */
+    nameSeries?:
+    | "Not Paid"
+    | "Paid"
+
+    /**
+      * What Data Series to use
+    */
+    dataSeries: number[]
+    | [30, 40, 90, 70]
+
+    /**
+      * What Categories from XAxis to use
+    */
+    categoriesXAxis: string[]
+    | ['Feb', 'Mar', 'Apr', 'May'];
     classNames?: string;
     showLabel?: boolean;
     /**
@@ -27,38 +45,54 @@ interface ChartProps {
     | "arrow-up"
     | "arrow-down";
 
-    // labelChartColor?: 
-    // | "danger"
-    // | "success"
-    // | "primary"
-    // | "warning"
-    // | "info"
-    // | "dark"
-    // | "light";
+    /**
+      * What Label Chart Color to use
+    */
 
-    // borderChartColor?: | "danger"
-    // | "success"
-    // | "primary"
-    // | "warning"
-    // | "info"
-    // | "dark"
-    // | "light";
-    // baseChartColor?: 
-    // | "danger"
-    // | "success"
-    // | "primary"
-    // | "warning"
-    // | "info"
-    // | "dark"
-    // | "light";
-    // lightChartColor?: 
-    // | "danger"
-    // | "success"
-    // | "primary"
-    // | "warning"
-    // | "info"
-    // | "dark"
-    // | "light";
+    labelChartColor?:
+    | "danger"
+    | "success"
+    | "primary"
+    | "warning"
+    | "info"
+    | "dark"
+    | "light";
+
+    /**
+      * What Border Chart Color to use
+    */
+
+    borderChartColor?:
+    | "danger"
+    | "success"
+    | "primary"
+    | "warning"
+    | "info"
+    | "dark"
+    | "light";
+
+    /**
+      * What Name Series to use
+    */
+    baseChartColor?:
+    | "danger"
+    | "success"
+    | "primary"
+    | "warning"
+    | "info"
+    | "dark"
+    | "light";
+
+    /**
+      * What Name Series to use
+    */
+    lightChartColor?:
+    | "danger-light"
+    | "success-light"
+    | "primary-light"
+    | "warning-light"
+    | "info-light"
+    | "dark-light";
 
     onClick?: () => void;
 }
@@ -69,17 +103,36 @@ export const Charts = ({
     children,
     labelIcon = "arrow-down",
     classNames,
+    labelChartColor,
+    borderChartColor,
+    baseChartColor,
+    lightChartColor,
+    nameSeries,
+    dataSeries,
+    categoriesXAxis,
     onClick,
 }: ChartProps) => {
 
     const chartRef = useRef<HTMLDivElement | null>(null)
     const { mode } = useThemeMode()
     const refreshMode = () => {
+
         if (!chartRef.current) {
             return
         }
+
         const height = parseInt(getCSS(chartRef.current, 'height'))
-        const chart = new ApexCharts(chartRef.current, getChartOptions(height))
+        const chart = new ApexCharts(chartRef.current, getChartOptions(height, {
+
+            labelChartColor: labelChartColor,
+            baseChartColor: baseChartColor,
+            lightChartColor: lightChartColor,
+            borderChartColor: borderChartColor,
+            nameSeries: nameSeries,
+            dataSeries: dataSeries,
+            categoriesXAxis: categoriesXAxis,
+
+        }))
         if (chart) {
             chart.render()
         }
@@ -94,7 +147,7 @@ export const Charts = ({
                 chart.destroy()
             }
         }
-    }, [chartRef, mode])
+    }, [chartRef, mode, labelChartColor, baseChartColor, lightChartColor, borderChartColor, nameSeries, dataSeries, categoriesXAxis])
 
     const labelColorHandler = (mode: string, labelColorBG: string): string => {
         switch (mode) {
@@ -215,17 +268,25 @@ export const Charts = ({
     )
 }
 
-function getChartOptions(height: number): ApexOptions {
-    const labelColor = getCSSVariableValue('--bs-danger-500')
-    const borderColor = getCSSVariableValue('--bs-gray-200')
-    const baseColor = getCSSVariableValue('--bs-info')
-    const lightColor = getCSSVariableValue('--bs-info-light')
+function getChartOptions(height: number, {
+    labelChartColor = 'danger',
+    borderChartColor = 'gray',
+    baseChartColor = 'info',
+    lightChartColor = 'info-light',
+    nameSeries = 'Net Profit',
+    dataSeries = [30, 40, 90, 70],
+    categoriesXAxis = ['Feb', 'Mar', 'Apr', 'May'],
+}): ApexOptions {
+    const labelColor = getCSSVariableValue(`--bs-${labelChartColor}`)
+    const borderColor = getCSSVariableValue(`--bs-${borderChartColor}`)
+    const baseColor = getCSSVariableValue(`--bs-${baseChartColor}`)
+    const lightColor = getCSSVariableValue(`--bs-${lightChartColor}`)
 
     return {
         series: [
             {
-                name: 'Net Profit',
-                data: [30, 40, 90, 70],
+                name: `${nameSeries}`,
+                data: dataSeries,
             },
         ],
         chart: {
@@ -254,7 +315,7 @@ function getChartOptions(height: number): ApexOptions {
             colors: [baseColor],
         },
         xaxis: {
-            categories: ['May', 'Jun', 'Jul', 'Aug'],
+            categories: categoriesXAxis,
             axisBorder: {
                 show: false,
             },
