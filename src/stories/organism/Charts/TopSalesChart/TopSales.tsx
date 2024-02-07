@@ -16,16 +16,17 @@ type ChartOptionsParams = {
 type TopSalesProps = ChartOptionsParams &{
   className: string
   title?: string;
-  salesWhatsapp?: string;
-  precentageWhatsapp?: string;
-  salesInstagram?: string;
-  precentageInstagram?: string;
-  salesFacebook?: string;
-  precentageFacebook?: string;
-  salesTiktok?: string;
-  precentageTiktok?: string;
-  salesEmail?: string;
-  precentageEmail?: string;
+  items: ListTopSales[]
+  // salesWhatsapp?: string;
+  // precentageWhatsapp?: string;
+  // salesInstagram?: string;
+  // precentageInstagram?: string;
+  // salesFacebook?: string;
+  // precentageFacebook?: string;
+  // salesTiktok?: string;
+  // precentageTiktok?: string;
+  // salesEmail?: string;
+  // precentageEmail?: string;
 }
 
 const TopSales: React.FC<TopSalesProps> = ({
@@ -35,19 +36,11 @@ const TopSales: React.FC<TopSalesProps> = ({
   chartColor,
   chartHeight = '200px',
   title = 'Top Sales',
-  salesWhatsapp = '1021',
-  salesFacebook = '708',
-  salesInstagram = '503',
-  salesTiktok = '170',
-  salesEmail = '770',
-  precentageEmail = '70',
-  precentageFacebook = '70',
-  precentageInstagram = '70',
-  precentageTiktok = '70',
-  precentageWhatsapp = '70',
+  items,
 }) => {
   const chartRef = useRef<HTMLDivElement | null>(null)
   const { mode } = useThemeMode()
+  
   const refreshChart = () => {
     if (!chartRef.current) {
       return
@@ -102,169 +95,39 @@ const TopSales: React.FC<TopSalesProps> = ({
               {/* end::Table head */}
               {/* begin::Table body */}
               <tbody>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}>
+              {items.map((item, index) => (
+                <tr key={index} style={{ borderBottom: '1px dashed #A1A5B7' }}>
                   <th>
-                    <div className='symbol symbol-40px me-2'>
-                      <span className='symbol-label bg-success'>
-                        <i className="bi bi-whatsapp items-center fw-bold text-white" style={{ fontSize: '25px' }}></i>
-                      </span>
+                  <div className='symbol symbol-40px me-2'>
+                      <img
+                        src={toAbsoluteUrl(item.icon)}
+                        className='h-50 align-self-center'
+                        alt=''
+                      />
                     </div>
                   </th>
                   <td >
                     <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                      WhatsApp
+                      {item.title}
                     </a>
-                    <span className='text-muted fw-semibold d-block fs-7'>{salesWhatsapp} Sales</span>
+                    <span className='text-muted fw-semibold d-block fs-7'>{item.salesValue} Sales</span>
                   </td>
                   <td>
                     <div className='d-flex flex-column w-100 me-2'>
-                      <div className='progress h-6px bg-success-subtle w-100'>
+                      <div className={`progress h-6px bg-${item.colorSubtle} w-100`}>
                         <div
-                          className='progress-bar bg-success'
+                          className={`progress-bar bg-${item.colorPrecentage}`}
                           role='progressbar'
-                          style={{ width: `${precentageWhatsapp}%` }}
+                          style={{ width: `${item.precentageValue}%` }}
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className=''>
-                    <span className='text-muted text-start fs-7 fw-semibold'>{precentageWhatsapp}%</span>
+                    <span className='text-muted text-start fs-7 fw-semibold'>{item.precentageValue}%</span>
                   </td>
                 </tr>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}>
-                  <th>
-                    <div className='symbol symbol-40px me-2'>
-                      {/* <span className='symbol-label'> */}
-                      <img
-                        src={toAbsoluteUrl('/media/svg/brand-logos/instagram-2-1.svg')}
-                        className='h-50 align-self-center'
-                        alt=''
-                      />
-                      {/* </span> */}
-                    </div>
-
-                  </th>
-                  <td>
-                    <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                      Instagram
-                    </a>
-                    <span className='text-muted fw-semibold d-block fs-7'>{salesInstagram} Sales</span>
-                  </td>
-                  <td>
-                    <div className='d-flex flex-column w-100 me-2'>
-                      <div className='progress h-6px w-100 bg-warning-subtle'>
-                        <div
-                          className='progress-bar bg-warning'
-                          role='progressbar'
-                          style={{ width: `${precentageInstagram}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='text-start'>
-                    <span className='text-muted text-start fs-7 fw-semibold'>{precentageInstagram}%</span>
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}>
-                  <th>
-                    <div className='symbol symbol-40px me-2'>
-                      {/* <span className='symbol-label'> */}
-                      <img
-                        src={toAbsoluteUrl('/media/svg/brand-logos/facebook-5.svg')}
-                        className='h-50 align-self-center'
-                        alt=''
-                      />
-                      {/* </span> */}
-                    </div>
-                  </th>
-                  <td>
-                    <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                      Facebook
-                    </a>
-                    <span className='text-muted fw-semibold d-block fs-7'>{salesFacebook} Sales</span>
-                  </td>
-                  <td>
-                    <div className='d-flex flex-column w-100 me-2'>
-                      <div className='progress h-6px w-100 bg-primary-subtle'>
-                        <div
-                          className='progress-bar bg-primary'
-                          role='progressbar'
-                          style={{ width: `${precentageFacebook}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='text-end'>
-                    <td className='text-start'>
-                      <span className='text-muted text-start fs-7 fw-semibold'>{precentageFacebook}%</span>
-                    </td>
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}>
-                  <th>
-                    <div className='symbol symbol-40px me-2'>
-                      <span className='symbol-label bg-dark'>
-                        <i className="bi bi-tiktok items-center fw-bold text-white" style={{ fontSize: '25px' }}></i>
-                      </span>
-                    </div>
-                  </th>
-                  <td>
-                    <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                      TikTok
-                    </a>
-                    <span className='text-muted fw-semibold d-block fs-7'>{salesTiktok} Sales</span>
-                  </td>
-                  <td>
-                    <div className='d-flex flex-column w-100 me-2'>
-                      <div className='progress h-6px w-100' style={{ background: '#F8F5FF' }}>
-                        <div
-                          className='progress-bar'
-                          role='progressbar'
-                          style={{ width: `${precentageTiktok}%`, backgroundColor: '#7239EA' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='text-end'>
-                    <td className='text-start'>
-                      <span className='text-muted text-start fs-7 fw-semibold'>{precentageTiktok}%</span>
-                    </td>
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}>
-                  <th>
-                    <div className='symbol symbol-40px me-2'>
-                      <span className='symbol-label bg-white'>
-                        <img
-                          src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-                          className='h-70 align-self-center'
-                          alt=''
-                        />
-                      </span>
-                    </div>
-                  </th>
-                  <td>
-                    <a href='#' className='text-dark fw-bold text-hover-primary mb-1 fs-6'>
-                      E-mail
-                    </a>
-                    <span className='text-muted fw-semibold d-block fs-7'>{salesEmail} Sales</span>
-                  </td>
-                  <td>
-                    <div className='d-flex flex-column w-100 me-2'>
-                      <div className='progress h-6px w-100 bg-success-subtle'>
-                        <div
-                          className='progress-bar bg-success'
-                          role='progressbar'
-                          style={{ width: `${precentageEmail}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='text-start'>
-                    <span className='text-muted text-start fs-7 fw-semibold'>{precentageEmail}%</span>
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px dashed #A1A5B7' }}></tr>
+                ))}
               </tbody>
               {/* end::Table body */}
             </table>
@@ -282,6 +145,7 @@ const TopSales: React.FC<TopSalesProps> = ({
     </div>
   )
 }
+
 
 function chartOptions ({
   categories,
