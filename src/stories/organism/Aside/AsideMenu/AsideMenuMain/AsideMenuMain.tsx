@@ -42,7 +42,7 @@ const memberAffiliatorMenus = {
           to: "/affiliate/dashboard",
           icon: "category",
         },
-        { title: "Komisi", to: "/dwde", icon: "bill" },
+        { title: "Komisi", to: "/affiliate/commission", icon: "bill" },
         { title: "Generate Link", to: "/dwde", icon: "fasten" },
         { title: "Bantuan Promosi", to: "/dwde", icon: "rescue" },
         { title: "Order Affiliasi", to: "/dwde", icon: "basket" },

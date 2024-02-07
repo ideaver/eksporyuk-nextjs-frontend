@@ -122,7 +122,9 @@ export const akuisisTableData: TableRowData[] = [
   },
 ];
 
-const useAffiliateDashboardViewModel = () => {
+interface IDashboardProps {}
+
+const useDashboardViewModel = ({}: IDashboardProps) => {
   const breadcrumbs = [
     {
       title: "Affiliasi",
@@ -190,4 +192,4 @@ const useAffiliateDashboardViewModel = () => {
   return { breadcrumbs, BigChart, Charts, mockData };
 };
 
-export default useAffiliateDashboardViewModel;
+export default useDashboardViewModel;
