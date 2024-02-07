@@ -5,6 +5,8 @@ import { getCSS, getCSSVariableValue } from "@/_metronic/assets/ts/_utils";
 import { useThemeMode } from "@/_metronic/partials";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import dynamic from "next/dynamic";
+import { ColorList } from "@/types/general/utilities";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
 
 interface ChartProps {
   /**
@@ -38,42 +40,27 @@ interface ChartProps {
   labelIcon?: "arrow-up" | "arrow-down";
 
   /**
+   * Label Content
+   */
+
+  label?: string;
+
+  /**
    * What Label Chart Color to use
    */
 
-  labelChartColor?:
-    | "danger"
-    | "success"
-    | "primary"
-    | "warning"
-    | "info"
-    | "dark"
-    | "light";
+  labelChartColor?: ColorList;
 
   /**
    * What Border Chart Color to use
    */
 
-  borderChartColor?:
-    | "danger"
-    | "success"
-    | "primary"
-    | "warning"
-    | "info"
-    | "dark"
-    | "light";
+  borderChartColor?: ColorList;
 
   /**
    * What Name Series to use
    */
-  baseChartColor?:
-    | "danger"
-    | "success"
-    | "primary"
-    | "warning"
-    | "info"
-    | "dark"
-    | "light";
+  baseChartColor?: ColorList;
 
   /**
    * What Name Series to use
@@ -90,47 +77,49 @@ interface ChartProps {
 }
 
 export const Charts = ({
-  labelColorBG = "danger-subtle",
-  textColor = "danger",
+  labelColorBG = "success-subtle",
+  textColor = "success",
   children,
   labelIcon = "arrow-down",
   classNames,
-  labelChartColor,
-  borderChartColor,
-  baseChartColor,
-  lightChartColor,
+  labelChartColor = "secondary",
+  borderChartColor = "secondary",
+  baseChartColor = "primary",
+  lightChartColor = "primary-light",
   nameSeries,
   dataSeries,
   categoriesXAxis,
   onClick,
+  label = "40%"
 }: ChartProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
   const { mode } = useThemeMode();
-  const refreshMode = () => {
-    if (!chartRef.current) {
-      return;
-    }
-
-    const height = parseInt(getCSS(chartRef.current, "height"));
-    const chart = new ApexCharts(
-      chartRef.current,
-      getChartOptions(height, {
-        labelChartColor: labelChartColor,
-        baseChartColor: baseChartColor,
-        lightChartColor: lightChartColor,
-        borderChartColor: borderChartColor,
-        nameSeries: nameSeries,
-        dataSeries: dataSeries,
-        categoriesXAxis: categoriesXAxis,
-      })
-    );
-    if (chart) {
-      chart.render();
-    }
-    return chart;
-  };
 
   useEffect(() => {
+    const refreshMode = () => {
+      if (!chartRef.current) {
+        return;
+      }
+
+      const height = parseInt(getCSS(chartRef.current, "height"));
+      const chart = new ApexCharts(
+        chartRef.current,
+        getChartOptions(height, {
+          labelChartColor: labelChartColor,
+          baseChartColor: baseChartColor,
+          lightChartColor: lightChartColor,
+          borderChartColor: borderChartColor,
+          nameSeries: nameSeries,
+          dataSeries: dataSeries,
+          categoriesXAxis: categoriesXAxis,
+        })
+      );
+      if (chart) {
+        chart.render();
+      }
+      return chart;
+    };
+
     const chart = refreshMode();
 
     return () => {
@@ -210,7 +199,7 @@ export const Charts = ({
                 textColor
               )}`}
             ></i>{" "}
-            40%
+            {label}
           </span>
         </div>
 
@@ -268,7 +257,7 @@ function getChartOptions(
     chart: {
       fontFamily: "inherit",
       type: "area",
-      height: 350,
+      height: height,
       toolbar: {
         show: false,
       },
@@ -356,7 +345,7 @@ function getChartOptions(
       },
       y: {
         formatter: function (val) {
-          return "$" + val + " thousands";
+          return currencyFormatter(val);
         },
       },
     },

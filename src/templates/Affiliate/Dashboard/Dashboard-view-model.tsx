@@ -122,23 +122,7 @@ export const akuisisTableData: TableRowData[] = [
   },
 ];
 
-interface IDashboardProps {}
-
-const useDashboardViewModel = ({}: IDashboardProps) => {
-  const breadcrumbs = [
-    {
-      title: "Affiliasi",
-      path: "/affiliate/dashboard",
-      isSeparator: false,
-      isActive: false,
-    },
-    {
-      title: "",
-      path: "",
-      isSeparator: true,
-      isActive: false,
-    },
-  ];
+const usePackages = () => {
   const BigChart = dynamic(
     () =>
       import("@/stories/organism/Charts/BigCharts/BigCharts").then(
@@ -158,6 +142,49 @@ const useDashboardViewModel = ({}: IDashboardProps) => {
       ssr: false,
     }
   );
+  const OrderAffiliateChart = dynamic(
+    () =>
+      import(
+        "@/stories/organism/Charts/OrderAfiliasiChart/OrderAfiliasiChart"
+      ).then((module) => module.OrderAfiliasiChart),
+    {
+      ssr: false,
+    }
+  );
+  const TopSalesChart = dynamic(
+    () =>
+      import("@/stories/organism/Charts/TopSalesChart/TopSales").then(
+        (module) => module.TopSales
+      ),
+    {
+      ssr: false,
+    }
+  );
+
+  return {
+    BigChart,
+    Charts,
+    OrderAffiliateChart,
+    TopSalesChart,
+  };
+};
+
+const useDashboardViewModel = () => {
+  const breadcrumbs = [
+    {
+      title: "Affiliasi",
+      path: "/affiliate/dashboard",
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: "",
+      path: "",
+      isSeparator: true,
+      isActive: false,
+    },
+  ];
+
   const mockData = {
     series: [
       {
@@ -189,7 +216,15 @@ const useDashboardViewModel = ({}: IDashboardProps) => {
     ],
   };
 
-  return { breadcrumbs, BigChart, Charts, mockData };
+  return {
+    breadcrumbs,
+    mockData,
+  };
 };
 
-export default useDashboardViewModel;
+const dashboardViewModel = {
+  useDashboardViewModel,
+  usePackages,
+};
+
+export default dashboardViewModel;

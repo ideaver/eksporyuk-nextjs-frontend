@@ -51,6 +51,31 @@ const BigChart = ({
   const { mode } = useThemeMode();
 
   useEffect(() => {
+    const refreshChart = () => {
+      if (!chartRef.current) {
+        return;
+      }
+
+      const height = parseInt(getCSS(chartRef.current, "height"));
+     
+      const chart = new ApexCharts(
+        chartRef.current,
+        getChartOptions(height, {
+          series: series,
+          categories: categories,
+          labelChartColor,
+          borderChartColor,
+          baseChartColor,
+          secondaryChartColor,
+        })
+      );
+      if (chart) {
+        chart.render();
+      }
+
+      return chart;
+    };
+
     const chart = refreshChart();
 
     return () => {
@@ -58,32 +83,16 @@ const BigChart = ({
         chart.destroy();
       }
     };
-  }, [chartRef, mode]);
-
-  const refreshChart = () => {
-    if (!chartRef.current) {
-      return;
-    }
-
-    const height = parseInt(getCSS(chartRef.current, "height"));
-
-    const chart = new ApexCharts(
-      chartRef.current,
-      getChartOptions(height, {
-        series: series,
-        categories: categories,
-        labelChartColor,
-        borderChartColor,
-        baseChartColor,
-        secondaryChartColor,
-      })
-    );
-    if (chart) {
-      chart.render();
-    }
-
-    return chart;
-  };
+  }, [
+    baseChartColor,
+    borderChartColor,
+    categories,
+    chartRef,
+    labelChartColor,
+    mode,
+    secondaryChartColor,
+    series,
+  ]);
 
   return (
     <div className={`card ${className}`}>

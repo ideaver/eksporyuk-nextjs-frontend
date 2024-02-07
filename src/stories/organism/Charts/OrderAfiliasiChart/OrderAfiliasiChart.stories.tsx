@@ -22,7 +22,7 @@ export const Display: Story = {
     chartColorPembayaran: "warning",
     chartColorProses: "info",
     chartColorPengiriman: "gray-300",
-    chartHeight: "200px",
+    chartHeight: 200,
     className: "mb-5 mb-xl-10",
     series: [55, 30, 33],
     categories: ["Pembayaran", "Proses", "Pengiriman"],
