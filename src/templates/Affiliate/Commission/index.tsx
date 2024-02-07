@@ -130,7 +130,7 @@ const Table = ({ data }: TableProps) => {
               <td className="fw-bold">
                 <Link
                   className="text-dark text-hover-primary"
-                  href={row.idOrder}
+                  href={"commission/" + row.idOrder + "/order/"}
                 >
                   {row.namaProduk}
                 </Link>
