@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { KTIcon, toAbsoluteUrl } from "@/_metronic/helpers";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import React from "react";
 
 interface BuilderProps {
@@ -17,6 +18,7 @@ interface BuilderProps {
     title?: string;
     subTitle?: string;
     toolbar?: JSX.Element[]
+    seachbar?: JSX.Element
 }
 
 const Builder = ({
@@ -55,8 +57,18 @@ const Builder = ({
                 { value: "3", label: "Semua Status" },
             ]}
         />
+    ],
+    seachbar = (
+        <TextField
+            placeholder="Search..."
+            preffixIcon="magnifier"
+            clickablePreffixIcon={true}
+            onClickPreffixIcon={() => {
+                confirm("Preffix Icon Clicked");
+            }}
+        />
+    )
 
-    ]
 }: BuilderProps) => {
     const formatToRupiah = (value: number) => {
         return value.toLocaleString('id-ID', {
@@ -68,15 +80,8 @@ const Builder = ({
         <div className={`card ${className}`}>
             {/* begin::Header */}
             <div className="d-flex flex-stack">
-                <div className="card-header border-0 pt-5">
-                    <h3 className="card-title align-items-start flex-column">
-                        <span className="card-label fw-bold fs-3 mb-1">
-                            {title}
-                        </span>
-                        <span className="text-muted mt-1 fw-semibold fs-7">
-                            {subTitle}
-                        </span>
-                    </h3>
+                <div className="d-flex bg-gray-400 rounded ms-5">
+                    {seachbar}
                 </div>
 
                 <div className="d-flex">
@@ -89,7 +94,7 @@ const Builder = ({
             </div>
             {/* end::Header */}
             {/* begin::Body */}
-            <div className="card-body py-3">
+            <div className="card-body py-5">
                 {/* begin::Table container */}
                 <div className="table-responsive">
                     {/* begin::Table */}
@@ -97,11 +102,11 @@ const Builder = ({
                         {/* begin::Table body */}
                         <thead>
                             <tr className='fw-bold uppercase text-muted'>
-                                <th className='min-w-250px rounded-start'>ID ORDER
+                                <th className='min-w-150px rounded-start'>ID ORDER
                                     <i className="bi bi-arrow-up ms-2"></i>
                                     <i className="bi bi-arrow-down "></i>
                                 </th>
-                                <th className='w-100px text-center'>NAMA PRODUK
+                                <th className='w-400px text-start'>NAMA PRODUK
                                     <i className="bi bi-arrow-up ms-2"></i>
                                     <i className="bi bi-arrow-down "></i>
                                 </th>
@@ -125,7 +130,7 @@ const Builder = ({
                                         </div>
                                     </td>
                                     <td className="p-0 min-w-200px">
-                                        <div className="text-gray-500 fw-bold text-hover-primary text-center mb-1 fs-6">
+                                        <div className="text-gray-500 fw-bold text-hover-primary text-start mb-1 fs-6">
                                             {item.namaProduk}
                                         </div>
                                     </td>
@@ -141,7 +146,7 @@ const Builder = ({
                                     </td>{" "}
                                     <td className="text-end p-0 min-w-100px">
                                         {" "}
-                                        <span className="text-dark fw-bold d-block fs-6">
+                                        <span className={`fw-bold d-block text-center rounded fs-6 ${item.status === 'Belum Dibayar' ? 'text-danger' : 'text-success'}  ${item.status === 'Belum Dibayar' ? 'bg-danger-subtle' : 'bg-success-subtle'}`}>
                                             {item.status}
                                         </span>
                                     </td>{" "}

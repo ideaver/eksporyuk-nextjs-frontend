@@ -5540,6 +5540,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-flatpickr@npm:^3":
+  version: 3.8.11
+  resolution: "@types/react-flatpickr@npm:3.8.11"
+  dependencies:
+    "@types/react": "npm:*"
+    flatpickr: "npm:^4.0.6"
+  checksum: 38717b75a066cc14980c8be8add1cb5f0de0bb4d758b69cb4fd0b67578d5c3325c7b3fb0f7c078ef00838a1ae4b1990e8d339a4169f4f6a2d9851c28e19abe62
+  languageName: node
+  linkType: hard
+
 "@types/react-table@npm:^7":
   version: 7.7.19
   resolution: "@types/react-table@npm:7.7.19"
@@ -6335,6 +6345,7 @@ __metadata:
     "@types/react": "npm:^18"
     "@types/react-copy-to-clipboard": "npm:^5"
     "@types/react-dom": "npm:^18"
+    "@types/react-flatpickr": "npm:^3"
     "@types/react-table": "npm:^7"
     animate.css: "npm:^4.1.1"
     apexcharts: "npm:^3.45.2"
@@ -6364,6 +6375,7 @@ __metadata:
     react-bootstrap: "npm:^2.10.0"
     react-copy-to-clipboard: "npm:^5.1.0"
     react-dom: "npm:^18"
+    react-flatpickr: "npm:^3.10.13"
     react-inlinesvg: "npm:^4.1.1"
     react-intl: "npm:^6.6.2"
     react-scripts: "npm:^5.0.1"
@@ -10522,6 +10534,13 @@ __metadata:
     keyv: "npm:^4.5.3"
     rimraf: "npm:^3.0.2"
   checksum: b76f611bd5f5d68f7ae632e3ae503e678d205cf97a17c6ab5b12f6ca61188b5f1f7464503efae6dc18683ed8f0b41460beb48ac4b9ac63fe6201296a91ba2f75
+  languageName: node
+  linkType: hard
+
+"flatpickr@npm:^4.0.6, flatpickr@npm:^4.6.2":
+  version: 4.6.13
+  resolution: "flatpickr@npm:4.6.13"
+  checksum: 0e027e72a2ce1716840a8c0bf9094f48d2665dc3f3024bf9604810c5bd7dd94aa830b133c5b5cfc0c330fc88939f33b54c8714515957f9d194c3a3bb7f75a1e2
   languageName: node
   linkType: hard
 
@@ -16412,7 +16431,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.10, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -16850,6 +16869,18 @@ __metadata:
   version: 2.0.4
   resolution: "react-fast-compare@npm:2.0.4"
   checksum: f0300c677e95198b5f993cbb8a983dab09586157dc678f9e2b5b29ff941b6677a8776fbbdc425ce102fad86937e36bb45cfcfd797f006270b97ccf287ebfb885
+  languageName: node
+  linkType: hard
+
+"react-flatpickr@npm:^3.10.13":
+  version: 3.10.13
+  resolution: "react-flatpickr@npm:3.10.13"
+  dependencies:
+    flatpickr: "npm:^4.6.2"
+    prop-types: "npm:^15.5.10"
+  peerDependencies:
+    react: "*"
+  checksum: 1ebc92418301cc7fa705e0b82e69d543cc9604147c91738c3f6495111ce91c4082340a3c8dc1672c10d100c07686a4fc00a461168345518126f382e6cc1316e9
   languageName: node
   linkType: hard
 
