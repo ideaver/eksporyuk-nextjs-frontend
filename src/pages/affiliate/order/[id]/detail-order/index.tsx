@@ -10,7 +10,7 @@ const DetailOrderPage: NextPage = () => {
   return (
     <>
       <AffiliateHeader urlType="order" id={id} />
-      <DetailOrder />
+      <DetailOrder orderId={id as string} />
     </>
   );
 };
