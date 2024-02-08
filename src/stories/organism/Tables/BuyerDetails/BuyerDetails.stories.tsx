@@ -20,23 +20,10 @@ type Story = StoryObj<typeof meta>;
 export const Display: Story = {
   render: (args) => <BuyerDetails {...args} />,
   args: {
-    items: [
-      {
-        icon: "/media/svg/card-logos/profil.svg",
-        title: "Nama",
-        value: 'Abdul Halim Abdullah',
-      },
-      {
-        icon: "/media/svg/card-logos/email.svg",
-        title: "Email",
-        value: 'abdulhalim@gmail.com',
-      },
-      {
-        icon: "/media/svg/card-logos/telepon.svg",
-        title: "No. Telepon",
-        value: '+6141 234 567',
-      },
-    ],
     className: "w-100",
+    title: 'Detail Pembeli',
+    emailUser: 'abdulhalim@gmail.com',
+    teleponUser: '+6141 234 567',
+    
   },
 };

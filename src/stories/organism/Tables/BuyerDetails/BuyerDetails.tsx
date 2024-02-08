@@ -1,49 +1,22 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import { useThemeMode } from "@/_metronic/partials";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { PaymentConfirmation, PaymentMethod } from "@/types/general/payment-method";
-import { useEffect, useRef, useState } from "react";
-
 
 
 type BuyerDetailsProps = {
     className: string;
-    title?: string;
-    items: ListBuyerDetails[];
-    paymentMethod?: PaymentMethod
+    title?: string
+    emailUser?: string
+    nameUser?: string
+    teleponUser?: string
 };
 
 const BuyerDetails: React.FC<BuyerDetailsProps> = ({
-    className,
+    className = "w-100",
     title = "Detail Pembeli",
-    items,
-    paymentMethod,
+    emailUser = 'abdulhalim@gmail.com',
+    nameUser = 'Abdul Halim Abdullah',
+    teleponUser = '+6141 234 567',
 }) => {
-    const chartRef = useRef<HTMLDivElement | null>(null);
-    const { mode } = useThemeMode();
-    const [shouldRender, setShouldRender] = useState(false);
-    function isIncludedPaymentMethod(value: string): value is PaymentMethod {
-        return Object.values(PaymentMethod).includes(value as PaymentMethod);
-    }
-    function isPaymentConfirmed(value: string): value is PaymentConfirmation {
-        return Object.values(PaymentConfirmation).includes(value as PaymentConfirmation);
-    }
-
-    useEffect(() => {
-        // Set shouldRender to true when any of the props change
-        setShouldRender(true);
-    }, [
-        title,
-    ]);
-
-    // Reset shouldRender to false after rendering
-    useEffect(() => {
-        setShouldRender(false);
-    }, [shouldRender]);
-
-
     return (
         <div className={`card ${className}`}>
             {/* begin::Body */}
@@ -71,63 +44,91 @@ const BuyerDetails: React.FC<BuyerDetailsProps> = ({
                             {/* end::Table head */}
                             {/* begin::Table body */}
                             <tbody>
-                                {items.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                    >
-                                        <th className="">
-                                            <div className="d-flex align-items-center mt-2">
-                                                <div className="symbol symbol-30px me-2">
-                                                    <img
-                                                        src={item.icon}
-                                                        className=""
-                                                        alt=""
-                                                    />
-                                                </div>
-                                                <div className="d-flex flex-column">
-                                                    <p className="text-muted fw-bold text-hover-primary text-start fs-6 mb-0">
-                                                        {item.title}
-                                                    </p>
-                                                </div>
+                                <tr>
+                                    <th className="">
+                                        <div className="d-flex align-items-center mt-2">
+                                            <div className="symbol symbol-30px me-2">
+                                                <img
+                                                    src={'/media/svg/card-logos/profil.svg'}
+                                                    className=""
+                                                    alt=""
+                                                />
                                             </div>
-                                        </th>
-                                        {/* <td className="">
-                                            <div className="d-flex items-center">
-                                                <div className="symbol symbol-30px">
-                                                    <img
-                                                        src={item.icon}
-                                                        className="text-end"
-                                                        alt=""
-                                                    />
-                                                </div>
-                                                <p
-                                                    className="text-muted fw-bold text-hover-primary min-w-50 text-start pt-2 ps-2 fs-6"
-                                                >
-                                                    {item.title}
+                                            <div className="d-flex flex-column">
+                                                <p className="text-muted fw-bold text-hover-primary text-start fs-6 mb-0">
+                                                    Nama
                                                 </p>
                                             </div>
-
-                                        </td> */}
-                                        <td>
-                                            <div className="d-flex flex-column min-w-50 me-2">
-                                                <div
-                                                    className={``}
-                                                >
-                                                    <div
-                                                        className={`text-end fw-bold fs-5 ${isIncludedPaymentMethod(item.value) ? "text-dark" : "text-muted"}`}
-                                                    >
-                                                        {item.value}
-                                                    </div>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <div className="d-flex align-items-center w-100 me-2 text-end">
+                                            <div className="max-w-50">
+                                                <img src="/media/svg/card-logos/profil-buyer.svg" alt="" />
+                                            </div>
+                                            <div className="d-flex justify-content-end max-w-50">
+                                                <div className={`text-end fw-bold max-w-50 fs-5 text-muted ms-1`}>
+                                                    {nameUser}
                                                 </div>
                                             </div>
-                                        </td>
-                                        {/* <td className="">
-                      <span className="text-muted text-start fs-7 fw-semibold">
-                        {item.precentageValue}%
-                      </span>
-                    </td> */}
-                                    </tr>
-                                ))}
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th className="">
+                                        <div className="d-flex align-items-center mt-2">
+                                            <div className="symbol symbol-30px me-2">
+                                                <img
+                                                    src={'/media/svg/card-logos/email.svg'}
+                                                    className=""
+                                                    alt=""
+                                                />
+                                            </div>
+                                            <div className="d-flex flex-column">
+                                                <p className="text-muted fw-bold text-hover-primary text-start fs-6 mb-0">
+                                                    Email
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <div className="d-flex flex-column w-100 me-2">
+                                            <div className={``}>
+                                                <div className={`text-end fw-bold fs-5 text-muted `}>
+                                                    {emailUser}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th className="">
+                                        <div className="d-flex align-items-center mt-2">
+                                            <div className="symbol symbol-30px me-2">
+                                                <img
+                                                    src={'/media/svg/card-logos/telepon.svg'}
+                                                    className=""
+                                                    alt=""
+                                                />
+                                            </div>
+                                            <div className="d-flex flex-column">
+                                                <p className="text-muted fw-bold text-hover-primary text-start fs-6 mb-0">
+                                                    No. Telepon
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <div className="d-flex flex-column w-100 me-2">
+                                            <div className={``}>
+                                                <div className={`text-end fw-bold text-muted fs-5 `}>
+                                                    {teleponUser}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                             {/* end::Table body */}
                         </table>
