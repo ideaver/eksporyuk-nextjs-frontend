@@ -10,12 +10,19 @@ import useOrderViewModel from "./Order-view-model";
 import Image from "next/image";
 import Flatpickr from "react-flatpickr";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
 
 interface OrderPageProps {}
 
 const OrderPage = ({}: OrderPageProps) => {
-  const { breadcrumbs, exportModalState, setExportModalState } =
-    useOrderViewModel();
+  const {
+    breadcrumbs,
+    exportModalState,
+    setExportModalState,
+    follupValues,
+    selectedFollupValue,
+    handleFollupChange,
+  } = useOrderViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Order Affiliasi</PageTitle>
@@ -33,7 +40,12 @@ const OrderPage = ({}: OrderPageProps) => {
         onChange={([startDate, endDate]) => {
           setExportModalState([startDate, endDate]);
         }}
-      ></ExportModal>
+      />
+      <FollowUpModal
+        follupValues={follupValues}
+        selectedFollupValue={selectedFollupValue}
+        handleFollupChange={handleFollupChange}
+      />
     </>
   );
 };
@@ -63,7 +75,7 @@ const Head = () => {
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+          <Buttons data-bs-toggle="modal" data-bs-target="#kt_export_modal">
             Export Data
           </Buttons>
         </div>
@@ -177,7 +189,11 @@ const ActionButton = () => {
       >
         {/* begin::Menu item */}
         <div className="menu-item px-3">
-          <span className="menu-link px-3" onClick={() => {}}>
+          <span
+            className="menu-link px-3"
+            data-bs-toggle="modal"
+            data-bs-target="#kt_follup_modal"
+          >
             Kirim Follow Up
           </span>
         </div>
@@ -196,7 +212,7 @@ const ExportModal = ({
   onChange: (value: any) => void;
 }) => {
   return (
-    <div className="modal fade" tabIndex={-1} id="kt_modal_1">
+    <div className="modal fade" tabIndex={-1} id="kt_export_modal">
       <div className="modal-dialog modal-lg modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
@@ -206,7 +222,7 @@ const ExportModal = ({
               data-bs-dismiss="modal"
               aria-label="Close"
             >
-              <KTIcon iconName="cross" />
+              <KTIcon iconName="cross" className="fs-2x" />
             </div>
           </div>
 
@@ -227,7 +243,7 @@ const ExportModal = ({
             </p>
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer justify-content-center">
             <Buttons buttonColor="secondary" data-bs-dismiss="modal">
               Batal
             </Buttons>

@@ -5,12 +5,13 @@ import useDetailOrderViewModel, {
 } from "./DetailOrder-view-model";
 
 const DetailOrder = ({ orderId }: IDetailOrderProps) => {
-  const { orderTableDatas } = useDetailOrderViewModel({
+  const { orderTableDatas, breadcrumbs } = useDetailOrderViewModel({
     orderId,
   });
   return (
     <>
-      <PageTitle>Detail Order</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Detail Order Affiliasi</PageTitle>
+
       <div className="row gy-5">
         {orderTableDatas.map((data, index) => (
           <div className="col-lg-4" key={index}>

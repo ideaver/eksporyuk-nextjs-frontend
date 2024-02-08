@@ -12,14 +12,17 @@ import {
 import { ThemeModeComponent } from "../assets/ts/layout";
 
 import { useLayout } from "./core";
+import { ButtonComponent } from "../assets/ts/components/_ButtonComponent";
 
 export function MasterInit() {
   const { config } = useLayout();
   const isFirstRun = useRef(true);
+
   const pluginsInitialization = () => {
     isFirstRun.current = false;
     ThemeModeComponent.init();
     setTimeout(() => {
+      ButtonComponent.bootstrap();
       ToggleComponent.bootstrap();
       ScrollTopComponent.bootstrap();
       DrawerComponent.bootstrap();
@@ -27,11 +30,11 @@ export function MasterInit() {
       MenuComponent.bootstrap();
       ScrollComponent.bootstrap();
       SwapperComponent.bootstrap();
-    if(typeof window !== undefined) {
-      document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
-        Tab.getOrCreateInstance(tab);
-      });
-    }
+      if (typeof window !== undefined) {
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
+          Tab.getOrCreateInstance(tab);
+        });
+      }
     }, 500);
   };
 

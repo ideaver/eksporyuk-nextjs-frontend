@@ -118,6 +118,15 @@ const useOrderViewModel = () => {
     MenuComponent.reinitialization();
   }, []);
 
+  const follupValues = ["follup-1", "follup-2", "follup-3"];
+
+  const [selectedFollupValue, setSelecteFollupValue] = useState("");
+
+  const handleFollupChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelecteFollupValue(event.target.value);
+  };
+
+
   const breadcrumbs = [
     {
       title: "Order Affiliasi",
@@ -133,7 +142,7 @@ const useOrderViewModel = () => {
     },
   ];
 
-  return { breadcrumbs, exportModalState, setExportModalState};
+  return { breadcrumbs, exportModalState, setExportModalState, follupValues, selectedFollupValue, handleFollupChange};
 };
 
 export default useOrderViewModel;

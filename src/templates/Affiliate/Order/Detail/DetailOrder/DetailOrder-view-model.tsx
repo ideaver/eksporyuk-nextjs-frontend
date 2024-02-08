@@ -129,8 +129,26 @@ const useDetailOrderViewModel = ({ orderId }: IDetailOrderProps) => {
     buyersDetailData,
     affiliateDetailData,
   ];
+
+  const breadcrumbs = [
+    {
+      title: "Order Affiliasi",
+      path: "/affiliate/order",
+      isSeparator: false,
+      isActive: false,
+    },
+
+    {
+      title: "",
+      path: "",
+      isSeparator: true,
+      isActive: false,
+    },
+  ];
+
   return {
     orderTableDatas,
+    breadcrumbs,
   };
 };
 
