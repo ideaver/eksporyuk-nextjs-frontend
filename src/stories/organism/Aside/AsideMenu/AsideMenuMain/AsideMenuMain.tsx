@@ -45,7 +45,7 @@ const memberAffiliatorMenus = {
         { title: "Komisi", to: "/affiliate/commission", icon: "bill" },
         { title: "Generate Link", to: "/dwde", icon: "fasten" },
         { title: "Bantuan Promosi", to: "/dwde", icon: "rescue" },
-        { title: "Order Affiliasi", to: "/dwde", icon: "basket" },
+        { title: "Order Affiliasi", to: "/affiliate/order", icon: "basket" },
         { title: "Kupon", to: "/dwde", icon: "barcode" },
         { title: "Pixel", to: "/dwde", icon: "data" },
         { title: "Leaderboard", to: "/dwde", icon: "ranking" },

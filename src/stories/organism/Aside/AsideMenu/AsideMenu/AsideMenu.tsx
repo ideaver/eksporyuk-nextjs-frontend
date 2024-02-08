@@ -21,9 +21,10 @@ const AsideMenu: React.FC<Props> = ({ asideMenuCSSClasses }) => {
       DrawerComponent.reinitialization();
       ToggleComponent.reinitialization();
       ScrollComponent.reinitialization();
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = 0;
-      }
+      // TODO: Remove this auto scroll when page changes, i don't think it's necessary
+      // if (scrollRef.current) {
+      //   scrollRef.current.scrollTop = 0;
+      // }
     }, 50);
   }, [pathname]);
 
