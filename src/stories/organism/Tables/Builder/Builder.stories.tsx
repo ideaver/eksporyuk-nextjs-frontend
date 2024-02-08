@@ -69,7 +69,7 @@ export const ActiveItem: Story = {
         namaProduk: "Kelas Bimbingan Ekspor Yuk",
         tier: "I",
         totalKomisi: 698342,
-        status: "Belum Dibayar",
+        status: "Sudah Dibayar",
       },
       {
         idOrder: "INV 7196",
