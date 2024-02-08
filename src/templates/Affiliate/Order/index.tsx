@@ -124,7 +124,9 @@ const Table = ({ data }: TableProps) => {
               <td className="fw-bold">
                 <Link
                   className="text-dark text-hover-primary"
-                  href={"commission/" + row.idOrder + "/order/"}
+                  href={
+                    "order/" + row.idOrder.replace(" ", "") + "/detail-order/"
+                  }
                 >
                   {row.namaProduk}
                 </Link>
