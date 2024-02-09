@@ -1,154 +1,107 @@
-import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import Image from "next/image";
 
-const orderCard = (id: string) => {
+const paymentProof = [
+  {
+    title: `Bukti Pembayaran`,
+    rows: [
+      {
+        icon: "/media/svg/card-logos/document.svg",
+        title: "BUKTI PEMBAYARAN.JPG",
+        subTitle: "Dikirim pada 8/1/2024, 14.42 WIB",
+        value: (
+          <>
+            <Buttons buttonColor="secondary" classNames="btn-sm fs-5 ms-5">
+              <i className="bi bi-eye-fill"></i>
+            </Buttons>
+          </>
+        ),
+      },
+    ],
+  },
+];
+
+const addressDetail = [
+  {
+    title: `Alamat Tujuan`,
+    rows: [
+      {
+        icon: "/media/svg/card-logos/document.svg",
+        title: (
+          <p className="text-center text-muted fs-6 fw-bold">
+            Produk yang dibeli adalah produk non-fisik. <br /> Tidak ada proses
+            pengiriman produk ke alamat pembeli.
+          </p>
+        ),
+      },
+    ],
+  },
+  // Add more sections as needed
+];
+const orderDetail = (orderId: string) => {
   return [
     {
-      title: `Order Detail (${id})`,
+      title: `Order INV`,
+      id: orderId,
       rows: [
         {
-          icon: "calendar",
-          title: "Tanggal Pembelian",
-          value: "13/01/2023",
-        },
-        {
-          icon: "wallet",
-          title: "Tipe Order",
-          value: "Berlangganan - Awal",
-        },
-        {
-          icon: "delivery",
-          title: "Status",
+          kuantiti: "I",
+          harga: "Rp 100.000",
+          total: 10000000,
           value: (
-            <Badge badgeColor={"success"} label="Pembayaran Dikonfirmasi" />
-          ),
-        },
-        {
-          icon: "two-credit-cart",
-          title: "Metode Pembayaran",
-          value: (
-            <>
+            <div className="text-dark">
               <Buttons
                 buttonColor="secondary"
-                classNames="btn-sm fw-bold fs-5 me-5"
+                classNames="btn-sm fw-bold fs-5 me-5 "
               >
                 Aa
               </Buttons>
-              Mandiri
-            </>
+              Kelas Bimbingan Ekspor Yuk
+            </div>
           ),
+        },
+        {
+          harga: "Subtotal",
+          total: 10000000,
+        },
+        {
+          harga: "Ongkos Kirim",
+          total: 10000000,
+        },
+        {
+          harga: "Diskon",
+          total: 10000000,
+        },
+        {
+          harga: <p className="text-dark mt-4">Total Harga</p>,
+          total: 10000000,
         },
       ],
     },
   ];
 };
 
-const buyersDetail = [
-  {
-    title: "Detail Pembeli",
-    rows: [
-      {
-        icon: "profile-circle",
-        title: "Nama",
-        value: (
-          <div className="d-flex  align-items-center justify-content-end p-0 ">
-            <Image
-              className="symbol symbol-30px symbol-circle"
-              src={"/media/avatars/300-1.jpg"}
-              width={30}
-              height={30}
-              alt=""
-            />{" "}
-            <span className="text-muted ms-5">Abdul Halim Abdullah</span>
-          </div>
-        ),
-      },
-      {
-        icon: "sms",
-        title: "Email",
-        value: "abdulhalim@gmail.com",
-      },
-      {
-        icon: "phone",
-        title: "No. Telepon",
-        value: "+6141 234 567",
-      },
-    ],
-  },
-];
-const affiliateDetail = [
-  {
-    title: "Detail Affiliasi",
-    rows: [
-      {
-        icon: "profile-circle",
-        title: "Nama",
-        value: (
-          <div className="d-flex align-items-center p-0 justify-content-end">
-            <Image
-              className="symbol symbol-30px symbol-circle"
-              src={"/media/avatars/300-5.jpg"}
-              width={30}
-              height={30}
-              alt=""
-            />{" "}
-            <span className="text-muted ms-5">Dwi Rahma</span>
-          </div>
-        ),
-      },
-      {
-        icon: "sms",
-        title: "Email",
-        value: "abdulhalim@gmail.com",
-      },
-      {
-        icon: "phone",
-        title: "No. Telepon",
-        value: "+6141 234 567",
-      },
-      {
-        icon: "discount",
-        title: "Kupon",
-        value: "AYOEKSPOR",
-      },
-    ],
-  },
-];
-
 export interface IDetailOrderProps {
   orderId: string;
 }
 
 const useDetailOrderViewModel = ({ orderId }: IDetailOrderProps) => {
-  const orderCardData = orderCard(orderId);
-  const buyersDetailData = buyersDetail;
-  const affiliateDetailData = affiliateDetail;
-  const orderTableDatas = [
-    orderCardData,
-    buyersDetailData,
-    affiliateDetailData,
-  ];
+  // First Section START
+  const paymentProofData = paymentProof;
+  const addressDetailData = addressDetail;
+  const orderDatas = {
+    paymentProof: paymentProofData,
+    addressDetail: addressDetailData,
+  };
+  // First Section END
 
-  const breadcrumbs = [
-    {
-      title: "Order Affiliasi",
-      path: "/affiliate/order",
-      isSeparator: false,
-      isActive: false,
-    },
+  // Second Section START
+  const orderDetailData = orderDetail(orderId);
+  // Second Section END
 
-    {
-      title: "",
-      path: "",
-      isSeparator: true,
-      isActive: false,
-    },
-  ];
 
   return {
-    orderTableDatas,
-    breadcrumbs,
+    orderDatas,
+    orderDetailData,
   };
 };
 
