@@ -48,7 +48,7 @@ const memberAffiliatorMenus = {
         { title: "Order Affiliasi", to: "/affiliate/order", icon: "basket" },
         { title: "Kupon", to: "/dwde", icon: "barcode" },
         { title: "Pixel", to: "/dwde", icon: "data" },
-        { title: "Leaderboard", to: "/dwde", icon: "ranking" },
+        { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
       ],
     },
   ],
