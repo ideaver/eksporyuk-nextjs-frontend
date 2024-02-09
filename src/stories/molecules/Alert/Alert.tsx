@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { KTIcon } from "../../../_metronic/helpers";
 import { Buttons } from "../Buttons/Buttons";
 import Link from "next/link";
+import { ColorList } from "@/types/general/utilities";
 
 interface AlertProps {
   /**
@@ -24,14 +25,7 @@ interface AlertProps {
   /**
    * What badge color to use
    */
-  alertColor:
-    | "primary"
-    | "secondary"
-    | "success"
-    | "danger"
-    | "warning"
-    | "info"
-    | "dark";
+  alertColor?: ColorList;
   /**
    * Alert Title
    */
@@ -40,6 +34,10 @@ interface AlertProps {
    * Alert contents
    */
   label: string;
+  /**
+   * Color for Label
+   */
+  labelColor?: ColorList;
   /**
    * Prefix Alert Icon name
    */
@@ -85,6 +83,7 @@ export const Alert = ({
   border = "no border",
   dismissable = false,
   label,
+  labelColor,
   title,
   buttonLabel = "Enable",
   classNames,
@@ -150,7 +149,14 @@ export const Alert = ({
         <h5 className={clsx("mb-1", mode === "normal" ? "text-light" : "")}>
           {title}
         </h5>
-        <span className={clsx(mode === "normal" ? "text-light" : "")}>
+        <span
+          className={clsx(
+            mode === "normal" ? "text-light" : "",
+            labelColor && {
+              [`text-${labelColor}`]: labelColor,
+            }
+          )}
+        >
           {label}
         </span>
         {linkAlert && (

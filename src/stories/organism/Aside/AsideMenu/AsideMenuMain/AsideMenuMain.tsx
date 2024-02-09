@@ -46,7 +46,7 @@ const memberAffiliatorMenus = {
         { title: "Generate Link", to: "/dwde", icon: "fasten" },
         { title: "Bantuan Promosi", to: "/dwde", icon: "rescue" },
         { title: "Order Affiliasi", to: "/affiliate/order", icon: "basket" },
-        { title: "Kupon", to: "/dwde", icon: "barcode" },
+        { title: "Kupon", to: "/affiliate/coupon", icon: "barcode" },
         { title: "Pixel", to: "/dwde", icon: "data" },
         { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
       ],
