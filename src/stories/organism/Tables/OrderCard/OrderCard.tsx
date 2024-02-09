@@ -1,32 +1,23 @@
 import { KTIcon } from "@/_metronic/helpers";
 
 interface Row {
-    icon?: string;
-    kuantiti?: string;
-    harga: string | JSX.Element;
-    total: number;
-    value?: string | JSX.Element;
+    icon: string;
+    title: string;
+    value: string | JSX.Element;
 }
 
 interface Table {
     title: string;
-    id: string;
     rows: Row[];
 }
 
 type OrderDetailsProps = {
     className?: string;
+    title?: string;
     data: Table[];
 };
 
-export const OrderDetails: React.FC<OrderDetailsProps> = ({ className, data }) => {
-    const formatToRupiah = (value: number) => {
-        return value.toLocaleString('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0,
-        });
-      };
+export const OrderCard: React.FC<OrderDetailsProps> = ({ className, data }) => {
     return (
         <div className={`card ${className}`}>
             {/* begin::Body */}
@@ -37,7 +28,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ className, data }) =
                         <div className="card-header border-0 pt-5">
                             <h3 className="card-title align-items-start flex-column">
                                 <span className="card-label fw-bold fs-3 mb-1">
-                                    {table.title} {table.id}
+                                    {table.title}
                                 </span>
                             </h3>
                         </div>
@@ -49,22 +40,18 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ className, data }) =
                                 {/* begin::Table */}
                                 <table className="table align-middle gs-0 gy-5">
                                     {/* begin::Table body */}
-                                    <thead>
-                                        <tr className='fw-bold uppercase text-muted'>
-                                            <th className='min-w-500px rounded-start text-uppercase'>nama produk</th>
-                                            <th className='w-100px text-end text-uppercase'>kuantiti</th>
-                                            <th className='w-150px text-end text-uppercase'>harga</th>
-                                            <th className='w-150px text-uppercase text-end'>total</th>
-                                        </tr>
-                                    </thead>
                                     <tbody>
                                         {table.rows.map((row, rowIndex) => (
                                             <tr key={rowIndex}>
                                                 <th className="">
                                                     <div className="d-flex align-items-center mt-2">
+                                                        <KTIcon
+                                                            iconName={row.icon}
+                                                            className="fs-2hx me-3"
+                                                        ></KTIcon>
                                                         <div className="d-flex flex-column">
-                                                            <p className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
-                                                                {row.value}
+                                                            <p className="text-muted fw-bold text-start fs-6 mb-0">
+                                                                {row.title}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -72,32 +59,13 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ className, data }) =
                                                 <td>
                                                     <div className="d-flex flex-column w-100 me-2">
                                                         <div className={``}>
-                                                            <div className={`text-end fw-bold fs-5 text-muted`}>
-                                                                {row.kuantiti}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex flex-column w-100 me-2">
-                                                        <div className={``}>
-                                                            <div className={`text-end text-muted fw-bold fs-5 `}>
-                                                                {row.harga}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex flex-column w-100 me-2">
-                                                        <div className={``}>
-                                                            <div className={`text-end text-muted fw-bold fs-5 `}>
-                                                                {formatToRupiah(row.total)}
+                                                            <div className={`text-end fw-bold fs-5 `}>
+                                                                {row.value}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
-
                                         ))}
                                     </tbody>
                                     {/* end::Table body */}

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { OrderDetails } from "./OrderDetails";
 import { PaymentConfirmation, PaymentMethod } from "@/types/general/payment-method";
 import { Badge } from "@/stories/atoms/Badge/Badge";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 
 const meta = {
   title: "Organism/OrderDetails",
@@ -22,12 +23,48 @@ export const Display: Story = {
   render: (args) => <OrderDetails {...args} />,
   args: {
     className: "w-100",
-    invoiceNumber: "7196",
-    subscription: 'Berlangganan - Awal',
-    transactionDate: '13/01/2023',
-    buttonValue: 'Aa',
-    statusPayment: PaymentConfirmation.Confirmed,
-    buttonPayment: PaymentMethod.Mandiri,
-    
+    data: [
+      {
+        title: `Order INV`,
+        id: "7196",
+        rows: [
+          {
+            kuantiti: "I",
+            harga: "Rp 100.000",
+            total: 10000000,
+            value: (
+              <div className="text-dark">
+                <Buttons
+                  buttonColor="secondary"
+                  classNames="btn-sm fw-bold fs-5 me-5"
+                >
+                  Aa
+                </Buttons>
+                Kelas Bimbingan Ekspor Yuk
+              </div>
+            ),
+          },
+          {
+            harga: "Subtotal",
+            total: 10000000,
+          },
+          {
+            harga: "Ongkos Kirim",
+            total: 10000000,
+          },
+          {
+            harga: "Diskon",
+            total: 10000000,
+          },
+          {
+            harga: (
+              <p className="text-dark mt-4">Total Harga</p>
+            ),
+            total: 10000000,
+          },
+        ],
+      },
+      // Add more sections as needed
+    ],
   },
 };
