@@ -9,8 +9,8 @@ const DetailOrderPage: NextPage = () => {
   const id = query.id;
   return (
     <>
-      <AffiliateHeader urlType="commission" id={id}/>
-      <DetailOrder />
+      <AffiliateHeader urlType="commission" id={id} />
+      <DetailOrder orderId={id as string} />
     </>
   );
 };
