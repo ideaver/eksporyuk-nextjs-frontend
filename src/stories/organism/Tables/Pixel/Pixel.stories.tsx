@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OrderDetails } from "./OrderDetails";
+import { PixelTable } from "./PixelTable";
 import { PaymentConfirmation, PaymentMethod } from "@/types/general/payment-method";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 
 const meta = {
-  title: "Organism/OrderDetails",
-  component: OrderDetails,
+  title: "Organism/PixelTable",
+  component: PixelTable,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",
@@ -14,53 +14,50 @@ const meta = {
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ["autodocs"],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
-} satisfies Meta<typeof OrderDetails>;
+} satisfies Meta<typeof PixelTable>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Display: Story = {
-  render: (args) => <OrderDetails {...args} />,
+  render: (args) => <PixelTable {...args} />,
   args: {
     className: "w-100",
     data: [
       {
-        title: `Order INV`,
-        id: "7196",
+        width: "min-w-700px",
         rows: [
           {
-            kuantiti: "I",
-            harga: "Rp 100.000",
-            total: 10000000,
+            breadcrumb: (
+              <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+            ),
             value: (
               <div className="text-dark">
                 <Buttons
                   buttonColor="secondary"
                   classNames="btn-sm fw-bold fs-5 me-5"
                 >
-                  Aa
+                  <img src="" alt=""/>Aa
                 </Buttons>
                 Kelas Bimbingan Ekspor Yuk
               </div>
             ),
           },
           {
-            harga: "Subtotal",
-            total: 10000000,
-          },
-          {
-            harga: "Ongkos Kirim",
-            total: 10000000,
-          },
-          {
-            harga: "Diskon",
-            total: 10000000,
-          },
-          {
-            harga: (
-              <p className="text-dark mt-4">Total Harga</p>
+            breadcrumb: (
+              <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
             ),
-            total: 10000000,
+            value: (
+              <div className="text-dark">
+                <Buttons
+                  buttonColor="secondary"
+                  classNames="btn-sm fw-bold fs-5 me-5"
+                >
+                  <img src="" alt=""/>Aa
+                </Buttons>
+                Kelas Bimbingan Ekspor Yuk
+              </div>
+            ),
           },
         ],
       },

@@ -1,26 +1,58 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import { OrderCard } from "@/stories/molecules/Cards/OrderCard/OrderCard";
 import useDetailOrderViewModel, {
   IDetailOrderProps,
 } from "./DetailOrder-view-model";
+import { BuktiPembayaran } from "@/stories/organism/Tables/BuktiPembayaran/BuktiPembayaran";
+import { AlamatTujuan } from "@/stories/organism/Tables/AlamatTujuan/AlamatTujuan";
+import { OrderDetails } from "@/stories/organism/Tables/OrderDetails/OrderDetails";
+import { useEffect, useState } from "react";
 
 const DetailOrder = ({ orderId }: IDetailOrderProps) => {
-  const { orderTableDatas, breadcrumbs } = useDetailOrderViewModel({
+  const { orderDatas, orderDetailData } = useDetailOrderViewModel({
     orderId,
   });
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Detail Order Affiliasi</PageTitle>
-
-      <div className="row gy-5">
-        {orderTableDatas.map((data, index) => (
-          <div className="col-lg-4" key={index}>
-            <OrderCard className="h-100" data={data}></OrderCard>
-          </div>
-        ))}
-      </div>
+      {isClient && (
+        <>
+          <OrderData
+            addressDetail={orderDatas.addressDetail}
+            paymentProof={orderDatas.paymentProof}
+          />
+          <OrderDetails data={orderDetailData} />
+        </>
+      )}
     </>
   );
 };
 
 export default DetailOrder;
+
+const OrderData = ({
+  paymentProof,
+  addressDetail,
+}: {
+  paymentProof: any;
+  addressDetail: any;
+}) => {
+  return (
+    <div className="row mb-5 gy-5">
+      <div className="col-lg-6">
+        <BuktiPembayaran className="h-100" title="Order" data={paymentProof} />
+      </div>
+      <div className="col-lg-6">
+        <AlamatTujuan
+          className="h-100"
+          title="Order"
+          data={addressDetail}
+        ></AlamatTujuan>
+      </div>
+    </div>
+  );
+};
