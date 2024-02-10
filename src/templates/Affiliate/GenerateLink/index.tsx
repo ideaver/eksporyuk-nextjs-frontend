@@ -232,16 +232,16 @@ const GenerateModal = ({
                             </div>
                             <div className="mt-6">
                                 <CheckBoxInput
-                                    className={selectedFollupValue === 'Aktifkan Parameter Akuisisi' ? "active" : ""}
+                                    className={selectedFollupValue === 'Aktifkan Parameter Kupon' ? "active" : ""}
                                     name="follup"
-                                    value={'Aktifkan Parameter Akuisisi'}
-                                    checked={selectedFollupValue === 'Aktifkan Parameter Akuisisi'}
+                                    value={'Aktifkan Parameter Kupon'}
+                                    checked={selectedFollupValue === 'Aktifkan Parameter Kupon'}
                                     onChange={handleFollupChange}
                                 >
-                                    {`Aktifkan Parameter Akuisisi`}
+                                    {`Aktifkan Parameter Kupon`}
                                 </CheckBoxInput>
                                 <p className="fw-bold fs-6 text-muted ms-20 ps-4">
-                                    Parameter akuisisi data berfungsi jika anda ingin mengetahui asal lead atau pembeli anda
+                                    Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
                                 </p>
                             </div>
 
