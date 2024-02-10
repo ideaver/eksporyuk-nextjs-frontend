@@ -115,9 +115,9 @@ const Table = ({ data }: TableProps) => {
                             <th className="">
                                 <div className="d-flex align-items-center">
                                     <div className="d-flex flex-column">
-                                        <p className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
+                                        <div className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
                                             {row.value}
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             </th>

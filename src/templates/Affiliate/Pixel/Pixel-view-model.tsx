@@ -20,7 +20,7 @@ export interface TableProps {
 export const tableData: TableRow[] = [
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -36,7 +36,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -52,7 +52,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -68,7 +68,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -84,7 +84,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -100,7 +100,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -116,7 +116,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -132,7 +132,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
@@ -148,7 +148,7 @@ export const tableData: TableRow[] = [
             },
             {
                 breadcrumb: (
-                    <Badge badgeColor={"primary"} label="Hubungkan" classNames="p-4" />
+                    <Buttons mode="light">Hubungkan</Buttons>
                 ),
                 value: (
                     <div className="text-dark">
