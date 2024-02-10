@@ -65,7 +65,7 @@ const Head = () => {
                 ></TextField>
             </div>
             <div className="col-lg-auto">
-                <Buttons data-bs-toggle="modal" data-bs-target="#kt_export_modal">
+                <Buttons data-bs-toggle="modal" data-bs-target="#kt_pengaturan_id_modal">
                     Pengaturan ID Pixel
                 </Buttons>
             </div>
@@ -146,7 +146,7 @@ const PixelModal = ({
     onChange: (value: any) => void;
 }) => {
     return (
-        <div className="modal fade" tabIndex={-1} id="kt_export_modal">
+        <div className="modal fade" tabIndex={-1} id="kt_pengaturan_id_modal">
             <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -161,24 +161,43 @@ const PixelModal = ({
                     </div>
 
                     <div className="modal-body">
-                        <p className="fw-bold required">Facebook/Meta Pixel ID</p>
-                        <Flatpickr
-                            value={date}
-                            onChange={onChange}
-                            options={{
-                                mode: "range",
-                                dateFormat: "d m Y",
-                            }}
-                            className="form-control form-control-solid"
-                            placeholder="Pilih Rentang Waktu"
-                        />
+                        <div>
+                            <h4 className="fw-bold text-gray-700">Facebook/Meta Pixel ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="1234567890"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <h4 className="fw-bold text-gray-700">TikTok Pixel ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="C545FFHT8ST896F"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <h4 className="fw-bold text-gray-700">Google Tag Manager ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="GTM-RGUSIRGS"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="modal-footer justify-content-center">
-                        <Buttons buttonColor="secondary" data-bs-dismiss="modal">
+                    <div className="modal-footer justify-content-center gap-4">
+                        <Buttons buttonColor="secondary" classNames="fw-bold" data-bs-dismiss="modal">
                             Batal
                         </Buttons>
-                        <Buttons data-bs-dismiss="modal">Simpan Pengaturan</Buttons>
+                        <Buttons data-bs-dismiss="modal" classNames="fw-bold" >Simpan Pengaturan</Buttons>
                     </div>
                 </div>
             </div>

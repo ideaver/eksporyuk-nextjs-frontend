@@ -199,145 +199,8 @@ export const tableData: TableRow[] = [
     },
 ];
 
-const tabsData = [
-    {
-        id: "kt_tab_pane_4",
-        name: "Social Media #1",
-        message: (
-            <p>
-                PENTING :<br />
-                <br />
-                kesempatan terbaik untuk
-                <br />
-                dapat levidio the feed akan
-                <br />
-                segera berakhir
-                <br />
-                <br />
-                Harga akan naik BESOK.
-                <br />
-                Dan ini serius, kalau ga percaya
-                <br />
-                silakan cek harganya besok
-                <br />
-                setelah tengah malam
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                jadi tunggu apalagi?
-                <br />
-                BESOK tengah malam harga naik
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                <br />
-                Jabat Erat,
-                <br />
-                <br />
-                NAMA AFFILIATE
-            </p>
-        ),
-    },
-    {
-        id: "kt_tab_pane_5",
-        name: "Social Media #2",
-        message: (
-            <p>
-                PENTING :<br />
-                <br />
-                kesempatan terbaik untuk
-                <br />
-                dapat levidio the feed akan
-                <br />
-                segera berakhir
-                <br />
-                <br />
-                Harga akan naik BESOK.
-                <br />
-                Dan ini serius, kalau ga percaya
-                <br />
-                silakan cek harganya besok
-                <br />
-                setelah tengah malam
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                jadi tunggu apalagi?
-                <br />
-                BESOK tengah malam harga naik
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                <br />
-                Jabat Erat,
-                <br />
-                <br />
-                NAMA AFFILIATE
-            </p>
-        ),
-    },
-    {
-        id: "kt_tab_pane_6",
-        name: "Social Media #3",
-        message: (
-            <p>
-                PENTING :<br />
-                <br />
-                kesempatan terbaik untuk
-                <br />
-                dapat levidio the feed akan
-                <br />
-                segera berakhir
-                <br />
-                <br />
-                Harga akan naik BESOK.
-                <br />
-                Dan ini serius, kalau ga percaya
-                <br />
-                silakan cek harganya besok
-                <br />
-                setelah tengah malam
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                jadi tunggu apalagi?
-                <br />
-                BESOK tengah malam harga naik
-                <br />
-                <br />
-                -&gt; KLIK DISINI (LINK AFFILIASI)
-                <br />
-                <br />
-                Jabat Erat,
-                <br />
-                <br />
-                NAMA AFFILIATE
-            </p>
-        ),
-    },
-    // Add more data as needed
-];
 
-const imageData = [
-    {
-        src: "/images/placeholders/banner-2.png",
-        alt: "",
-    },
-    {
-        src: "/images/placeholders/banner-1.png",
-        alt: "",
-    },
-    {
-        src: "/images/placeholders/banner-2.png",
-        alt: "",
-    },
-    // Add more data as needed
-];
+
 
 const useGenerateLinkViewModel = ({ }: IGenerateLinkProps) => {
     const follupValues = ["follup-1", "follup-2", "follup-3"];
@@ -345,8 +208,6 @@ const useGenerateLinkViewModel = ({ }: IGenerateLinkProps) => {
     const handleFollupChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelecteFollupValue(event.target.value);
       };
-    const generateTabsData = tabsData;
-    const generateImageData = imageData;
     const breadcrumbs = [
         {
             title: "Affiliasi",
@@ -362,7 +223,7 @@ const useGenerateLinkViewModel = ({ }: IGenerateLinkProps) => {
         },
     ];
 
-    return { breadcrumbs, generateTabsData, generateImageData, follupValues, selectedFollupValue, setSelecteFollupValue, handleFollupChange };
+    return { breadcrumbs, follupValues, selectedFollupValue, setSelecteFollupValue, handleFollupChange };
 };
 
 export default useGenerateLinkViewModel;

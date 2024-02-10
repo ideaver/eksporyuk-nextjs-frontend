@@ -19,7 +19,7 @@ interface GenerateLinkPageProps { }
 
 const GenerateLinkPage = ({ }: GenerateLinkPageProps) => {
     const {
-        breadcrumbs, generateTabsData, generateImageData, follupValues, selectedFollupValue, setSelecteFollupValue, handleFollupChange
+        breadcrumbs, follupValues, selectedFollupValue, setSelecteFollupValue, handleFollupChange
     } = useGenerateLinkViewModel({});
     return (
         <>
@@ -34,8 +34,6 @@ const GenerateLinkPage = ({ }: GenerateLinkPageProps) => {
                 </KTCardBody>
             </KTCard>
             <GenerateModal
-                tabsData={generateTabsData}
-                imageData={generateImageData}
                 follupValues={follupValues}
                 selectedFollupValue={selectedFollupValue}
                 handleFollupChange={handleFollupChange}
@@ -126,14 +124,10 @@ const Table = ({ data }: TableProps) => {
 };
 
 const GenerateModal = ({
-    tabsData,
-    imageData,
     follupValues,
     selectedFollupValue,
     handleFollupChange,
 }: {
-    tabsData: any;
-    imageData: any;
     follupValues: string[];
     selectedFollupValue: string;
     handleFollupChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
