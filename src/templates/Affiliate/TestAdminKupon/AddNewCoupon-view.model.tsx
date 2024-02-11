@@ -4,22 +4,21 @@ export interface AddNewCouponTableList {
     imageSrc: string;
     title: string;
   }
-  
-  const tabsData = [
-    {
-        id: "kt_tab_pane_1",
-        name: "Facebook Pixel",
-    },
-    {
-        id: "kt_tab_pane_2",
-        name: "Tiktok Pixel",
 
+  const navLinks = [
+    {
+        name: 'Facebook Pixel',
+        href: "test-add-new-coupon/facebook-pixel"
     },
     {
-        id: "kt_tab_pane_3",
-        name: "Google Tab Manager",
+        name: 'Tiktok Pixel',
+        href: "test-add-new-coupon/tiktok-pixel"
     },
-];
+    {
+        name: 'Google Tab Manager',
+        href: "test-add-new-coupon/google-tab-manager"
+    }
+  ]
   
   const useAddNewCouponViewModel = () => {
     const follupValues = ["follup-1", "follup-2", "follup-3"];
@@ -27,7 +26,7 @@ export interface AddNewCouponTableList {
     const handleFollupChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelecteFollupValue(event.target.value);
       };
-    const addNewCouponTabsData = tabsData;
+    const addNewCouponTabsData = navLinks;
     const breadcrumbs = [
       {
         title: "Manajemen Produk",
