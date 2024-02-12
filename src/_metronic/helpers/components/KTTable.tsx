@@ -6,7 +6,7 @@ import { WithChildren } from '../react18MigrationHelpers'
 // https://preview.keenthemes.com/html/metronic/docs/base/tables
 
 type Props = {
-    className?: string
+    className: string
     responsive?: string
     color?: string
     table?: boolean
