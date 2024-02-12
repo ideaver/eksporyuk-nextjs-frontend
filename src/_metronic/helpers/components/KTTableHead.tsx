@@ -9,6 +9,9 @@ type Props = {
     className?: string
     color?: string
     border?: string
+    fontWeight?: string
+    textColor?: string
+    aligment?: string
 
 }
 
@@ -18,16 +21,22 @@ const KTTableHead: FC<Props & WithChildren> = (props) => {
         border,
         color,
         children,
+        fontWeight,
+        textColor,
+        aligment
     } = props
     return (
         <thead>
             <tr className={clsx(
                 className && className,
                 {
-
+                    
                 },
                 color && `border-${color}`,
-                border && `border-${border}`
+                border && `border-${border}`,
+                fontWeight && `fw-${fontWeight}`,
+                textColor && `text-${textColor}`,
+                aligment && `text-${aligment}`
             )}
 
             >

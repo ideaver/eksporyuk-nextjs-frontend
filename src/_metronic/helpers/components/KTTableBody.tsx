@@ -10,6 +10,10 @@ type Props = {
     color?: string
     border?: string
     active?: boolean
+    fontWeight?: string
+    textColor?: string
+    aligment?: string
+
 
 }
 
@@ -20,6 +24,9 @@ const KTTableBody: FC<Props & WithChildren> = (props) => {
         color,
         active,
         children,
+        fontWeight,
+        textColor,
+        aligment
     } = props
     return (
         <tbody>
@@ -29,7 +36,10 @@ const KTTableBody: FC<Props & WithChildren> = (props) => {
                     'table-active': active,
                 },
                 color && `border-${color}`,
-                border && `border-${border}`
+                border && `border-${border}`,
+                fontWeight && `fw-${fontWeight}`,
+                textColor && `text-${textColor}`,
+                aligment && `text-${aligment}`
             )}
 
             >
