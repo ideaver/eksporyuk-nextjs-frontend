@@ -24,6 +24,7 @@ const PixelPage = ({ }: PixelPageProps) => {
         follupValues,
         selectedFollupValue,
         handleFollupChange,
+        pixelTabsData,
     } = usePixelViewModel({});
     return (
         <>
@@ -48,6 +49,14 @@ const PixelPage = ({ }: PixelPageProps) => {
                 selectedFollupValue={selectedFollupValue}
                 handleFollupChange={handleFollupChange}
             />
+            <SaveAdjustId />
+            <IdPixelModal
+                tabsData={pixelTabsData}
+                follupValues={follupValues}
+                selectedFollupValue={selectedFollupValue}
+                handleFollupChange={handleFollupChange}
+            />
+            <SubmitIdPixelModal />
         </>
     );
 };
@@ -65,7 +74,7 @@ const Head = () => {
                 ></TextField>
             </div>
             <div className="col-lg-auto">
-                <Buttons data-bs-toggle="modal" data-bs-target="#kt_export_modal">
+                <Buttons data-bs-toggle="modal" data-bs-target="#kt_pengaturan_id_modal">
                     Pengaturan ID Pixel
                 </Buttons>
             </div>
@@ -115,9 +124,9 @@ const Table = ({ data }: TableProps) => {
                             <th className="">
                                 <div className="d-flex align-items-center">
                                     <div className="d-flex flex-column">
-                                        <p className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
+                                        <div className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
                                             {row.value}
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             </th>
@@ -146,7 +155,7 @@ const PixelModal = ({
     onChange: (value: any) => void;
 }) => {
     return (
-        <div className="modal fade" tabIndex={-1} id="kt_export_modal">
+        <div className="modal fade" tabIndex={-1} id="kt_pengaturan_id_modal">
             <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -161,27 +170,200 @@ const PixelModal = ({
                     </div>
 
                     <div className="modal-body">
-                        <p className="fw-bold required">Facebook/Meta Pixel ID</p>
-                        <Flatpickr
-                            value={date}
-                            onChange={onChange}
-                            options={{
-                                mode: "range",
-                                dateFormat: "d m Y",
-                            }}
-                            className="form-control form-control-solid"
-                            placeholder="Pilih Rentang Waktu"
-                        />
+                        <div>
+                            <h4 className="fw-bold text-gray-700">Facebook/Meta Pixel ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="1234567890"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <h4 className="fw-bold text-gray-700">TikTok Pixel ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="C545FFHT8ST896F"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <h4 className="fw-bold text-gray-700">Google Tag Manager ID</h4>
+                            <div className="d-flex">
+                                <TextField
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="GTM-RGUSIRGS"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="modal-footer justify-content-center">
-                        <Buttons buttonColor="secondary" data-bs-dismiss="modal">
+                    <div className="modal-footer justify-content-center gap-4">
+                        <Buttons buttonColor="secondary" classNames="fw-bold" data-bs-dismiss="modal">
                             Batal
                         </Buttons>
-                        <Buttons data-bs-dismiss="modal">Simpan Pengaturan</Buttons>
+                        <Buttons data-bs-dismiss="modal" classNames="fw-bold" data-bs-toggle="modal" data-bs-target="#tersimpan_pengaturan_id" >Simpan Pengaturan</Buttons>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
+
+const SaveAdjustId = () => {
+    return (
+        <div className="modal fade" id="tersimpan_pengaturan_id" tabIndex={-1} aria-labelledby="tersimpan_pengaturan_id" aria-hidden="true">
+            <div className="modal-dialog modal-md modal-dialog-centered">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <div className="ms-auto">
+                            <div
+                                className="btn btn-icon btn-sm btn-active-light-primary me-2"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <KTIcon iconName="cross" className="fs-2x" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-body d-flex flex-column align-items-center">
+                        <div className="d-flex align-items-center justify-content-center">
+                            <img
+                                src={'/media/svg/general/checklist.svg'}
+                                className="img-fluid mb-6"
+                                alt=""
+                                width={100}
+                            />
+                        </div>
+                        <h2 className="text-center text-gray-700 mb-2">Pengaturan tersimpan</h2>
+                        <p className="text-center text-gray-700 fs-5">Pengaturan ID Pixel berhasil disimpan</p>
+                    </div>
+                    <div className="modal-footer justify-content-center gap-4">
+                        <Buttons buttonColor="primary" classNames="fw-bold" data-bs-dismiss="modal">
+                            Tutup
+                        </Buttons>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    )
+}
+
+const IdPixelModal = ({
+    tabsData,
+    follupValues,
+    selectedFollupValue,
+    handleFollupChange,
+}: {
+    tabsData: any;
+    follupValues: string[];
+    selectedFollupValue: string;
+    handleFollupChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+
+}) => {
+    return (
+        <div className="modal fade" tabIndex={-1} id="kt_id_pixel_modal">
+            <div className="modal-dialog modal-lg modal-dialog-centered">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <div className=" d-block">
+                            <h3 className="modal-title mb-1">ID Pixel</h3>
+                            <span className="fw-bold text-muted">Produk: Kelas Bimbingan EksporYuk</span>
+                        </div>
+                        <div
+                            className="btn btn-icon btn-sm btn-active-light-primary ms-2"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <KTIcon iconName="cross" className="fs-2x" />
+                        </div>
+                    </div>
+
+                    <div className="modal-body">
+                        <ul className="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6">
+                            {tabsData.map((tab: any, index: any) => (
+                                <li className="nav-item" key={index}>
+                                    <a
+                                        className={`nav-link ${index === 0 ? "active" : ""} fw-bold`}
+                                        data-bs-toggle="tab"
+                                        href={`#${tab.id}`}
+                                    >
+                                        {tab.name}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                        <div>
+                            <div className="tab-content">
+                                {tabsData.map((tab: any, index: any) => (
+                                    <div
+                                        className={`tab-pane fade ${index === 0 ? "show active" : ""}`}
+                                        id={tab.id}
+                                        role="tabpanel"
+                                        key={index}
+                                    >
+                                        <div>{tab.message}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="modal-footer d-flex justify-content-center">
+                        <Buttons buttonColor="secondary" classNames="fw-bold" data-bs-dismiss="modal">
+                            Tutup
+                        </Buttons>
+                        <Buttons data-bs-dismiss="modal" classNames="fw-bold" data-bs-toggle="modal" data-bs-target="#submit_id_pixel_modal">Submit Pixel</Buttons>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const SubmitIdPixelModal = () => {
+    return (
+        <div className="modal fade" id="submit_id_pixel_modal" tabIndex={-1} aria-labelledby="submit_id_pixel_modal" aria-hidden="true">
+            <div className="modal-dialog modal-md modal-dialog-centered">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <div className="ms-auto">
+                            <div
+                                className="btn btn-icon btn-sm btn-active-light-primary me-2"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <KTIcon iconName="cross" className="fs-2x" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-body d-flex flex-column align-items-center">
+                        <div className="d-flex align-items-center justify-content-center">
+                            <img
+                                src={'/media/svg/general/checklist.svg'}
+                                className="img-fluid mb-6"
+                                alt=""
+                                width={100}
+                            />
+                        </div>
+                        <h2 className="text-center text-gray-700 mb-2">Pengaturan Berhasil Diperbarui</h2>
+                        <p className="text-center text-gray-700 fs-5">Data Pixel Produk Berhasil Diperbarui</p>
+                    </div>
+                    <div className="modal-footer justify-content-center gap-4">
+                        <Buttons buttonColor="primary" classNames="fw-bold" data-bs-dismiss="modal">
+                            Tutup
+                        </Buttons>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    )
+}
