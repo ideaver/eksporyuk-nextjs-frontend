@@ -22,11 +22,11 @@ export const CheckBoxInput = ({
   return (
     <label
       className={clsx(
-        "w-100 btn btn-active-light-primary d-flex flex-stack text-start",
+        "w-100 d-flex flex-stack text-start",
         className
       )}
     >
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-start">
         <div className="form-check form-check-custom form-check-solid form-check-primary me-6">
           <input
             className="form-check-input p-6"
@@ -39,7 +39,7 @@ export const CheckBoxInput = ({
         </div>
         <div className="flex-grow-1">
           {defaultChildren ? (
-            <h2 className="d-flex align-items-center fs-3 fw-bold flex-wrap">
+            <h2 className="d-flex align-items-center fs-3 fw-bold py-2 flex-wrap">
               {children}
             </h2>
           ) : (
