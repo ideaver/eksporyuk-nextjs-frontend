@@ -39,7 +39,7 @@ export const CheckBoxInput = ({
         </div>
         <div className="flex-grow-1">
           {defaultChildren ? (
-            <h2 className="d-flex align-items-center fs-3 fw-bold flex-wrap">
+            <h2 className="d-flex align-items-center fs-3 fw-bold py-2 flex-wrap">
               {children}
             </h2>
           ) : (

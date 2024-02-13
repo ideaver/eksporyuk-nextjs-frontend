@@ -64,8 +64,8 @@ const GoogleTabManager = ({
                                     checked={selectedFollupValue === 'Aktifkan Parameter Kupon'}
                                     onChange={handleFollupChange}
                                 >
-                                    <h3 className="pt-2">{`Aktifkan Parameter Kupon`}</h3>
-                                    <span className="fw-bold fs-6 text-muted">
+                                    {`Aktifkan Parameter Kupon`}
+                                    <span className="fw-bold fs-6 text-muted pt-2">
                                         Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
                                     </span>
                                 </CheckBoxInput>
@@ -104,8 +104,8 @@ const GoogleTabManager = ({
                                     checked={selectedFollupValue === 'Izinkan Affiliasi Menggunakan Kupon Ini'}
                                     onChange={handleFollupChange}
                                 >
-                                    <h3 className="pt-2">{`Izinkan Affiliasi Menggunakan Kupon Ini`}</h3>
-                                    <span className="fw-bold fs-6 text-muted">
+                                    {`Izinkan Affiliasi Menggunakan Kupon Ini`}
+                                    <span className="fw-bold fs-6 text-muted pt-2">
                                         Apabila diaktifkan, maka affilasi dapat menggunakan kode ini dan membuat kode sendiri menggunakan kode ini
                                     </span>
                                 </CheckBoxInput>

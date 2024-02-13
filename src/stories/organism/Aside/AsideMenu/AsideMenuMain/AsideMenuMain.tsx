@@ -50,6 +50,7 @@ const memberAffiliatorMenus = {
         { title: "Pixel", to: "/affiliate/pixel", icon: "data" },
         { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
         { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon", icon: "barcode" },
+        { title: "Buyer Form", to: "/affiliate/test-buyer-form", icon: "barcode" },
       ],
     },
   ],
