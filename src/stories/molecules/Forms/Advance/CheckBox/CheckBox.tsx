@@ -22,11 +22,11 @@ export const CheckBoxInput = ({
   return (
     <label
       className={clsx(
-        "w-100 btn btn-active-light-primary d-flex flex-stack text-start",
+        "w-100 d-flex flex-stack text-start",
         className
       )}
     >
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-start">
         <div className="form-check form-check-custom form-check-solid form-check-primary me-6">
           <input
             className="form-check-input p-6"

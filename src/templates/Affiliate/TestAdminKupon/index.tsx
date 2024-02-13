@@ -157,15 +157,15 @@ const AddNewCouponContent = ({
                                         <CheckBoxInput
                                             className={selectedFollupValue === 'Aktifkan Parameter Kupon' ? "active" : ""}
                                             name="follup"
-                                            value={'Aktifkan Parameter Kupon'}
-                                            checked={selectedFollupValue === 'Aktifkan Parameter Kupon'}
+                                            value={'option1' || 'option2'}
+                                            checked={selectedFollupValue === 'option1'}
                                             onChange={handleFollupChange}
                                         >
-                                            {`Aktifkan Parameter Kupon`}
+                                            <h3 className="pt-2">{`Aktifkan Parameter Kupon`}</h3>
+                                            <span className="fw-bold fs-6 text-muted">
+                                                Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
+                                            </span>
                                         </CheckBoxInput>
-                                        <p className="fw-bold fs-6 text-muted ms-20 ps-4">
-                                            Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
-                                        </p>
                                     </div>
                                     <div className="pt-4">
                                         <h4 className="required fw-bold text-gray-700">Batas Jumlah Penggunaan</h4>
@@ -197,15 +197,15 @@ const AddNewCouponContent = ({
                                         <CheckBoxInput
                                             className={selectedFollupValue === 'Izinkan Affiliasi Menggunakan Kupon Ini' ? "active" : ""}
                                             name="follup"
-                                            value={'Izinkan Affiliasi Menggunakan Kupon Ini'}
-                                            checked={selectedFollupValue === 'Izinkan Affiliasi Menggunakan Kupon Ini'}
+                                            value={'option1' && 'option2'}
+                                            checked={selectedFollupValue === 'option2'}
                                             onChange={handleFollupChange}
                                         >
-                                            {`Izinkan Affiliasi Menggunakan Kupon Ini`}
+                                            <h3 className="pt-2">{`Izinkan Affiliasi Menggunakan Kupon Ini`}</h3>
+                                            <span className="fw-bold fs-6 text-muted">
+                                                Apabila diaktifkan, maka affilasi dapat menggunakan kode ini dan membuat kode sendiri menggunakan kode ini
+                                            </span>
                                         </CheckBoxInput>
-                                        <p className="fw-bold fs-6 text-muted ms-20 ps-4">
-                                            Apabila diaktifkan, maka affilasi dapat menggunakan kode ini dan membuat kode sendiri menggunakan kode ini
-                                        </p>
                                     </div>
                                     <div className="pt-4">
                                         <h4 className="fw-bold text-gray-700">Batas Penggunaan Kupon oleh Affiliasi</h4>
