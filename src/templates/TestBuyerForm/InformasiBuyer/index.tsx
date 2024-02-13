@@ -3,6 +3,7 @@ import { Buttons } from '@/stories/molecules/Buttons/Buttons'
 import { CheckBoxInput } from '@/stories/molecules/Forms/Advance/CheckBox/CheckBox'
 import { Dropdown } from '@/stories/molecules/Forms/Dropdown/Dropdown'
 import { TextField } from '@/stories/molecules/Forms/Input/TextField'
+import { Textarea } from '@/stories/molecules/Forms/Textarea/Textarea'
 import React from 'react'
 
 const InformasiBuyer = () => {
@@ -64,7 +65,7 @@ const InformasiBuyer = () => {
                         </div>
                         <div className="pt-2">
                             <h4 className="fw-bold text-gray-700">E-mail</h4>
-                            <TextField
+                            <Textarea
                                 classNames="form-control"
                                 styleType="outline"
                                 size="medium"
@@ -92,7 +93,7 @@ const InformasiBuyer = () => {
                         buttonColor="secondary" classNames="fw-bold">
                         Batal
                     </Buttons>
-                    <Buttons buttonColor="primary" classNames="fw-bold ms-6">Tambahkan Kupon</Buttons>
+                    <Buttons onClick={() => { }} buttonColor="primary" classNames="fw-bold ms-6">Tambahkan Kupon</Buttons>
                 </div>
             </div>
         </div>
