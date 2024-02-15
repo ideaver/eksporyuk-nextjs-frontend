@@ -51,6 +51,7 @@ const memberAffiliatorMenus = {
         { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
         { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon", icon: "barcode" },
         { title: "Buyer Form", to: "/affiliate/test-buyer-form", icon: "barcode" },
+        { title: "Reminder Form", to: "/affiliate/test-reminder-form", icon: "barcode" },
       ],
     },
   ],

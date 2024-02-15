@@ -2,7 +2,7 @@ import React from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import FacebookPixel from "@/templates/Affiliate/TestAdminKupon/TabLink/FacebookPixel";
-import useAddNewCouponViewModel from "@/templates/Affiliate/TestAdminKupon/AddNewCoupon-view.model";
+import useAddNewCouponViewModel from "@/templates/Affiliate/TestAdminKupon/AddNewCoupon-view-model";
 import AdminHeader from "@/components/layouts/TabBarCoupon/AdminHeader";
 
 interface Props {
