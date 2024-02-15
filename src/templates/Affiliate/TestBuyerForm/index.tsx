@@ -146,6 +146,7 @@ const BuyerFormContent = ({
                             <div className="pt-2">
                                 <h4 className="fw-bold text-gray-700">E-mail</h4>
                                 <Textarea
+                                    rows={4}
                                     classNames="form-control"
                                     styleType="outline"
                                     size="large"
