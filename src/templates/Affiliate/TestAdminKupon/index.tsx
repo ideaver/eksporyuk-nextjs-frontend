@@ -4,7 +4,7 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { useEffect, useState } from "react";
-import useAddNewCouponViewModel, { AddNewCouponTableList } from "./AddNewCoupon-view.model";
+import useAddNewCouponViewModel, { AddNewCouponTableList } from "./AddNewCoupon-view-model";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";

@@ -1,6 +1,6 @@
 import React from "react";
 import { NextPage } from "next";
-import InformasiBuyer from "@/templates/TestBuyerForm/InformasiBuyer";
+import InformasiBuyer from "@/templates/Affiliate/TestBuyerForm/InformasiBuyer";
 import BuyerFormHeader from "@/components/layouts/TabBarBuyerFormHeader/BuyerFormHeader";
 
 const InformasiBuyerPage: NextPage = () => {

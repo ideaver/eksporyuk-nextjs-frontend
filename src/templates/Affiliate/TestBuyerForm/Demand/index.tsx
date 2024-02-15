@@ -71,7 +71,7 @@ const Demand = () => {
                         buttonColor="secondary" classNames="fw-bold">
                         Batal
                     </Buttons>
-                    <Buttons buttonColor="primary" classNames="fw-bold ms-6">Tambahkan Kupon</Buttons>
+                    <Buttons onClick={() => { }} buttonColor="primary" classNames="fw-bold ms-6">Tambahkan Kupon</Buttons>
                 </div>
             </div>
         </div>
