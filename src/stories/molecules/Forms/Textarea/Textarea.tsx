@@ -59,6 +59,7 @@ interface TextareaProps {
    * Props for Input
    */
   props?: any;
+  rows?: number
 }
 
 /**
@@ -79,6 +80,7 @@ export const Textarea = ({
   suffixIconTooltip,
   classNames,
   props,
+  rows,
 }: TextareaProps) => {
   const inputSizeHandler = (size: string): string => {
     switch (size) {
@@ -144,6 +146,7 @@ export const Textarea = ({
         id="field"
         placeholder={placeholder}
         disabled={disabled}
+        rows={rows}
         {...props}
       />
 
