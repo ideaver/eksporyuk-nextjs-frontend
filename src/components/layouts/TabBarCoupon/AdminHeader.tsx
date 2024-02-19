@@ -19,12 +19,15 @@ const AdminHeader = ({ urlType, id, children }: IAdminHeaderViewModel & { childr
 
     return (
         <div>
+            <div style={{ position: 'relative', zIndex: 999 }}>
             <PageTitle breadcrumbs={breadcrumbs}>Tambah Kupon Baru</PageTitle>
+            </div>
             <div className="row">
-                <div className="col-3">
-                    <KTCard>
+                <div className="col-3" >
+                    <div className="min-w-250px" style={{ position: 'fixed', top: 0, zIndex: 9999, marginTop: 120 }}>
+                    <KTCard className="sticky-top" >
                         <KTCardBody>
-                            <h2 className="fw-bold text-gray-700 pb-4">
+                            <h2 className="fw-bold text-gray-700 pb-4" style={{ }}>
                                 Status
                             </h2>
                             <div className="d-flex">
@@ -43,6 +46,7 @@ const AdminHeader = ({ urlType, id, children }: IAdminHeaderViewModel & { childr
                             </p>
                         </KTCardBody>
                     </KTCard>
+                    </div>
                 </div>
                 <div className="col-9">
                     <div>

@@ -86,31 +86,33 @@ const MailketingContent = ({
     return (
         <div className="row">
             <div className="col-3">
-                <KTCard shadow>
-                    <KTCardBody>
-                        <h2 className="fw-bold text-gray-700 pb-4">
-                            Token API Mailketing
-                        </h2>
-                        <div className="d-flex">
-                            <TextField
-                                classNames=""
-                                styleType="outline"
-                                size="medium"
-                                placeholder="Token API"
-                            />
-                        </div>
-                        <p className="fw-bold fs-7 text-muted pt-2">
-                            Fill with API Token from MailKeting <br />
-                            <span>Mailketing, login mailketing,</span> <br />
-                            <span>Integration &gt; generate token</span>
-                        </p>
-                        <div>
-                            <Buttons classNames="fw-bold mt-6">
-                                Connect
-                            </Buttons>
-                        </div>
-                    </KTCardBody>
-                </KTCard>
+                <div className="min-w-250px sticky-top" style={{ position: 'fixed', top: 0, zIndex: 9999, marginTop: 104 }}>
+                    <KTCard shadow>
+                        <KTCardBody>
+                            <h2 className="fw-bold text-gray-700 pb-4">
+                                Token API Mailketing
+                            </h2>
+                            <div className="d-flex">
+                                <TextField
+                                    classNames=""
+                                    styleType="outline"
+                                    size="medium"
+                                    placeholder="Token API"
+                                />
+                            </div>
+                            <p className="fw-bold fs-7 text-muted pt-2">
+                                Fill with API Token from MailKeting <br />
+                                <span>Mailketing, login mailketing,</span> <br />
+                                <span>Integration &gt; generate token</span>
+                            </p>
+                            <div>
+                                <Buttons classNames="fw-bold mt-6">
+                                    Connect
+                                </Buttons>
+                            </div>
+                        </KTCardBody>
+                    </KTCard>
+                </div>
             </div>
             <div className="col-9">
                 <div>
@@ -155,19 +157,19 @@ const MailketingContent = ({
                                 <p className="fw-bold fs-6 text-muted">Setiap pengguna baru yang terdaftar akan tersimpan di list ini</p>
                             </div>
                             <div className="d-flex justify-content-end">
-                                <Buttons buttonColor="primary" classNames="fw-bold mt-6">Simpan Pengaturan</Buttons>
+                                <Buttons onClick={() => { }} buttonColor="primary" classNames="fw-bold mt-6">Simpan Pengaturan</Buttons>
                             </div>
                         </KTCardBody>
                     </KTCard>
                 </div>
 
                 <div className="pt-10">
-                <KTCard shadow>
+                    <KTCard shadow>
                         <KTCardBody>
                             <h2 className="">Test Mailketing <br />
-                            <span className="text-muted fs-5">Test Integrasi Mailketing dengan mengirimkan e-mail</span>
+                                <span className="text-muted fs-5">Test Integrasi Mailketing dengan mengirimkan e-mail</span>
                             </h2>
-                            
+
                             <div className="pt-8">
                                 <h4 className="fw-bold text-gray-700">Kirim Ke</h4>
                                 <TextField
@@ -189,7 +191,7 @@ const MailketingContent = ({
                             <div className="pt-8">
                                 <h4 className="fw-bold text-gray-700">Isi Pesan</h4>
                                 <Textarea
-                                rows={5}
+                                    rows={5}
                                     classNames=""
                                     styleType="outline"
                                     size="medium"
@@ -197,15 +199,13 @@ const MailketingContent = ({
                                 />
                             </div>
                             <div className="d-flex justify-content-end mt-4">
-                                <Buttons buttonColor="primary" classNames="fw-bold mt-6">Kirim Test E-mail</Buttons>
+                                <Buttons onClick={() => { }} buttonColor="primary" classNames="fw-bold mt-6">Kirim Test E-mail</Buttons>
                             </div>
                         </KTCardBody>
                     </KTCard>
                 </div>
             </div>
             <div className="pt-10">
-                
-
             </div>
 
         </div>

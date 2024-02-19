@@ -21,7 +21,7 @@ const memberAffiliatorMenus = {
     {
       section: "Menu Kelas",
       items: [
-        { title: "Dashboard Kelas", to: "/dwde", icon: "category" },
+        { title: "Dashboard Kelas", to: "/kelas/dashboard", icon: "category" },
         {
           title: "Kelas",
           to: "/dwde",
@@ -49,9 +49,9 @@ const memberAffiliatorMenus = {
         { title: "Kupon", to: "/affiliate/coupon", icon: "barcode" },
         { title: "Pixel", to: "/affiliate/pixel", icon: "data" },
         { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
-        { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon", icon: "barcode" },
-        { title: "Buyer Form", to: "/affiliate/test-buyer-form", icon: "barcode" },
-        { title: "Reminder Form", to: "/affiliate/test-reminder-form", icon: "barcode" },
+        { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon/facebook-pixel", icon: "barcode" },
+        { title: "Buyer Form", to: "/affiliate/test-buyer-form/informasi-buyer", icon: "barcode" },
+        { title: "Reminder Form", to: "/affiliate/test-reminder-form/informasi-reminder", icon: "barcode" },
         { title: "Mailketing SMTP", to: "/affiliate/test-mailketing", icon: "barcode" },
       ],
     },

@@ -203,7 +203,7 @@ const InformasiPesanContent = ({
                                     />
                                 </div>
                             </div>
-                            <p className="fw-bold fs-6 text-muted pt-6">Berdasarkan input yang diberikan, maka reminder akan dikirimkan <br />
+                            <p className="fw-bold fs-6 text-muted pt-10">Berdasarkan input yang diberikan, maka reminder akan dikirimkan <br />
                                 <span className="text-dark">6 Jam sebelum masa berlangganan produk "Kelas Bimbingan Eksporyuk" berakhir melalui E-mail.</span>
                             </p>
                         </div>

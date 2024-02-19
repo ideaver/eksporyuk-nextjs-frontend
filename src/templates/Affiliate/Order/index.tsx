@@ -11,6 +11,7 @@ import Image from "next/image";
 import Flatpickr from "react-flatpickr";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
 
 interface OrderPageProps {}
 
@@ -160,7 +161,7 @@ const Table = ({ data }: TableProps) => {
               <td className="text-end">
                 <Badge label={row.status} badgeColor={row.badgeColor} />
               </td>
-              <td className="fw-bold text-muted text-end">
+              <td className="fw-bold text-muted justify-content-end text-end">
                 <ActionButton />
               </td>
             </tr>
@@ -212,22 +213,65 @@ const ExportModal = ({
   onChange: (value: any) => void;
 }) => {
   return (
-    <div className="modal fade" tabIndex={-1} id="kt_export_modal">
-      <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Export Data</h5>
-            <div
-              className="btn btn-icon btn-sm btn-active-light-primary ms-2"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <KTIcon iconName="cross" className="fs-2x" />
-            </div>
-          </div>
+    // <div className="modal fade" tabIndex={-1} id="kt_export_modal">
+    //   <div className="modal-dialog modal-lg modal-dialog-centered">
+    //     <div className="modal-content">
+    //       <div className="modal-header">
+    //         <h5 className="modal-title">Export Data</h5>
+    //         <div
+    //           className="btn btn-icon btn-sm btn-active-light-primary ms-2"
+    //           data-bs-dismiss="modal"
+    //           aria-label="Close"
+    //         >
+    //           <KTIcon iconName="cross" className="fs-2x" />
+    //         </div>
+    //       </div>
 
-          <div className="modal-body">
-            <p className="fw-bold required">Pilih Rentang Waktu</p>
+    //       <div className="modal-body">
+    //         <p className="fw-bold required">Pilih Rentang Waktu</p>
+    //         <Flatpickr
+    //           value={date}
+    //           onChange={onChange}
+    //           options={{
+    //             mode: "range",
+    //             dateFormat: "d m Y",
+    //           }}
+    //           className="form-control form-control-solid"
+    //           placeholder="Pilih Rentang Waktu"
+    //         />
+    //         <p className="fw-bold text-muted mt-2">
+    //           Pilih rentang waktu data yang ingin diexport
+    //         </p>
+    //       </div>
+
+    //       <div className="modal-footer justify-content-center">
+    //         <Buttons buttonColor="secondary" data-bs-dismiss="modal">
+    //           Batal
+    //         </Buttons>
+    //         <Buttons data-bs-dismiss="modal">Export</Buttons>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+    <div>
+      <KTModal
+      dataBsTarget="kt_export_modal"
+      title="Export Data"
+      fade
+      modalCentered
+      onClose={() => {
+        
+      }}
+      buttonClose={
+        <Buttons buttonColor="secondary" data-bs-dismiss="modal" classNames="fw-bold">Batal</Buttons>
+      }
+      buttonSubmit={
+        <Buttons data-bs-dismiss="modal" classNames="fw-bold">Export</Buttons>
+      }
+      footerContentCentered
+      modalSize="lg"
+      >
+      <p className="fw-bold required text-gray-700">Pilih Rentang Waktu</p>
             <Flatpickr
               value={date}
               onChange={onChange}
@@ -241,16 +285,7 @@ const ExportModal = ({
             <p className="fw-bold text-muted mt-2">
               Pilih rentang waktu data yang ingin diexport
             </p>
-          </div>
-
-          <div className="modal-footer justify-content-center">
-            <Buttons buttonColor="secondary" data-bs-dismiss="modal">
-              Batal
-            </Buttons>
-            <Buttons data-bs-dismiss="modal">Export</Buttons>
-          </div>
-        </div>
-      </div>
+      </KTModal>
     </div>
   );
 };

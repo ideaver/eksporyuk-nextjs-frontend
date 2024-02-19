@@ -18,6 +18,8 @@ type Props = {
   utilityP?: number
   utilityPY?: number
   utilityPX?: number
+  style?: React.CSSProperties
+  zIndex?: number
 }
 
 const KTCard: FC<Props & WithChildren> = (props) => {

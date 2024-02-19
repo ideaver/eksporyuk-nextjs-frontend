@@ -11,6 +11,7 @@ import { ImageConfigContext } from "next/dist/shared/lib/image-config-context.sh
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { useEffect, useState } from "react";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
 
 const Promotion = () => {
   const {
@@ -146,26 +147,23 @@ const PromotionModal = ({
   tabsData: any;
   imageData: any;
 }) => {
-  return (
-    <div className="modal fade" tabIndex={-1} id="kt_promotion_modal">
-      <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <div className=" d-block">
-              <h3 className="modal-title mb-1"> Bantuan Promosi</h3>
-              <span>Bundling Kelas Ekspor + Aplikasi EYA</span>
-            </div>
-            <div
-              className="btn btn-icon btn-sm btn-active-light-primary ms-2"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <KTIcon iconName="cross" className="fs-2x" />
-            </div>
-          </div>
+  const [modalOpen, setModalOpen] = useState(false);
 
-          <div className="modal-body">
-            <h3 className="fw-bold text-gray-600">Media</h3>
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+  return ( 
+    <div>
+      <KTModal
+          dataBsTarget="kt_promotion_modal"
+          fade
+          modalSize="lg"
+          modalCentered
+          title="Bantuan Promosi"
+          subTitle="Bundling Kelas Ekspor + Aplikasi EYA"
+          onClose={handleModalClose}
+        >
+          <h3 className="fw-bold text-gray-700">Media</h3>
             <div className="row mb-5 gy-5">
               {imageData.map((image: any, index: any) => (
                 <div className="col" key={index}>
@@ -187,7 +185,7 @@ const PromotionModal = ({
                 </div>
               ))}
             </div>
-            <h3 className="fw-bold text-gray-600">Caption atau Pesan</h3>
+            <h3 className="fw-bold text-gray-800">Caption atau Pesan</h3>
             <ul className="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6">
               {tabsData.map((tab: any, index: any) => (
                 <li className="nav-item" key={index}>
@@ -224,15 +222,7 @@ const PromotionModal = ({
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="modal-footer justify-content-center">
-            <Buttons buttonColor="secondary" data-bs-dismiss="modal">
-              Tutup
-            </Buttons>
-          </div>
-        </div>
-      </div>
+        </KTModal>
     </div>
   );
 };

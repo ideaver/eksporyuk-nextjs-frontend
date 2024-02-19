@@ -8,6 +8,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { CouponContents } from "@/stories/organism/Contens/CouponContents/CouponContents";
 import { Alert } from "@/stories/molecules/Alert/Alert";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
 
 const Coupon = () => {
   const { breadcrumbs, couponTable, couponDetailsData, couponProductsData } =
@@ -22,7 +23,25 @@ const Coupon = () => {
           <Footer />
         </KTCardBody>
       </KTCard>
-      <div className="modal fade" tabIndex={-1} id="kt_coupon_modal">
+      <KTModal
+        dataBsTarget="kt_coupon_modal"
+        title="Detail Kupon"
+        fade
+        modalCentered
+        footerContentCentered
+        onClose={() => { }}
+        buttonClose={
+          <Buttons buttonColor='secondary' classNames="fw-bold" data-bs-dismiss="modal">Tutup</Buttons>
+        }
+        modalSize="xl"
+        buttonSubmit={false}
+      >
+        <CouponContents
+          coupons={couponDetailsData}
+          products={couponProductsData}
+        />
+      </KTModal>
+      {/* <div className="modal fade" tabIndex={-1} id="kt_coupon_modal">
         <div className="modal-dialog modal-xl modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -50,8 +69,62 @@ const Coupon = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="modal fade" tabIndex={-1} id="kt_create_coupon_modal">
+      </div> */}
+      <KTModal
+        dataBsTarget="kt_create_coupon_modal"
+        title="Tambah Kupon"
+        fade
+        modalCentered
+        footerContentCentered
+        onClose={() => {
+
+        }}
+        modalSize="lg"
+        buttonClose={
+          <Buttons buttonColor='secondary' classNames="fw-bold" data-bs-dismiss="modal">Batal</Buttons>
+        }
+        buttonSubmit={
+          <Buttons classNames="fw-bold">Simpan</Buttons>
+        }
+      >
+        <div>
+          <h4 className="required fw-bold text-gray-700">
+            Pilih Kupon Utama
+          </h4>
+          <Dropdown
+            styleType="solid"
+            props={{ id: "couponName" }}
+            options={[
+              { label: "EKSPORYUK", value: "mainCoupon1" },
+              { label: "Kupon Utama 2", value: "mainCoupon2" },
+            ]}
+            onValueChange={() => { }}
+          />
+          <p className="fw-bold text-gray-600 mt-3">
+            Pilih kupon utama yang dibuat oleh admin
+          </p>
+        </div>
+        <div>
+          <h4 className="required fw-bold text-gray-700">Kode Kupon</h4>
+          <TextField
+            styleType="solid"
+            placeholder="Masukkan Nama Kupon anda"
+          />
+          <p className="fw-bold text-gray-600 mt-3">
+            Masukkan kode kupon yang ingin anda gunakan dan bagikan
+          </p>
+        </div>
+        <Alert
+          alertColor="warning"
+          mode="light"
+          label="Hanya bisa membuat 1 kupon dari setiap kupon utama. Kupon yang sudah anda buat tidak dapat diubah kembali."
+          title="PERHATIAN"
+          labelColor="dark"
+          border="dashed"
+          prefixIcon="shield-cross"
+        ></Alert>
+      </KTModal>
+      {/* <div className="modal fade" tabIndex={-1} id="kt_create_coupon_modal">
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -112,7 +185,7 @@ const Coupon = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };
@@ -138,7 +211,7 @@ const Head = () => {
               { label: "Aktif", value: "active" },
               { label: "Tidak Aktif", value: "inactive" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={() => { }}
           />
         </div>
         <div className="col-lg-auto">
@@ -149,7 +222,7 @@ const Head = () => {
               { label: "Aktif", value: "active" },
               { label: "Tidak Aktif", value: "inactive" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={() => { }}
           />
         </div>
         <div className="col-lg-auto">
@@ -176,7 +249,7 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => {}}
+          onValueChange={() => { }}
         />
       </div>
       <div className="col-auto">
@@ -184,7 +257,7 @@ const Footer = () => {
           total={10}
           current={1}
           maxLength={5}
-          onPageChange={() => {}}
+          onPageChange={() => { }}
         ></Pagination>
       </div>
     </div>
