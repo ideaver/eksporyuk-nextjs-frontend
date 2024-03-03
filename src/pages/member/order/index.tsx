@@ -1,9 +1,9 @@
 import React from "react";
 import { NextPage } from "next";
-import Dashboard from "@/templates/Kelas/Dashboard";
+import MemberOrderPage from "@/templates/Member/Order";
 
 const Member: NextPage = () => {
-  return <Dashboard />;
+  return <MemberOrderPage />;
 };
 
 export default Member;

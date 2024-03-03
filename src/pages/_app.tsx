@@ -15,6 +15,13 @@ import { Suspense, useEffect, useState } from "react";
 import { I18nProvider } from "@/_metronic/i18n/i18nProvider";
 import { MasterLayout } from "@/components/layouts/Master/MasterLayout";
 import dynamic from "next/dynamic";
+import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+
+
+const client = new ApolloClient({
+  uri: "http://109.123.232.206:3002/graphql",
+  cache: new InMemoryCache(),
+});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +49,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <I18nProvider>
           <LayoutProvider>
             <ThemeModeProvider>
+              <ApolloProvider client={client}>
               <MasterLayout>
                 {" "}
                 {/* TODO: Make this work with auth */}
@@ -49,6 +57,7 @@ export default function App({ Component, pageProps }: AppProps) {
               </MasterLayout>
 
               <MasterInit />
+              </ApolloProvider>
             </ThemeModeProvider>
           </LayoutProvider>
         </I18nProvider>

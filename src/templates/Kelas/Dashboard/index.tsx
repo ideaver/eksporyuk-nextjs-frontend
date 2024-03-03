@@ -1,9 +1,4 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import {
-    AkuisisiTableProps,
-    akuisisTableData,
-    listCardItems,
-} from "./Dashboard-view-model";
 import ListCard from "@/stories/organism/Tables/ListCard/ListCard";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import dashboardViewModel from "./Dashboard-view-model";
@@ -13,10 +8,8 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Kelas } from "@/stories/organism/Tables/KelasTable/Kelas";
 
 const Dashboard = ({ }) => {
-    const { breadcrumbs, mockData } = dashboardViewModel.useDashboardViewModel();
+    const { breadcrumbs } = dashboardViewModel.useDashboardViewModel();
 
-    const { BigChart, Charts, OrderAffiliateChart, TopSalesChart } =
-        dashboardViewModel.usePackages();
 
     const rows = [
         {
@@ -225,44 +218,3 @@ const Dashboard = ({ }) => {
 };
 
 export default Dashboard;
-
-const AkuisisiTable = ({ data }: AkuisisiTableProps) => {
-    return (
-        <KTCard className="h-100">
-            <KTCardBody>
-                <div className="mb-5 ">
-                    <h3 className="card-title align-items-start flex-column">
-                        <span className="card-label fw-bold fs-3 mb-1">Data Akuisisi</span>
-                    </h3>
-                    <span className="text-muted mt-1 fw-semibold fs-7">
-                        per Januari 2024
-                    </span>
-                </div>
-                <div className="table-responsive">
-                    <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
-                        <thead>
-                            <tr className="fw-bold text-muted">
-                                <th className="min-w-150px">SUMBER TRAFFIC</th>
-                                <th>VIEW</th>
-                                <th>LEAD</th>
-                                <th>SALE</th>
-                                <th className="text-end min-w-125px">NILAI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((row, index) => (
-                                <tr key={index}>
-                                    <td className="fw-bold">{row.source}</td>
-                                    <td className="fw-bold text-muted">{row.view}</td>
-                                    <td className="fw-bold text-muted">{row.lead}</td>
-                                    <td className="fw-bold text-muted">{row.sale}</td>
-                                    <td className="fw-bold text-muted text-end">{row.value}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </KTCardBody>
-        </KTCard>
-    );
-};

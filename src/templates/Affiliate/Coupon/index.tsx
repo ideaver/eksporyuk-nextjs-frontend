@@ -41,35 +41,6 @@ const Coupon = () => {
           products={couponProductsData}
         />
       </KTModal>
-      {/* <div className="modal fade" tabIndex={-1} id="kt_coupon_modal">
-        <div className="modal-dialog modal-xl modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Detail Kupon</h5>
-              <div
-                className="btn btn-icon btn-sm btn-active-light-primary ms-2"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              >
-                <KTIcon iconName="cross" className="fs-2x" />
-              </div>
-            </div>
-
-            <div className="modal-body">
-              <CouponContents
-                coupons={couponDetailsData}
-                products={couponProductsData}
-              />
-            </div>
-
-            <div className="modal-footer justify-content-center">
-              <Buttons buttonColor="secondary" data-bs-dismiss="modal">
-                Tutup
-              </Buttons>
-            </div>
-          </div>
-        </div>
-      </div> */}
       <KTModal
         dataBsTarget="kt_create_coupon_modal"
         title="Tambah Kupon"
@@ -124,68 +95,6 @@ const Coupon = () => {
           prefixIcon="shield-cross"
         ></Alert>
       </KTModal>
-      {/* <div className="modal fade" tabIndex={-1} id="kt_create_coupon_modal">
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Tambah Kupon</h5>
-              <div
-                className="btn btn-icon btn-sm btn-active-light-primary ms-2"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              >
-                <KTIcon iconName="cross" className="fs-2x" />
-              </div>
-            </div>
-
-            <div className="modal-body">
-              <div>
-                <h4 className="required fw-bold text-gray-700">
-                  Pilih Kupon Utama
-                </h4>
-                <Dropdown
-                  styleType="solid"
-                  props={{ id: "couponName" }}
-                  options={[
-                    { label: "EKSPORYUK", value: "mainCoupon1" },
-                    { label: "Kupon Utama 2", value: "mainCoupon2" },
-                  ]}
-                  onValueChange={() => {}}
-                />
-                <p className="fw-bold text-gray-600 mt-3">
-                  Pilih kupon utama yang dibuat oleh admin
-                </p>
-              </div>
-              <div>
-                <h4 className="required fw-bold text-gray-700">Kode Kupon</h4>
-                <TextField
-                  styleType="solid"
-                  placeholder="Masukkan Nama Kupon anda"
-                />
-                <p className="fw-bold text-gray-600 mt-3">
-                  Masukkan kode kupon yang ingin anda gunakan dan bagikan
-                </p>
-              </div>
-              <Alert
-                alertColor="warning"
-                mode="light"
-                label="Hanya bisa membuat 1 kupon dari setiap kupon utama. Kupon yang sudah anda buat tidak dapat diubah kembali."
-                title="PERHATIAN"
-                labelColor="dark"
-                border="dashed"
-                prefixIcon="shield-cross"
-              ></Alert>
-            </div>
-
-            <div className="modal-footer justify-content-center">
-              <Buttons buttonColor="secondary" data-bs-dismiss="modal">
-                Batal
-              </Buttons>
-              <Buttons data-bs-dismiss="modal">Simpan</Buttons>
-            </div>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };

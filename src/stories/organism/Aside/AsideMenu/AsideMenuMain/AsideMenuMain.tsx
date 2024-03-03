@@ -7,8 +7,8 @@ const memberAffiliatorMenus = {
       section: "Menu Member",
       items: [
         { title: "Dashboard Member", to: "/home", icon: "category" },
-        { title: "Order Saya", to: "/dwde", icon: "basket" },
-        { title: "Langganan", to: "/dwde", icon: "timer" },
+        { title: "Order Saya", to: "/member/order", icon: "basket" },
+        { title: "Langganan", to: "/member/langganan", icon: "timer" },
         { title: "Katalog Produk", to: "/dwde", icon: "cube-2" },
         {
           title: "Komunitas",
@@ -24,9 +24,30 @@ const memberAffiliatorMenus = {
         { title: "Dashboard Kelas", to: "/kelas/dashboard", icon: "category" },
         {
           title: "Kelas",
-          to: "/dwde",
+          to: "/kelas",
           icon: "book-open",
-          subItems: [{ title: "Kelas 1", to: "/dwde", icon: "cube-2" }],
+          subItems: [
+            { 
+              title: "Kelas Terdaftar", 
+              to: "/kelas/kelas/kelas-terdaftar/semua-kelas", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Kelas Detail", 
+              to: "/kelas/kelas/kelas-detail", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Katalog Kelas", 
+              to: "/kelas/kelas/dwde", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Whishlist", 
+              to: "/kelas/kelas/dwde", 
+              icon: "cube-2" 
+            },
+          ],
         },
         { title: "Reviews", to: "/dwde", icon: "star" },
         { title: "My Quiz Attempts", to: "/dwde", icon: "note-2" },
