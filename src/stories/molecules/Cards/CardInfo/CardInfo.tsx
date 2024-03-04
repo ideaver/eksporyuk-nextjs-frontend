@@ -18,6 +18,8 @@ interface CardInfoProps {
   borderColor?: ColorList;
   borderType?: BorderList;
   borderWidth?: string;
+  titleSize?: number;
+  marginBottom?: number;
 }
 
 export const CardInfo = ({
@@ -35,6 +37,8 @@ export const CardInfo = ({
   borderColor = "secondary",
   borderType = "dashed",
   borderWidth = "1",
+  titleSize = 2,
+  marginBottom = 2,
 }: CardInfoProps) => {
   const borderHandler = () => {
     if (showBorder) {
@@ -51,7 +55,7 @@ export const CardInfo = ({
       <div className="card-body">
         <KTIcon iconName={icon} className={`text-${iconColor} fs-3x ms-n1`} />
 
-        <div className={`text-${titleColor} fw-bold fs-2 mb-2 mt-5`}>
+        <div className={`text-${titleColor} fw-bold fs-${titleSize} mb-${marginBottom} mt-5`}>
           {title}
         </div>
 

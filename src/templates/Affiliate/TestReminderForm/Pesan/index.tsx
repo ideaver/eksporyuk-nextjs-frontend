@@ -136,7 +136,7 @@ const PesanContent = ({
                                     {pesanValue.map((item, index) => (
                                         <div className="d-flex justify-content-between align-items-center mx-2 mb-2" key={index}>
                                             {item !== "-" && (
-                                                <Buttons buttonColor="secondary" classNames="btn p-2 d-flex g-4">
+                                                <Buttons buttonColor="secondary" classNames="btn p-2 d-flex ">
                                                     <p className="m-0 flex-grow-1">{item}</p>
                                                     <KTIcon iconName="copy" className="fs-1 text-hover-primary" />
                                                 </Buttons>

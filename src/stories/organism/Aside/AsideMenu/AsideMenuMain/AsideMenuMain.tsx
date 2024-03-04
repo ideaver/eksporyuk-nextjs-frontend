@@ -7,8 +7,8 @@ const memberAffiliatorMenus = {
       section: "Menu Member",
       items: [
         { title: "Dashboard Member", to: "/home", icon: "category" },
-        { title: "Order Saya", to: "/dwde", icon: "basket" },
-        { title: "Langganan", to: "/dwde", icon: "timer" },
+        { title: "Order Saya", to: "/member/order", icon: "basket" },
+        { title: "Langganan", to: "/member/langganan", icon: "timer" },
         { title: "Katalog Produk", to: "/dwde", icon: "cube-2" },
         {
           title: "Komunitas",
@@ -21,12 +21,33 @@ const memberAffiliatorMenus = {
     {
       section: "Menu Kelas",
       items: [
-        { title: "Dashboard Kelas", to: "/dwde", icon: "category" },
+        { title: "Dashboard Kelas", to: "/kelas/dashboard", icon: "category" },
         {
           title: "Kelas",
-          to: "/dwde",
+          to: "/kelas",
           icon: "book-open",
-          subItems: [{ title: "Kelas 1", to: "/dwde", icon: "cube-2" }],
+          subItems: [
+            { 
+              title: "Kelas Terdaftar", 
+              to: "/kelas/kelas/kelas-terdaftar/semua-kelas", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Kelas Detail", 
+              to: "/kelas/kelas/kelas-detail", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Katalog Kelas", 
+              to: "/kelas/kelas/dwde", 
+              icon: "cube-2" 
+            },
+            { 
+              title: "Whishlist", 
+              to: "/kelas/kelas/dwde", 
+              icon: "cube-2" 
+            },
+          ],
         },
         { title: "Reviews", to: "/dwde", icon: "star" },
         { title: "My Quiz Attempts", to: "/dwde", icon: "note-2" },
@@ -49,9 +70,9 @@ const memberAffiliatorMenus = {
         { title: "Kupon", to: "/affiliate/coupon", icon: "barcode" },
         { title: "Pixel", to: "/affiliate/pixel", icon: "data" },
         { title: "Leaderboard", to: "/affiliate/leaderboard", icon: "ranking" },
-        { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon", icon: "barcode" },
-        { title: "Buyer Form", to: "/affiliate/test-buyer-form", icon: "barcode" },
-        { title: "Reminder Form", to: "/affiliate/test-reminder-form", icon: "barcode" },
+        { title: "Tambah Kupon Baru", to: "/affiliate/test-add-new-coupon/facebook-pixel", icon: "barcode" },
+        { title: "Buyer Form", to: "/affiliate/test-buyer-form/informasi-buyer", icon: "barcode" },
+        { title: "Reminder Form", to: "/affiliate/test-reminder-form/informasi-reminder", icon: "barcode" },
         { title: "Mailketing SMTP", to: "/affiliate/test-mailketing", icon: "barcode" },
       ],
     },

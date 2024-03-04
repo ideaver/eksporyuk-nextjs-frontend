@@ -190,7 +190,7 @@ const tabsData = [
         message: (
             <>
                 <div>
-                    <h4 className="fw-bold text-gray-700">Facebook/Meta Pixel ID</h4>
+                    <h4 className="fw-bold text-gray-700 pt-4">Facebook/Meta Pixel ID</h4>
                     <div className="d-flex">
                         <TextField
                             styleType="outline"
@@ -234,7 +234,7 @@ const tabsData = [
                     </div>
                 </div>
                 <div className="mt-6">
-                    <h4 className="fw-bold text-gray-700">Event pada Saat Menekan Beli Sekarang</h4>
+                    <h4 className="fw-bold text-gray-700">Event pada Redirect Page</h4>
                     <div className="d-flex">
                         <TextField
                             styleType="outline"
@@ -251,7 +251,7 @@ const tabsData = [
                     </div>
                 </div>
                 <div className="mt-6">
-                    <h4 className="fw-bold text-gray-700">Event pada Saat Menekan Beli Sekarang</h4>
+                    <h4 className="fw-bold text-gray-700">Event pada Invoice</h4>
                     <div className="d-flex">
                         <TextField
                             styleType="outline"

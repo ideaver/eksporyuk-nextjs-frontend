@@ -1,0 +1,19 @@
+import React from "react";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import KelasTerdaftar from "@/components/TabBarKelas/KelasTerdaftar/KelasTerdaftar";
+import KelasTerdaftarPage from "@/templates/Kelas/KelasTerdaftar";
+
+const BelumSelesaiPage: NextPage = () => {
+    const { query } = useRouter();
+    const id = query.id;
+    return (
+        <>
+            <KelasTerdaftar urlType="kelas/kelas-terdaftar" id={id} />
+            <KelasTerdaftarPage />
+            
+        </>
+    );
+};
+
+export default BelumSelesaiPage;
