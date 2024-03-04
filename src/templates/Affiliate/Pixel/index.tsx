@@ -14,6 +14,10 @@ import Flatpickr from "react-flatpickr";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 
 interface PixelPageProps { }
 
@@ -35,7 +39,8 @@ const PixelPage = ({ }: PixelPageProps) => {
                     <div className="mb-10">
                         <Head />
                     </div>
-                    <Table data={tableData} />
+                    {/* <Table data={tableData} /> */}
+                    <QueryTablePixel />
                     <Footer />
                 </KTCardBody>
             </KTCard>
@@ -109,24 +114,107 @@ const Footer = () => {
     );
 };
 
-const Table = ({ data }: TableProps) => {
+// const Table = ({ data }: TableProps) => {
+//     return (
+//         <div className="table-responsive mb-10">
+//             <table className="table">
+//                 <thead>
+//                     <tr className='fw-bold uppercase text-muted'>
+//                         <th className={`rounded-start text-uppercase min-w-500px`}>nama produk<i className="bi bi-arrow-up ms-3"></i><i className="bi bi-arrow-down"></i></th>
+//                         <th className='w-100px text-end text-uppercase'>Actions</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>
+//                     {data.map((row, index) => (
+//                         <tr key={index}>
+//                             <th className="">
+//                                 <div className="d-flex align-items-center">
+//                                     <div className="d-flex flex-column">
+//                                         <div className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
+//                                             {row.value}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </th>
+//                             <td>
+//                                 <div className="d-flex flex-column w-100 me-2">
+//                                     <div className={``}>
+//                                         <div className={`text-end fw-bold fs-5 text-muted`}>
+//                                             {row.breadcrumb}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </td>
+//                         </tr>
+//                     ))}
+//                 </tbody>
+//             </table>
+//         </div>
+//     );
+// };
+
+const QueryTablePixel = () => {
+    const [pixelData, setPixelData] = useState<TableRow[]>([]);
+
+    const GET_PIXEL = gql`
+    query {
+  courseFindMany {
+    updatedAt
+    title
+    status
+    startDate
+    sellingPrice
+    prerequisites
+    outcome
+    objective
+    maxEnrollment
+    level
+    isCertificationProvided
+    id
+    endDate
+    description
+    createdById
+    basePrice
+    createdAt
+  }
+}`;
+
+    const { loading, error, data } = useQuery(GET_PIXEL);
+
+    useEffect(() => {
+        if (data && data.courseFindMany) {
+            const pixelData = data.courseFindMany.map((data: any) => ({
+                icon: data.icon,
+                value: data.title,
+                breadcrumb: "Hubungkan"
+            }));
+            setPixelData(pixelData);
+        }
+    }, [data])
+
+    console.log(`GET_PIXEL`, data, loading, error);
+
     return (
         <div className="table-responsive mb-10">
-            <table className="table">
-                <thead>
-                    <tr className='fw-bold uppercase text-muted'>
+            <KTTable utilityGY={3}>
+                <KTTableHead className='fw-bold uppercase text-muted'>
                         <th className={`rounded-start text-uppercase min-w-500px`}>nama produk<i className="bi bi-arrow-up ms-3"></i><i className="bi bi-arrow-down"></i></th>
                         <th className='w-100px text-end text-uppercase'>Actions</th>
-                    </tr>
-                </thead>
+                </KTTableHead>
                 <tbody>
-                    {data.map((row, index) => (
+                    {pixelData.map((user, index) => (
                         <tr key={index}>
                             <th className="">
                                 <div className="d-flex align-items-center">
                                     <div className="d-flex flex-column">
-                                        <div className="text-muted fw-bold text-start fs-6 mb-0 text-dark">
-                                            {row.value}
+                                        <div className="text-dark fw-bold text-start fs-6 mb-0 text-dark">
+                                            <Buttons
+                                                buttonColor="secondary"
+                                                classNames="btn-sm fw-bold fs-5 me-5"
+                                            >
+                                                <img src="" alt="" />Aa
+                                            </Buttons>
+                                            {user.value}
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +223,9 @@ const Table = ({ data }: TableProps) => {
                                 <div className="d-flex flex-column w-100 me-2">
                                     <div className={``}>
                                         <div className={`text-end fw-bold fs-5 text-muted`}>
-                                            {row.breadcrumb}
+                                            <Buttons mode="light"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#kt_id_pixel_modal">{user.breadcrumb}</Buttons>
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +233,7 @@ const Table = ({ data }: TableProps) => {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </KTTable>
         </div>
     );
 };

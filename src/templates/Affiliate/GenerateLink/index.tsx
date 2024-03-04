@@ -15,7 +15,8 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 
 interface GenerateLinkPageProps { }
 
@@ -31,7 +32,8 @@ const GenerateLinkPage = ({ }: GenerateLinkPageProps) => {
                     <div className="mb-10">
                         <Head />
                     </div>
-                    <Table data={tableData} />
+                    {/* <Table data={tableData} /> */}
+                    <QueryTableGenerateLink />
                     <Footer />
                 </KTCardBody>
             </KTCard>
@@ -86,7 +88,86 @@ const Footer = () => {
     );
 };
 
-const Table = ({ data }: TableProps) => {
+// const Table = ({ data }: TableProps) => {
+//     return (
+//         <div className="table-responsive mb-10">
+//             <table className="table">
+//                 <thead>
+//                     <tr className='fw-bold uppercase text-gray-500'>
+//                         <th className={`rounded-start text-uppercase min-w-500px`}>nama produk<i className="bi bi-arrow-up ms-3"></i><i className="bi bi-arrow-down"></i></th>
+//                         <th className='w-200px text-end text-uppercase'>Actions</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>
+//                     {data.map((row, index) => (
+//                         <tr key={index}>
+//                             <th className="">
+//                                 <div className="d-flex align-items-center">
+//                                     <div className="d-flex flex-column">
+//                                         <div className="text-gray-500 fw-bold text-start fs-6 mb-0 text-dark">
+//                                             {row.value}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </th>
+//                             <td>
+//                                 <div className="d-flex flex-column w-100 me-2">
+//                                     <div className={``}>
+//                                         <div className={`text-end fw-bold fs-5 text-gray-500`}>
+//                                             {row.breadcrumb}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </td>
+//                         </tr>
+//                     ))}
+//                 </tbody>
+//             </table>
+//         </div>
+//     );
+// };
+
+const QueryTableGenerateLink = () => {
+    const [generateLinkData, setGenerateLinkData] = useState<TableRow[]>([]);
+
+    const GET_GENERATE_LINK = gql`
+    query {
+  courseFindMany {
+    updatedAt
+    title
+    status
+    startDate
+    sellingPrice
+    prerequisites
+    outcome
+    objective
+    maxEnrollment
+    level
+    isCertificationProvided
+    id
+    endDate
+    description
+    createdById
+    basePrice
+    createdAt
+  }
+}`;
+
+    const { loading, error, data } = useQuery(GET_GENERATE_LINK);
+
+    useEffect(() => {
+        if (data && data.courseFindMany) {
+            const generateLinkData = data.courseFindMany.map((data: any) => ({
+                icon: data.icon,
+                value: data.title,
+                breadcrumb: "Generate Link",
+            }));
+            setGenerateLinkData(generateLinkData);
+        }
+    }, [data])
+
+    console.log(`GET_GENERATE_LINK`, data, loading, error);
+
     return (
         <div className="table-responsive mb-10">
             <table className="table">
@@ -97,13 +178,21 @@ const Table = ({ data }: TableProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, index) => (
+                    {generateLinkData.map((user, index) => (
                         <tr key={index}>
                             <th className="">
                                 <div className="d-flex align-items-center">
                                     <div className="d-flex flex-column">
                                         <div className="text-gray-500 fw-bold text-start fs-6 mb-0 text-dark">
-                                            {row.value}
+                                            <div className="text-dark">
+                                                <Buttons
+                                                    buttonColor="secondary"
+                                                    classNames="btn-sm fw-bold fs-5 me-5"
+                                                >
+                                                    <img src="" alt="" />Aa
+                                                </Buttons>
+                                                {user.value}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -112,7 +201,10 @@ const Table = ({ data }: TableProps) => {
                                 <div className="d-flex flex-column w-100 me-2">
                                     <div className={``}>
                                         <div className={`text-end fw-bold fs-5 text-gray-500`}>
-                                            {row.breadcrumb}
+                                            <Buttons mode="light"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#kt_generate_modal"
+                                            >{user.breadcrumb}</Buttons>
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +232,7 @@ const GenerateModal = ({
     const handleModalClose = () => {
         setModalOpen(false);
     };
-    return ( 
+    return (
         <div>
             <KTModal
                 dataBsTarget="kt_generate_modal"
@@ -151,7 +243,7 @@ const GenerateModal = ({
                 subTitle="Produk: Kelas Bimbingan EksporYuk"
                 subTitleColor="gray-500"
                 subTitleWeight="bold"
-                buttonClose= {
+                buttonClose={
                     <Buttons buttonColor='secondary' classNames="text-gray-900 fw-bold" data-bs-dismiss="modal">Tutup</Buttons>
                 }
                 buttonSubmit={
@@ -251,9 +343,9 @@ const GenerateModal = ({
                             onChange={handleFollupChange}
                         >
                             {`Aktifkan Parameter Kupon`}
-                        <p className="fw-bold fs-6 text-gray-500 mt-2">
-                            Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
-                        </p>
+                            <p className="fw-bold fs-6 text-gray-500 mt-2">
+                                Parameter kupon akan otomatis menggunakan kupon yang dipilih pada pembelian produk
+                            </p>
                         </CheckBoxInput>
                     </div>
                 </div>
@@ -277,3 +369,5 @@ const GenerateModal = ({
 
     );
 };
+
+

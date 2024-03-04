@@ -1,20 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef } from 'react'
-import ApexCharts, { ApexOptions } from 'apexcharts'
-import { Dropdown1, useThemeMode } from '@/_metronic/partials'
 import { KTCard, KTCardBody, KTIcon } from '@/_metronic/helpers'
-import { getCSSVariableValue } from '@/_metronic/assets/ts/_utils'
 import { Buttons } from '@/stories/molecules/Buttons/Buttons'
 import { KTTable } from '@/_metronic/helpers/components/KTTable'
 import { KTTableBody } from '@/_metronic/helpers/components/KTTableBody'
-import { CardInfo } from '@/stories/molecules/Cards/CardInfo/CardInfo'
 
 type Props = {
     className: string
-    chartColor: string
-    strokeColor: string
-    chartHeight: string
-    title?: string;
     presentase?: number;
     totalPresentase?: number;
     colorPrecentage?: string;
@@ -38,37 +30,7 @@ type Table = {
     description?: string
 }
 
-
-
-const CourseProgress: React.FC<Props> = ({ className, chartColor, chartHeight, strokeColor, title, presentase, totalPresentase, colorPrecentage, colorSubtle, backgroundColor, datas, table }) => {
-    const chartRef = useRef<HTMLDivElement | null>(null)
-    const { mode } = useThemeMode()
-    const refreshChart = () => {
-        if (!chartRef.current) {
-            return
-        }
-
-        const chart = new ApexCharts(
-            chartRef.current,
-            chartOptions(chartHeight, chartColor, strokeColor)
-        )
-        if (chart) {
-            chart.render()
-        }
-
-        return chart
-    }
-
-    useEffect(() => {
-        const chart = refreshChart()
-        return () => {
-            if (chart) {
-                chart.destroy()
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chartRef, mode])
-
+const CourseProgress: React.FC<Props> = ({ className, presentase, totalPresentase, colorPrecentage, colorSubtle, backgroundColor, datas, table }) => {
     const chunkArray = (array: any[], size: number) => {
         const chunkedArr = [];
         for (let i = 0; i < array.length; i += size) {
@@ -156,139 +118,5 @@ const CourseProgress: React.FC<Props> = ({ className, chartColor, chartHeight, s
     )
 }
 
-const chartOptions = (
-    chartHeight: string,
-    chartColor: string,
-    strokeColor: string
-): ApexOptions => {
-    const labelColor = getCSSVariableValue('--bs-gray-500')
-    const borderColor = getCSSVariableValue('--bs-gray-200')
-    const color = getCSSVariableValue('--bs-' + chartColor)
-
-    return {
-        series: [
-            {
-                name: 'Net Profit',
-                data: [30, 45, 32, 70, 40, 40, 40],
-            },
-        ],
-        chart: {
-            fontFamily: 'inherit',
-            type: 'area',
-            height: chartHeight,
-            toolbar: {
-                show: false,
-            },
-            zoom: {
-                enabled: false,
-            },
-            sparkline: {
-                enabled: true,
-            },
-            dropShadow: {
-                enabled: true,
-                enabledOnSeries: undefined,
-                top: 5,
-                left: 0,
-                blur: 3,
-                color: strokeColor,
-                opacity: 0.5,
-            },
-        },
-        plotOptions: {},
-        legend: {
-            show: false,
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        fill: {
-            type: 'solid',
-            opacity: 0,
-        },
-        stroke: {
-            curve: 'smooth',
-            show: true,
-            width: 3,
-            colors: [strokeColor],
-        },
-        xaxis: {
-            categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-            labels: {
-                show: false,
-                style: {
-                    colors: labelColor,
-                    fontSize: '12px',
-                },
-            },
-            crosshairs: {
-                show: false,
-                position: 'front',
-                stroke: {
-                    color: borderColor,
-                    width: 1,
-                    dashArray: 3,
-                },
-            },
-        },
-        yaxis: {
-            min: 0,
-            max: 80,
-            labels: {
-                show: false,
-                style: {
-                    colors: labelColor,
-                    fontSize: '12px',
-                },
-            },
-        },
-        states: {
-            normal: {
-                filter: {
-                    type: 'none',
-                    value: 0,
-                },
-            },
-            hover: {
-                filter: {
-                    type: 'none',
-                    value: 0,
-                },
-            },
-            active: {
-                allowMultipleDataPointsSelection: false,
-                filter: {
-                    type: 'none',
-                    value: 0,
-                },
-            },
-        },
-        tooltip: {
-            style: {
-                fontSize: '12px',
-            },
-            y: {
-                formatter: function (val) {
-                    return '$' + val + ' thousands'
-                },
-            },
-            marker: {
-                show: false,
-            },
-        },
-        colors: ['transparent'],
-        markers: {
-            colors: [color],
-            strokeColors: [strokeColor],
-            strokeWidth: 3,
-        },
-    }
-}
 
 export { CourseProgress }
