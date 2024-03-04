@@ -23,9 +23,6 @@ export const Display: Story = {
     render: (args) => <CourseProgress {...args} />,
     args: {
         className: "w-100",
-        chartColor: "success",
-        strokeColor: "primary",
-        chartHeight: '150px',
         presentase: 80,
         totalPresentase: 100,
         colorPrecentage: "info",
