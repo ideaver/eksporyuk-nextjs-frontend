@@ -153,6 +153,8 @@ const QueryTableGenerateLink = () => {
   }
 }`;
 
+// Generate Link Kurang data Untuk Icon dan Button. Button > Mutation buat Push data
+
     const { loading, error, data } = useQuery(GET_GENERATE_LINK);
 
     useEffect(() => {
@@ -189,7 +191,7 @@ const QueryTableGenerateLink = () => {
                                                     buttonColor="secondary"
                                                     classNames="btn-sm fw-bold fs-5 me-5"
                                                 >
-                                                    <img src="" alt="" />Aa
+                                                    <img src="" alt="" />{user.icon}
                                                 </Buttons>
                                                 {user.value}
                                             </div>
