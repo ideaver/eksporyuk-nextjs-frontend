@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-export const listCardItems = [
+export const listCardItems: ListItem[] = [
   {
     icon: {
       name: "abstract-24",
@@ -8,9 +8,20 @@ export const listCardItems = [
       textColor: "text-info",
     },
     title: "Kelas Bimbingan EksporYuk",
-    row1Value: 51,
-    row2Value: 30,
-    row3Value: "Rp 12.253.245",
+    rows: [
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+    ],
   },
   {
     icon: {
@@ -19,9 +30,20 @@ export const listCardItems = [
       textColor: "text-success",
     },
     title: "Ekspor Yuk Automation",
-    row1Value: 51,
-    row2Value: 30,
-    row3Value: "Rp 12.253.245",
+    rows: [
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+    ],
   },
   {
     icon: {
@@ -30,9 +52,20 @@ export const listCardItems = [
       textColor: "text-danger",
     },
     title: "Bundling Kelas Ekspor + Aplikasi EYA",
-    row1Value: 51,
-    row2Value: 30,
-    row3Value: "Rp 12.253.245",
+    rows: [
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+    ],
   },
   {
     icon: {
@@ -41,9 +74,20 @@ export const listCardItems = [
       textColor: "text-primary",
     },
     title: "Jasa Website Ekspor Bisnis",
-    row1Value: 51,
-    row2Value: 30,
-    row3Value: "Rp 12.253.245",
+    rows: [
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+    ],
   },
   {
     icon: {
@@ -52,9 +96,20 @@ export const listCardItems = [
       textColor: "text-warning",
     },
     title: "Legalitas Ekspor",
-    row1Value: 51,
-    row2Value: 30,
-    row3Value: "Rp 12.253.245",
+    rows: [
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+      {
+        name: "Total Lead",
+        value: "51",
+      },
+    ],
   },
 ];
 
@@ -121,6 +176,71 @@ export const akuisisTableData: TableRowData[] = [
     value: "Rp. 1.476.619.696",
   },
 ];
+"/media/products/1.png"
+export interface DashboardTableRow {
+  title: string;
+  img: string;
+  value: string;
+}
+
+export interface DashboardTableProps {
+  title: string;
+  value: string;
+  data: DashboardTableRow[];
+}
+
+export const dashboardTableMocks: DashboardTableRow[] = [
+  {
+    title: "Kelas Bimbingan EksporYuk",
+    img: "/media/products/1.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Ekspor Yuk Automation",
+    img: "/media/products/2.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Bundling Kelas Ekspor + Aplikasi EYA",
+    img: "/media/products/3.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Jasa Website Ekspor Bisnis",
+    img: "/media/products/4.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Legalitas Ekspor",
+    img: "/media/products/5.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Kelas Bimbingan EksporYuk",
+    img: "/media/products/1.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Ekspor Yuk Automation",
+    img: "/media/products/2.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Bundling Kelas Ekspor + Aplikasi EYA",
+    img: "/media/products/3.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Jasa Website Ekspor Bisnis",
+    img: "/media/products/4.png",
+    value: "Rp. 1.476.619.696",
+  },
+  {
+    title: "Legalitas Ekspor",
+    img: "/media/products/5.png",
+    value: "Rp. 1.476.619.696",
+  },
+ ]
 
 const usePackages = () => {
   const BigChart = dynamic(
@@ -172,8 +292,8 @@ const usePackages = () => {
 const useDashboardViewModel = () => {
   const breadcrumbs = [
     {
-      title: "Affiliasi",
-      path: "/affiliate/dashboard",
+      title: "Admin",
+      path: "/admin/dashboard",
       isSeparator: false,
       isActive: false,
     },

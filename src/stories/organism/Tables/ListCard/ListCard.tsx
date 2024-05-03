@@ -1,36 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { KTIcon } from "@/_metronic/helpers";
-import { Dropdown1 } from "@/_metronic/partials";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import React from "react";
 
 interface ListCardProps {
   /**
    * Classname for Table
    */
   className?: string;
-  /**
-   * Row 1 Name
-   */
-  row1Name?: string;
-  /**
-   * Row 2 Name
-   */
-  row2Name?: string;
-  /**
-   * Row 3 Name
-   */
-  row3Name?: string;
   items: ListItem[];
 }
 
-const ListCard = ({
-  className,
-  row1Name = "Total Lead",
-  row2Name = "Total Saled",
-  row3Name = "Total Omzet",
-  items,
-}: ListCardProps) => {
+const ListCard = ({ className, items }: ListCardProps) => {
   return (
     <div className={`card ${className}`}>
       {/* begin::Header */}
@@ -85,31 +65,16 @@ const ListCard = ({
                       {item.title}
                     </div>
                   </td>
-                  <td className="text-start p-0 min-w-70px">
-                    <span className="text-dark fw-bold d-block fs-6">
-                      {item.row1Value}
-                    </span>
-                    <span className="text-muted fw-semibold text-muted d-block fs-7">
-                      {row1Name}
-                    </span>
-                  </td>
-                  <td className="text-start p-0 min-w-70px">
-                    <span className="text-dark fw-bold d-block fs-6">
-                      {item.row2Value}
-                    </span>
-                    <span className="text-muted fw-semibold text-muted d-block fs-7">
-                      {row2Name}
-                    </span>
-                  </td>{" "}
-                  <td className="text-end p-0 min-w-100px">
-                    {" "}
-                    <span className="text-dark fw-bold d-block fs-6">
-                      {item.row3Value}
-                    </span>
-                    <span className="text-muted fw-semibold text-muted d-block fs-7">
-                      {row3Name}
-                    </span>
-                  </td>{" "}
+                  {item.rows.map((row, rowIndex) => (
+                    <td key={rowIndex} className="text-start p-0 min-w-70px">
+                      <span className="text-dark fw-bold d-block fs-6">
+                        {row.value}
+                      </span>
+                      <span className="text-muted fw-semibold text-muted d-block fs-7">
+                        {row.name}
+                      </span>
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useRef, useState } from "react";
-import ApexCharts, { ApexOptions } from "apexcharts";
 import { getCSS, getCSSVariableValue } from "@/_metronic/assets/ts/_utils";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
 import { useThemeMode } from "@/_metronic/partials";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import dynamic from "next/dynamic";
 import { ColorList } from "@/types/general/utilities";
-import currencyFormatter from "@/_metronic/helpers/Formatter";
+import ApexCharts, { ApexOptions } from "apexcharts";
+import React, { useEffect, useRef, useState } from "react";
 
 interface ChartProps {
   /**
@@ -46,10 +45,37 @@ interface ChartProps {
   label?: string;
 
   /**
+   * subLabel Content
+   */
+
+  subLabel?: string;
+  /**
+   * value Content
+   */
+
+  value?: string;
+  /**
+   * title Content
+   */
+
+  title?: string;
+  /**
+   * subTitle Content
+   */
+
+  subTitle?: string;
+
+  /**
    * What Label Chart Color to use
    */
 
   labelChartColor?: ColorList;
+
+   /**
+   * What Label Chart Color to use
+   */
+
+   fullHeightChart?: boolean;
 
   /**
    * What Border Chart Color to use
@@ -73,6 +99,15 @@ interface ChartProps {
     | "info-light"
     | "dark-light";
 
+  /**
+   * toolbar dropdown option
+   */
+  dropdownOptions?: { value: string; label: string }[];
+
+  /**
+   * toolbar dropdown click handler
+   */
+  onDropdownValueChanged: (value: string | number) => void;
   onClick?: () => void;
 }
 
@@ -90,7 +125,18 @@ export const Charts = ({
   dataSeries,
   categoriesXAxis,
   onClick,
-  label = "40%"
+  label,
+  subLabel = "Sub Label",
+  title,
+  subTitle,
+  value,
+  fullHeightChart = false,
+  dropdownOptions = [
+    { value: "1", label: "Hari Ini" },
+    { value: "2", label: "Minggu Ini" },
+    { value: "3", label: "Bulan Ini" },
+  ],
+  onDropdownValueChanged
 }: ChartProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
   const { mode } = useThemeMode();
@@ -182,47 +228,111 @@ export const Charts = ({
   return (
     <div className={`card ${classNames}`}>
       {/* begin::Header */}
-      <div className="card-header border-0 pb-0">
-        <div className="card-title flex-row items-center text-center my-auto flex">
-          <div className="card-label fw-bold mb-1" style={{ fontSize: "50px" }}>
-            2
+      {title == null && subTitle == null ? (
+        <div className="card-header border-0 pb-0">
+          <div className="card-title items-center text-center my-auto flex-column">
+            <div className="d-flex flex-row items-center text-center ">
+              <div
+                className="card-label fw-bold mb-1"
+                style={{ fontSize: "50px" }}
+              >
+                {value}
+              </div>
+              {label != null ? (
+                <span
+                  className={`fw-bold fs-7 rounded border p-2 align-self-center ${labelColorHandler(
+                    mode,
+                    labelColorBG
+                  )} ${textColorHandler(mode, textColor)}`}
+                >
+                  <i
+                    className={`bi ${iconHandler(
+                      mode,
+                      labelIcon
+                    )} ${textColorHandler(mode, textColor)}`}
+                  ></i>{" "}
+                  {label}
+                </span>
+              ) : (
+                <></>
+              )}
+            </div>
+            <span className="text-muted mt-1 fw-semibold fs-7">{subLabel}</span>
           </div>
-          <span
-            className={`fw-bold fs-7 rounded border p-2 ${labelColorHandler(
-              mode,
-              labelColorBG
-            )} ${textColorHandler(mode, textColor)}`}
-          >
-            <i
-              className={`bi ${iconHandler(mode, labelIcon)} ${textColorHandler(
-                mode,
-                textColor
-              )}`}
-            ></i>{" "}
-            {label}
-          </span>
-        </div>
 
-        {/* begin::Toolbar */}
-        <div className="card-toolbar" data-kt-buttons="true">
-          <Dropdown
-            styleType="solid"
-            onValueChange={() => {}}
-            options={[
-              { value: "1", label: "Hari Ini" },
-              { value: "2", label: "Minggu Ini" },
-              { value: "3", label: "Bulan Ini" },
-            ]}
-          />
+          {/* begin::Toolbar */}
+          <div className="card-toolbar" data-kt-buttons="true">
+            <Dropdown
+              styleType="solid"
+              onValueChange={onDropdownValueChanged}
+              options={dropdownOptions}
+            />
+          </div>
+          {/* end::Toolbar */}
         </div>
-        {/* end::Toolbar */}
-      </div>
+      ) : (
+        <>
+          <div className="card-header border-0 pb-0 pt-5">
+            <div className="card-title items-center text-center my-auto flex-column">
+              <h3 className="card-title align-items-start flex-column">
+                <span className="card-label fw-bold fs-3 mb-1">{title}</span>
+              </h3>
+              <span className="text-muted mt-1 fw-semibold fs-7">
+                {subTitle}
+              </span>
+            </div>
+
+            {/* begin::Toolbar */}
+            <div className="card-toolbar" data-kt-buttons="true">
+              <Dropdown
+                styleType="solid"
+                onValueChange={onDropdownValueChanged}
+                options={[
+                  { value: "1", label: "Hari Ini" },
+                  { value: "2", label: "Minggu Ini" },
+                  { value: "3", label: "Bulan Ini" },
+                ]}
+              />
+            </div>
+            {/* end::Toolbar */}
+          </div>
+          <div className="card-header border-0 pb-0 flex-column">
+            <div className="d-flex flex-row items-center text-center ">
+              <div
+                className="card-label fw-bold mb-1 pe-5"
+                style={{ fontSize: "50px" }}
+              >
+                {value}
+              </div>
+              {label != null ? (
+                <span
+                  className={`fw-bold fs-7 rounded border p-2 align-self-center ${labelColorHandler(
+                    mode,
+                    labelColorBG
+                  )} ${textColorHandler(mode, textColor)}`}
+                >
+                  <i
+                    className={`bi ${iconHandler(
+                      mode,
+                      labelIcon
+                    )} ${textColorHandler(mode, textColor)}`}
+                  ></i>{" "}
+                  {label}
+                </span>
+              ) : (
+                <></>
+              )}
+            </div>
+            <span className="text-muted mt-1 fw-semibold fs-7">{subLabel}</span>
+          </div>
+        </>
+      )}
       {/* end::Header */}
 
       {/* begin::Body */}
       <div className="card-body">
         {/* begin::Chart */}
-        <div ref={chartRef} id="chart" style={{ height: "350px" }}></div>
+        <div ref={chartRef} id="chart" style={{ height: fullHeightChart ? "100%" : "350px"}}></div>
         {/* end::Chart */}
       </div>
       {/* end::Body */}

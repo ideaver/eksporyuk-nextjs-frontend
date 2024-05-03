@@ -4,10 +4,17 @@ type Icon = {
   textColor: string;
 };
 
+type RowItem = {
+  name: string;
+  value: string;
+}
+
 type ListItem = {
-  icon: Icon;
   title: string;
-  row1Value: number;
-  row2Value: number;
-  row3Value: string;
-};
+  icon: {
+    name: string;
+    color: string;
+    textColor: string;
+  };
+  rows: RowItem[];
+}
