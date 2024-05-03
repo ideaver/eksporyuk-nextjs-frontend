@@ -1,6 +1,6 @@
 import { MenuSection } from "@/types/navigation/menu";
 
-const memberAffiliatorMenus: MenuSection[] = [
+export const memberAffiliatorMenus: MenuSection[] = [
   {
     section: "Menu Member",
     items: [

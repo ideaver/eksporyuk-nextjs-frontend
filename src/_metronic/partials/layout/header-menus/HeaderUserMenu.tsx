@@ -1,10 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { FC } from "react";
 // import {useAuth} from '../../../../app/modules/auth'
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const HeaderUserMenu: FC = () => {
-  // const {currentUser, logout} = useAuth()
+  const { data: session, status } = useSession();
+  
+
   return (
     <>
       <div
@@ -15,23 +18,33 @@ const HeaderUserMenu: FC = () => {
         <div className="menu-item px-3">
           <div className="menu-content d-flex align-items-center px-3">
             <div className="symbol symbol-50px me-5">
-              <img alt="Logo" src={"/media/avatars/300-1.jpg"} />
+              <img
+                alt="Logo"
+                src={session?.user.image ?? "/media/avatars/150-1.jpg"}
+              />
             </div>
 
             <div className="d-flex flex-column">
               <div className="fw-bolder d-flex align-items-center fs-5">
                 {/* {currentUser?.first_name} {currentUser?.first_name} */}
-                Angga Sanjaya
+                {session?.user.name}
                 <span className="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">
-                  Admin
+                  {session?.user.role}
                 </span>
               </div>
               <a
                 href="#"
                 className="fw-bold text-muted text-hover-primary fs-7"
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "170px", // adjust this value as needed
+                  display: "block", // ensure it's a block element
+                }}
               >
                 {/* {currentUser?.email} */}
-                admin@mail.com
+                {session?.user.email}aaaaaaaaaaaaaaaaaa
               </a>
             </div>
           </div>

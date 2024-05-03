@@ -37,7 +37,7 @@ interface LoginFormProps {
    * Optional click handler
    */
   onClick?: (email: string | undefined, password: string | undefined) => void;
-  isError?: boolean;
+  errorMessage?: string;
 }
 
 /**
@@ -48,7 +48,7 @@ export const LoginForm = ({
   onClick,
   forgotPasswordOnClick,
   registerOnClick,
-  isError,
+  errorMessage,
 }: LoginFormProps) => {
   const [visiblePassword, setVisiblePassword] = useState(false);
 
@@ -69,9 +69,9 @@ export const LoginForm = ({
       <div className="text-center mt-15">
         <h1 className="text-dark fw-bolder fs-2x mb-3">Login</h1>
       </div>
-      {isError ? (
+      {errorMessage != null ? (
         <Alert
-          label="Terjadi Kesalahan saat Login, periksa Email dan password anda"
+          label={errorMessage}
           title="Terjadi kesalahan"
           alertColor="danger"
         />
