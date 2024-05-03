@@ -181,10 +181,12 @@ const QueryTablePixel = () => {
 
     const { loading, error, data } = useQuery(GET_PIXEL);
 
+    // Pixel Kurang data Untuk Icon dan Button. Button > Mutation buat Push data
+
     useEffect(() => {
         if (data && data.courseFindMany) {
             const pixelData = data.courseFindMany.map((data: any) => ({
-                icon: data.icon,
+                icon: "Aa",
                 value: data.title,
                 breadcrumb: "Hubungkan"
             }));
@@ -212,7 +214,7 @@ const QueryTablePixel = () => {
                                                 buttonColor="secondary"
                                                 classNames="btn-sm fw-bold fs-5 me-5"
                                             >
-                                                <img src="" alt="" />Aa
+                                                <img src="" alt="" />{user.icon}
                                             </Buttons>
                                             {user.value}
                                         </div>

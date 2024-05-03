@@ -9,6 +9,8 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { CouponContents } from "@/stories/organism/Contens/CouponContents/CouponContents";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 
 const Coupon = () => {
   const { breadcrumbs, couponTable, couponDetailsData, couponProductsData } =
@@ -19,7 +21,8 @@ const Coupon = () => {
       <KTCard>
         <KTCardBody>
           <Head />
-          <CouponTable tableData={couponTable} />
+          {/* <CouponTable tableData={couponTable} /> */}
+          <QueryTableCoupon />
           <Footer />
         </KTCardBody>
       </KTCard>
@@ -173,21 +176,139 @@ const Footer = () => {
   );
 };
 
-const CouponTable = ({ tableData }: { tableData: CouponTableProps[] }) => {
+// const CouponTable = ({ tableData }: { tableData: CouponTableProps[] }) => {
+//   return (
+//     <div className="table-responsive mt-5">
+//       <table className="table gy-5">
+//         <thead>
+//           <tr className="fw-bold text-uppercase text-muted">
+//             <th className="w-200px">Kode Kupon</th>
+//             <th className="w-360px">Kupon Utama</th>
+//             <th className="text-end">Diskon</th>
+//             <th className="text-end">Penggunaan</th>
+//             <th className="text-end">Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {tableData.map((data, index) => (
+//             <tr key={index}>
+//               <td
+//                 className=""
+//                 data-bs-toggle="modal"
+//                 data-bs-target="#kt_coupon_modal"
+//               >
+//                 <span className="text-dark fw-bold me-5 cursor-pointer text-hover-primary">
+//                   {data.name}
+//                 </span>
+//                 {data.name !== "-" && (
+//                   <button className="btn p-0">
+//                     <KTIcon
+//                       iconName="copy"
+//                       className="fs-1 text-hover-primary "
+//                     />
+//                   </button>
+//                 )}
+//               </td>
+//               <td className="">
+//                 <span className="text-muted fw-bold me-5">
+//                   {data.mainCouponName}
+//                 </span>
+//                 {data.mainCouponName !== "-" && (
+//                   <button className="btn p-0">
+//                     <KTIcon
+//                       iconName="copy"
+//                       className="fs-1 text-hover-primary "
+//                     />
+//                   </button>
+//                 )}
+//               </td>
+//               <td className="text-muted text-end fw-bold">{data.value}</td>
+//               <td className="text-muted text-end fw-bold">{data.usage}</td>
+//               <td className="text-muted text-end fw-bold">
+//                 <Badge
+//                   label={data.status.label}
+//                   badgeColor={data.status.color}
+//                 />
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// };
+
+const QueryTableCoupon = () => {
+  const [couponData, setCouponData] = useState<CouponTableProps[]>([]);
+
+  const GET_COUPON = gql`
+  query CouponFindMany($where: CouponWhereInput) {
+  couponFindMany(where: $where) {
+    id
+    description
+    startDate
+    endDate
+    isHighlight
+    isActive
+    value
+    minOrderTotalAmountValue
+    maxOrderTotalAmountValue
+    minOrderQuantityValue
+    maxOrderQuantityValue
+    maxClaimPerUser
+    claimerQuota
+    freeDelivery
+    lastClaimAt
+    createdAt
+    updatedAt
+    imageId
+    type
+    source
+    affiliatorCoupon {
+      id
+      code
+      extendedFromId
+      createdById
+    }
+  }
+}`;
+
+const { loading, error, data } = useQuery(GET_COUPON);
+
+// Data Coupon Kurang Bagian Name, Value, Usage. Status Masih Hardcode
+
+  useEffect(() => {
+    if (data && data.couponFindMany) {
+      const couponData = data.couponFindMany.map((data: any) => ({
+        name: "BELAJAR SEKARANG",
+        mainCouponName: data.source,
+        value: "50",
+        usage: "41", //data.claimerQuota
+        status: {
+          label: data.isActive ? "Aktif" : "Tidak Aktif",
+          color: data.isActive ? "success" : "danger",
+        },
+      }));
+      setCouponData(couponData);
+    }
+  }, [data])
+
+  console.log(`GET_COUPON`, data, loading, error);
+  
   return (
     <div className="table-responsive mt-5">
       <table className="table gy-5">
         <thead>
           <tr className="fw-bold text-uppercase text-muted">
             <th className="w-200px">Kode Kupon</th>
-            <th className="w-360px">Kupon Utama</th>
+            <th className="w-250px">Kupon Utama</th>
             <th className="text-end">Diskon</th>
             <th className="text-end">Penggunaan</th>
-            <th className="text-end">Status</th>
+            <th className="w-250px text-end">Status</th>
           </tr>
         </thead>
         <tbody>
-          {tableData.map((data, index) => (
+          {couponData.map((data, index) => (
             <tr key={index}>
               <td
                 className=""
@@ -202,7 +323,7 @@ const CouponTable = ({ tableData }: { tableData: CouponTableProps[] }) => {
                     <KTIcon
                       iconName="copy"
                       className="fs-1 text-hover-primary "
-                    />
+                    /> 
                   </button>
                 )}
               </td>
@@ -215,11 +336,11 @@ const CouponTable = ({ tableData }: { tableData: CouponTableProps[] }) => {
                     <KTIcon
                       iconName="copy"
                       className="fs-1 text-hover-primary "
-                    />
+                    /> 
                   </button>
                 )}
               </td>
-              <td className="text-muted text-end fw-bold">{data.value}</td>
+              <td className="text-muted text-end fw-bold">{data.value}%</td>
               <td className="text-muted text-end fw-bold">{data.usage}</td>
               <td className="text-muted text-end fw-bold">
                 <Badge
