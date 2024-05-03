@@ -35,11 +35,11 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         <div className="d-flex flex-center flex-wrap px-5">
           {/* begin::Links */}
           <div className="d-flex fw-semibold text-primary fs-base">
-            <Link href="#" className="px-5" target="_blank">
+            <Link href="/" className="px-5" target="_blank">
               Syarat & Ketentuan
             </Link>
 
-            <Link href="#" className="px-5" target="_blank">
+            <Link href="/" className="px-5" target="_blank">
               Contact Us
             </Link>
           </div>

@@ -1,6 +1,4 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import { ChartsWidget1 } from "@/_metronic/partials/widgets";
-import { MasterLayout } from "@/components/layouts/Master/MasterLayout";
 
 export default function Home() {
   return (
@@ -24,7 +22,6 @@ export default function Home() {
       >
         Dashboard
       </PageTitle>
-      
       {/* </MasterLayout> */}
     </>
   );

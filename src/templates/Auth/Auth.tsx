@@ -8,6 +8,7 @@ import useAuthViewModel from "./Auth-view-model";
 const AuthPage: React.FC = () => {
   const {
     isLogin,
+    isError,
     setIsLogin,
     isForgotPassword,
     setIsForgotPassword,
@@ -27,6 +28,7 @@ const AuthPage: React.FC = () => {
         />
       ) : isLogin ? (
         <LoginForm
+          isError={isError}
           forgotPasswordOnClick={() => {
             setIsForgotPassword(true);
           }}

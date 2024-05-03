@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { Alert } from "@/stories/molecules/Alert/Alert";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -36,6 +37,7 @@ interface LoginFormProps {
    * Optional click handler
    */
   onClick?: (email: string | undefined, password: string | undefined) => void;
+  isError?: boolean;
 }
 
 /**
@@ -46,6 +48,7 @@ export const LoginForm = ({
   onClick,
   forgotPasswordOnClick,
   registerOnClick,
+  isError,
 }: LoginFormProps) => {
   const [visiblePassword, setVisiblePassword] = useState(false);
 
@@ -66,6 +69,15 @@ export const LoginForm = ({
       <div className="text-center mt-15">
         <h1 className="text-dark fw-bolder fs-2x mb-3">Login</h1>
       </div>
+      {isError ? (
+        <Alert
+          label="Terjadi Kesalahan saat Login, periksa Email dan password anda"
+          title="Terjadi kesalahan"
+          alertColor="danger"
+        />
+      ) : (
+        <></>
+      )}
       {/* begin::Form group */}
       <div className="fv-row mb-8 mt-11">
         <TextField
@@ -119,7 +131,11 @@ export const LoginForm = ({
         <div />
 
         {/* begin::Link */}
-        <Buttons mode="link" onClick={forgotPasswordOnClick} classNames="link-primary">
+        <Buttons
+          mode="link"
+          onClick={forgotPasswordOnClick}
+          classNames="link-primary"
+        >
           Lupa Password?
         </Buttons>
         {/* end::Link */}
@@ -137,7 +153,11 @@ export const LoginForm = ({
       </div>
       <div className="text-gray-500 text-center fw-semibold fs-6">
         Belum punya akun?{" "}
-        <Buttons mode="link" onClick={registerOnClick} classNames="link-primary">
+        <Buttons
+          mode="link"
+          onClick={registerOnClick}
+          classNames="link-primary"
+        >
           Daftar Sekarang
         </Buttons>
       </div>
