@@ -64,7 +64,7 @@ const AsideToolbar = () => {
                 <KTIcon iconName="setting-2" className="text-muted fs-1" />
               </a>
 
-              {/* <HeaderUserMenu /> */}
+              <HeaderUserMenu />
               {/*end::Action*/}
             </div>
             {/*end::User menu*/}
