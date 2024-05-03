@@ -1,3 +1,3 @@
 echo "Installing staging"
-  yarn clean
+  yarn cache clean
   yarn install

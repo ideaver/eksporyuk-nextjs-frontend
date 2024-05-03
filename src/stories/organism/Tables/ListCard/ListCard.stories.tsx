@@ -21,9 +21,20 @@ export const ActiveItem: Story = {
           textColor: "text-info",
         },
         title: "Kelas Bimbingan EksporYuk",
-        row1Value: 51,
-        row2Value: 30,
-        row3Value: "Rp 12.253.245",
+        rows: [
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+        ],
       },
       {
         icon: {
@@ -32,9 +43,20 @@ export const ActiveItem: Story = {
           textColor: "text-success",
         },
         title: "Ekspor Yuk Automation",
-        row1Value: 51,
-        row2Value: 30,
-        row3Value: "Rp 12.253.245",
+        rows: [
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+        ],
       },
       {
         icon: {
@@ -43,9 +65,20 @@ export const ActiveItem: Story = {
           textColor: "text-danger",
         },
         title: "Bundling Kelas Ekspor + Aplikasi EYA",
-        row1Value: 51,
-        row2Value: 30,
-        row3Value: "Rp 12.253.245",
+        rows: [
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+        ],
       },
       {
         icon: {
@@ -54,9 +87,20 @@ export const ActiveItem: Story = {
           textColor: "text-primary",
         },
         title: "Jasa Website Ekspor Bisnis",
-        row1Value: 51,
-        row2Value: 30,
-        row3Value: "Rp 12.253.245",
+        rows: [
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+        ],
       },
       {
         icon: {
@@ -65,9 +109,20 @@ export const ActiveItem: Story = {
           textColor: "text-warning",
         },
         title: "Legalitas Ekspor",
-        row1Value: 51,
-        row2Value: 30,
-        row3Value: "Rp 12.253.245",
+        rows: [
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+          {
+            name: "Total Lead",
+            value: "51",
+          },
+        ],
       },
     ],
   },

@@ -19,16 +19,21 @@ const Dashboard = ({}) => {
       <div className="row gy-5 g-xl-8 mb-10">
         <div className="col-xl-4">
           <Charts
+            value="2"
+            subLabel="Total Lead"
             labelIcon="arrow-down"
             labelColorBG="danger-subtle"
             textColor="danger"
             dataSeries={[30, 40, 32, 5]}
             categoriesXAxis={["Feb", "Mar", "Apr", "May"]}
+            onDropdownValueChanged={() => {}}
           />
         </div>
 
         <div className="col-xl-4">
           <Charts
+            value="2"
+            subLabel="Total Sales"
             labelIcon="arrow-up"
             labelColorBG="success-subtle"
             baseChartColor="info"
@@ -36,11 +41,14 @@ const Dashboard = ({}) => {
             label="2.2%"
             dataSeries={[20, 80, 30, 70]}
             categoriesXAxis={["Feb", "Mar", "Apr", "May"]}
+            onDropdownValueChanged={() => {}}
           />
         </div>
 
         <div className="col-xl-4">
           <Charts
+            value="2"
+            subLabel="Total Omzet"
             labelIcon="arrow-up"
             labelColorBG="success-subtle"
             baseChartColor="danger"
@@ -48,6 +56,7 @@ const Dashboard = ({}) => {
             label="3.2%"
             dataSeries={[35, 29, 43, 54]}
             categoriesXAxis={["Feb", "Mar", "Apr", "May"]}
+            onDropdownValueChanged={() => {}}
           />
         </div>
       </div>
