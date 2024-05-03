@@ -95,7 +95,7 @@ export const memberAffiliatorMenus: MenuSection[] = [
 export const adminMenus: MenuSection[] = [
   {
     items: [
-      { title: "Dashboard Admin", to: "/home", icon: "category" },
+      { title: "Dashboard Admin", to: "/admin/dashboard", icon: "category" },
       { title: "Order Saya", to: "/member/order", icon: "basket" },
       { title: "Langganan", to: "/member/langganan", icon: "timer" },
       { title: "Katalog Produk", to: "/dwde", icon: "cube-2" },

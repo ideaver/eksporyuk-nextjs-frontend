@@ -3,7 +3,7 @@ import { ForgotPassword } from "@/stories/organism/Forms/ForgotPassword/ForgotPa
 import { LoginForm } from "@/stories/organism/Forms/LoginForm/LoginForm";
 import { RegisterForm } from "@/stories/organism/Forms/RegisterForm/RegisterForm";
 import React from "react";
-import LoadingOverlay from "react-loading-overlay";
+import LoadingOverlay from "react-loading-overlay-ts";
 import useAuthViewModel from "./Auth-view-model";
 
 const AuthPage: React.FC = () => {

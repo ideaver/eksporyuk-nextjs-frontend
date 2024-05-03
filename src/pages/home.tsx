@@ -3,9 +3,11 @@ import { PageTitle } from "@/_metronic/layout/core";
 import { useUserFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const { data, loading, error } = useUserFindOneQuery({
     variables: {
@@ -18,6 +20,10 @@ export default function Home() {
       signOut();
     }
   }, [data, loading]);
+
+  if (session?.user.role === "ADMIN") {
+    router.replace("/admin/dashboard");
+  }
   return (
     <>
       {/* <MasterLayout> */}
