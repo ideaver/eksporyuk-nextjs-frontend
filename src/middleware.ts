@@ -1,10 +1,26 @@
+import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  if (url.pathname === "/") {
-    url.pathname = "/home";
-    return NextResponse.redirect(url);
+export default withAuth(
+  function middleware(req: NextRequestWithAuth) {
+    const url = req.nextUrl.clone();
+
+    if (req.nextauth.token) {
+      if (url.pathname === "/" || url.pathname === "/auth") {
+        url.pathname = "/home";
+        return NextResponse.redirect(url);
+      }
+    }
+  },
+  {
+    pages: {
+      signIn: "/auth",
+      error: "/error",
+      newUser: "/home",
+    },
   }
-}
+);
+
+export const config = {
+  matcher: ["/((?!public|images|media).*)", "/auth"],
+};

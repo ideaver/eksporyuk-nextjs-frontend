@@ -1,0 +1,64 @@
+query UserFindOne($where: UserWhereUniqueInput!) {
+  userFindOne(where: $where) {
+    id
+    name
+    email
+    emailVerifiedAt
+    referralCode
+    password
+    passwordUpdatedAt
+    birthDate
+    createdAt
+    updatedAt
+    deletedAt
+    role
+    gender
+    createdFavorites {
+      mentorId
+    }
+    student {
+      _count {
+        enrollments
+      }
+      enrollments {
+        id
+        courseId
+      }
+    }
+    referredBy {
+      name
+    }
+    avatarImage {
+      path
+    }
+    accounts {
+      balance
+      accountCategory
+    }
+    orders {
+      _count {
+        invoices
+      }
+    }
+    membership {
+      id
+      startDate
+      endDate
+      membershipCategory {
+        id
+        name
+        description
+        membershipType
+        durationDay
+        benefits
+        price
+        benefitCourses
+        affiliateFirstCommission
+        affiliateCommission
+        createdAt
+        updatedAt
+        createdById
+      }
+    }
+  }
+}

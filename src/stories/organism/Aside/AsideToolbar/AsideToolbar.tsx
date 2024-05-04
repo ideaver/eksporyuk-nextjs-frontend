@@ -1,18 +1,21 @@
 import { KTIcon } from "@/_metronic/helpers";
-import { HeaderUserMenu, Search } from "@/_metronic/partials";
+import { HeaderUserMenu } from "@/_metronic/partials";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 const AsideToolbar = () => {
+  // Session State
+  const { data: session, status } = useSession();
   return (
     <>
       {/*begin::User*/}
       <div className="aside-user d-flex align-items-sm-center justify-content-center py-5">
         {/*begin::Symbol*/}
         <div className="symbol symbol-50px">
-          <Image
-            src="/media/avatars/300-1.jpg"
+          <img
+            src={session?.user.image ?? "/media/avatars/150-1.jpg"}
             width={300}
             height={300}
             // fill={true}
@@ -32,13 +35,13 @@ const AsideToolbar = () => {
                 href="#"
                 className="text-white text-hover-primary fs-6 fw-bold"
               >
-                Angga Sanjaya
+                {session?.user.name}
               </a>
               {/*end::Username*/}
 
               {/*begin::Description*/}
               <span className="text-gray-600 fw-bold d-block fs-8 mb-1">
-                Member
+                {session?.user.role}
               </span>
               {/*end::Description*/}
 
@@ -64,7 +67,7 @@ const AsideToolbar = () => {
                 <KTIcon iconName="setting-2" className="text-muted fs-1" />
               </a>
 
-              {/* <HeaderUserMenu /> */}
+              <HeaderUserMenu />
               {/*end::Action*/}
             </div>
             {/*end::User menu*/}

@@ -1,5 +1,5 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import { TableProps, tableData } from "./Order-view-model";
+import { TableProps, TableRow, tableData } from "./Order-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -11,10 +11,15 @@ import Image from "next/image";
 import Flatpickr from "react-flatpickr";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 
-interface OrderPageProps {}
+interface OrderPageProps { }
 
-const OrderPage = ({}: OrderPageProps) => {
+const OrderPage = ({ }: OrderPageProps) => {
   const {
     breadcrumbs,
     exportModalState,
@@ -31,7 +36,8 @@ const OrderPage = ({}: OrderPageProps) => {
           <div className="mb-10">
             <Head />
           </div>
-          <Table data={tableData} />
+          {/* <Table data={tableData} /> */}
+          <QueryTableOrder />
           <Footer />
         </KTCardBody>
       </KTCard>
@@ -71,7 +77,7 @@ const Head = () => {
               { label: "Aktif", value: "active" },
               { label: "Tidak Aktif", value: "inactive" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={() => { }}
           />
         </div>
         <div className="col-lg-auto">
@@ -95,7 +101,7 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => {}}
+          onValueChange={() => { }}
         />
       </div>
       <div className="col-auto">
@@ -103,44 +109,162 @@ const Footer = () => {
           total={10}
           current={1}
           maxLength={5}
-          onPageChange={() => {}}
+          onPageChange={() => { }}
         ></Pagination>
       </div>
     </div>
   );
 };
 
-const Table = ({ data }: TableProps) => {
+// const Table = ({ data }: TableProps) => {
+//   return (
+//     <div className="table-responsive mb-10">
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th className="fw-bold text-muted min-w-100px">ID ORDER</th>
+//             <th className="fw-bold text-muted min-w-300px">NAMA PRODUK</th>
+//             <th className="fw-bold text-muted text-end min-w-200px">PEMBELI</th>
+//             <th className="fw-bold text-muted text-end min-w-200px">
+//               TANGGAL PEMBELIAN
+//             </th>
+//             <th className="fw-bold text-muted text-end min-w-200px">
+//               TOTAL HARGA
+//             </th>
+//             <th className="fw-bold text-muted text-end min-w-200px">STATUS</th>
+//             <th className="fw-bold text-muted text-end min-w-150px">ACTION</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {data.map((row, index) => (
+//             <tr key={index}>
+//               <td className="fw-bold">{row.idOrder}</td>
+//               <td className="fw-bold">
+//                 <Link
+//                   className="text-dark text-hover-primary"
+//                   href={
+//                     "order/" + row.idOrder.replace(" ", "") + "/detail-order/"
+//                   }
+//                 >
+//                   {row.namaProduk}
+//                 </Link>
+//               </td>
+//               <td className="fw-bold text-muted text-end d-flex align-items-center p-0 pb-10">
+//                 <Image
+//                   className="symbol symbol-50px symbol-circle me-5"
+//                   src="/media/avatars/300-1.jpg"
+//                   width={50}
+//                   height={50}
+//                   alt={row.pembeli + "Image"}
+//                 ></Image>
+//                 {row.pembeli}
+//               </td>
+//               <td className="fw-bold text-muted text-end">
+//                 {row.tanggalPembelian}
+//               </td>
+//               <td className="fw-bold text-muted text-end">{row.totalHarga}</td>
+//               <td className="text-end">
+//                 <Badge label={row.status} badgeColor={row.badgeColor} />
+//               </td>
+//               <td className="fw-bold text-muted justify-content-end text-end">
+//                 <ActionButton />
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// };
+
+const QueryTableOrder = () => {
+  const [orderData, setOrderData] = useState<TableRow[]>([]);
+
+  const GET_ORDER = gql`
+  query OrderFindMany($where: OrderWhereInput) {
+  orderFindMany(where: $where) {
+    id
+    platformFee
+    createdAt
+    updatedAt
+    cartId
+    createdByUserId
+    couponId
+    referralLinkId
+    createdByUser {
+      id
+      name
+    }
+  }
+}`;
+
+  const { loading, error, data } = useQuery(GET_ORDER);
+
+  // Untuk Data Order Kurang Status, Badge Button, Nama Produk, Icon/Avatar Pembeli
+
+  useEffect(() => {
+    if (data && data.orderFindMany) {
+      const orderData = data.orderFindMany.map((order: any) => ({
+        idOrder: order.id, // order.createdByUser.id
+        namaProduk: order.createdByUser.name,
+        pembeli: order.createdByUser.name,
+        tanggalPembelian: order.createdAt,
+        totalHarga: order.platformFee,
+        status: "Pending",
+        badgeColor: "warning",
+      }));
+      setOrderData(orderData);
+    }
+  }, [data]);
+
+  console.log("ORDER DATA", data, loading, error, orderData);
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', options);
+  };
+
+  const formatToIDR = (amount: string) => {
+    return parseInt(amount).toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+  };
+
   return (
     <div className="table-responsive mb-10">
-      <table className="table">
-        <thead>
-          <tr>
-            <th className="fw-bold text-muted min-w-100px">ID ORDER</th>
-            <th className="fw-bold text-muted min-w-300px">NAMA PRODUK</th>
-            <th className="fw-bold text-muted text-end min-w-200px">PEMBELI</th>
-            <th className="fw-bold text-muted text-end min-w-200px">
-              TANGGAL PEMBELIAN
-            </th>
-            <th className="fw-bold text-muted text-end min-w-200px">
-              TOTAL HARGA
-            </th>
-            <th className="fw-bold text-muted text-end min-w-200px">STATUS</th>
-            <th className="fw-bold text-muted text-end min-w-150px">ACTION</th>
-          </tr>
-        </thead>
+      <KTTable>
+        <KTTableHead>
+          <th className="fw-bold text-muted min-w-100px">ID ORDER</th>
+          <th className="fw-bold text-muted min-w-300px">NAMA PRODUK</th>
+          <th className="fw-bold text-muted text-start min-w-200px">PEMBELI</th>
+          <th className="fw-bold text-muted text-end min-w-200px">
+            TANGGAL PEMBELIAN
+          </th>
+          <th className="fw-bold text-muted text-end min-w-200px">
+            TOTAL HARGA
+          </th>
+          <th className="fw-bold text-muted text-end min-w-200px">STATUS</th>
+          <th className="fw-bold text-muted text-end min-w-150px">ACTION</th>
+        </KTTableHead>
         <tbody>
-          {data.map((row, index) => (
+          {orderData.map((user, index) => (
             <tr key={index}>
-              <td className="fw-bold">{row.idOrder}</td>
+              <td className="fw-bold">INV {user.idOrder}</td>
               <td className="fw-bold">
                 <Link
                   className="text-dark text-hover-primary"
                   href={
-                    "order/" + row.idOrder.replace(" ", "") + "/detail-order/"
+                    "order/" + user.idOrder.toString().replace(" ", "") + "/detail-order/"
                   }
                 >
-                  {row.namaProduk}
+                  {user.namaProduk}
                 </Link>
               </td>
               <td className="fw-bold text-muted text-end d-flex align-items-center p-0 pb-10">
@@ -149,24 +273,24 @@ const Table = ({ data }: TableProps) => {
                   src="/media/avatars/300-1.jpg"
                   width={50}
                   height={50}
-                  alt={row.pembeli + "Image"}
+                  alt={user.pembeli + "Image"}
                 ></Image>
-                {row.pembeli}
+                {user.pembeli}
               </td>
               <td className="fw-bold text-muted text-end">
-                {row.tanggalPembelian}
+                {formatDate(user.tanggalPembelian)}
               </td>
-              <td className="fw-bold text-muted text-end">{row.totalHarga}</td>
+              <td className="fw-bold text-muted text-end">{formatToIDR(user.totalHarga)}</td>
               <td className="text-end">
-                <Badge label={row.status} badgeColor={row.badgeColor} />
+                <Badge label={user.status} badgeColor={user.badgeColor} />
               </td>
-              <td className="fw-bold text-muted text-end">
+              <td className="fw-bold text-muted justify-content-end text-end">
                 <ActionButton />
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </KTTable>
     </div>
   );
 };
@@ -212,45 +336,39 @@ const ExportModal = ({
   onChange: (value: any) => void;
 }) => {
   return (
-    <div className="modal fade" tabIndex={-1} id="kt_export_modal">
-      <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Export Data</h5>
-            <div
-              className="btn btn-icon btn-sm btn-active-light-primary ms-2"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <KTIcon iconName="cross" className="fs-2x" />
-            </div>
-          </div>
+    <div>
+      <KTModal
+        dataBsTarget="kt_export_modal"
+        title="Export Data"
+        fade
+        modalCentered
+        onClose={() => {
 
-          <div className="modal-body">
-            <p className="fw-bold required">Pilih Rentang Waktu</p>
-            <Flatpickr
-              value={date}
-              onChange={onChange}
-              options={{
-                mode: "range",
-                dateFormat: "d m Y",
-              }}
-              className="form-control form-control-solid"
-              placeholder="Pilih Rentang Waktu"
-            />
-            <p className="fw-bold text-muted mt-2">
-              Pilih rentang waktu data yang ingin diexport
-            </p>
-          </div>
-
-          <div className="modal-footer justify-content-center">
-            <Buttons buttonColor="secondary" data-bs-dismiss="modal">
-              Batal
-            </Buttons>
-            <Buttons data-bs-dismiss="modal">Export</Buttons>
-          </div>
-        </div>
-      </div>
+        }}
+        buttonClose={
+          <Buttons buttonColor="secondary" data-bs-dismiss="modal" classNames="fw-bold">Batal</Buttons>
+        }
+        buttonSubmit={
+          <Buttons data-bs-dismiss="modal" classNames="fw-bold">Export</Buttons>
+        }
+        footerContentCentered
+        modalSize="lg"
+      >
+        <p className="fw-bold required text-gray-700">Pilih Rentang Waktu</p>
+        <Flatpickr
+          value={date}
+          onChange={onChange}
+          options={{
+            mode: "range",
+            dateFormat: "d m Y",
+          }}
+          className="form-control form-control-solid"
+          placeholder="Pilih Rentang Waktu"
+        />
+        <p className="fw-bold text-muted mt-2">
+          Pilih rentang waktu data yang ingin diexport
+        </p>
+      </KTModal>
     </div>
   );
 };
