@@ -16,14 +16,17 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (data?.userFindOne === null && !loading) {
-      signOut();
+    if (process.env.NEXT_PUBLIC_MAINTENANCE == "false") {
+      if (data?.userFindOne === null && !loading) {
+        signOut();
+      }
     }
   }, [data, loading]);
 
   if (session?.user.role === "ADMIN") {
     router.replace("/admin/dashboard");
   }
+
   return (
     <>
       {/* <MasterLayout> */}
