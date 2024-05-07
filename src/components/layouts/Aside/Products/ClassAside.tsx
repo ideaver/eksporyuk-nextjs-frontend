@@ -1,5 +1,7 @@
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { useRouter } from "next/router";
 import ClassTabBar from "../../TabBar/Products/ClassTabBar";
 import useClassViewModel from "./ClassAside-view-model";
 
@@ -8,9 +10,15 @@ interface AsideProductLayoutProps {
 }
 
 const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
-  const { thumbnail, handleFileChange, handleStatusChange, status } =
-    useClassViewModel();
-
+  const {
+    thumbnail,
+    handleFileChange,
+    handleStatusChange,
+    status,
+    handleNext,
+    handlePrevious,
+  } = useClassViewModel();
+  const router = useRouter();
   return (
     <div className="row gx-10">
       <div className="col-lg-3">
@@ -70,6 +78,21 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
       <div className="col-lg-9">
         <ClassTabBar urlType="create"></ClassTabBar>
         {children}
+        <div className={"row flex-end mt-10"}>
+          {router.pathname !== "/admin/products/[action]/information" && (
+            <Buttons
+              mode="light"
+              classNames={"col-lg-2 me-lg-5"}
+              onClick={handlePrevious}
+            >
+              Previous
+            </Buttons>
+          )}
+
+          <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={handleNext}>
+            Next
+          </Buttons>
+        </div>
       </div>
     </div>
   );

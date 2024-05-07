@@ -5205,6 +5205,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@seznam/compose-react-refs@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@seznam/compose-react-refs@npm:1.0.6"
+  checksum: 10c0/8f615898d76adf128cc62672ac20d701c8c99d70615bd1a0dc4d30b1b6435038825e48b86833ebbcd178fef88af6ea268a84c6a4334278ea756c6240a5e39cbf
+  languageName: node
+  linkType: hard
+
 "@sinclair/typebox@npm:^0.24.1":
   version: 0.24.51
   resolution: "@sinclair/typebox@npm:0.24.51"
@@ -7406,6 +7413,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vtaits/use-lazy-ref@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@vtaits/use-lazy-ref@npm:0.1.3"
+  peerDependencies:
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/c0d4721c97ad687581bf80e0353be5d414de613b4d88feb1a8e1042edf3ab61d5b4737a1b1bf4606dbcedc6533fcb91389bce31d83640dfc9a58a3e62099ffe9
+  languageName: node
+  linkType: hard
+
 "@webassemblyjs/ast@npm:1.11.6, @webassemblyjs/ast@npm:^1.11.5":
   version: 1.11.6
   resolution: "@webassemblyjs/ast@npm:1.11.6"
@@ -8014,6 +8030,7 @@ __metadata:
     react-redux: "npm:^9.1.2"
     react-scripts: "npm:^5.0.1"
     react-select: "npm:^5.8.0"
+    react-select-async-paginate: "npm:^0.7.4"
     react-table: "npm:^7.8.0"
     react-topbar-progress-indicator: "npm:^4.1.1"
     redux-persist: "npm:^6.0.0"
@@ -15590,6 +15607,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"krustykrab@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "krustykrab@npm:1.0.0"
+  checksum: 10c0/d1f59e4f9e0faec07a633c622528ef9c4e0a18aacd38e45c2c5982c99c12a0a1b843c505b47f9625909d538be5cfd134ffa9824a5ed1e4af6d7e4765b20da94f
+  languageName: node
+  linkType: hard
+
 "language-subtag-registry@npm:^0.3.20":
   version: 0.3.22
   resolution: "language-subtag-registry@npm:0.3.22"
@@ -19688,6 +19712,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-select-async-paginate@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "react-select-async-paginate@npm:0.7.4"
+  dependencies:
+    "@seznam/compose-react-refs": "npm:^1.0.6"
+    "@vtaits/use-lazy-ref": "npm:^0.1.3"
+    krustykrab: "npm:^1.0.0"
+    sleep-promise: "npm:^9.1.0"
+    use-is-mounted-ref: "npm:^1.5.0"
+    use-latest: "npm:^1.2.1"
+  peerDependencies:
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0
+    react-select: ^5.0.0
+  checksum: 10c0/7241a030d48b5484be647cf269bd67cbcffe73ddf1d1947f1643c8e2915a078992fbbf90376e6a9571242a4c30287cf9c198e751ed832d6f476a3c7b8ccc4e9f
+  languageName: node
+  linkType: hard
+
 "react-select@npm:^5.8.0":
   version: 5.8.0
   resolution: "react-select@npm:5.8.0"
@@ -20954,6 +20995,13 @@ __metadata:
   version: 4.0.0
   resolution: "slash@npm:4.0.0"
   checksum: 10c0/b522ca75d80d107fd30d29df0549a7b2537c83c4c4ecd12cd7d4ea6c8aaca2ab17ada002e7a1d78a9d736a0261509f26ea5b489082ee443a3a810586ef8eff18
+  languageName: node
+  linkType: hard
+
+"sleep-promise@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "sleep-promise@npm:9.1.0"
+  checksum: 10c0/15813898a356d64818d34b437523fe64b0804694730d23201af171e7f3172843d8fcbdc1ba7eea0a0f5b76afa94277a64ef829f22abe3801e3eb2e3915092aa3
   languageName: node
   linkType: hard
 
@@ -23023,7 +23071,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-isomorphic-layout-effect@npm:^1.1.2":
+"use-is-mounted-ref@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "use-is-mounted-ref@npm:1.5.0"
+  peerDependencies:
+    react: ">=16.0.0"
+  checksum: 10c0/83642eae9738a9d224f03156b6b1c4b3491fc6edf3da15b9381c3020ad553490e7fed6f936d5950ac5ee86f7ab0dbe7f5f34294f7b54efb44e64997274e42ba3
+  languageName: node
+  linkType: hard
+
+"use-isomorphic-layout-effect@npm:^1.1.1, use-isomorphic-layout-effect@npm:^1.1.2":
   version: 1.1.2
   resolution: "use-isomorphic-layout-effect@npm:1.1.2"
   peerDependencies:
@@ -23032,6 +23089,20 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/d8deea8b85e55ac6daba237a889630bfdbf0ebf60e9e22b6a78a78c26fabe6025e04ada7abef1e444e6786227d921e648b2707db8b3564daf757264a148a6e23
+  languageName: node
+  linkType: hard
+
+"use-latest@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "use-latest@npm:1.2.1"
+  dependencies:
+    use-isomorphic-layout-effect: "npm:^1.1.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/1958886fc35262d973f5cd4ce16acd6ce3a66707a72761c93abd1b5ae64e1a11efa83f68e6c8c9bf1647628037980ce59df64cba50adb36bd4071851e70527d2
   languageName: node
   linkType: hard
 
