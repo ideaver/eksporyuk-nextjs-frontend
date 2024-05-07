@@ -27,6 +27,10 @@ interface DropdownProps {
    */
   props?: any;
   /**
+   * Value for Dropdown
+   */
+  value?: any;
+  /**
    * Aria Label for Dropdown
    */
   ariaLabel?: string;
@@ -38,6 +42,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   size = "medium",
   styleType = "outline",
   disabled,
+  value,
   props,
   ariaLabel,
 }) => {
@@ -83,7 +88,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         dropdownStyleHandler(styleType)
       )}
       aria-label={ariaLabel}
-      value={selectedValue}
+      value={value ?? selectedValue}
       onChange={handleChange}
       disabled={disabled}
       {...props}

@@ -10,6 +10,7 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import Link from "next/link";
 import { useEffect } from "react";
 import { breadcrumbs } from "./Products-view-model";
 
@@ -214,11 +215,10 @@ const Head = () => {
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons
-            data-bs-toggle="modal"
-            data-bs-target="#kt_create_coupon_modalllllsss"
-          >
-            Tambah Kelas Baru
+          <Buttons>
+            <Link href={"products/create/information"} className="text-white">
+              Tambah Kelas Baru
+            </Link>
           </Buttons>
         </div>
       </div>
