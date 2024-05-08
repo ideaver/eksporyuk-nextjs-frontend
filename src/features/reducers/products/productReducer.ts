@@ -1,4 +1,5 @@
 import { CourseLevelEnum } from "@/app/service/graphql/gen/graphql";
+import { defaultCreateQuizData, ICreateQuizData } from "@/types/contents/products/IQuizData";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductState {
@@ -11,6 +12,9 @@ interface ProductState {
   price: string;
   discountPrice: string;
   courseLevel: CourseLevelEnum;
+  quizs: ICreateQuizData[];
+  editQuiz: ICreateQuizData;
+  objective: string[];
   // Add other product properties here
 }
 
@@ -24,6 +28,9 @@ const initialState: ProductState = {
   price: "",
   discountPrice: "",
   courseLevel: CourseLevelEnum.Beginner,
+  quizs: [],
+  editQuiz: defaultCreateQuizData,
+  objective: []
   // Initialize other product properties here
 };
 
@@ -58,6 +65,15 @@ export const productSlice = createSlice({
     changeCourseLevel: (state, action: PayloadAction<CourseLevelEnum>) => {
       state.courseLevel = action.payload;
     },
+    changeQuizs: (state, action: PayloadAction<ICreateQuizData[]>) => {
+      state.quizs = action.payload;
+    },
+    changeEditQuiz: (state, action: PayloadAction<ICreateQuizData>) => {
+      state.editQuiz = action.payload;
+    },
+    changeObjective: (state, action: PayloadAction<string[]>) => {
+      state.objective = action.payload;
+    }
     // Add other product actions here
   },
 });
@@ -72,6 +88,9 @@ export const {
   changePrice,
   changeDiscountPrice,
   changeCourseLevel,
+  changeQuizs,
+  changeEditQuiz,
+  changeObjective
 } = productSlice.actions;
 
 export default productSlice.reducer;

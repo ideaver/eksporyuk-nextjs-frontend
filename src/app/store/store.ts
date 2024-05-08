@@ -4,25 +4,31 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-const persistConfig = {
-  key: "root",
+const navigationPersistConfig = {
+  key: "navigation",
+  storage,
+};
+
+const productPersistConfig = {
+  key: "product",
   storage,
 };
 
 const persistedNavigationReducer = persistReducer(
-  persistConfig,
+  navigationPersistConfig,
   navigationReducer
 );
 
 const persistedProductReducer = persistReducer(
-  persistConfig,
+  productPersistConfig,
   productReducer
 );
 
+// rest of the code...
 export const store = configureStore({
   reducer: {
     navigation: persistedNavigationReducer,
-    product: persistedProductReducer
+    product: persistedProductReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
