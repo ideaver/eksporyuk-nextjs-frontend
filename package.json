@@ -45,6 +45,7 @@
     "react-apexcharts": "^1.4.1",
     "react-bootstrap": "^2.10.0",
     "react-copy-to-clipboard": "^5.1.0",
+    "react-currency-input-field": "^3.8.0",
     "react-dom": "^18",
     "react-flatpickr": "^3.10.13",
     "react-inlinesvg": "^4.1.1",

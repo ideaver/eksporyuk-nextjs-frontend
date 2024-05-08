@@ -1,3 +1,4 @@
+import { CourseLevelEnum } from "@/app/service/graphql/gen/graphql";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductState {
@@ -7,6 +8,9 @@ interface ProductState {
   classDescription: string;
   introVideo: string;
   classAuthor: string;
+  price: string;
+  discountPrice: string;
+  courseLevel: CourseLevelEnum;
   // Add other product properties here
 }
 
@@ -17,6 +21,9 @@ const initialState: ProductState = {
   classDescription: "",
   introVideo: "",
   classAuthor: "",
+  price: "",
+  discountPrice: "",
+  courseLevel: CourseLevelEnum.Beginner,
   // Initialize other product properties here
 };
 
@@ -42,17 +49,29 @@ export const productSlice = createSlice({
     changeClassAuthor: (state, action: PayloadAction<string>) => {
       state.classAuthor = action.payload;
     },
+    changePrice: (state, action: PayloadAction<string>) => {
+      state.price = action.payload;
+    },
+    changeDiscountPrice: (state, action: PayloadAction<string>) => {
+      state.discountPrice = action.payload;
+    },
+    changeCourseLevel: (state, action: PayloadAction<CourseLevelEnum>) => {
+      state.courseLevel = action.payload;
+    },
     // Add other product actions here
   },
 });
 
-export const { 
-  changeThumbnail, 
-  changeStatus, 
-  changeClassName, 
-  changeClassDescription, 
-  changeIntroVideo, 
-  changeClassAuthor 
+export const {
+  changeThumbnail,
+  changeStatus,
+  changeClassName,
+  changeClassDescription,
+  changeIntroVideo,
+  changeClassAuthor,
+  changePrice,
+  changeDiscountPrice,
+  changeCourseLevel,
 } = productSlice.actions;
 
 export default productSlice.reducer;
