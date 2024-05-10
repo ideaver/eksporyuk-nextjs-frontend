@@ -22,7 +22,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 const client = new ApolloClient({
-  uri: "http://109.123.232.206:3002/graphql",
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_SCHEMA,
   cache: new InMemoryCache(),
 });
 

@@ -9,7 +9,7 @@ const createApolloClient = () => {
     cache: new InMemoryCache(),
     headers: {
       "Apollo-Require-Preflight": "true",
-      "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Allow-Origin": "*",
     },
   });
 };

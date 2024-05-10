@@ -83,6 +83,7 @@ const ClassInformation = ({}) => {
         <AsyncPaginate
           isSearchable={true}
           loadOptions={loadOptions}
+          
         ></AsyncPaginate>
       </KTCardBody>
     </KTCard>
