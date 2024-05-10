@@ -86,12 +86,12 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
               classNames={"col-lg-2 me-lg-5"}
               onClick={handlePrevious}
             >
-              Previous
+              Sebelumnya
             </Buttons>
           )}
 
           <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={handleNext}>
-            Next
+            {router.pathname === "/admin/products/[action]/certificate" ? "Kirim" : "Selanjutnya"}
           </Buttons>
         </div>
       </div>
