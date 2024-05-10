@@ -30,6 +30,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
               type="file"
               onChange={handleFileChange}
               className="d-none"
+              accept=".jpg, .jpeg, .png"
               id="thumbnail-input"
             />
             <label
