@@ -113,6 +113,11 @@ export const adminMenus: MenuSection[] = [
         icon: "lots-shopping",
       },
       {
+        title: "Manajemen Member",
+        to: "/admin/members",
+        icon: "people",
+      },
+      {
         title: "Manajemen Artikel",
         to: "/admin/articles",
         icon: "tablet-text-up",

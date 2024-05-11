@@ -15,29 +15,6 @@ import { useEffect } from "react";
 import { breadcrumbs } from "./Products-view-model";
 
 const Products = ({}) => {
-  useEffect(() => {
-    const modalElement = document.getElementById(
-      "kt_create_coupon_modalllllsss"
-    );
-    if (!modalElement) return;
-
-    const handleModalShow = () => {
-      console.log("Modal is about to be shown");
-    };
-
-    const handleModalShown = () => {
-      console.log("Modal has been shown");
-    };
-
-    modalElement.addEventListener("show.bs.modal", handleModalShow);
-    modalElement.addEventListener("shown.bs.modal", handleModalShown);
-
-    // Clean up the event listeners when the component is unmounted
-    return () => {
-      modalElement.removeEventListener("show.bs.modal", handleModalShow);
-      modalElement.removeEventListener("shown.bs.modal", handleModalShown);
-    };
-  }, []);
 
   return (
     <>
@@ -215,7 +192,7 @@ const Head = () => {
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons>
+          <Buttons >
             <Link href={"products/create/information"} className="text-white">
               Tambah Kelas Baru
             </Link>
