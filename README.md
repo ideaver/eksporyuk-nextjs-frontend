@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Workflow Guidelines
 
-## Getting Started
+This repository follows a structured workflow to maintain code integrity and facilitate collaboration among team members. Below are the guidelines to follow:
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. [Project Details](#project-details)
+2. [Workflow Steps](#workflow-steps)
+   - [Pull 'dev' Branch](#pull-dev-branch)
+   - [Create New Integration Branch](#create-new-integration-branch)
+   - [Submit Pull Request to 'dev' Branch](#submit-pull-request-to-dev-branch)
+   - [Code Review and Merge](#code-review-and-merge)
+   - [Repeat](#repeat)
+3. [Branch Naming Guide](#branch-naming-guide)
+4. [Additional Notes](#additional-notes)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Details
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Project Name**: EksporYuk Web
+- **Stack**: NextJS, Storybook, Redux Toolkit, GraphQL
+- **Docs**: [Metronic](https://preview.keenthemes.com/metronic8/react/docs), [Bootstrap 5](https://getbootstrap.com/docs)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Workflow Steps
 
-## Learn More
+### Pull 'dev' Branch
 
-To learn more about Next.js, take a look at the following resources:
+- Make sure to pull the latest changes from the 'dev' branch before starting any work.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Create New Integration Branch
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- For each integration task, create a new branch following the naming convention: `type-username-feature`.
+- Example: `bugfix-johndoe-login`
 
-## Deploy on Vercel
+### Submit Pull Request to 'dev' Branch
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Once the integration is complete, submit a pull request to merge your changes into the 'dev' branch.
+- Ensure the pull request includes necessary details and follows the project's guidelines.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Code Review and Merge
+
+- After thorough review and testing, merge the changes into the 'dev' branch.
+- Ensure all conflicts are resolved and the code meets the project standards.
+
+### Repeat
+
+- Repeat the process for subsequent tasks or iterations.
+
+## Branch Naming Guide
+
+| Branch Type | Description                                                           |
+| ----------- | --------------------------------------------------------------------- |
+| hotfix      | For quickly fixing critical issues, usually with a temporary solution |
+| bugfix      | For fixing a bug                                                      |
+| feature     | For adding, removing, or modifying a feature                          |
+| test        | For experimenting with something which is not an issue                |
+| wip         | For a work in progress                                                |
+
+## Additional Notes
+
+- Collaboration:
+
+  - Feel free to collaborate and communicate with team members regarding tasks and updates.
+
+- Code Quality:
+
+  - Maintain high code quality standards and adhere to best practices throughout the development process.
+
+- Communication:
+  - Effective communication is key. Discuss any concerns or issues promptly with the team.
+
+By adhering to these guidelines, we aim to streamline the development process and ensure the reliability and stability of our codebase. Happy coding!
