@@ -18,6 +18,7 @@ This repository follows a structured workflow to maintain code integrity and fac
 
 - **Project Name**: EksporYuk Web
 - **Stack**: NextJS, Storybook, Redux Toolkit, GraphQL
+- **Docs**: [Metronic](https://preview.keenthemes.com/metronic8/react/docs), [Bootstrap 5](https://getbootstrap.com/docs)
 
 ## Workflow Steps
 
