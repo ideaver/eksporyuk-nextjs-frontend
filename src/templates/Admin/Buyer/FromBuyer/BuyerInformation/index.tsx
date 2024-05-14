@@ -2,7 +2,7 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import useBuyerInformationViewModel, {
   useCountryDropdown,
-} from "./buyerInformation-view-model";
+} from "./BuyerInformation-view-model";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { AsyncPaginate } from "react-select-async-paginate";
 

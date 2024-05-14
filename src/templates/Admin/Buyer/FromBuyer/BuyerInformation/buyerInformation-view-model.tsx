@@ -15,6 +15,7 @@ import { UnknownAction } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GroupBase, OptionsOrGroups } from "react-select";
+
 type OptionType = {
   value: number;
   label: string;
@@ -54,19 +55,6 @@ export const useCountryDropdown = () => {
 
   return { loadOptions };
 };
-
-/* 
-query
-{
-  "where": {
-    "name": {
-      "contains": null
-    }
-  },
-  "take": null,
-  "skip": null
-}
-*/
 
 const useField = (
   selector: (state: RootState) => string,

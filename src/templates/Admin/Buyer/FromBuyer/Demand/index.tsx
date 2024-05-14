@@ -1,6 +1,6 @@
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import useDemandViewModel from "./demand-view-model";
+import useDemandViewModel from "./Demand-view-model";
 
 const DemandPage = () => {
   const {

@@ -11,10 +11,64 @@ import Image from "next/image";
 import Link from "next/link";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useEffect } from "react";
-import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { useEffect, useState } from "react";
+
+const dummyData: any = [
+  {
+    id: 1,
+    name: "Jhon Doe",
+    companyName: "Global corporate",
+    country: "Amerika Serikat",
+    flag: "/media/flags/united-states.svg",
+    companyAddress: "123 Street, New York USA",
+    email: "jondoe@gmail.com",
+    telephoneNumber: "+82 213123213123",
+    registeredDate: "12 November 2022",
+    demand: "bubuk mesiu",
+    quantityRequired: "100 Tom",
+    shippingTerms: "FQB",
+    destinationPort: "Port of Los Angels, USA",
+  },
+  {
+    id: 2,
+    name: "Jhon Mimi",
+    companyName: "Global company",
+    country: "Amerika Latin",
+    flag: "/media/flags/united-states.svg",
+    companyAddress: "123 Street, New York USA",
+    email: "jonmimi@gmail.com",
+    telephoneNumber: "+82 213123213123",
+    registeredDate: "12 November 2022",
+    demand: "bubuk mesiu",
+    quantityRequired: "100 Tom",
+    shippingTerms: "FQB",
+    destinationPort: "Port of Los Angels, USA",
+  },
+];
 
 const BuyerPage = () => {
+  //dumy
+  const [buyers, setBuyers] = useState(
+    dummyData.map((buyer: any) => ({ ...buyer, checked: false }))
+  );
+
+  const [isCheckedAll, setIsCheckedAll] = useState<boolean>(false);
+
+  const handleCheckedAllChange = () => {
+    const newSelectAll = !isCheckedAll;
+    setIsCheckedAll(newSelectAll);
+    setBuyers(
+      buyers.map((buyer: any) => ({ ...buyer, checked: newSelectAll }))
+    );
+  };
+  const handleCheckedItemChange = (id: number) => {
+    const newBuyers = buyers.map((buyer: any) =>
+      buyer.id === id ? { ...buyer, checked: !buyer.checked } : buyer
+    );
+    setBuyers(newBuyers);
+    setIsCheckedAll(newBuyers.every((buyer: any) => buyer.checked));
+  };
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Buyer</PageTitle>
@@ -34,11 +88,11 @@ const BuyerPage = () => {
             >
               <th className="min-w-200px">
                 <CheckBoxInput
-                  checked={false}
+                  checked={isCheckedAll}
                   name="check-all"
                   value="all"
                   defaultChildren={false}
-                  onChange={() => {}}
+                  onChange={handleCheckedAllChange}
                 >
                   <p className="mb-0">NAMA BUYER</p>
                 </CheckBoxInput>
@@ -55,67 +109,74 @@ const BuyerPage = () => {
               <th className="text-end min-w-250px">DESTINATION PORT</th>
               <th className="text-end min-w-125px">ACTION</th>
             </KTTableHead>
-
-            <tr>
-              <td className="align-middle">
-                <CheckBoxInput
-                  className="ps-0"
-                  checked={false}
-                  name="check-all"
-                  value="all"
-                  defaultChildren={false}
-                  onChange={() => {}}
-                >
-                  <p className="fw-bold text-black mb-0">Jhon Doe</p>
-                </CheckBoxInput>
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                Global Trading Co.
-              </td>
-              <td className="min-w-250px align-middle text-end fw-bold text-muted">
-                <Image
-                  className="symbol-label bg-gray-600 rounded-circle"
-                  src={"/media/flags/united-states.svg"}
-                  width={60}
-                  height={60}
-                  alt="flag"
-                />
-                <span className="text-muted fw-bold">Amerika Serikat</span>
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                123 Street, New York USA
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                jhondoe123@gmail.com
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                +84 129038012938
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                12 November 2022
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                Bubuk Mesiu
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                100 Ton
-              </td>
-              <td className="min-w-200px text-end fw-bold text-muted">FQB</td>
-              <td className="min-w-200px text-end fw-bold text-muted">
-                Port of Los Angles, USA
-              </td>
-              <td className="align-middle text-end ">
-                <Dropdown
-                  styleType="solid"
-                  options={[
-                    { label: "Action", value: "all" },
-                    { label: "Aktif", value: "active" },
-                    { label: "Tidak Aktif", value: "inactive" },
-                  ]}
-                  onValueChange={() => {}}
-                />
-              </td>
-            </tr>
+            {buyers.map((buyer: any) => {
+              return (
+                <tr key={buyer.id}>
+                  <td className="align-middle">
+                    <CheckBoxInput
+                      className="ps-0"
+                      checked={buyer.checked}
+                      name="check-all"
+                      value="all"
+                      defaultChildren={false}
+                      onChange={() => {
+                        handleCheckedItemChange(buyer.id);
+                      }}
+                    >
+                      <p className="fw-bold text-black mb-0">{buyer.name}</p>
+                    </CheckBoxInput>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.companyName}
+                  </td>
+                  <td className="min-w-250px align-middle text-end fw-bold text-muted">
+                    <Image
+                      className="symbol-label bg-gray-600 rounded-circle"
+                      src={buyer.flag}
+                      width={60}
+                      height={60}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">{buyer.country}</span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.companyAddress}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.email}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.telephoneNumber}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.registeredDate}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.demand}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.quantityRequired}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.shippingTerms}
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    {buyer.destinationPort}
+                  </td>
+                  <td className="align-middle text-end ">
+                    <Dropdown
+                      styleType="solid"
+                      options={[
+                        { label: "Action", value: "all" },
+                        { label: "Aktif", value: "active" },
+                        { label: "Tidak Aktif", value: "inactive" },
+                      ]}
+                      onValueChange={() => {}}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </KTTable>
           <Footer />
         </KTCardBody>
