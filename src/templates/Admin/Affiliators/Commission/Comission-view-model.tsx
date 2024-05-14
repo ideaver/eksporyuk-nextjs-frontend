@@ -63,27 +63,27 @@ export const formatToIDR = (amount: string) => {
   });
 };
 
+export const breadcrumbs = [
+  {
+    title: "Manajemen Produk",
+    path: "#",
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: "Semua Komisi",
+    path: "#",
+    isSeparator: true,
+    isActive: true,
+  },
+];
+
 const useComissionViewModel = ({}: ICommissionProps) => {
   const [takePage, setTakePage] = useState<any>(20);
   const [skipPage, setSkipPage] = useState<any>(1);
   const [status, setStatus] = useState<any>(null);
 
-  const breadcrumbs = [
-    {
-      title: "Manajemen Produk",
-      path: "#",
-      isSeparator: false,
-      isActive: false,
-    },
-    {
-      title: "Semua Komisi",
-      path: "#",
-      isSeparator: true,
-      isActive: true,
-    },
-  ];
-
-  return { breadcrumbs, takePage, setTakePage, skipPage, setSkipPage, status, setStatus };
+  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus };
 };
 
 export default useComissionViewModel;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { PageTitle } from "@/_metronic/layout/core";
-import useComissionViewModel, { useCommisionData, formatToIDR } from "./Comission-view-model";
+import useComissionViewModel, { useCommisionData, formatToIDR, breadcrumbs } from "./Comission-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -14,7 +14,7 @@ import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 interface ComissionPageProps {}
 
 const CommissionPage = ({}: ComissionPageProps) => {
-  const { breadcrumbs, takePage, setTakePage, skipPage, setSkipPage, status, setStatus } = useComissionViewModel({});
+  const { takePage, setTakePage, skipPage, setSkipPage, status, setStatus } = useComissionViewModel({});
 
   return (
     <>
