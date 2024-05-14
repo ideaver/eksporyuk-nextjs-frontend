@@ -28,5 +28,13 @@ query MentorFindMany($take: Int, $skip: Int, $where: MentorWhereInput) {
       avatarImageId
       referralLinkId
     }
+    _count {
+      courses
+      createdCourses
+      createdAnnouncements
+      favorites
+      createdCoupons
+      creditCards
+    }
   }
 }
