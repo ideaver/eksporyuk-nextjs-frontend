@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
 
 import { PageTitle } from "@/_metronic/layout/core";
-import useComissionViewModel, { TableRow } from "./Comission-view-model";
+import useComissionViewModel, { useCommisionData, formatToIDR } from "./Comission-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -12,15 +11,10 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 
-import { useInvoiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
-
 interface ComissionPageProps {}
 
 const CommissionPage = ({}: ComissionPageProps) => {
-  const { breadcrumbs } = useComissionViewModel({});
-  const [takePage, setTakePage] = useState(20);
-  const [skipPage, setSkipPage] = useState(1);
-  const [status, setStatus] = useState(null);
+  const { breadcrumbs, takePage, setTakePage, skipPage, setSkipPage, status, setStatus } = useComissionViewModel({});
 
   return (
     <>
@@ -84,49 +78,8 @@ const Head = ({ setStatus }: any) => {
 };
 
 const QueryComissionTable = ({ skipPage, takePage, status }: any) => {
-  const { data, loading, error } = useInvoiceFindManyQuery({
-    variables: {
-      skip: skipPage,
-      take: takePage,
-      where: {
-        status: {
-          equals: status,
-        }
-      }
-    }
-  });
-  const [commissionData, setComissionData] = useState<TableRow[]>([]);
-
-  useEffect(() => {
-    if (data && data.invoiceFindMany) {
-      const commissionData = data.invoiceFindMany.map((invoice: any) => ({
-        idOrder: invoice.orderId,
-        namaKelas: invoice.order?.enrollment?.map(
-          (title: any) => title.course.title
-        ),
-        pembeli: invoice.order?.enrollment?.map(
-          (name: any) => name.course.enrollments[0].student.user.name
-        ),
-        affiliasi: invoice.order?.enrollment?.map(
-          (name: any) =>
-            name.course.enrollments[0].student.user.affiliator.user.name
-        ),
-        totalKomisi: invoice.amount,
-        status: invoice.status,
-        badgeColor: invoice.status === "FULLPAID" ? "success" : invoice.status === "CANCELLED" ? "danger" : "warning",
-      }));
-      setComissionData(commissionData);
-    }
-  }, [data]);
-
-  const formatToIDR = (amount: string) => {
-    return parseInt(amount).toLocaleString("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    });
-  };
-
+  const { commissionData, loading, error} = useCommisionData(skipPage, takePage, status);
+ 
   return (
     <div className="table-responsive mb-10 p-10">
       <KTTable utilityGY={3}>
