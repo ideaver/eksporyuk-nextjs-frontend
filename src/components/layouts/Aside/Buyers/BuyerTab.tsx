@@ -2,7 +2,7 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { useRouter } from "next/router";
 import ClassTabBar from "../../TabBar/Buyers/BuyerTabBar";
-import { useNavigation } from "./BuyersTab-vies-model";
+import { useNavigation } from "./BuyersTab-view-model";
 
 interface TabBuyerLayoutProps {
   children?: React.ReactNode;
