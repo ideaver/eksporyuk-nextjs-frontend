@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect } from "react";
 
-import { useInvoiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import { useInvoiceFindManyQuery, QueryMode } from "@/app/service/graphql/gen/graphql";
 
 interface ICommissionProps {}
 
@@ -15,17 +15,40 @@ export interface TableRow {
   badgeColor: any;
 }
 
-export const useCommisionData = (skipPage: number, takePage: number, status: any) => {
-  const { data, loading, error } = useInvoiceFindManyQuery({
-    variables: {
+const useCommisionData = (skipPage: number, takePage: number, status: any) => {
+  const numTakePage = Number(takePage);
+
+  let variables: any = {
+    take: numTakePage,
+    where: {
+      status: {
+        equals: status,
+      }
+    }
+  };
+
+  // Add skip property when status is empty
+  if (!status) {
+    variables = {
+      ...variables,
       skip: skipPage,
-      take: takePage,
+    }
+  }
+
+  if (status === "") {
+    variables = {
+      take: numTakePage,
+      skip: skipPage,
       where: {
         status: {
-          equals: status,
+          equals: null,
         }
       }
     }
+  }
+
+  const { data, loading, error } = useInvoiceFindManyQuery({
+    variables,
   });
 
   const [commissionData, setComissionData] = useState<TableRow[]>([]);
@@ -51,8 +74,14 @@ export const useCommisionData = (skipPage: number, takePage: number, status: any
       setComissionData(commissionData);
     }
   }, [data]);
+  
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (commissionData.length ?? 0) / takePage
+    )
+  };
 
-  return { commissionData, loading, error };
+  return { commissionData, loading, error, calculateTotalPage };
 }
 
 export const formatToIDR = (amount: string) => {
@@ -79,11 +108,13 @@ export const breadcrumbs = [
 ];
 
 const useComissionViewModel = ({}: ICommissionProps) => {
-  const [takePage, setTakePage] = useState<any>(20);
-  const [skipPage, setSkipPage] = useState<any>(1);
+  const [takePage, setTakePage] = useState<any>(10);
+  const [skipPage, setSkipPage] = useState<any>(0);
   const [status, setStatus] = useState<any>(null);
 
-  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus };
+  const { commissionData, loading, error, calculateTotalPage } = useCommisionData(skipPage, takePage, status);
+
+  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus, commissionData, loading, error, calculateTotalPage};
 };
 
 export default useComissionViewModel;
