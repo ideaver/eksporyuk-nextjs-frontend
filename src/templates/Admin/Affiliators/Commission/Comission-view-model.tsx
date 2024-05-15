@@ -15,8 +15,69 @@ export interface TableRow {
   badgeColor: any;
 }
 
-const useCommisionData = (skipPage: number, takePage: number, status: any) => {
+const useCommisionData = (skipPage: number, takePage: number, status: any, searchComission: string) => {
   const numTakePage = Number(takePage);
+
+  const getVariables = (skipPage: number, takePage: number, status: any) => {
+    let variables: any = {
+      take: numTakePage,
+      where: {
+        status: {
+          equals: status,
+        }
+      }
+    };
+  
+    // Add skip property when status is empty
+    if (!status) {
+      variables = {
+        ...variables,
+        skip: skipPage,
+      }
+    }
+  
+    if (status === "") {
+      variables = {
+        take: takePage,
+        skip: skipPage,
+        where: {
+          status: {
+            equals: null,
+          }
+        }
+      }
+    }
+
+    if (searchComission) {
+      variables = {
+        ...variables,
+        where: {
+          order: {
+            is: {
+              enrollment: {
+                every: {
+                  student: {
+                    is: {
+                      user: {
+                        is: {
+                          name: {
+                            contains: searchComission,
+                            mode: QueryMode.Insensitive,
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return variables;
+  }
 
   let variables: any = {
     take: numTakePage,
@@ -48,7 +109,7 @@ const useCommisionData = (skipPage: number, takePage: number, status: any) => {
   }
 
   const { data, loading, error } = useInvoiceFindManyQuery({
-    variables,
+    variables: getVariables(skipPage, numTakePage, status),
   });
 
   const [commissionData, setComissionData] = useState<TableRow[]>([]);
@@ -111,10 +172,11 @@ const useComissionViewModel = ({}: ICommissionProps) => {
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [status, setStatus] = useState<any>(null);
+  const [searchCommission, setSearchComission] = useState("");
 
-  const { commissionData, loading, error, calculateTotalPage } = useCommisionData(skipPage, takePage, status);
+  const { commissionData, loading, error, calculateTotalPage } = useCommisionData(skipPage, takePage, status, searchCommission);
 
-  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus, commissionData, loading, error, calculateTotalPage};
+  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus, commissionData, loading, error, calculateTotalPage, setSearchComission};
 };
 
 export default useComissionViewModel;

@@ -17,7 +17,7 @@ import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 interface ComissionPageProps {}
 
 const CommissionPage = ({}: ComissionPageProps) => {
-  const { takePage, setTakePage, skipPage, setSkipPage, status, setStatus, commissionData, loading, error, calculateTotalPage } =
+  const { setTakePage, skipPage, setSkipPage, setStatus, commissionData, loading, error, calculateTotalPage, setSearchComission } =
     useComissionViewModel({});
 
   return (
@@ -26,14 +26,9 @@ const CommissionPage = ({}: ComissionPageProps) => {
       <KTCard>
         <KTCardBody>
           <div className="mb-10">
-            <Head setStatus={setStatus} />
+            <Head setStatus={setStatus} onSearch={setSearchComission} />
           </div>
         </KTCardBody>
-        {/* <QueryComissionTable
-          skipPage={skipPage}
-          takePage={takePage}
-          status={status}
-        /> */}
         <QueryComissionTable
           commissionData={commissionData}
           loading={loading}
@@ -101,14 +96,6 @@ const Head = ({ setStatus, onSearch }: any) => {
 };
 
 const QueryComissionTable = ({ commissionData, error, loading }: any) => {
-  // const { commissionData, loading, error, calculateTotalPage } = useCommisionData(
-  //   skipPage,
-  //   takePage,
-  //   status
-  // );
-
-  // console.log("calcullate", calculateTotalPage());
-
   return (
     <div className="table-responsive mb-10 p-10">
       {error ? (
