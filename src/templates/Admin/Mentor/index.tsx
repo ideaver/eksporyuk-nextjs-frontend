@@ -13,6 +13,9 @@ import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
+import ForgotPasswordModal from "./component/ForgotPasswordModal";
+import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+import { useState } from "react";
 
 const MentorPage = ({}) => {
   const {
@@ -29,6 +32,7 @@ const MentorPage = ({}) => {
     checkedItems,
     selectAll,
   } = useMentorViewModel();
+
 
   return (
     <>
@@ -149,6 +153,15 @@ const Body = ({
   checkedItems: { id: string; value: boolean }[];
   selectAll: boolean;
 }) => {
+  const {
+    forgotPasswordModalLoading,
+    handleForgotPassword,
+    setShowForgotPasswordModal,
+    showForgotPasswordModal,
+    forgotPasswordSuccess,
+    forgotPasswordError,
+  } = useForgotPassword();
+  const [selectedMentor, setSelectedMentor]= useState("");
   return (
     <>
       {mentorFindMany.error ? (
@@ -200,7 +213,7 @@ const Body = ({
                       onChange={() => handleSingleCheck(index)}
                     >
                       <Link
-                        href={`/admin/members/detail/${mentor.id}/profile`}
+                        href={`/admin/mentors/detail/${mentor.id}/profile`}
                         className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                         style={{
                           maxWidth: "90px",
@@ -227,14 +240,14 @@ const Body = ({
                           />
                         </span>
                       </div>
-                      <div className="d-flex flex-column">
+                      <Link  href={`/admin/mentors/detail/${mentor.id}/profile`} className="d-flex flex-column">
                         <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
                           {mentor.user.name}
                         </span>
                         <span className="fw-bold text-muted">
                           {mentor.user.email}
                         </span>
-                      </div>
+                      </Link>
                     </div>
                   </td>
 
@@ -250,8 +263,8 @@ const Body = ({
                   <td className="align-middle text-end text-muted fw-bold w-150px">
                     {mentor._count.createdCourses}
                   </td>
-                  <td className="align-middle text-end">
-                    <p>
+                  <td className="align-middle text-end ">
+                    <p className="mb-0">
                       {" "}
                       <Badge
                         label={
@@ -264,15 +277,32 @@ const Body = ({
                     </p>
                   </td>
                   <td className="align-middle text-end ">
-                    <Dropdown
-                      styleType="solid"
-                      options={[
-                        { label: "Action", value: "all" },
-                        { label: "Aktif", value: "active" },
-                        { label: "Tidak Aktif", value: "inactive" },
-                      ]}
-                      onValueChange={() => {}}
-                    />
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <button className="dropdown-item" onClick={()=>{
+                            setSelectedMentor(mentor.user.email)
+                            setShowForgotPasswordModal(true)
+                          }}>
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Edit</button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
                   </td>
                 </tr>
               );
@@ -280,6 +310,12 @@ const Body = ({
           </KTTable>
         </>
       )}
+       <ForgotPasswordModal
+        handleClose={() => setShowForgotPasswordModal(false)}
+        show={showForgotPasswordModal}
+        handleSubmit={() => handleForgotPassword(selectedMentor)}
+        isLoading={forgotPasswordModalLoading}
+      />
     </>
   );
 };
