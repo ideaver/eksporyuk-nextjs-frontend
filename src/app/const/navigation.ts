@@ -112,7 +112,7 @@ export const adminMenus: MenuSection[] = [
             icon: "cube-2",
           },
           { title: "Manajemen Kupon", to: "/admin/affiliate/coupon", icon: "cube-2" },
-          { title: "Manajemen Rewards", to: "/admin/affiliate/rewards", icon: "cube-2" },
+          { title: "Manajemen Rewards", to: "/admin/affiliate/reward", icon: "cube-2" },
         ],
       },
       {
