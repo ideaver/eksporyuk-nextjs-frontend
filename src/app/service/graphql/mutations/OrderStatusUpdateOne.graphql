@@ -1,0 +1,12 @@
+mutation OrderStatusUpdateOne(
+  $data: OrderStatusUpdateInput!
+  $where: OrderStatusWhereUniqueInput!
+) {
+  orderStatusUpdateOne(data: $data, where: $where) {
+    id
+    createdAt
+    status
+    changedById
+    orderId
+  }
+}

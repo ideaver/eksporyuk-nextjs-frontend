@@ -10,10 +10,10 @@ const useMentorHeaderViewModel = ({id, data}:IMentorheaderViewModel ) => {
           label: "Profile",
           to: `/admin/mentors/detail/${id}/profile`,
         },
-        {
-          label: "Sertifikat",
-          to: `/admin/mentors/detail/${id}/certificate`,
-        },
+        // {
+        //   label: "Sertifikat",
+        //   to: `/admin/mentors/detail/${id}/certificate`,
+        // },
       ];
 
       const breadcrumbs = [

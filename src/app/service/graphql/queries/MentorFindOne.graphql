@@ -35,6 +35,65 @@ query MentorFindOne($where: MentorWhereUniqueInput!) {
       gender
       avatarImageId
       referralLinkId
+      addresses {
+        id
+        name
+        latitude
+        longitude
+        label
+        isMain
+        createdAt
+        updatedAt
+        userId
+        subdistrict {
+          id
+          name
+          postalCode
+          updatedAt
+          district {
+            id
+            name
+            updatedAt
+            city {
+              id
+              name
+              updatedAt
+              province {
+                id
+                name
+                stateCode
+                latitude
+                longitude
+                updatedAt
+                country {
+                  id
+                  name
+                  iso3
+                  iso2
+                  numericCode
+                  phoneCode
+                  capital
+                  currency
+                  currencyName
+                  currencySymbol
+                  tld
+                  native
+                  latitude
+                  longitude
+                  flagEmoji
+                  emojiU
+                  updatedAt
+                  region
+                  region_id
+                  subregion
+                  subregion_id
+                  nationality
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

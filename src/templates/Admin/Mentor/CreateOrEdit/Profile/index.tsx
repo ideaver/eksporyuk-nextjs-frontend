@@ -8,6 +8,7 @@ import ForgotPasswordModal from "../../component/ForgotPasswordModal";
 
 const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
   const userData = data?.mentorFindOne?.user;
+  const userAddress = userData?.addresses?.find((a) => a.isMain === true);
   const {
     forgotPasswordModalLoading,
     handleForgotPassword,
@@ -16,7 +17,23 @@ const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
     forgotPasswordSuccess,
     forgotPasswordError,
   } = useForgotPassword();
+  function formatAddress(userAddress: any) {
+    if (
+      !userAddress ||
+      !userAddress.name ||
+      !userAddress.label ||
+      !userAddress.subdistrict ||
+      !userAddress.subdistrict.district ||
+      !userAddress.subdistrict.district.city ||
+      !userAddress.subdistrict.district.city.province ||
+      !userAddress.subdistrict.district.city.province.country ||
+      !userAddress.subdistrict.postalCode
+    ) {
+      return "Tidak ada Alamat";
+    }
 
+    return `${userAddress.name}, ${userAddress.label}, ${userAddress.subdistrict.name}, ${userAddress.subdistrict.district.name}, ${userAddress.subdistrict.district.city.name}, ${userAddress.subdistrict.district.city.province.name}, ${userAddress.subdistrict.district.city.province.country.name}, ${userAddress.subdistrict.postalCode}`;
+  }
   return (
     <>
       {forgotPasswordSuccess && (
@@ -60,8 +77,7 @@ const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
 
             <div className="col-lg-4">
               <span className="fw-bolder fs-6 text-dark ">
-                Jl. Sumarwi, RT01/RW03, Wonosari Wonosari - Kabupaten
-                Gunungkidul - Provinsi D.I. Yogyakarta 54321
+                {formatAddress(userAddress)}
               </span>
             </div>
           </div>
