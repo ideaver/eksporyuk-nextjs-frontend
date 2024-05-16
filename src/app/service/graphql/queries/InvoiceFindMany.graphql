@@ -33,15 +33,13 @@ query InvoiceFindMany($take: Int, $skip: Int, $where: InvoiceWhereInput) {
         }
       }
     }
-    payments {
+    payment {
       id
       amount
       createdAt
       updatedAt
       method
       status
-      invoiceId
-      transactionId
       invoice {
         id
         adminFee
