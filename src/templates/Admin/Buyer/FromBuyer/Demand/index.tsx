@@ -1,6 +1,9 @@
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import useDemandViewModel from "./Demand-view-model";
+import CurrencyInput from "react-currency-input-field";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const DemandPage = () => {
   const {
@@ -8,11 +11,15 @@ const DemandPage = () => {
     setInputDemand,
     inputDemandQuantity,
     setInputDemandQuantity,
-    inputShippingTerms,
-    setInputShippingTerms,
-    inputDestinationPort,
-    setInputDestinationPort,
+    price,
+    handleChangePrice,
+    abbreviation,
+    handleChangeAbbreviation,
+    shippingTerms,
+    handleChangeShippingTerms,
+    shippingOption,
   } = useDemandViewModel();
+
   return (
     <KTCard>
       <KTCardBody>
@@ -39,26 +46,50 @@ const DemandPage = () => {
         <h5 className="text-muted mt-2 mb-8">
           Jumlah komoditas yang dibutuhkan buyer
         </h5>
-        <h5 className="required">Shipping Terms</h5>
-        <TextField
-          props={{
-            value: inputShippingTerms,
-            onChange: setInputShippingTerms,
-          }}
-        />
+        <h5 className="required">Satuan</h5>
+        <Dropdown
+          value={abbreviation}
+          options={[
+            { value: "Ton", label: "Ton" },
+            { value: "Kg", label: "Kg" },
+            { value: "Pcs", label: "Ton" },
+          ]}
+          onValueChange={(value) =>
+            handleChangeAbbreviation(value as "Ton" | "Kg" | "Pcs")
+          }
+        ></Dropdown>
         <h5 className="text-muted mt-2 mb-8">
-          Shipping terms yang ditentukan buyer
+          Jumlah komoditas yang dibutuhkan buyer
         </h5>
-        <h5 className="required">Destination Port</h5>
-        <TextField
-          placeholder="Masukan quantity required"
-          props={{
-            value: inputDestinationPort,
-            onChange: setInputDestinationPort,
-          }}
+        <h5 className="required">Harga</h5>
+        <CurrencyInput
+          className="form-control"
+          id="price-field"
+          name="price"
+          placeholder="Masukan Harga (Rp)"
+          intlConfig={{ locale: "id-ID" }}
+          defaultValue={0}
+          value={price}
+          decimalsLimit={2}
+          onValueChange={(value, name, values) =>
+            handleChangePrice(value ?? "")
+          }
         />
         <h5 className="text-muted mt-2 mb-8">
-          Tujuan akhir dari dikirimkannya komoditas dari pelabuhan lainnya
+          Jumlah harga yang dibutuhkan buyer
+        </h5>
+        <h5 className="required">Shipping Terms</h5>
+        <Dropdown
+          value={shippingTerms}
+          options={shippingOption}
+          onValueChange={(value) =>
+            handleChangeShippingTerms(
+              value as InternationalTradeDeliveryTypeEnum
+            )
+          }
+        ></Dropdown>
+        <h5 className="text-muted mt-2 mb-8">
+          Jumlah komoditas yang dibutuhkan buyer
         </h5>
       </KTCardBody>
     </KTCard>

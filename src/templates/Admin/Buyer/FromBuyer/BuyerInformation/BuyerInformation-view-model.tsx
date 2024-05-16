@@ -22,7 +22,7 @@ type OptionType = {
 };
 
 export const useCountryDropdown = () => {
-  const getMentors = useCountryFindManyQuery({
+  const getCountries = useCountryFindManyQuery({
     variables: {
       take: 3,
     },
@@ -33,11 +33,11 @@ export const useCountryDropdown = () => {
     prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
   ) {
     const result =
-      getMentors.data?.countryFindMany?.map((mentor) => ({
-        value: mentor.id,
-        label: mentor.name,
+      getCountries.data?.countryFindMany?.map((country) => ({
+        value: country.id,
+        label: country.name,
       })) ?? [];
-    await getMentors.refetch({
+    await getCountries.refetch({
       skip: prevOptions.length,
       where: {
         name: {

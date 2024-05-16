@@ -1,5 +1,8 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import useBuyerViewModel, { breadcrumbs } from "./Buyer-view-model";
+import useBuyerViewModel, {
+  breadcrumbs,
+  useCountryDropdown,
+} from "./Buyer-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -10,178 +13,165 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import Link from "next/link";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useEffect, useState } from "react";
-
-const dummyData: any = [
-  {
-    id: 1,
-    name: "Jhon Doe",
-    companyName: "Global corporate",
-    country: "Amerika Serikat",
-    flag: "/media/flags/united-states.svg",
-    companyAddress: "123 Street, New York USA",
-    email: "jondoe@gmail.com",
-    telephoneNumber: "+82 213123213123",
-    registeredDate: "12 November 2022",
-    demand: "bubuk mesiu",
-    quantityRequired: "100 Tom",
-    shippingTerms: "FQB",
-    destinationPort: "Port of Los Angels, USA",
-  },
-  {
-    id: 2,
-    name: "Jhon Mimi",
-    companyName: "Global company",
-    country: "Amerika Latin",
-    flag: "/media/flags/united-states.svg",
-    companyAddress: "123 Street, New York USA",
-    email: "jonmimi@gmail.com",
-    telephoneNumber: "+82 213123213123",
-    registeredDate: "12 November 2022",
-    demand: "bubuk mesiu",
-    quantityRequired: "100 Tom",
-    shippingTerms: "FQB",
-    destinationPort: "Port of Los Angels, USA",
-  },
-];
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const BuyerPage = () => {
-  //dummy
-  const [buyers, setBuyers] = useState(
-    dummyData.map((buyer: any) => ({ ...buyer, checked: false }))
-  );
-
-  const [isCheckedAll, setIsCheckedAll] = useState<boolean>(false);
-
-  const handleCheckedAllChange = () => {
-    const newSelectAll = !isCheckedAll;
-    setIsCheckedAll(newSelectAll);
-    setBuyers(
-      buyers.map((buyer: any) => ({ ...buyer, checked: newSelectAll }))
-    );
-  };
-  const handleCheckedItemChange = (id: number) => {
-    const newBuyers = buyers.map((buyer: any) =>
-      buyer.id === id ? { ...buyer, checked: !buyer.checked } : buyer
-    );
-    setBuyers(newBuyers);
-    setIsCheckedAll(newBuyers.every((buyer: any) => buyer.checked));
-  };
+  const {
+    setBuyerFindCountry,
+    formatDate,
+    calculateTotalPage,
+    buyerFindMany,
+    setBuyerFindTake,
+    setBuyerFindSearch,
+    currentPage,
+    handlePageChange,
+    handleSelectAllCheck,
+    handleSingleCheck,
+    checkedItems,
+    selectAll,
+  } = useBuyerViewModel();
 
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Buyer</PageTitle>
       <KTCard>
         <KTCardBody>
-          <Head />
-          <KTTable
-            utilityGY={5}
-            utilityGX={8}
-            responsive="table-responsive my-10"
-            className="fs-6"
-          >
-            <KTTableHead
-              textColor="muted"
-              fontWeight="bold"
-              className="text-uppercase align-middle"
+          <Head
+            setSearchCountry={(id) => {
+              setBuyerFindCountry(id);
+            }}
+            onSearch={(val) => {
+              setBuyerFindSearch(val);
+            }}
+          />
+          {buyerFindMany.error ? (
+            <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+              <h3 className="text-center">{buyerFindMany.error.message}</h3>
+            </div>
+          ) : buyerFindMany.loading ? (
+            <div className="d-flex justify-content-center align-items-center h-500px">
+              <h3 className="text-center">Loading....</h3>
+            </div>
+          ) : (
+            <KTTable
+              utilityGY={5}
+              utilityGX={8}
+              responsive="table-responsive my-10"
+              className="fs-6"
             >
-              <th className="min-w-200px">
-                <CheckBoxInput
-                  checked={isCheckedAll}
-                  name="check-all"
-                  value="all"
-                  defaultChildren={false}
-                  onChange={handleCheckedAllChange}
-                >
-                  <p className="mb-0">NAMA BUYER</p>
-                </CheckBoxInput>
-              </th>
-              <th className="text-end min-w-200px">NAMA PERUSAHAAN</th>
-              <th className="text-end min-w-250px">NEGARA</th>
-              <th className="text-end min-w-250px">ALAMAT</th>
-              <th className="text-end min-w-200px">E-MAIL</th>
-              <th className="text-end min-w-200px">NO. TELEPON</th>
-              <th className="text-end min-w-250px">TANGGAL TERDAFTAR</th>
-              <th className="text-end min-w-200px">DEMAND</th>
-              <th className="text-end min-w-250px">QUANTITY REQUIRED</th>
-              <th className="text-end min-w-200px">SHIPPING TERMS</th>
-              <th className="text-end min-w-250px">DESTINATION PORT</th>
-              <th className="text-end min-w-125px">ACTION</th>
-            </KTTableHead>
-            <tbody className="align-middle">
-              {buyers.map((buyer: any) => {
-                return (
-                  <tr key={buyer.id} className="">
-                    <td className="">
-                      <CheckBoxInput
-                        className="ps-0"
-                        checked={buyer.checked}
-                        name="check-all"
-                        value="all"
-                        defaultChildren={false}
-                        onChange={() => {
-                          handleCheckedItemChange(buyer.id);
-                        }}
-                      >
-                        <p className="fw-bold text-black mb-0">{buyer.name}</p>
-                      </CheckBoxInput>
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.companyName}
-                    </td>
-                    <td className="min-w-250px text-end fw-bold text-muted">
-                      <img
+              <KTTableHead
+                textColor="muted"
+                fontWeight="bold"
+                className="text-uppercase align-middle"
+              >
+                <th className="min-w-200px">
+                  <CheckBoxInput
+                    checked={selectAll}
+                    name="check-all"
+                    value="all"
+                    defaultChildren={false}
+                    onChange={handleSelectAllCheck}
+                  >
+                    <p className="mb-0">NAMA BUYER</p>
+                  </CheckBoxInput>
+                </th>
+                <th className="text-end min-w-200px">NAMA PERUSAHAAN</th>
+                <th className="text-end min-w-250px">NEGARA</th>
+                <th className="text-end min-w-250px">ALAMAT</th>
+                <th className="text-end min-w-200px">E-MAIL</th>
+                <th className="text-end min-w-200px">NO. TELEPON</th>
+                <th className="text-end min-w-250px">TANGGAL TERDAFTAR</th>
+                <th className="text-end min-w-200px">DEMAND</th>
+                <th className="text-end min-w-250px">QUANTITY REQUIRED</th>
+                <th className="text-end min-w-200px">SHIPPING TERMS</th>
+                <th className="text-end min-w-125px">ACTION</th>
+              </KTTableHead>
+
+              <tbody className="align-middle">
+                {buyerFindMany.data?.buyerFindMany?.map((buyer, index) => {
+                  return (
+                    <tr key={buyer.id} className="">
+                      <td className="">
+                        <CheckBoxInput
+                          className="ps-0"
+                          checked={checkedItems[index]?.value ?? false}
+                          name="check-all"
+                          value="all"
+                          defaultChildren={false}
+                          onChange={() => {
+                            handleSingleCheck(index);
+                          }}
+                        >
+                          <p className="fw-bold text-black mb-0">
+                            {buyer.buyerName}
+                          </p>
+                        </CheckBoxInput>
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.companyName}
+                      </td>
+                      <td className="min-w-250px text-end fw-bold text-muted">
+                        {/* <img
                         className="symbol-label bg-gray-600 rounded-circle mx-3"
-                        src={buyer.flag}
+                        src={buyer.country?.flagEmoji}
                         width={40}
                         height={40}
                         alt="flag"
-                      />
-                      <span className="text-muted fw-bold">
-                        {buyer.country}
-                      </span>
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.companyAddress}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.email}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.telephoneNumber}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.registeredDate}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.demand}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.quantityRequired}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.shippingTerms}
-                    </td>
-                    <td className="min-w-200px text-end fw-bold text-muted">
-                      {buyer.destinationPort}
-                    </td>
-                    <td className="text-end ">
-                      <Dropdown
-                        styleType="solid"
-                        options={[
-                          { label: "Action", value: "all" },
-                          { label: "Aktif", value: "active" },
-                          { label: "Tidak Aktif", value: "inactive" },
-                        ]}
-                        onValueChange={() => {}}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </KTTable>
-          <Footer />
+                      /> */}
+                        <span className=" mx-3">
+                          {buyer.country?.flagEmoji}
+                        </span>
+                        <span className="text-muted fw-bold">
+                          {buyer.country?.name}
+                        </span>
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.address}
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.email}
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.phone}
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {formatDate(buyer.createdAt)}
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.productName}
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.quantity} <span>{buyer.abbreviation}</span>
+                      </td>
+                      <td className="min-w-200px text-end fw-bold text-muted">
+                        {buyer.deliveryType}
+                      </td>
+                      <td className="text-end ">
+                        <Dropdown
+                          styleType="solid"
+                          options={[
+                            { label: "Action", value: "all" },
+                            { label: "Aktif", value: "active" },
+                            { label: "Tidak Aktif", value: "inactive" },
+                          ]}
+                          onValueChange={() => {}}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </KTTable>
+          )}
+          <Footer
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            setBuyerFindSkip={(val) => {}}
+            setBuyerFindTake={(val) => {
+              setBuyerFindTake(val);
+            }}
+          />
         </KTCardBody>
       </KTCard>
       <ImportModal />
@@ -189,7 +179,14 @@ const BuyerPage = () => {
   );
 };
 
-const Head = () => {
+const Head = ({
+  onSearch,
+  setSearchCountry,
+}: {
+  onSearch: (val: string) => void;
+  setSearchCountry: (id: number) => void;
+}) => {
+  const { loadOptions } = useCountryDropdown();
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -197,18 +194,17 @@ const Head = () => {
           styleType="solid"
           preffixIcon="magnifier"
           placeholder="Search"
+          props={{
+            onChange: (e: any) => onSearch(e.target.value),
+          }}
         />
       </div>
       <div className="col-lg-auto row gy-3">
         <div className="col-lg-auto">
-          <Dropdown
-            styleType="solid"
-            options={[
-              { label: "Semua Negara", value: "all" },
-              { label: "Indonesia", value: "IND" },
-              { label: "Malaysia", value: "MLY" },
-            ]}
-            onValueChange={() => {}}
+          <AsyncPaginate
+            className="min-w-200px"
+            loadOptions={loadOptions}
+            onChange={(id) => setSearchCountry(id?.value as number)}
           />
         </div>
         <div className="col-lg-auto">
@@ -236,7 +232,19 @@ const Head = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({
+  currentPage,
+  setCurrentPage,
+  setBuyerFindTake,
+  setBuyerFindSkip,
+  pageLength,
+}: {
+  currentPage: number;
+  pageLength: number;
+  setCurrentPage: (val: number) => void;
+  setBuyerFindTake: (val: number) => void;
+  setBuyerFindSkip: (val: number) => void;
+}) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -247,15 +255,15 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => {}}
+          onValueChange={(val) => setBuyerFindTake(val as number)}
         />
       </div>
       <div className="col-auto">
         <Pagination
-          total={10}
-          current={1}
+          total={pageLength}
+          current={currentPage}
           maxLength={5}
-          onPageChange={() => {}}
+          onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
     </div>
@@ -282,7 +290,7 @@ const ImportModal = () => {
         }
         buttonSubmit={
           <Buttons data-bs-dismiss="modal" classNames="fw-bold">
-            Export
+            Import
           </Buttons>
         }
         footerContentCentered

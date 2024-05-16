@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 interface BuyerState {
   fileXLSX: string;
@@ -9,11 +10,12 @@ interface BuyerState {
   email: string;
   telephoneNumber: string;
   demand: string;
+  abbreviation: "Ton" | "Kg" | "Pcs";
   demandQuantity: string;
-  shippingTerms: string;
-  destinationPort: string;
+  shippingTerms: InternationalTradeDeliveryTypeEnum;
+  price: string;
 
-  // Add other product properties here
+  // Add other buyers properties here
 }
 
 const initialState: BuyerState = {
@@ -26,8 +28,9 @@ const initialState: BuyerState = {
   telephoneNumber: "",
   demand: "",
   demandQuantity: "",
-  shippingTerms: "",
-  destinationPort: "",
+  abbreviation: "Ton",
+  shippingTerms: InternationalTradeDeliveryTypeEnum.Cfr,
+  price: "",
 
   // Initialize other buyer properties here
 };
@@ -60,17 +63,26 @@ export const buyerSlice = createSlice({
     changeDemand: (state, action: PayloadAction<string>) => {
       state.demand = action.payload;
     },
-    changeShippingTerms: (state, action: PayloadAction<string>) => {
-      state.destinationPort = action.payload;
-    },
-    changeDestinationPort: (state, action: PayloadAction<string>) => {
-      state.destinationPort = action.payload;
+    changeShippingTerms: (
+      state,
+      action: PayloadAction<InternationalTradeDeliveryTypeEnum>
+    ) => {
+      state.shippingTerms = action.payload;
     },
     changeDemandQuantity: (state, action: PayloadAction<string>) => {
-      state.destinationPort = action.payload;
+      state.demandQuantity = action.payload;
+    },
+    changeAbbreviation: (
+      state,
+      action: PayloadAction<"Ton" | "Kg" | "Pcs">
+    ) => {
+      state.abbreviation = action.payload;
+    },
+    changePrice: (state, action: PayloadAction<string>) => {
+      state.price = action.payload;
     },
 
-    // Add other product actions here
+    // Add other buyers actions here
   },
 });
 
@@ -81,7 +93,8 @@ export const {
   changeCompanyAddress,
   changeDemand,
   changeDemandQuantity,
-  changeDestinationPort,
+  changeAbbreviation,
+  changePrice,
   changeEmail,
   changeShippingTerms,
   changeTelephoneNumber,
