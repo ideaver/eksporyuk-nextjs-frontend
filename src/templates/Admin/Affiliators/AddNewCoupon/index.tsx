@@ -26,35 +26,21 @@ export default CreateNewCoupon;
 
 const CreateNewCouponContent = () => {
   const [preview, setPreview] = useState("https://via.placeholder.com/150");
-  const urls = [
-    {
-      label: "Informasi Kupon",
-      to: `#`,
-    },
-    {
-      label: "Affiliasi",
-      to: `#`,
-    },
-    {
-      label: "Penggunaan",
-      to: `#`,
-    },
-  ];
 
   const fileInputRef = useRef(null);
 
   const handleImageClick = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click();
+      // fileInputRef.current.click();
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event: any) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result);
+        // setPreview(reader.result);
       };
       reader.readAsDataURL(file);
       // Handle the file upload logic here
