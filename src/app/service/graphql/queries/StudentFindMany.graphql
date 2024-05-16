@@ -1,0 +1,41 @@
+query StudentFindMany(
+  $where: StudentWhereInput
+  $orderBy: [StudentOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  studentFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+    updatedAt
+    user {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+    _count {
+      reviewedCourses
+      enrollments
+      certificates
+      creditCards
+    }
+  }
+}

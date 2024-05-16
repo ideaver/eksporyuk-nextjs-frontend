@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { KTIcon } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { formatAddress } from "@/app/service/utils/addressFormatter";
 import { TabLink } from "@/stories/organism/Links/TabLink/TabLink";
 import useMentorheaderViewModel, {
   IMentorheaderViewModel,
@@ -8,9 +9,10 @@ import useMentorheaderViewModel, {
 
 const Mentorheader = ({ id, data }: IMentorheaderViewModel) => {
   const { urls, breadcrumbs } = useMentorheaderViewModel({
-    id, data
+    id,
+    data,
   });
-  const userData =data?.mentorFindOne?.user;
+  const userData = data?.mentorFindOne?.user;
   const mentorData = data?.mentorFindOne;
   return (
     <>
@@ -21,7 +23,10 @@ const Mentorheader = ({ id, data }: IMentorheaderViewModel) => {
           <div className="d-flex flex-wrap flex-sm-nowrap mb-3">
             <div className="me-7 mb-4">
               <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-                <img src={userData?.avatarImageId ?? "/media/avatars/300-1.jpg"} alt="Metornic" />
+                <img
+                  src={userData?.avatarImageId ?? "/media/avatars/300-1.jpg"}
+                  alt="Metornic"
+                />
               </div>
             </div>
 
@@ -41,9 +46,9 @@ const Mentorheader = ({ id, data }: IMentorheaderViewModel) => {
                     </p>
                     <p className="d-flex align-items-center text-gray-400  me-5 mb-2">
                       <KTIcon iconName="geolocation" className="fs-4 me-1" />
-                      {/* TODO Add Address */}
-                      Wonosari - Kabupaten Gunung Kidul - Provinsi D.I.
-                      Yogyakarta
+                      {formatAddress(
+                        userData?.addresses?.find((a) => a.isMain === true)
+                      )}
                     </p>
                   </div>
                 </div>
@@ -54,7 +59,9 @@ const Mentorheader = ({ id, data }: IMentorheaderViewModel) => {
                   <div className="d-flex flex-wrap">
                     <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                       <div className="d-flex align-items-center">
-                        <div className="fs-2 fw-bolder">{mentorData?._count.courses}</div>
+                        <div className="fs-2 fw-bolder">
+                          {mentorData?._count.courses}
+                        </div>
                       </div>
 
                       <div className="fw-bold fs-6 text-gray-400">
@@ -64,15 +71,15 @@ const Mentorheader = ({ id, data }: IMentorheaderViewModel) => {
 
                     <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                       <div className="d-flex align-items-center">
-                        <div className="fs-2 fw-bolder">{mentorData?._count.createdCourses}</div>
+                        <div className="fs-2 fw-bolder">
+                          {mentorData?._count.createdCourses}
+                        </div>
                       </div>
 
                       <div className="fw-bold fs-6 text-gray-400">
                         Jumlah Siswa
                       </div>
                     </div>
-
-                   
                   </div>
                 </div>
               </div>

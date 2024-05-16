@@ -5,6 +5,7 @@ import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import ForgotPasswordModal from "../../component/ForgotPasswordModal";
+import { formatAddress } from "@/app/service/utils/addressFormatter";
 
 const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
   const userData = data?.mentorFindOne?.user;
@@ -17,23 +18,6 @@ const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
     forgotPasswordSuccess,
     forgotPasswordError,
   } = useForgotPassword();
-  function formatAddress(userAddress: any) {
-    if (
-      !userAddress ||
-      !userAddress.name ||
-      !userAddress.label ||
-      !userAddress.subdistrict ||
-      !userAddress.subdistrict.district ||
-      !userAddress.subdistrict.district.city ||
-      !userAddress.subdistrict.district.city.province ||
-      !userAddress.subdistrict.district.city.province.country ||
-      !userAddress.subdistrict.postalCode
-    ) {
-      return "Tidak ada Alamat";
-    }
-
-    return `${userAddress.name}, ${userAddress.label}, ${userAddress.subdistrict.name}, ${userAddress.subdistrict.district.name}, ${userAddress.subdistrict.district.city.name}, ${userAddress.subdistrict.district.city.province.name}, ${userAddress.subdistrict.district.city.province.country.name}, ${userAddress.subdistrict.postalCode}`;
-  }
   return (
     <>
       {forgotPasswordSuccess && (

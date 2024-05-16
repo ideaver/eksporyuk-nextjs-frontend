@@ -358,17 +358,19 @@ const Body = ({
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime()
               )[0];
-        function getProductName(cartItems: any[]) {
-  const types: any = [];
-  cartItems.forEach((item, index) => {
-    if (item.productId !== null) types.push(item.product?.name);
-    if (item.bundleId !== null) types.push(item.bundle?.name);
-    if (item.courseId !== null) types.push(item.course?.title);
-    if (item.membershipCategoryId !== null) types.push(item.membership?.name);
-    if (item.productServiceId !== null) types.push(item.productService?.name);
-  });
-  return types.filter(Boolean).join(', ');
-}
+              function getProductName(cartItems: any[]) {
+                const types: any = [];
+                cartItems.forEach((item, index) => {
+                  if (item.productId !== null) types.push(item.product?.name);
+                  if (item.bundleId !== null) types.push(item.bundle?.name);
+                  if (item.courseId !== null) types.push(item.course?.title);
+                  if (item.membershipCategoryId !== null)
+                    types.push(item.membership?.name);
+                  if (item.productServiceId !== null)
+                    types.push(item.productService?.name);
+                });
+                return types.filter(Boolean).join(", ");
+              }
               return (
                 <tr key={index}>
                   <td className="align-middle">
@@ -389,11 +391,9 @@ const Body = ({
                         href={"orders/" + order.id + "/detail-order"}
                         className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold mb-0"
                       >
-                    
-                          <p key={index} className="mb-0">
-                         {  getProductName(order?.cart?.cartItems ?? [])}
-                          </p>
-                   
+                        <p key={index} className="mb-0">
+                          {getProductName(order?.cart?.cartItems ?? [])}
+                        </p>
                       </Link>
                     </div>
                   </td>

@@ -1,12 +1,54 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
+import {
+  OrderStatusEnum,
+  StudentFindOneQuery,
+} from "@/app/service/graphql/gen/graphql";
+import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import React from "react";
+import Link from "next/link";
 
-const OrderPage: React.FC = () => {
+const OrderPage = ({
+  data,
+}: {
+  data: StudentFindOneQuery["studentFindOne"];
+}) => {
+  function getProductName(cartItems: any[]) {
+    const types: any = [];
+    cartItems.forEach((item, index) => {
+      if (item.productId !== null) types.push(item.product?.name);
+      if (item.bundleId !== null) types.push(item.bundle?.name);
+      if (item.courseId !== null) types.push(item.course?.title);
+      if (item.membershipCategoryId !== null) types.push(item.membership?.name);
+      if (item.productServiceId !== null) types.push(item.productService?.name);
+    });
+    return types.filter(Boolean).join(", ");
+  }
+
+  function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
+    switch (status) {
+      case OrderStatusEnum.Pending:
+        return "warning";
+      case OrderStatusEnum.Processing:
+        return "primary";
+      case OrderStatusEnum.Done:
+        return "success";
+      case OrderStatusEnum.Shipped:
+        return "info";
+      case OrderStatusEnum.Delivered:
+        return "success";
+      case OrderStatusEnum.Cancelled:
+        return "danger";
+      case OrderStatusEnum.Returned:
+        return "secondary";
+      default:
+        return "info";
+    }
+  }
   return (
     <>
       <div className="card mb-5 mb-xl-10" id="kt_profile_details_view">
@@ -30,40 +72,76 @@ const OrderPage: React.FC = () => {
               <th className="text-end min-w-150px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
-            <tr>
-              <td className="align-middle fw-bold text-black">INV 123456</td>
-              <td className="align-middle ">
-                <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                  Ekspor Yuk Automation (EYA)
-                </span>
-              </td>
-              <td className="fw-bold text-muted text-end align-middle w-200px">
-                7 Januari 2024
-              </td>
+            {data?.user.orders?.map((order, index) => {
+              const latestInvoices = order?.invoices?.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )[0];
+              const latestStatus = order?.statuses?.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )[0];
+              return (
+                <tr key={index}>
+                  <td className="align-middle fw-bold text-black">
+                    {order.id}
+                  </td>
+                  <td className="align-middle ">
+                    <Link
+                      href={"/admin/orders/" + order.id + "/detail-order"}
+                      className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold"
+                    >
+                      {getProductName(order.cart.cartItems ?? [])}
+                    </Link>
+                  </td>
+                  <td className="fw-bold text-muted text-end align-middle w-200px">
+                    {formatDate(order.createdAt)}
+                  </td>
 
-              <td className="align-middle text-end text-muted fw-bold w-125px">
-                Rp 399.000
-              </td>
-              <td className="align-middle text-end">
-                <p>
-                  {" "}
-                  <Badge label="Published" badgeColor="success" />{" "}
-                </p>
-              </td>
-              <td className="align-middle text-end ">
-                <Dropdown
-                  styleType="solid"
-                  options={[
-                    { label: "Action", value: "all" },
-                    { label: "Aktif", value: "active" },
-                    { label: "Tidak Aktif", value: "inactive" },
-                  ]}
-                  onValueChange={() => {}}
-                />
-              </td>
-            </tr>
+                  <td className="align-middle text-end text-muted fw-bold w-125px">
+                    {currencyFormatter(latestInvoices?.amount ?? 0)}
+                  </td>
+                  <td className="align-middle text-end">
+                    <p>
+                      {" "}
+                      <Badge
+                        label={latestStatus?.status ?? "Tidak Diketahui"}
+                        badgeColor={getStatusBadgeColor(latestStatus?.status)}
+                      />{" "}
+                    </p>
+                  </td>
+                  <td className="align-middle text-end ">
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <button className="dropdown-item">
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Edit</button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </KTTable>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </div>
     </>
