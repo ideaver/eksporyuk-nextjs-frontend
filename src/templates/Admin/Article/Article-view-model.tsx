@@ -1,4 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  ArticleFindManyQuery,
+  QueryMode,
+  useArticleFindLengthQuery,
+  useArticleFindManyQuery,
+  ArticleTypeEnum,
+} from "@/app/service/graphql/gen/graphql";
+import { QueryResult } from "@apollo/client";
 
 export const breadcrumbs = [
   {
@@ -19,18 +27,18 @@ const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [articleFindSkip, setArticleFindSkip] = useState(0);
   const [articleFindTake, setArticleFindTake] = useState(10);
-  // const mentorLength = useMentorFindLengthQuery();
+  const articleLength = useArticleFindLengthQuery();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setArticleFindSkip((page - 1) * articleFindTake);
   };
 
-  // const calculateTotalPage = () => {
-  //   return Math.ceil(
-  //     (mentorLength.data?.mentorFindMany?.length ?? 0) / mentorFindTake
-  //   );
-  // };
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (articleLength.data?.articleFindMany?.length ?? 0) / articleFindTake
+    );
+  };
   return {
     currentPage,
     setCurrentPage,
@@ -39,67 +47,80 @@ const usePagination = () => {
     articleFindTake,
     setArticleFindTake,
     handlePageChange,
-    //   calculateTotalPage,
-  };
-};
-
-const dummyData = [
-  {
-    id: 1,
-    title:
-      "Strategi Terbaik Untuk Meningkatkan Ekspor Produk Anda: Panduan Langkah Demi Langkah",
-    writer: {
-      image: "/media/avatars/300-3.jpg",
-      name: "Admin Eksporyuk",
-    },
-    date: "12 November 2022",
-    category: ["Tips & Trick"],
-    status: true,
-  },
-  {
-    id: 2,
-    title: "Inovasi Produk dan Peluang Ekspor: Kunci Kesuksesan Bisnis Anda",
-    writer: {
-      image: "/media/avatars/300-3.jpg",
-      name: "Admin Eksporyuk",
-    },
-    date: "12 November 2022",
-    category: ["Tips & Trick", "Afiliasi"],
-    status: false,
-  },
-];
-
-export const useDummyData = () => {
-  const [articles, setArticles] = useState(
-    dummyData.map((article: any) => ({ ...article, checked: false }))
-  );
-
-  const [isCheckedAll, setIsCheckedAll] = useState<boolean>(false);
-
-  const handleCheckedAllChange = () => {
-    const newSelectAll = !isCheckedAll;
-    setIsCheckedAll(newSelectAll);
-    setArticles(
-      articles?.map((article: any) => ({ ...article, checked: newSelectAll }))
-    );
-  };
-  const handleCheckedItemChange = (id: number) => {
-    const newArticles = articles.map((article: any) =>
-      article.id === id ? { ...article, checked: !article.checked } : article
-    );
-    setArticles(newArticles);
-    setIsCheckedAll(newArticles.every((article: any) => article.checked));
-  };
-
-  return {
-    articles,
-    isCheckedAll,
-    handleCheckedAllChange,
-    handleCheckedItemChange,
+    calculateTotalPage,
+    articleLength,
   };
 };
 
 const useArticleViewModel = () => {
-  return {};
+  const {
+    currentPage,
+    setCurrentPage,
+    articleFindSkip,
+    setArticleFindSkip,
+    articleFindTake,
+    setArticleFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    articleLength,
+  } = usePagination();
+
+  const typeOption = Object.entries(ArticleTypeEnum).map(([value, label]) => ({
+    label: value,
+    value: label,
+  }));
+
+  const [articleFindSearch, setArticleFindSearch] = useState("");
+  const [articleFindStatus, setArticleFindStatus] = useState("all");
+  const [articleFindCategory, setArticleFindCategory] = useState("all");
+
+  const articleFindMany = useArticleFindManyQuery({
+    variables: {
+      take: parseInt(articleFindTake.toString()),
+      skip: articleFindSkip,
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            type: {
+              equals:
+                articleFindCategory === "all"
+                  ? null
+                  : (articleFindCategory as ArticleTypeEnum),
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  return {
+    articleFindMany,
+    articleFindTake,
+    setArticleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    articleFindSearch,
+    setArticleFindSearch,
+    articleLength,
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+    setArticleFindStatus,
+    typeOption,
+    setArticleFindCategory,
+  };
 };
 export default useArticleViewModel;
