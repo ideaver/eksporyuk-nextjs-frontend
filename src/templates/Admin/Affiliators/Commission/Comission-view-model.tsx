@@ -155,8 +155,8 @@ export const formatToIDR = (amount: string) => {
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Produk",
-    path: "#",
+    title: "Manajemen Komisi",
+    path: "/admin/affiliate/commission",
     isSeparator: false,
     isActive: false,
   },
