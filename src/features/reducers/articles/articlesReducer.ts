@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ArticleState {
   thumbnail: string;
-  category: string[];
+  category: string;
   status: string;
   title: string;
   urlVideo: string;
@@ -11,7 +11,7 @@ interface ArticleState {
 
 const initialState: ArticleState = {
   thumbnail: "/media/svg/files/blank-image.svg",
-  category: [],
+  category: "",
   status: "",
   title: "",
   urlVideo: "",
@@ -25,7 +25,7 @@ export const articleSlice = createSlice({
     changeThumbnail: (state, action: PayloadAction<string>) => {
       state.thumbnail = action.payload;
     },
-    changeCategory: (state, action: PayloadAction<string[]>) => {
+    changeCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
     changeStatus: (state, action: PayloadAction<string>) => {

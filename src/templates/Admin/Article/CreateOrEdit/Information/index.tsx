@@ -21,12 +21,18 @@ const InformationPage = () => {
     setInputTitle,
     inputUrlVideo,
     setInputUrlVideo,
+    category,
+    handleCategoryChange,
+    typeOption,
   } = useInformationViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Artikel</PageTitle>
       <div className="row gx-8">
         <Aside
+          typeOption={typeOption}
+          category={category}
+          handleCategoryChange={handleCategoryChange}
           thumbnail={thumbnail}
           handleFileChange={handleFileChange}
           handleStatusChange={handleStatusChange}
@@ -85,14 +91,25 @@ const InformationPage = () => {
   );
 };
 
+interface TypeOption {
+  value: string;
+  label: string;
+}
+
 const Aside = ({
   thumbnail,
   status,
+  category,
+  handleCategoryChange,
   handleFileChange,
   handleStatusChange,
+  typeOption,
 }: {
+  typeOption: TypeOption[];
   thumbnail: string;
   status: string;
+  category: string;
+  handleCategoryChange: (e: string) => void;
   handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleStatusChange: (e: string) => void;
 }) => {
@@ -139,13 +156,9 @@ const Aside = ({
         <KTCardBody className="d-flex flex-column">
           <h3 className="mb-5">Kategori</h3>
           <Dropdown
-            options={[
-              { value: "published", label: "Published" },
-              { value: "private", label: "Private" },
-            ]}
-            //   value={status}
-            //   onValueChange={(value) => handleStatusChange(value as string)}
-            onValueChange={() => {}}
+            options={typeOption}
+            value={category}
+            onValueChange={(value) => handleCategoryChange(value as string)}
           ></Dropdown>
           <p className="text-muted fw-bold mt-5">Atur Kategori</p>
           <Buttons

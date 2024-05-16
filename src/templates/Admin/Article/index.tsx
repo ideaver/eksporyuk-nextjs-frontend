@@ -75,14 +75,7 @@ const ArticlePage = () => {
                 className="text-uppercase align-middle"
               >
                 <th className="min-w-200px">
-                  {/* <CheckBoxInput
-                  checked={isCheckedAll}
-                  name="check-all"
-                  value="all"
-                  onChange={handleCheckedAllChange}
-                > */}
                   <p className="mb-0">JUDUL</p>
-                  {/* </CheckBoxInput> */}
                 </th>
                 <th className="text-end min-w-200px">PENULIS</th>
                 <th className="text-end min-w-250px">TANGGAL</th>
@@ -95,20 +88,9 @@ const ArticlePage = () => {
                   return (
                     <tr key={article.id} className="">
                       <td className="">
-                        {/* <CheckBoxInput
-                        className="ps-0"
-                        checked={article.checked}
-                        name="check-all"
-                        value="all"
-                        defaultChildren={false}
-                        onChange={() => {
-                          handleCheckedItemChange(article.id);
-                        }}
-                      > */}
                         <p className="fw-bold text-black mb-0 min-w-300px align-middle">
                           {article.title}
                         </p>
-                        {/* </CheckBoxInput> */}
                       </td>
 
                       <td className="min-w-250px text-end fw-bold text-muted">

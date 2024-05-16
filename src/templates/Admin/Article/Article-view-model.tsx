@@ -100,6 +100,34 @@ const useArticleViewModel = () => {
                   : (articleFindCategory as ArticleTypeEnum),
             },
           },
+          {
+            createdByAdmin: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: articleFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            type: {
+              equals:
+                articleFindCategory === "all"
+                  ? null
+                  : (articleFindCategory as ArticleTypeEnum),
+            },
+          },
         ],
       },
     },
