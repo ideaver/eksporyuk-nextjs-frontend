@@ -3,21 +3,9 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { useRouter } from "next/router";
 import ClassTabBar from "../../TabBar/Buyers/BuyerTabBar";
 import useBuyerTabViewModel, { useNavigation } from "./BuyersTab-view-model";
-import { useDispatch } from "react-redux";
-import {
-  changeAbbreviation,
-  changeBuyerName,
-  changeCompanyAddress,
-  changeCompanyName,
-  changeCountry,
-  changeDemand,
-  changeDemandQuantity,
-  changeEmail,
-  changePrice,
-  changeShippingTerms,
-  changeTelephoneNumber,
-} from "@/features/reducers/buyers/buyersReducer";
-import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import { useSession } from "next-auth/react";
 
 interface TabBuyerLayoutProps {
   children?: React.ReactNode;
@@ -28,7 +16,21 @@ const TabBuyerLayout = ({ children }: TabBuyerLayoutProps) => {
   const { response, buyerCreateOne, resetBuyerState } = useBuyerTabViewModel();
   const router = useRouter();
 
-  const dispatch = useDispatch();
+  const {
+    abbreviation,
+    companyAddress,
+    buyerName,
+    companyName,
+    country,
+    telephoneNumber,
+    email,
+    price,
+    demand,
+    demandQuantity,
+    shippingTerms,
+  } = useSelector((state: RootState) => state.buyer);
+
+  const { data, status } = useSession();
 
   return (
     <>
@@ -50,7 +52,8 @@ const TabBuyerLayout = ({ children }: TabBuyerLayoutProps) => {
             classNames={"col-lg-2 mt-5 mt-lg-0"}
             onClick={() => {
               try {
-                buyerCreateOne();
+                if (status === "authenticated") buyerCreateOne();
+
                 resetBuyerState();
               } catch (error) {
                 console.log(error);

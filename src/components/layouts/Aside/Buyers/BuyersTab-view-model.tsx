@@ -16,6 +16,7 @@ import {
   changeShippingTerms,
   changeTelephoneNumber,
 } from "@/features/reducers/buyers/buyersReducer";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -67,6 +68,8 @@ const useBuyerTabViewModel = () => {
     shippingTerms,
   } = useSelector((state: RootState) => state.buyer);
 
+  const { data: session, status } = useSession();
+
   const [buyerCreateOne, response] = useBuyerCreateOneMutation({
     variables: {
       data: {
@@ -76,7 +79,7 @@ const useBuyerTabViewModel = () => {
         companyName: companyName,
         createdByAdmin: {
           connect: {
-            id: "52139a25-b8e7-4580-bddd-c1405ffffcc4",
+            id: session?.user?.id,
           },
         },
         country: {
