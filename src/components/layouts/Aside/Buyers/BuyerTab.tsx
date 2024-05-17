@@ -50,7 +50,7 @@ const TabBuyerLayout = ({ children }: TabBuyerLayoutProps) => {
             classNames={"col-lg-2 mt-5 mt-lg-0"}
             onClick={() => {
               try {
-                // buyerCreateOne();
+                buyerCreateOne();
                 resetBuyerState();
               } catch (error) {
                 console.log(error);
