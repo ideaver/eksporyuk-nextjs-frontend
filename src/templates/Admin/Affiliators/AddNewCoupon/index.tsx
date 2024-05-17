@@ -28,6 +28,8 @@ const CreateNewCoupon = () => {
 export default CreateNewCoupon;
 
 const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, fileInputRef }: any) => {
+  const { isFreeDelivery, setIsFreeDelivery, couponCode, setCouponCode, value, setValue, setEndDate, isActive, setIsActive, onSubmit } = useAddNewCouponViewModel();
+
   return (
     <div className="row">
       {/* Section 1 */}
@@ -88,12 +90,18 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
               <div className="d-flex">
                 <Dropdown
                   styleType="outline"
-                  props={{ id: "couponName" }}
+                  props={{ id: "" }}
                   options={[
-                    { label: "Aktif", value: "status1" },
-                    { label: "Non-Aktif", value: "status2" },
+                    { label: "Aktif", value: "true" },
+                    { label: "Non-Aktif", value: "false" },
                   ]}
-                  onValueChange={() => {}}
+                  onValueChange={(e) => {
+                    if (e === "true") {
+                      setIsActive(true);
+                    } else {
+                      setIsActive(false);
+                    }
+                  }}
                 />
               </div>
               <p className="fw-bold fs-5 text-muted pt-2">Atur Status</p>
@@ -150,6 +158,10 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                           styleType="outline"
                           size="medium"
                           placeholder="https://member.eksporyuk.com/aff/6267/6068/"
+                          props= {{
+                            value: couponCode,
+                            onChange: (e: any) => setCouponCode(e.target.value)
+                          }}
                         />
                         <p className="fw-bold fs-6 text-muted">
                           Nama/Kode Kupon
@@ -165,6 +177,11 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                             styleType="outline"
                             size="medium"
                             placeholder="ID, isi dengan identifikasi apapun"
+                            type="number"
+                            props={{
+                              value: value,
+                              onChange: (e: any) => setValue(e.target.value)
+                            }}
                           />
                         </div>
                         <div className="w-50 ps-3">
@@ -184,7 +201,7 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                       </p>
                       <div className="mt-6">
                         <CheckBoxInput
-                          className="active"
+                          className=""
                           name="follup"
                           value={"option1" || "option2"}
                           checked={false}
@@ -202,8 +219,8 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                           className="active"
                           name="follup"
                           value={"option1" || "option2"}
-                          checked={false}
-                          onChange={() => {}}
+                          checked={isFreeDelivery}
+                          onChange={(e) => { setIsFreeDelivery(e.target.checked) }}
                         >
                           {`Aktifkan Gratis Ongkir pada Item Ini agar pelanggan bisa menikmati pengiriman tanpa biaya tambahan`}
                           <span className="fw-bold fs-6 text-muted pt-2">
@@ -220,6 +237,7 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                           styleType="outline"
                           size="medium"
                           placeholder="Berapa kali kupon ini dapat digunakan"
+                          type="number"
                         />
                         <p className="fw-bold fs-6 text-muted">
                           Masukkan 0 jika kupon ini dapat digunakan sampai
@@ -234,6 +252,10 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                           styleType="outline"
                           size="medium"
                           placeholder="Pilih tanggal"
+                          type="date"
+                          props={{
+                            onChange: (e: any) => setEndDate(e.target.value)
+                          }}
                         />
                         <p className="fw-bold fs-6 text-muted">
                           Masukkan 0 jika kupon ini dapat digunakan sampai
@@ -348,7 +370,7 @@ const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, f
                 style={{ width: "100%" }}
               >
                 <button className="btn btn-secondary">Batal</button>
-                <button className="btn btn-primary">Tambahkan Kupon</button>
+                <button className="btn btn-primary" onClick={onSubmit}>Tambahkan Kupon</button>
               </div>
             </div>
           </div>
