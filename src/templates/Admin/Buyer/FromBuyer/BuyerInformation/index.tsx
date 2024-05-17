@@ -14,12 +14,11 @@ const BuyerInformationPage = () => {
     setInputCompanyAddress,
     inputCompanyName,
     setInputCompanyName,
-    inputCountry,
-    setInputCountry,
     inputEmail,
     setInputEmail,
     inputTelephoneNumber,
     setInputTelephoneNumber,
+    handleChangeCountry,
   } = useBuyerInformationViewModel();
 
   const { loadOptions } = useCountryDropdown();
@@ -47,14 +46,11 @@ const BuyerInformationPage = () => {
         />
         <h5 className="text-muted mt-2 mb-8">Nama perusahaan buyer</h5>
         <h5 className="required">Negara</h5>
-        {/* <TextField
-          props={{
-            value: inputCountry,
-            onChange: setInputCountry,
-          }}
-        /> */}
         <AsyncPaginate
           isSearchable={true}
+          onChange={(e) => {
+            handleChangeCountry(e?.value as number);
+          }}
           loadOptions={loadOptions}
         ></AsyncPaginate>
         <h5 className="text-muted mt-2 mb-8">Pilih negara Asal buyer</h5>

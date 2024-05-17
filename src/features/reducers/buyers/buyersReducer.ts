@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { PropsValue } from "react-select";
 
 interface BuyerState {
   fileXLSX: string;
   buyerName: string;
   companyName: string;
-  country: any;
+  country: number;
   companyAddress: string;
   email: string;
   telephoneNumber: string;
@@ -22,7 +23,7 @@ const initialState: BuyerState = {
   fileXLSX: "",
   buyerName: "",
   companyName: "",
-  country: "",
+  country: 1,
   companyAddress: "",
   email: "",
   telephoneNumber: "",
@@ -48,7 +49,7 @@ export const buyerSlice = createSlice({
     changeCompanyName: (state, action: PayloadAction<string>) => {
       state.companyName = action.payload;
     },
-    changeCountry: (state, action: PayloadAction<any>) => {
+    changeCountry: (state, action: PayloadAction<number>) => {
       state.country = action.payload;
     },
     changeCompanyAddress: (state, action: PayloadAction<string>) => {

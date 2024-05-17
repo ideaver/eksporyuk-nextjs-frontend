@@ -75,7 +75,7 @@ const ShippingTermsHandler = () => {
 
 const useDemandViewModel = () => {
   const shippingOption = Object.entries(InternationalTradeDeliveryTypeEnum).map(
-    ([value, label]) => ({ value, label })
+    ([value, label]) => ({ value: label, label })
   );
 
   const priceHandler = PriceHandler();
@@ -90,15 +90,6 @@ const useDemandViewModel = () => {
     (state: RootState) => state.buyer.demandQuantity,
     (value) => changeDemandQuantity(value)
   );
-  // const [inputShippingTerms, setInputShippingTerms] = useField(
-  //   (state: RootState) => state.buyer.shippingTerms,
-  //   (value) => changeShippingTerms(value)
-  // );
-  // const [inputAbbreviation, setInputAbbreviation] = useField(
-  //   (state: RootState) => state.buyer.abbreviation,
-  //   (value) => changeAbbreviation(value)
-  // );
-
   const [inputPrice, setInputPrice] = useField(
     (state: RootState) => state.buyer.price,
     (value) => changePrice(value)
@@ -107,16 +98,12 @@ const useDemandViewModel = () => {
   return {
     shippingOption,
     ...priceHandler,
-    // inputAbbreviation,
-    // setInputAbbreviation,
     ...abbreviationHandler,
     ...shippingTermsHandler,
     inputDemand,
     setInputDemand,
     inputDemandQuantity,
     setInputDemandQuantity,
-    // inputShippingTerms,
-    // setInputShippingTerms,
     inputPrice,
     setInputPrice,
   };

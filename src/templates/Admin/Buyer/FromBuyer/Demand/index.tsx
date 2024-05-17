@@ -52,7 +52,7 @@ const DemandPage = () => {
           options={[
             { value: "Ton", label: "Ton" },
             { value: "Kg", label: "Kg" },
-            { value: "Pcs", label: "Ton" },
+            { value: "Pcs", label: "Pcs" },
           ]}
           onValueChange={(value) =>
             handleChangeAbbreviation(value as "Ton" | "Kg" | "Pcs")
@@ -82,11 +82,11 @@ const DemandPage = () => {
         <Dropdown
           value={shippingTerms}
           options={shippingOption}
-          onValueChange={(value) =>
+          onValueChange={(value) => {
             handleChangeShippingTerms(
               value as InternationalTradeDeliveryTypeEnum
-            )
-          }
+            );
+          }}
         ></Dropdown>
         <h5 className="text-muted mt-2 mb-8">
           Jumlah komoditas yang dibutuhkan buyer

@@ -72,7 +72,22 @@ const useField = (
   return [value, handleChange];
 };
 
+const CountryChangeHandler = () => {
+  const dispatch = useDispatch();
+  const country = useSelector((state: RootState) => state.buyer.country);
+
+  const handleChangeCountry = (value: number) => {
+    dispatch(changeCountry(value));
+  };
+  return {
+    country,
+    handleChangeCountry,
+  };
+};
+
 const useBuyerInformationViewModel = () => {
+  const countryChangeHandler = CountryChangeHandler();
+
   const [inputBuyerName, setInputBuyerName] = useField(
     (state: RootState) => state.buyer.buyerName,
     (value) => changeBuyerName(value)
@@ -85,10 +100,6 @@ const useBuyerInformationViewModel = () => {
     (state: RootState) => state.buyer.companyName,
     (value) => changeCompanyName(value)
   );
-  const [inputCountry, setInputCountry] = useField(
-    (state: RootState) => state.buyer.country,
-    (value) => changeCountry(value)
-  );
   const [inputEmail, setInputEmail] = useField(
     (state: RootState) => state.buyer.email,
     (value) => changeEmail(value)
@@ -97,13 +108,13 @@ const useBuyerInformationViewModel = () => {
     (state: RootState) => state.buyer.telephoneNumber,
     (value) => changeTelephoneNumber(value)
   );
+
   return {
+    ...countryChangeHandler,
     inputCompanyAddress,
     setInputCompanyAddress,
     inputCompanyName,
     setInputCompanyName,
-    inputCountry,
-    setInputCountry,
     inputEmail,
     setInputEmail,
     inputTelephoneNumber,
