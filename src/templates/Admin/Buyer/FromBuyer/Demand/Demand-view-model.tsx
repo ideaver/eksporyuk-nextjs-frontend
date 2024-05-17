@@ -1,44 +1,136 @@
 import { RootState } from "@/app/store/store";
 import {
   changeAbbreviation,
+  changeBuyerName,
+  changeCompanyAddress,
+  changeCompanyName,
+  changeCountry,
   changeDemand,
   changeDemandQuantity,
+  changeEmail,
   changePrice,
   changeShippingTerms,
+  changeTelephoneNumber,
 } from "@/features/reducers/buyers/buyersReducer";
-import { UnknownAction } from "@reduxjs/toolkit";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  InternationalTradeDeliveryTypeEnum,
+  useBuyerCreateOneMutation,
+} from "@/app/service/graphql/gen/graphql";
+import { useRouter } from "next/router";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
-const useField = (
-  selector: (state: RootState) => string,
-  action: (value: string) => UnknownAction
-) => {
+const useResetBuyerState = () => {
   const dispatch = useDispatch();
-  const initialValue = useSelector(selector);
-  const [value, setValue] = useState(initialValue);
+  const router = useRouter();
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    dispatch(action(event.target.value));
+  const resetBuyerState = () => {
+    dispatch(changeAbbreviation("Ton"));
+    dispatch(changeBuyerName(""));
+    dispatch(changeCountry(1));
+    dispatch(changeCompanyName(""));
+    dispatch(changeCompanyAddress(""));
+    dispatch(changeDemand(""));
+    dispatch(changeDemandQuantity(""));
+    dispatch(changePrice(""));
+    dispatch(changeEmail(""));
+    dispatch(changeShippingTerms(InternationalTradeDeliveryTypeEnum.Cfr));
+    dispatch(changeTelephoneNumber(""));
+    router.push("/admin/buyers");
   };
-
-  return [value, handleChange];
+  return { resetBuyerState };
 };
 
-const PriceHandler = () => {
+export const useBuyerInformationForm = () => {
   const dispatch = useDispatch();
-  const price = useSelector((state: RootState) => state.buyer.price);
+  const router = useRouter();
 
-  const handleChangePrice = (price: string) => {
-    dispatch(changePrice(price));
-  };
+  const { resetBuyerState } = useResetBuyerState();
 
-  return {
+  const {
+    abbreviation,
+    companyAddress,
+    buyerName,
+    companyName,
+    country,
+    telephoneNumber,
+    email,
     price,
-    handleChangePrice,
-  };
+    demand,
+    demandQuantity,
+    shippingTerms,
+  } = useSelector((state: RootState) => state.buyer);
+
+  const { data: session, status } = useSession();
+
+  const [buyerCreateOne, response] = useBuyerCreateOneMutation({
+    variables: {
+      data: {
+        abbreviation,
+        address: companyAddress,
+        buyerName,
+        companyName: companyName,
+        createdByAdmin: {
+          connect: {
+            id: session?.user?.id,
+          },
+        },
+        country: {
+          connect: {
+            id: country,
+          },
+        },
+        phone: telephoneNumber,
+        email,
+        price,
+        productName: demand,
+        quantity: Number(demandQuantity),
+        deliveryType:
+          shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum,
+      },
+    },
+  });
+
+  // validation
+  const buyerSchema = Yup.object().shape({
+    demand: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("Demand diperlukan"),
+    demandQuantity: Yup.string()
+      .min(1, "Minimal 1 simbol")
+      .max(50, "Maksimal 100 simbol")
+      .required("Jumlah demand diperlukan"),
+    price: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("price diperlukan"),
+  });
+
+  const DemandFormik = useFormik({
+    initialValues: {
+      demand: demand,
+      demandQuantity: demandQuantity,
+      price: price,
+    },
+    validationSchema: buyerSchema,
+    onSubmit: (values) => {
+      if (status === "authenticated") {
+        try {
+          buyerCreateOne();
+          resetBuyerState();
+        } catch (error) {
+          console.log(error);
+        } finally {
+          router.push("/admin/buyers");
+        }
+      }
+    },
+  });
+  return { formik: DemandFormik, response };
 };
 
 const AbbreviationHandler = () => {
@@ -78,34 +170,16 @@ const useDemandViewModel = () => {
     ([value, label]) => ({ value: label, label })
   );
 
-  const priceHandler = PriceHandler();
+  const { resetBuyerState } = useResetBuyerState();
+
   const abbreviationHandler = AbbreviationHandler();
   const shippingTermsHandler = ShippingTermsHandler();
 
-  const [inputDemand, setInputDemand] = useField(
-    (state: RootState) => state.buyer.demand,
-    (value) => changeDemand(value)
-  );
-  const [inputDemandQuantity, setInputDemandQuantity] = useField(
-    (state: RootState) => state.buyer.demandQuantity,
-    (value) => changeDemandQuantity(value)
-  );
-  const [inputPrice, setInputPrice] = useField(
-    (state: RootState) => state.buyer.price,
-    (value) => changePrice(value)
-  );
-
   return {
+    resetBuyerState,
     shippingOption,
-    ...priceHandler,
     ...abbreviationHandler,
     ...shippingTermsHandler,
-    inputDemand,
-    setInputDemand,
-    inputDemandQuantity,
-    setInputDemandQuantity,
-    inputPrice,
-    setInputPrice,
   };
 };
 
