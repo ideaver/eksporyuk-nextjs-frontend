@@ -63,11 +63,8 @@ export default function App({
                   <ThemeModeProvider>
                     <ApolloProvider client={client}>
                       <MasterLayout>
-                        {" "}
-                        {/* TODO: Make this work with auth */}
                         <Component {...pageProps} />
                       </MasterLayout>
-
                       <MasterInit />
                     </ApolloProvider>
                   </ThemeModeProvider>

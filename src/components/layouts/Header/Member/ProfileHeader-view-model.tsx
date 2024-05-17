@@ -1,5 +1,8 @@
+import { StudentFindOneQuery } from "@/app/service/graphql/gen/graphql";
+
 export interface IMemberProfileHeaderViewModel {
     id: string | string[] | undefined;
+    data: StudentFindOneQuery['studentFindOne']
   }
 const useProfileHeaderViewModel = ({id}:IMemberProfileHeaderViewModel ) => {
     const urls = [

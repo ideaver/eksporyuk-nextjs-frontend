@@ -6,7 +6,7 @@ interface Row {
   value: string | JSX.Element;
 }
 
-interface Table {
+export interface Table {
   title: string;
   rows: Row[];
 }
