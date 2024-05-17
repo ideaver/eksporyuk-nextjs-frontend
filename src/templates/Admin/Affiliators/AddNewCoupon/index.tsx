@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
 
 import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
@@ -8,46 +7,27 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
-import { TabLink } from "@/stories/organism/Links/TabLink/TabLink";
-import useAddNewCouponViewModel from "./AddNewCoupon-view-model";
+import useAddNewCouponViewModel, { breadcrumbs } from "./AddNewCoupon-view-model";
 
 const CreateNewCoupon = () => {
-  const { breadcrumbs } = useAddNewCouponViewModel();
+  const { preview, handleImageClick, handleFileChange, fileInputRef } = useAddNewCouponViewModel();
 
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Kupon Baru</PageTitle>
-      <CreateNewCouponContent />
+      <CreateNewCouponContent 
+        preview={preview}
+        handleImageClick={handleImageClick}
+        handleFileChange={handleFileChange}
+        fileInputRef={fileInputRef}
+      />
     </>
   );
 };
 
 export default CreateNewCoupon;
 
-const CreateNewCouponContent = () => {
-  const [preview, setPreview] = useState("https://via.placeholder.com/150");
-
-  const fileInputRef = useRef(null);
-
-  const handleImageClick = () => {
-    if (fileInputRef.current) {
-      // fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event: any) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-      // Handle the file upload logic here
-      console.log("Selected file:", file);
-    }
-  };
-
+const CreateNewCouponContent = ({ preview, handleImageClick, handleFileChange, fileInputRef }: any) => {
   return (
     <div className="row">
       {/* Section 1 */}
