@@ -1,5 +1,6 @@
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
+import couponReducer from "@/features/reducers/affiliators/couponReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
@@ -14,9 +15,14 @@ const productPersistConfig = {
   storage,
 };
 
+const couponPersistConfig = {
+  key: "coupon",
+  storage
+}
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
-  navigationReducer
+  navigationReducer,
 );
 
 const persistedProductReducer = persistReducer(
@@ -24,11 +30,17 @@ const persistedProductReducer = persistReducer(
   productReducer
 );
 
+const persistedCouponReducer = persistReducer(
+  couponPersistConfig,
+  couponReducer
+)
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
     navigation: persistedNavigationReducer,
     product: persistedProductReducer,
+    coupon: persistedCouponReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
