@@ -4,12 +4,13 @@ import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { PageTitle } from "@/_metronic/layout/core";
-import useNewRewardViewModel from "./NewReward-view-model";
+import useNewRewardViewModel, { breadcrumbs } from "./NewReward-view-model";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 
 const CreateNewReward = () => {
-  const { breadcrumbs } = useNewRewardViewModel();
+  const { previewImages, setPreviewImages, handleFileChange, handleFileClick } =
+    useNewRewardViewModel();
 
   return (
     <>
@@ -22,23 +23,22 @@ const CreateNewReward = () => {
 export default CreateNewReward;
 
 const CreateNewRewardContent = () => {
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      const previews = fileArray.map((file) => URL.createObjectURL(file));
-      setPreviewImages(previews);
-    }
-  };
-
-  const handleFileClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  const {
+    previewImages,
+    setPreviewImages,
+    handleFileChange,
+    handleFileClick,
+    fileInputRef,
+    rewardName,
+    setRewardName,
+    rewardDesc,
+    setRewardDesc,
+    pointsRequired,
+    setPointsRequired,
+    endSales,
+    setEndSales,
+    onSubmit,
+  } = useNewRewardViewModel();
 
   return (
     <div className="row">
@@ -113,6 +113,10 @@ const CreateNewRewardContent = () => {
                         <TextField
                           onClickPreffixIcon={function noRefCheck() {}}
                           onClickSuffixIcon={function noRefCheck() {}}
+                          props={{
+                            value: rewardName,
+                            onChange: (e: any) => setRewardName(e.target.value)
+                          }}
                         />
                         <p className="fw-bold fs-5 text-muted pt-2">
                           Masukan nama produk reward
@@ -178,6 +182,10 @@ const CreateNewRewardContent = () => {
                           onClickPreffixIcon={function noRefCheck() {}}
                           onClickSuffixIcon={function noRefCheck() {}}
                           placeholder="Masukan deskripsi dari produk reward ini"
+                          props={{
+                            value: rewardDesc,
+                            onChange: (e: any) => setRewardDesc(e.target.value),
+                          }}
                         />
                         <p className="fw-bold fs-5 text-muted pt-2">
                           Masukan konten artikel
@@ -193,6 +201,10 @@ const CreateNewRewardContent = () => {
                           type="number"
                           placeholder="Masukan jumlah poin"
                           preffixIcon="bi bi-0-circle"
+                          props={{
+                            value: pointsRequired,
+                            onChange: (e: any) => setPointsRequired(e.target.value)
+                          }}
                         />
                         <p className="fw-bold fs-5 text-muted pt-2">
                           Poin yang harus ditukarkan affiliate
@@ -206,9 +218,14 @@ const CreateNewRewardContent = () => {
                           onClickPreffixIcon={function noRefCheck() {}}
                           onClickSuffixIcon={function noRefCheck() {}}
                           type="date"
+                          props={{
+                            value: endSales,
+                            onChange: (e: any) => setEndSales(e.target.value)
+                          }}
                         />
                         <p className="fw-bold fs-5 text-muted pt-2">
-                          Batas akhir reward dapat ditukarkan. Kosongkan jika tidak ada batasan waktu.
+                          Batas akhir reward dapat ditukarkan. Kosongkan jika
+                          tidak ada batasan waktu.
                         </p>
                       </div>
                     </div>
@@ -239,8 +256,14 @@ const CreateNewRewardContent = () => {
                             styleType="outline"
                             props={{ id: "couponName" }}
                             options={[
-                              { label: "Jasa Website Ekspor Hemat", value: "ekspor-hemat" },
-                              { label: "Jasa Website Ekspor Reguler", value: "ekspor-reguler" },
+                              {
+                                label: "Jasa Website Ekspor Hemat",
+                                value: "ekspor-hemat",
+                              },
+                              {
+                                label: "Jasa Website Ekspor Reguler",
+                                value: "ekspor-reguler",
+                              },
                             ]}
                             onValueChange={() => {}}
                           />
@@ -269,7 +292,7 @@ const CreateNewRewardContent = () => {
                 style={{ width: "100%" }}
               >
                 <button className="btn btn-secondary">Batal</button>
-                <button className="btn btn-primary">Tambahkan Reward</button>
+                <button className="btn btn-primary" onClick={onSubmit}>Tambahkan Reward</button>
               </div>
             </div>
           </div>

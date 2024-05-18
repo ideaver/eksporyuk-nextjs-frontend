@@ -1,0 +1,14 @@
+mutation RewardsRedeemCreateOne($data: RewardsRedeemCreateInput!) {
+  rewardsRedeemCreateOne(data: $data) {
+    rewardsCatalog {
+      title
+      description
+      pointsRequired
+      endSales
+      id
+    }
+    user {
+      id
+    }
+  }
+}
