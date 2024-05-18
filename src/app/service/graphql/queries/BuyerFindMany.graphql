@@ -1,0 +1,28 @@
+query BuyerFindMany($skip: Int, $take: Int, $where: BuyerWhereInput) {
+  buyerFindMany(skip: $skip, take: $take, where: $where) {
+    abbreviation
+    address
+    buyerName
+    companyName
+    counterContacted
+    country {
+      name
+      flagEmoji
+      id
+    }
+    createdAt
+    deliveryType
+    email
+    phone
+    price
+    productName
+    quantity
+    updatedAt
+    hsCodeSection {
+      name
+    }
+    hsCodeSectionId
+    id
+    countryId
+  }
+}
