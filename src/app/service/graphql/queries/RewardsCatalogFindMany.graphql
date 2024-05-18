@@ -1,0 +1,15 @@
+query RewardsCatalogFindMany($take: Int, $skip: Int, $where: RewardsCatalogWhereInput) {
+  rewardsCatalogFindMany(take: $take, skip: $skip, where: $where) {
+    id
+    title
+    course {
+      basePrice
+      status
+    }
+    pointsRequired
+    _count {
+      RewardsRedeem
+    }
+    createdAt
+  }
+}
