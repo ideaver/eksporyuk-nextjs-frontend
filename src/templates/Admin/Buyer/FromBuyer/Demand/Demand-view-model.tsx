@@ -87,7 +87,7 @@ export const useBuyerInformationForm = () => {
         email,
         price,
         productName: demand,
-        quantity: Number(demandQuantity),
+        quantity: parseFloat(demandQuantity),
         deliveryType:
           shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum,
       },

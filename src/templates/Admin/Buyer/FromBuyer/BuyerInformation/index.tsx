@@ -4,7 +4,6 @@ import useBuyerInformationViewModel, {
   useCountryDropdown,
   useBuyerInformationForm,
 } from "./BuyerInformation-view-model";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { AsyncPaginate } from "react-select-async-paginate";
 import clsx from "clsx";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
@@ -148,7 +147,7 @@ const BuyerInformationPage = () => {
           <h5 className="text-muted mt-2 mb-8">E-mail buyer</h5>
           <h5 className="">No. Telepon</h5>
           <input
-            type="text"
+            type="number"
             placeholder="Masukan nomor telepon"
             {...formik.getFieldProps("telephoneNumber")}
             onChange={(e) => {

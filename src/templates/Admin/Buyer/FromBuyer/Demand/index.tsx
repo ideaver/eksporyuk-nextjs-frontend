@@ -88,6 +88,7 @@ const DemandPage = () => {
             <h5 className="required">Quantity Required</h5>
             <TextField
               placeholder="Masukan quantity required"
+              type="number"
               classNames={clsx(
                 {
                   "is-invalid":
