@@ -1,6 +1,6 @@
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
-import Image from "next/image";
+import { useState } from "react";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
@@ -18,10 +18,23 @@ import useAffiliatorViewModel, {
 } from "./Affiliator-view-model";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { AffiliatorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import ForgotPasswordModal from "./component/ForgotPasswordModal";
+import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 
 const AffiliatorPage = () => {
-  const { handleSelectAllCheck, handleSingleCheck, checkedItems, selectAll, skipPage, setSkipPage, takePage, setTakePage, calculateTotalPage, setSearchAffiliator, affiliatorFindMany } =
-    useAffiliatorViewModel();
+  const {
+    handleSelectAllCheck,
+    handleSingleCheck,
+    checkedItems,
+    selectAll,
+    skipPage,
+    setSkipPage,
+    takePage,
+    setTakePage,
+    calculateTotalPage,
+    setSearchAffiliator,
+    affiliatorFindMany,
+  } = useAffiliatorViewModel();
 
   return (
     <>
@@ -51,7 +64,7 @@ const AffiliatorPage = () => {
 
 export default AffiliatorPage;
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void}) => {
+const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -79,8 +92,18 @@ const Body = ({
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: string; value: boolean }[];
   selectAll: boolean;
-  affiliatorFindMany: QueryResult<AffiliatorFindManyQuery>
+  affiliatorFindMany: QueryResult<AffiliatorFindManyQuery>;
 }) => {
+  const [userEmail, setUserEmail] = useState("");
+  const {
+    forgotPasswordModalLoading,
+    handleForgotPassword,
+    setShowForgotPasswordModal,
+    showForgotPasswordModal,
+    forgotPasswordSuccess,
+    forgotPasswordError,
+  } = useForgotPassword();
+
   return (
     <>
       {affiliatorFindMany.error ? (
@@ -130,7 +153,7 @@ const Body = ({
                       onChange={() => handleSingleCheck(index)}
                     >
                       <Link
-                        href={`/admin/members/detail/${affiliator.id}/profile`}
+                        href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
                         className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                         style={{
                           maxWidth: "90px",
@@ -158,9 +181,13 @@ const Body = ({
                         </span>
                       </div>
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                          {affiliator.user.name}
-                        </span>
+                        <Link
+                          href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
+                        >
+                          <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                            {affiliator.user.name}
+                          </span>
+                        </Link>
                         <span className="fw-bold text-muted">
                           {affiliator.user.username}
                         </span>
@@ -176,7 +203,7 @@ const Body = ({
                   <td className="align-middle text-end text-muted fw-bold w-150px">
                     {dateFormatter(affiliator.user.createdAt)}
                   </td>
-                  <td className="align-middle text-end w-150px">
+                  {/* <td className="align-middle text-end w-150px">
                     <Dropdown
                       styleType="solid"
                       options={[
@@ -190,6 +217,37 @@ const Body = ({
                       ]}
                       onValueChange={() => {}}
                     />
+                  </td> */}
+                  <td className="align-middle text-end ">
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setShowForgotPasswordModal(true);
+                              setUserEmail(affiliator.user.email)
+                            }}
+                          >
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Edit</button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
                   </td>
                 </KTTableBody>
               );
@@ -197,11 +255,24 @@ const Body = ({
           )}
         </KTTable>
       )}
+
+      <ForgotPasswordModal
+        handleClose={() => setShowForgotPasswordModal(false)}
+        show={showForgotPasswordModal}
+        handleSubmit={() => handleForgotPassword(userEmail)}
+        isLoading={forgotPasswordModalLoading}
+      />
     </>
   );
 };
 
-const Footer = ({ skipPage, setSkipPage, takePage, setTakePage, totalPage }: any) => {
+const Footer = ({
+  skipPage,
+  setSkipPage,
+  takePage,
+  setTakePage,
+  totalPage,
+}: any) => {
   if (skipPage === 0) skipPage = 1;
 
   return (

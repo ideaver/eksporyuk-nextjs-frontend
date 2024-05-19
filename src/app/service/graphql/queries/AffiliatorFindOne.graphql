@@ -1,0 +1,36 @@
+query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
+  affiliatorFindOne(where: $where) {
+    _count {
+      creditCards
+    }
+    user {
+      id
+      avatarImageId
+      role
+      name
+      username
+      email
+      addresses {
+        name
+      }
+      orders {
+        _count {
+          enrollment
+        }
+        invoices {
+          amount
+        }
+      }
+      Withdrawal {
+        amount
+        transaction {
+          amount
+        }
+      }
+      phone {
+        phoneNumber
+      }
+      createdAt
+    }
+  }
+}
