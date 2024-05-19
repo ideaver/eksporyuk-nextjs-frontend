@@ -4,11 +4,23 @@ import { PageTitle } from "@/_metronic/layout/core";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
 import { TabLink } from "@/stories/organism/Links/TabLink/TabLink";
 import useAffiliatorHeaderViewModel from "./AffiliatorHeader-view-model";
+import { formatCurrency } from '@/app/service/utils/currencyFormatter';
 
 const AffiliatorHeader = ({ id, data }: any) => {
   const { urls, breadcrumbs } = useAffiliatorHeaderViewModel({ id });
   const userData = data?.affiliatorFindOne?.user;
   const affiliatorData = data?.affiliatorFindOne;
+
+  const totalOrdersAmount = userData?.orders.reduce((total: any, order: any) => {
+    const orderTotal = order?.invoices?.reduce((orderTotal: any, invoice: any) => orderTotal + invoice.amount, 0);
+    return total + (orderTotal ?? 0);
+  }, 0);
+  const totalOrdersQuantity = userData?.orders?.reduce((total: any, order: any) => { 
+    const orderQuantity = order?.cart.cartItems?.reduce((orderQuantity: any, cart: any) => orderQuantity + cart.quantity, 0);
+    return total + (orderQuantity ?? 0);
+  } , 0);
+
+  console.log(totalOrdersAmount, totalOrdersQuantity);
 
   return (
     <>
@@ -56,7 +68,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                     <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                       <div className="d-flex align-items-center">
                         <div className="fs-2 fw-bolder">
-                          Rp. {userData?.orders[0]?.invoices[0]?.amount ?? "1"}
+                          {formatCurrency(totalOrdersAmount) ?? "1"}
                         </div>
                       </div>
 
@@ -68,7 +80,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                     <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                       <div className="d-flex align-items-center">
                         <div className="fs-2 fw-bolder">
-                          {affiliatorData?._count.createdCourses ?? "1"}
+                          {totalOrdersQuantity ?? "1"}
                         </div>
                       </div>
 

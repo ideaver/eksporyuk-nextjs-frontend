@@ -20,6 +20,11 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
         invoices {
           amount
         }
+        cart {
+          cartItems {
+            quantity
+          }
+        }
       }
       Withdrawal {
         amount
