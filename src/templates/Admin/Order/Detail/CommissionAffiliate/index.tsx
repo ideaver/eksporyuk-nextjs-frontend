@@ -1,7 +1,8 @@
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import { OrderFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import { CardInfo } from "@/stories/molecules/Cards/CardInfo/CardInfo";
 
-const CommissionAffiliate = ({}) => {
+const CommissionAffiliate = ({data}: {data: OrderFindOneQuery['orderFindOne']}) => {
   return (
     <>
       <KTCard>

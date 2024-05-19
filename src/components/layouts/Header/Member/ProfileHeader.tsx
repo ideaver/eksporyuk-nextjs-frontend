@@ -3,12 +3,23 @@ import { KTIcon } from '@/_metronic/helpers'
 import { TabLink } from '@/stories/organism/Links/TabLink/TabLink'
 import useProfileHeaderViewModel, { IMemberProfileHeaderViewModel } from './ProfileHeader-view-model'
 import { PageTitle } from '@/_metronic/layout/core';
+import { formatAddress } from '@/app/service/utils/addressFormatter';
+import { formatCurrency } from '@/app/service/utils/currencyFormatter';
 
-const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
+const ProfileHeader = ({id, data}: IMemberProfileHeaderViewModel) => {
 
     const {urls, breadcrumbs} = useProfileHeaderViewModel({
-        id
+        id, data
     });
+
+const totalOrdersAmount = data?.user?.orders?.reduce((total, order) => {
+  const orderTotal = order?.invoices?.reduce((orderTotal, invoice) => orderTotal + invoice.amount, 0);
+  return total + (orderTotal ?? 0);
+}, 0);
+const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => { 
+  const orderQuantity = order?.cart.cartItems?.reduce((orderQuantity, cart) => orderQuantity + cart.quantity, 0);
+  return total + (orderQuantity ?? 0);
+} , 0);
 
   return (
    <>
@@ -19,7 +30,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
     <div className='d-flex flex-wrap flex-sm-nowrap mb-3'>
       <div className='me-7 mb-4'>
         <div className='symbol symbol-100px symbol-lg-160px symbol-fixed position-relative'>
-          <img src={'/media/avatars/300-1.jpg'} alt='Metornic' />
+          <img src={data?.user.avatarImageId ?? '/media/avatars/blank.png'} alt='Metornic' />
         </div>
       </div>
 
@@ -28,7 +39,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
           <div className='d-flex flex-column'>
             <div className='d-flex align-items-center mb-2'>
               <p className='text-gray-800 fs-2 fw-bolder me-1 mb-0'>
-                Fajar Setiawan
+                {data?.user.name}
               </p>
             
             </div>
@@ -45,7 +56,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
                 className='d-flex align-items-center text-gray-400  me-5 mb-2'
               >
                 <KTIcon iconName='geolocation' className='fs-4 me-1' />
-                Wonosari - Kabupaten Gunung Kidul - Provinsi D.I. Yogyakarta
+                {formatAddress(data?.user.addresses?.find((a) => a.isMain === true))}
               </p>
             </div>
           </div>
@@ -57,7 +68,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
             <div className='d-flex flex-wrap'>
               <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                 <div className='d-flex align-items-center'>
-                  <div className='fs-2 fw-bolder'>Rp 18.376.231</div>
+                  <div className='fs-2 fw-bolder'>{formatCurrency(totalOrdersAmount ?? 0)}</div>
                 </div>
 
                 <div className='fw-bold fs-6 text-gray-400'>Total Pembelian</div>
@@ -65,7 +76,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
 
               <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                 <div className='d-flex align-items-center'>
-                  <div className='fs-2 fw-bolder'>180</div>
+                  <div className='fs-2 fw-bolder'>{totalOrdersQuantity}</div>
                 </div>
 
                 <div className='fw-bold fs-6 text-gray-400'>Kuantitas Pembelian</div>
@@ -73,7 +84,7 @@ const ProfileHeader = ({id}: IMemberProfileHeaderViewModel) => {
 
               <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                 <div className='d-flex align-items-center'>
-                  <div className='fs-2 fw-bolder'>2</div>
+                  <div className='fs-2 fw-bolder'>{data?.enrollments?.length}</div>
                 </div>
 
                 <div className='fw-bold fs-6 text-gray-400'>Kelas Terdaftar</div>

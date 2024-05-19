@@ -1,3 +1,4 @@
+import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import couponReducer from "@/features/reducers/affiliators/couponReducer";
@@ -12,6 +13,11 @@ const navigationPersistConfig = {
 
 const productPersistConfig = {
   key: "product",
+  storage,
+};
+
+const buyerPersistConfig = {
+  key: "buyer",
   storage,
 };
 
@@ -30,17 +36,17 @@ const persistedProductReducer = persistReducer(
   productReducer
 );
 
-const persistedCouponReducer = persistReducer(
-  couponPersistConfig,
-  couponReducer
-)
+const persistedBuyerReducer = persistReducer(buyerPersistConfig, buyersReducer);
+
+const persistedCouponReducer = persistReducer(couponPersistConfig, couponReducer);
 
 // rest of the code...
 export const store = configureStore({
   reducer: {
     navigation: persistedNavigationReducer,
     product: persistedProductReducer,
-    coupon: persistedCouponReducer
+    buyer: persistedBuyerReducer,
+    coupon: persistedCouponReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,0 +1,5 @@
+mutation BuyerCreateOne($data: BuyerCreateInput!) {
+  buyerCreateOne(data: $data) {
+    id
+  }
+}

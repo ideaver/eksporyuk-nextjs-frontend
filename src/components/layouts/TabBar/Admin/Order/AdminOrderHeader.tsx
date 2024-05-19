@@ -9,16 +9,22 @@ import useAdminOrderHeaderViewModel, {
 } from "./AdminOrderHeader-view-model";
 import ChangeOrderModal from "./components/ChangeOrderModal";
 
-const AdminOrderLayout = ({ urlType, id }: IAdminOrderHeaderViewModel) => {
+const AdminOrderLayout = ({
+  urlType,
+  id,
+  data,
+}: IAdminOrderHeaderViewModel) => {
   const {
     urls,
     handleFollupChange,
     selectedFollupValue,
     follupValues,
-    setShowOrderStatusModal, showOrderStatusModal,
+    setShowOrderStatusModal,
+    showOrderStatusModal,
     orderTableDatas,
     breadcrumbs,
-  } = useAdminOrderHeaderViewModel({ urlType, id });
+    updateOrderStatusHandler,
+  } = useAdminOrderHeaderViewModel({ urlType, id, data });
   const router = useRouter();
 
   return (
@@ -58,9 +64,9 @@ const AdminOrderLayout = ({ urlType, id }: IAdminOrderHeaderViewModel) => {
         <ChangeOrderModal
           show={showOrderStatusModal}
           onClose={() => setShowOrderStatusModal(false)}
-          onConfirm={(value) => {
-            console.log(value)
-            setShowOrderStatusModal(false)
+          onConfirm={async (value) => {
+            await updateOrderStatusHandler(value.value);
+            setShowOrderStatusModal(false);
           }}
         ></ChangeOrderModal>
       </div>
