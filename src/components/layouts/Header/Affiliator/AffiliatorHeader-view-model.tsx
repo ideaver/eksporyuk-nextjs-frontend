@@ -24,16 +24,28 @@ const useAffiliatorHeaderViewModel = ({ id }: any) => {
 
   const breadcrumbs = [
     {
-      title: "User",
+      title: "Manajemen Affiliator",
       path: "/admin/affiliate/affiliator",
       isSeparator: false,
       isActive: false,
     },
     {
-      title: "Detail Affiliator",
-      path: `/admin/affiliate/affiliator/detail/${id}/profile`,
+      title: "",
+      path: "",
       isSeparator: true,
-      isActive: true,
+      isActive: false,
+    },
+    {
+      title: "Semua Affiliator",
+      path: "/admin/affiliate/affiliator",
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: "",
+      path: "",
+      isSeparator: true,
+      isActive: false,
     },
   ];
 
