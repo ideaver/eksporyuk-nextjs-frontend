@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import {
   ArticleFindManyQuery,
   QueryMode,
+  useArticleCategoryFindManyQuery,
   useArticleFindLengthQuery,
   useArticleFindManyQuery,
-  ArticleTypeEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
+import { GroupBase, OptionsOrGroups } from "react-select";
 
 export const breadcrumbs = [
   {
@@ -52,6 +53,40 @@ const usePagination = () => {
   };
 };
 
+export const useCategoriesDropdown = () => {
+  const getCategory = useArticleCategoryFindManyQuery({
+    variables: {
+      take: null,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<unknown, GroupBase<unknown>>
+  ) {
+    const result =
+      getCategory.data?.articleCategoryFindMany?.map((category) => ({
+        value: category.id,
+        label: category.name.toLocaleLowerCase(),
+      })) ?? [];
+    await getCategory.refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+  return { loadOptions };
+};
+
 const useArticleViewModel = () => {
   const {
     currentPage,
@@ -65,14 +100,9 @@ const useArticleViewModel = () => {
     articleLength,
   } = usePagination();
 
-  const typeOption = Object.entries(ArticleTypeEnum).map(([value, label]) => ({
-    label: value,
-    value: label,
-  }));
-
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
-  const [articleFindCategory, setArticleFindCategory] = useState("all");
+  const [articleFindCategory, setArticleFindCategory] = useState(0);
 
   const articleFindMany = useArticleFindManyQuery({
     variables: {
@@ -93,11 +123,13 @@ const useArticleViewModel = () => {
                   ? false
                   : null,
             },
-            type: {
-              equals:
-                articleFindCategory === "all"
-                  ? null
-                  : (articleFindCategory as ArticleTypeEnum),
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
             },
           },
           {
@@ -121,11 +153,13 @@ const useArticleViewModel = () => {
                   ? false
                   : null,
             },
-            type: {
-              equals:
-                articleFindCategory === "all"
-                  ? null
-                  : (articleFindCategory as ArticleTypeEnum),
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
             },
           },
         ],
@@ -147,7 +181,6 @@ const useArticleViewModel = () => {
     handlePageChange,
     calculateTotalPage,
     setArticleFindStatus,
-    typeOption,
     setArticleFindCategory,
   };
 };

@@ -1,16 +1,30 @@
-import { ArticleTypeEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  FileTypeEnum,
+  QueryMode,
+  useArticleCategoryCreateOneMutation,
+  useArticleCategoryFindManyQuery,
+  useArticleCreateOneMutation,
+} from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
+  TypeCategory,
   changeCategory,
   changeContent,
   changeStatus,
   changeThumbnail,
   changeTitle,
-  changeUrlVideo,
+  changeFile,
 } from "@/features/reducers/articles/articlesReducer";
 import { UnknownAction } from "@reduxjs/toolkit";
-import { useState } from "react";
+import { useFormik } from "formik";
+import { useRouter } from "next/router";
+import * as Yup from "yup";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import axios from "axios";
+import useArticleViewModel from "../../Article-view-model";
 
 export const breadcrumbs = [
   {
@@ -26,6 +40,189 @@ export const breadcrumbs = [
     isActive: false,
   },
 ];
+
+export const useCategoriesDropdown = () => {
+  const getCategory = useArticleCategoryFindManyQuery({
+    variables: {
+      take: null,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<unknown, GroupBase<unknown>>
+  ) {
+    const result =
+      getCategory.data?.articleCategoryFindMany?.map((category) => ({
+        value: category.id,
+        label: category.name.toLocaleLowerCase(),
+      })) ?? [];
+    await getCategory.refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+  return { loadOptions, getCategory };
+};
+
+const useResetArticleState = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const resetArticleState = () => {
+    dispatch(changeCategory([]));
+    dispatch(changeContent(""));
+    dispatch(changeTitle(""));
+    dispatch(changeStatus("published"));
+    dispatch(changeThumbnail(null));
+    router.push("/admin/articles");
+  };
+
+  return { resetArticleState };
+};
+
+export const useCategoryForm = () => {
+  const { data: session, status } = useSession();
+  //
+  const { getCategory } = useCategoriesDropdown();
+
+  const [articleCategoryCreateOne, response] =
+    useArticleCategoryCreateOneMutation();
+  const categorySchema = Yup.object().shape({
+    categoryName: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(30, "Maksimal 30 simbol")
+      .required("Nama kategoru diperlukan"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      categoryName: "",
+    },
+    validationSchema: categorySchema,
+    onSubmit: (values) => {
+      try {
+        articleCategoryCreateOne({
+          variables: {
+            data: {
+              name: values.categoryName,
+              createdByAdmin: {
+                connect: {
+                  // id: session?.user?.id,
+                  id: "9e5ebc28-85bf-4ca4-b055-438acc210c65",
+                },
+              },
+            },
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        getCategory.refetch();
+      }
+    },
+  });
+  return { formik, response };
+};
+export const useArticleForm = () => {
+  const articleState = useSelector((state: RootState) => state.article);
+  const [state, setState] = useState<File | null>(null);
+  //refetch
+  const { articleFindMany } = useArticleViewModel();
+
+  //parse to { id:value }
+  const categoryArticle = articleState.category.map((e) => ({ id: e.value }));
+
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const { resetArticleState } = useResetArticleState();
+
+  //mutation
+  const [articleCreateOne, response] = useArticleCreateOneMutation({
+    variables: {
+      data: {
+        title: articleState.title,
+        content: articleState.content,
+        createdByAdmin: {
+          connect: {
+            // id: session?.user.id,
+            id: "9e5ebc28-85bf-4ca4-b055-438acc210c65",
+          },
+        },
+        isActive: articleState.status === "published" ? true : false,
+        fileUrl: {
+          connect: [
+            {
+              path: "https://www.youtube.com/watch?v=qKs7pMWXgQY",
+            },
+          ],
+        },
+        category: {
+          connect: [...categoryArticle],
+        },
+      },
+    },
+    onCompleted: () => {
+      articleFindMany.refetch();
+    },
+  });
+
+  //validation schema for article form
+  const articleSchema = Yup.object().shape({
+    title: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("Title diperlukan"),
+    content: Yup.string()
+      .min(20, "Minimal 20 simbol")
+      .required("Content diperlukan"),
+  });
+
+  const formData = new FormData();
+  // formData.append("userId", session?.user?.id as string);
+  formData.append("userId", "d37fc899-d880-4ee5-bc98-193162765579");
+  formData.append("file", state as File);
+
+  const articleForm = useFormik({
+    initialValues: {
+      content: articleState.content,
+      title: articleState.title,
+    },
+    validationSchema: articleSchema,
+    onSubmit: async (values) => {
+      if (status === "authenticated") {
+        try {
+          // const response = await axios.post(
+          //   `${process.env.NEXT_PUBLIC_UPLOAD_FILE_URL}`,
+          //   formData,
+          //   {
+          //     headers: {
+          //       "Content-Type": "multipart/form-data",
+          //     },
+          //   }
+          // );
+          articleCreateOne();
+          resetArticleState();
+        } catch (error) {
+          console.log(error);
+        } finally {
+          router.push("/admin/articles");
+        }
+      }
+    },
+  });
+
+  return { formik: articleForm, response, state, setState };
+};
+
 const useField = (
   selector: (state: RootState) => string,
   action: (value: string) => UnknownAction
@@ -43,61 +240,46 @@ const useField = (
 };
 
 const useInformationViewModel = () => {
-  const typeOption = Object.entries(ArticleTypeEnum).map(([value, label]) => ({
-    label: value,
-    value: label,
-  }));
-
   const dispatch = useDispatch();
   const status = useSelector((state: RootState) => state.article.status);
   const thumbnail = useSelector((state: RootState) => state.article.thumbnail);
   const category = useSelector((state: RootState) => state.article.category);
 
+  const { resetArticleState } = useResetArticleState();
+  const { state, setState } = useArticleForm();
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    setState(file as File);
     if (!file) return;
+    // const fileCopy = new File([file], file.name, {
+    //   type: file.type,
+    //   lastModified: file.lastModified,
+    // });
+    // console.log(fileCopy);
 
     const reader = new FileReader();
     reader.onloadend = () => {
       dispatch(changeThumbnail(reader.result as string));
     };
     reader.readAsDataURL(file);
+    // dispatch(changeFile(state));
   };
 
   const handleStatusChange = (status: string) => {
     dispatch(changeStatus(status));
   };
-  const handleCategoryChange = (status: string) => {
+  const handleCategoryChange = (status: TypeCategory[]) => {
     dispatch(changeCategory(status));
   };
-
-  const [inputTitle, setInputTitle] = useField(
-    (state: RootState) => state.article.title,
-    (value) => changeTitle(value)
-  );
-  const [inputUrlVideo, setInputUrlVideo] = useField(
-    (state: RootState) => state.article.urlVideo,
-    (value) => changeUrlVideo(value)
-  );
-  const [inputContent, setInputContent] = useField(
-    (state: RootState) => state.article.content,
-    (value) => changeContent(value)
-  );
-
   return {
+    resetArticleState,
     category,
     handleCategoryChange,
     status,
     handleFileChange,
     handleStatusChange,
     thumbnail,
-    inputContent,
-    setInputContent,
-    inputTitle,
-    setInputTitle,
-    inputUrlVideo,
-    setInputUrlVideo,
-    typeOption,
   };
 };
 

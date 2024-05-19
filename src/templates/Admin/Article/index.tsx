@@ -1,5 +1,8 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import useArticleViewModel, { breadcrumbs } from "./Article-view-model";
+import useArticleViewModel, {
+  breadcrumbs,
+  useCategoriesDropdown,
+} from "./Article-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
@@ -10,12 +13,10 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import Link from "next/link";
 import { QueryResult } from "@apollo/client";
-import {
-  ArticleFindManyQuery,
-  ArticleTypeEnum,
-} from "@/app/service/graphql/gen/graphql";
+import { ArticleFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const ArticlePage = () => {
   const {
@@ -32,7 +33,6 @@ const ArticlePage = () => {
     handlePageChange,
     calculateTotalPage,
     setArticleFindStatus,
-    typeOption,
     setArticleFindCategory,
   } = useArticleViewModel();
 
@@ -49,9 +49,8 @@ const ArticlePage = () => {
             setStatus={(val) => {
               setArticleFindStatus(val);
             }}
-            option={typeOption}
             setCategory={(val) => {
-              setArticleFindCategory(val as ArticleTypeEnum);
+              setArticleFindCategory(val?.value);
             }}
           />
           {articleFindMany.error ? (
@@ -88,7 +87,7 @@ const ArticlePage = () => {
                   return (
                     <tr key={article.id} className="">
                       <td className="">
-                        <p className="fw-bold text-black mb-0 min-w-300px align-middle">
+                        <p className="fw-bold text-black mb-0 min-w-250px align-middle">
                           {article.title}
                         </p>
                       </td>
@@ -120,12 +119,20 @@ const ArticlePage = () => {
                         </div>
                       </td>
                       <td className="min-w-175px text-end fw-bold text-muted">
-                        <Badge
+                        {/* <Badge
                           key={article.id + article.type}
                           label={article.type}
                           badgeColor="dark"
                           classNames="mx-1"
-                        />
+                        /> */}
+                        {article.category?.map((val) => (
+                          <Badge
+                            key={val.id}
+                            label={val.name}
+                            badgeColor="dark"
+                            classNames="mx-1"
+                          />
+                        ))}
                       </td>
                       <td className="min-w-100px text-end fw-bold text-muted">
                         {article.isActive ? (
@@ -136,14 +143,30 @@ const ArticlePage = () => {
                       </td>
 
                       <td className="text-end ">
-                        <Dropdown
-                          styleType="solid"
-                          options={[
-                            { label: "Edit", value: "active" },
-                            { label: "Hapus", value: "inactive" },
-                          ]}
-                          onValueChange={() => {}}
-                        />
+                        <div className="dropdown  ps-15 pe-0">
+                          <button
+                            className="btn btn-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            Actions
+                          </button>
+                          <ul className="dropdown-menu">
+                            <li>
+                              <Link
+                                href={`/admin/articles/edit/${article.id}`}
+                                className="dropdown-item"
+                              >
+                                Edit
+                              </Link>
+                            </li>
+                            <li></li>
+                            <li>
+                              <button className="dropdown-item">Hapus</button>
+                            </li>
+                          </ul>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -166,22 +189,16 @@ const ArticlePage = () => {
   );
 };
 
-interface TypeOption {
-  value: string;
-  label: string;
-}
-
 const Head = ({
   onSearch,
   setStatus,
-  option,
   setCategory,
 }: {
   onSearch: (val: string) => void;
   setStatus: (val: string) => void;
-  option: TypeOption[];
-  setCategory: (val: ArticleTypeEnum) => void;
+  setCategory: (val: any) => void;
 }) => {
+  const { loadOptions } = useCategoriesDropdown();
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -196,13 +213,20 @@ const Head = ({
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
-          <Dropdown
+          {/* <Dropdown
             styleType="solid"
             options={[{ label: "Semua Kategori", value: "all" }, ...option]}
             onValueChange={(e) => {
-              setCategory(e as ArticleTypeEnum);
+              setCategory(e as string);
             }}
-          />
+          /> */}
+          <AsyncPaginate
+            className="min-w-200px"
+            loadOptions={loadOptions}
+            onChange={(id) =>
+              setCategory(id ? id : { value: 0, lebal: "semua negara" })
+            }
+          ></AsyncPaginate>
         </div>
         <div className="col-lg-auto">
           <Dropdown

@@ -9,8 +9,11 @@ query ArticleFindMany($where: ArticleWhereInput, $take: Int, $skip: Int) {
         avatarImageId
       }
     }
+    category {
+      name
+      id
+    }
     isActive
-    type
     title
     updatedAt
   }

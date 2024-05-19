@@ -1,0 +1,18 @@
+query ArticleFindOne($where: ArticleWhereUniqueInput!) {
+  articleFindOne(where: $where) {
+    id
+    title
+    content
+    isActive
+    createdByAdminId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+    fileUrl {
+      path
+    }
+  }
+}

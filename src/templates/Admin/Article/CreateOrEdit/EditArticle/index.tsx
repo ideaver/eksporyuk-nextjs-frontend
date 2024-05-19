@@ -1,57 +1,51 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import useInformationViewModel, {
+import useEditArticleViewModel, {
+  IEditArticle,
   breadcrumbs,
-  useArticleForm,
-  useCategoriesDropdown,
-  useCategoryForm,
-} from "./Information-view-model";
+} from "./EditArticle-view-model";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { useCategoriesDropdown } from "../../Article-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { ChangeEvent, useMemo } from "react";
-import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
+import { TypeCategory } from "@/features/reducers/articles/articlesReducer";
+import { useCategoryForm } from "../Information/Information-view-model";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useDispatch } from "react-redux";
-import {
-  TypeCategory,
-  changeContent,
-  changeTitle,
-} from "@/features/reducers/articles/articlesReducer";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import clsx from "clsx";
-import { AsyncPaginate } from "react-select-async-paginate";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { useRouter } from "next/router";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
-const InformationPage = () => {
+const EditArticle = ({ id, data }: IEditArticle) => {
   const ReactQuill = useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
     []
   );
-  const router = useRouter();
-  const dispatch = useDispatch();
 
   const {
-    thumbnail,
-    handleFileChange,
-    handleStatusChange,
+    content,
+    setContent,
+    title,
+    setTitle,
     status,
+    setStatus,
     category,
-    handleCategoryChange,
-    resetArticleState,
-    // inputContent,
-    // setInputContent,
-  } = useInformationViewModel();
-  const { response } = useArticleForm();
+    setCategory,
+    formik,
+    response,
+    thumbnail,
+  } = useEditArticleViewModel({ data, id });
 
-  const { formik } = useArticleForm();
+  const router = useRouter();
 
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Tambah Artikel</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Edit Article</PageTitle>
       <LoadingOverlayWrapper
+        active={response.loading}
         styles={{
           overlay: (base) => ({
             ...base,
@@ -65,19 +59,16 @@ const InformationPage = () => {
             },
           }),
         }}
-        active={response.loading}
         spinner
       >
         <form onSubmit={formik.handleSubmit}>
           <div className="row gx-8">
             <Aside
-              // typeOption={[{ value: "sdnaw", label: "sjdnkw" }]}
-              handleCategoryChange={handleCategoryChange}
-              category={category}
-              thumbnail={thumbnail}
-              handleFileChange={handleFileChange}
-              handleStatusChange={handleStatusChange}
               status={status}
+              handleCategoryChange={setCategory}
+              category={category ?? [{ value: 0, label: "kategori nol" }]}
+              handleStatusChange={setStatus}
+              thumbnail={thumbnail}
             />
             <div className="col-lg-8">
               <KTCard className="">
@@ -101,7 +92,7 @@ const InformationPage = () => {
                       value: formik.values.title,
                       onChange: (e: any) => {
                         formik.setFieldValue("title", e.target.value);
-                        dispatch(changeTitle(e.target.value));
+                        setTitle(e.target.value);
                       },
                     }}
                   />
@@ -110,13 +101,9 @@ const InformationPage = () => {
                       <span role="alert">{formik.errors.title}</span>
                     </div>
                   )}
-                  <h5 className="text-muted mt-3">Masukan judul artikel</h5>
+                  <h5 className="text-muted mt-3">Edit judul artikel</h5>
                   <h5 className="required mt-5">Konten Artikel</h5>
-                  <div
-                    style={{
-                      height: "220px",
-                    }}
-                  >
+                  <div>
                     <ReactQuill
                       modules={{
                         toolbar: [
@@ -133,30 +120,37 @@ const InformationPage = () => {
                           ["clean"],
                         ],
                       }}
+                      className={clsx(
+                        {
+                          "is-invalid":
+                            formik.touched.content && formik.errors.content,
+                        },
+                        {
+                          "is-valid":
+                            formik.touched.content && !formik.errors.content,
+                        }
+                      )}
                       theme="snow"
                       value={formik.values.content}
-                      style={{ height: "80%" }}
                       onChange={(e) => {
                         formik.setFieldValue("content", e);
-                        dispatch(changeContent(e));
+                        setContent(e);
                       }}
                     />
                   </div>
-
                   {formik.touched.content && formik.errors.content && (
                     <div className="fv-plugins-message-container">
                       <span role="alert">{formik.errors.content}</span>
                     </div>
                   )}
-                  <h5 className="text-muted mt-3">Masukan konten artikel</h5>
+                  <h5 className="text-muted mt-3">Edit konten artikel</h5>
                 </KTCardBody>
               </KTCard>
-
               <div className="d-flex flex-end mt-6 gap-4">
                 <Buttons
                   buttonColor="secondary"
                   onClick={() => {
-                    resetArticleState();
+                    router.push("/admin/articles");
                   }}
                 >
                   Batal
@@ -167,24 +161,29 @@ const InformationPage = () => {
           </div>
         </form>
       </LoadingOverlayWrapper>
+
       <AddCategoryModal />
     </>
   );
 };
 
 const Aside = ({
-  thumbnail,
   status,
-  category,
   handleCategoryChange,
-  handleFileChange,
+  category,
   handleStatusChange,
+  thumbnail,
 }: {
-  thumbnail: string | null;
+  thumbnail:
+    | {
+        __typename?: "File" | undefined;
+        path: string;
+      }
+    | undefined;
   status: string;
-  category: TypeCategory[];
-  handleCategoryChange: (e: TypeCategory[]) => void;
-  handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  category: { value: any; label: any }[];
+  handleCategoryChange: (e: { value: any; label: any }[] | undefined) => void;
+  // handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleStatusChange: (e: string) => void;
 }) => {
   const { loadOptions } = useCategoriesDropdown();
@@ -196,7 +195,7 @@ const Aside = ({
 
           <input
             type="file"
-            onChange={handleFileChange}
+            // onChange={handleFileChange}
             className="d-none"
             accept=".jpg, .jpeg, .png"
             id="thumbnail-input"
@@ -216,7 +215,8 @@ const Aside = ({
             </div>
             <div className="card-body">
               <img
-                src={thumbnail ?? "/media/svg/files/blank-image.svg"}
+                src={thumbnail?.path ?? "/media/svg/files/blank-image.svg"}
+                // src={"/media/svg/files/blank-image.svg"}
                 alt=""
                 className="img-fluid rounded object-fit-cover"
               />
@@ -231,9 +231,9 @@ const Aside = ({
         <KTCardBody className="d-flex flex-column">
           <h3 className="mb-5">Kategori</h3>
           <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-            {category.map((e: any, index) => (
+            {category?.map((e: any, index) => (
               <Buttons
-                key={index}
+                key={e.value + index}
                 classNames="fit-content"
                 icon="cross"
                 buttonColor="secondary"
@@ -253,14 +253,18 @@ const Aside = ({
             className="min-w-200px"
             loadOptions={loadOptions}
             onChange={(value) => {
-              handleCategoryChange([...category, value as TypeCategory]);
+              console.log(value);
+              handleCategoryChange([
+                ...category,
+                value as { label: any; value: any },
+              ]);
             }}
           ></AsyncPaginate>
           {/* <Dropdown
-            options={typeOption}
-            value={category}
-            onValueChange={(value) => handleCategoryChange(value as string)}
-          ></Dropdown> */}
+              options={typeOption}
+              value={category}
+              onValueChange={(value) => handleCategoryChange(value as string)}
+            ></Dropdown> */}
           <p className="text-muted fw-bold mt-5">Atur Kategori</p>
           <Buttons
             showIcon={true}
@@ -282,7 +286,9 @@ const Aside = ({
               { value: "private", label: "Private" },
             ]}
             value={status}
-            onValueChange={(value) => handleStatusChange(value as string)}
+            onValueChange={(value) => {
+              handleStatusChange(value as string);
+            }}
           ></Dropdown>
           <p className="text-muted fw-bold mt-5">Atur Status</p>
         </KTCardBody>
@@ -346,4 +352,4 @@ const AddCategoryModal = () => {
   );
 };
 
-export default InformationPage;
+export default EditArticle;

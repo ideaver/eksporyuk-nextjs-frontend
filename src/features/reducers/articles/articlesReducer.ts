@@ -1,20 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface TypeCategory {
+  value: number;
+  label: string;
+}
+
 interface ArticleState {
-  thumbnail: string;
-  category: string;
+  thumbnail: string | null;
+  file: File | null;
+  category: TypeCategory[];
   status: string;
   title: string;
-  urlVideo: string;
   content: string;
 }
 
 const initialState: ArticleState = {
-  thumbnail: "/media/svg/files/blank-image.svg",
-  category: "",
-  status: "",
+  thumbnail: null,
+  file: null,
+  category: [],
+  status: "published",
   title: "",
-  urlVideo: "",
   content: "",
 };
 
@@ -22,10 +27,13 @@ export const articleSlice = createSlice({
   name: "article",
   initialState,
   reducers: {
-    changeThumbnail: (state, action: PayloadAction<string>) => {
+    changeThumbnail: (state, action: PayloadAction<string | null>) => {
       state.thumbnail = action.payload;
     },
-    changeCategory: (state, action: PayloadAction<string>) => {
+    changeFile: (state, action: PayloadAction<File | null>) => {
+      state.file = action.payload ? action.payload : null;
+    },
+    changeCategory: (state, action: PayloadAction<TypeCategory[]>) => {
       state.category = action.payload;
     },
     changeStatus: (state, action: PayloadAction<string>) => {
@@ -33,9 +41,6 @@ export const articleSlice = createSlice({
     },
     changeTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
-    },
-    changeUrlVideo: (state, action: PayloadAction<string>) => {
-      state.urlVideo = action.payload;
     },
     changeContent: (state, action: PayloadAction<string>) => {
       state.content = action.payload;
@@ -49,7 +54,7 @@ export const {
   changeStatus,
   changeThumbnail,
   changeTitle,
-  changeUrlVideo,
+  changeFile,
 } = articleSlice.actions;
 
 export default articleSlice.reducer;
