@@ -1,0 +1,14 @@
+mutation RewardsCatalogCreateOne($data: RewardsCatalogCreateInput!) {
+  rewardsCatalogCreateOne(data: $data) {
+    title
+    rewardsType
+    pointsRequired
+    endSales
+    description
+    id
+    createdBy {
+      id
+    }
+    createdById
+  }
+}

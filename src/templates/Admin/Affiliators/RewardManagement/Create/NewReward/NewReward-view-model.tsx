@@ -1,6 +1,7 @@
 import { useState, useRef, ChangeEvent } from "react";
+import { useRouter } from "next/router";
 
-import { useRewardsRedeemCreateOneMutation, RewardsRedeemCreateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { useRewardsCatalogCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { RewardsTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -19,13 +20,15 @@ export const breadcrumbs = [
 ];
 
 const useNewRewardViewModel = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  // Local states
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [rewardName, setRewardName] = useState("");
   const [rewardDesc, setRewardDesc] = useState("");
   const [pointsRequired, setPointsRequired] = useState(0);
   const [endSales, setEndSales] = useState("");
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -42,48 +45,48 @@ const useNewRewardViewModel = () => {
     }
   };
 
-  const [rewardsRedeemCreateMutation] = useRewardsRedeemCreateOneMutation();
+  const [rewardsCatalogCreateMutation] = useRewardsCatalogCreateOneMutation();
 
-  const handleRewardsRedeemCreateMutation = async ({ rewardName, rewardDesc, pointsRequired, endSales }: any) => {
-    const data = await rewardsRedeemCreateMutation({
+  const handleRewardsCatalogCreateOneMutation = async ({
+    rewardName,
+    rewardDesc,
+    pointsRequired,
+    endSales,
+  }: any) => {
+    const data = await rewardsCatalogCreateMutation({
       variables: {
         data: {
-          rewardsCatalog: {
-            create: {
-              title: rewardName,
-              rewardsType: RewardsTypeEnum.Product,
-              pointsRequired: Number(pointsRequired),
-              endSales,
-              description: rewardDesc,
-            },
-            connect: {
-              id: 26
-            }
-          },
-          user: {
-            connect: {
-              id: "26"
-            }
-          }
-        }
-      }
+          title: rewardName,
+          rewardsType: RewardsTypeEnum.Cash,
+          pointsRequired: Number(pointsRequired),
+          endSales,
+          description: rewardDesc,
+        },
+      },
     });
 
     return data;
-  }
+  };
 
   const onSubmit = async () => {
     try {
-      const data = await handleRewardsRedeemCreateMutation({ rewardName, rewardDesc, pointsRequired, endSales });
+      const data = await handleRewardsCatalogCreateOneMutation({
+        rewardName,
+        rewardDesc,
+        pointsRequired,
+        endSales,
+      });
       const result = data.data;
       console.log(result);
       setRewardName("");
-      setRewardDesc("")
-      setEndSales("")
-      setPreviewImages([])
+      setRewardDesc("");
+      setEndSales("");
+      setPreviewImages([]);
       setPointsRequired(0);
     } catch (error) {
-      alert(error);
+      console.log(error);
+    } finally {
+      router.push("/admin/affiliate/reward");
     }
   };
 
