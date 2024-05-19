@@ -38,6 +38,7 @@ const CreateNewRewardContent = () => {
     endSales,
     setEndSales,
     onSubmit,
+    errorMessage,
   } = useNewRewardViewModel();
 
   return (
@@ -99,6 +100,7 @@ const CreateNewRewardContent = () => {
             <div>
               <KTCard>
                 <KTCardBody>
+                  {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                   <div className="tab-content" id="myTabContent">
                     {/* Informasi Reward */}
                     <div

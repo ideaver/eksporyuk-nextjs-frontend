@@ -29,6 +29,7 @@ const useNewRewardViewModel = () => {
   const [rewardDesc, setRewardDesc] = useState("");
   const [pointsRequired, setPointsRequired] = useState(0);
   const [endSales, setEndSales] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -69,6 +70,12 @@ const useNewRewardViewModel = () => {
   };
 
   const onSubmit = async () => {
+    // Check if any required field is empty
+    if (!rewardName || !rewardDesc || !pointsRequired || !endSales) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
     try {
       const data = await handleRewardsCatalogCreateOneMutation({
         rewardName,
@@ -105,6 +112,7 @@ const useNewRewardViewModel = () => {
     handleFileClick,
     fileInputRef,
     onSubmit,
+    errorMessage,
   };
 };
 
