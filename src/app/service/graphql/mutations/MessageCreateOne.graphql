@@ -1,0 +1,14 @@
+mutation MessageCreateOne($data: MessageCreateInput!) {
+  messageCreateOne(data: $data) {
+    id
+    content
+    createdAt
+    updatedAt
+    senderId
+    replyToId
+    chatRoomId
+    files {
+      path
+    }
+  }
+}

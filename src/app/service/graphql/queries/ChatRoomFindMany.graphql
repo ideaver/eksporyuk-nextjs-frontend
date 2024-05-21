@@ -1,0 +1,69 @@
+query ChatRoomFindMany(
+  $where: ChatRoomWhereInput
+  $take: Int
+  $skip: Int
+  $orderBy: [ChatRoomOrderByWithRelationInput!]
+) {
+  chatRoomFindMany(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+    id
+    name
+    createdAt
+    updatedAt
+    endedAt
+    type
+    supportStatus
+    complain {
+      id
+      createdAt
+      updatedAt
+      resolvedAt
+      status
+      resolvedById
+      chatRoomId
+    }
+    messages {
+      id
+      content
+      createdAt
+      updatedAt
+      senderId
+      replyToId
+      chatRoomId
+      addressId
+      _count {
+        reads
+        likes
+        files
+        replies
+      }
+    }
+    participants {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+    _count {
+      participants
+      messages
+    }
+  }
+}
