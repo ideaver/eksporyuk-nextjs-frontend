@@ -81,7 +81,7 @@ const AsideAffiliateLayout = ({ children }: AsideAffiliateLayoutProps) => {
         <ClassTabBar></ClassTabBar>
         {children}
         <div className={"row flex-end mt-10"}>
-          {router.pathname !== "/admin/affiliate/coupon/information" && (
+          {router.pathname !== `/admin/affiliate/coupon/[id]/information` && (
             <Buttons
               mode="light"
               classNames={"col-lg-2 me-lg-5"}
@@ -91,8 +91,8 @@ const AsideAffiliateLayout = ({ children }: AsideAffiliateLayoutProps) => {
             </Buttons>
           )}
 
-          <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={router.pathname === "/admin/affiliate/coupon/usage" ? onSubmit : handleNext}>
-            {router.pathname === "/admin/affiliate/coupon/usage" ? "Buat Kupon" : "Selanjutnya"}
+          <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={router.pathname == `/admin/affiliate/coupon/[id]/usage` ? onSubmit : handleNext}>
+            {router.pathname == `/admin/affiliate/coupon/[id]/usage` ? "Buat Kupon" : "Selanjutnya"}
           </Buttons>
         </div>
       </div>

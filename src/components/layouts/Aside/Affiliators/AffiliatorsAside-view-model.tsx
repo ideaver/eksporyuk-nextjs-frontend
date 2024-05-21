@@ -7,11 +7,18 @@ import { RootState } from "@/app/store/store";
 import {
   changeIsActive,
   changeThumbnail,
+  changeCouponCode,
+  changeEndDate,
+  changeFreeDelivery,
+  changeLimitUsage,
+  changeStartDate,
+  changeValue
 } from "@/features/reducers/affiliators/couponReducer";
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 
-const useNavigation = () => {
+const useNavigation = ({ id }: any) => {
   const router = useRouter();
+  console.log("useNavigation", id);
 
   const pageMap: { [key: string]: string } = {
     "/information": "/affiliation",
@@ -25,9 +32,8 @@ const useNavigation = () => {
   const navigate = (pageMap: { [key: string]: string }) => {
     const pathEnd = router.pathname.split("/").pop();
     const page = pageMap[`/${pathEnd}`];
-    console.log(page);
     if (page) {
-      router.push(`/admin/affiliate/coupon${page}`);
+      router.push(`/admin/affiliate/coupon/${id}${page}`);
     }
   };
 
@@ -39,7 +45,10 @@ const useNavigation = () => {
 
 const useClassViewModel = () => {
   const dispatch = useDispatch();
-  const { handleNext, handlePrevious } = useNavigation();
+  const router = useRouter();
+  const { id } = router.query;
+  const { handleNext, handlePrevious } = useNavigation({ id });
+
   const thumbnail = useSelector((state: RootState) => state.coupon.thumbnail);
   const status = useSelector((state: RootState) => state.coupon.isActive);
   const couponCode = useSelector((state: RootState) => state.coupon.couponCode);
@@ -65,6 +74,18 @@ const useClassViewModel = () => {
 
   const [affiliatorCouponCreateMutation] = useAffiliatorCouponCreateOneMutation();
 
+  // Reset form data
+  const resetFormData = () => {
+    dispatch(changeCouponCode(""));
+    dispatch(changeEndDate(""));
+    dispatch(changeFreeDelivery(false));
+    dispatch(changeIsActive("false"));
+    dispatch(changeLimitUsage(0));
+    dispatch(changeStartDate(""));
+    dispatch(changeThumbnail(""));
+    dispatch(changeValue(0));
+  };
+
   // Mutation Data
   const handleAffiliatorCouponCreateMutation = async ({ couponCode, value, endDate, isFreeDelivery, isActive }: any) => {
     const data = await affiliatorCouponCreateMutation({
@@ -81,13 +102,8 @@ const useClassViewModel = () => {
             }
           },
           createdBy: {
-            create: {
-              user: {
-                connect: {
-                  username: "hello",
-                  name: null
-                }
-              }
+            connect: {
+              id: String(id),
             }
           }
         }
@@ -100,10 +116,13 @@ const useClassViewModel = () => {
   const onSubmit = async () => {
     try {
       const data = await handleAffiliatorCouponCreateMutation({couponCode, value, endDate, isFreeDelivery, isActive})
+      resetFormData();
       const result = data.data;
       console.log(result);
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
+    } finally {
+      router.push("/admin/affiliate/affiliator");
     }
   }
 

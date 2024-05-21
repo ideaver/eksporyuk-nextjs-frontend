@@ -57,8 +57,6 @@ const useCouponInformationViewModel = () => {
     (value) => changeFreeDelivery(value)
   );
 
-  console.log(isFreeDelivery);
-
   const [endDate, setEndDate] = useField(
     (state: RootState) => state.coupon.endDate,
     (value) => changeEndDate(value)

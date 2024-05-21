@@ -1,4 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { useRouter } from "next/router";
+import Link from "next/link";
+
 import { KTIcon } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
@@ -7,6 +10,7 @@ import useAffiliatorHeaderViewModel from "./AffiliatorHeader-view-model";
 import { formatCurrency } from '@/app/service/utils/currencyFormatter';
 
 const AffiliatorHeader = ({ id, data }: any) => {
+  const router = useRouter();
   const { urls, breadcrumbs } = useAffiliatorHeaderViewModel({ id });
   const userData = data?.affiliatorFindOne?.user;
   const affiliatorData = data?.affiliatorFindOne;
@@ -20,7 +24,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
     return total + (orderQuantity ?? 0);
   } , 0);
 
-  console.log(totalOrdersAmount, totalOrdersQuantity);
+  console.log(id);
 
   return (
     <>
@@ -28,6 +32,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
 
       <div className="card mb-5 mb-xl-10">
         <div className="card-body pt-9 pb-0">
+          {/* Image profile */}
           <div className="d-flex flex-wrap flex-sm-nowrap mb-3">
             <div className="me-7 mb-4">
               <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
@@ -38,6 +43,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
               </div>
             </div>
 
+            {/* Name & address */}
             <div className="flex-grow-1">
               <div className="d-flex justify-content-between align-items-start flex-wrap mb-2">
                 <div className="d-flex flex-column">
@@ -60,6 +66,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                     </p>
                   </div>
                 </div>
+                <Link href={`/admin/affiliate/coupon/${id}/information`} className="btn btn-primary">Tambah Kupon</Link>
               </div>
 
               <div className="d-flex flex-wrap flex-stack">
@@ -103,6 +110,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                   </div>
                 </div>
               </div>
+              
             </div>
           </div>
 

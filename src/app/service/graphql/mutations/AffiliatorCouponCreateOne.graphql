@@ -1,6 +1,7 @@
 mutation AffiliatorCouponCreateOne($data: AffiliatorCouponCreateInput!) {
   affiliatorCouponCreateOne(data: $data) {
     code
+    id
     coupon {
       freeDelivery
       startDate
@@ -8,10 +9,22 @@ mutation AffiliatorCouponCreateOne($data: AffiliatorCouponCreateInput!) {
       type
     }
     createdBy {
-      user {
-        username
-        name
-      }
+      id
+    }
+    coupon {
+      description
+      endDate
+      freeDelivery
+      isActive
+      value
+      type
+      startDate
+      claimerQuota
+      maxClaimPerUser
+      maxOrderQuantityValue
+      maxOrderTotalAmountValue
+      minOrderQuantityValue
+      minOrderTotalAmountValue
     }
   }
 }

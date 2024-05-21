@@ -37,5 +37,40 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
       }
       createdAt
     }
+    createdCoupons {
+      code
+      id
+      createdBy {
+        user {
+          email
+          name
+          username
+        }
+      }
+      extendedFrom {
+        extendedByCourses {
+          course {
+            id
+          }
+        }
+      }
+      coupon {
+        claimerQuota
+        createdAt
+        description
+        endDate
+        imageId
+        isActive
+        maxClaimPerUser
+        maxOrderQuantityValue
+        maxOrderTotalAmountValue
+        minOrderQuantityValue
+        minOrderTotalAmountValue
+        startDate
+        updatedAt
+        type
+        value
+      }
+    }
   }
 }
