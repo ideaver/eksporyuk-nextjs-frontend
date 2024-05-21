@@ -1,4 +1,371 @@
+import {
+  OmzetReferralLinkQuery,
+  PeriodEnum,
+  SalesDataQuery,
+  TotalSalesAndOmzetQuery,
+  useOmzetsReferralLinkQuery,
+  useOrderCountsByCustomPeriodQuery,
+  useSalesDataQueryQuery,
+  useTotalSalesAndOmzetsQuery,
+  useUserCompetitorsQueryQuery,
+  useUserCountQuery,
+} from "@/app/service/graphql/gen/graphql";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { QueryResult } from "@apollo/client";
 import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
+
+export const useTotalSales = () => {
+  const date = useMemo(() => new Date(), []);
+
+  const [period, setPeriod] = useState(1);
+
+  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
+  const timeReduction = timeReductionMap[period] || 1;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  const [series, setSeries] = useState<any>();
+  const [categories, setCategories] = useState<any>();
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+    totalSales.refetch();
+  }, [date, timeReduction]);
+
+  const totalSales = useTotalSalesAndOmzetsQuery({
+    variables: {
+      totalSalesAndOmzet: {
+        // 7 hari ke belakang
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+  });
+
+  const chartSales = useSalesDataQueryQuery({
+    variables: {
+      salesData: {
+        period:
+          period === 1
+            ? PeriodEnum.Daily
+            : period === 2
+            ? PeriodEnum.Daily
+            : PeriodEnum.Weekly,
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+    onCompleted: () => {
+      setSeries(chartSales.data?.salesDataQuery?.map((value) => value.sales));
+      setCategories(
+        chartSales.data?.salesDataQuery?.map((value: any) => {
+          const date = new Date(value?.period);
+          return formatDate(date.toString()).split(" ").slice(0, 2).join(" ");
+        })
+      );
+    },
+  });
+
+  const totalSalesData: any = totalSales?.data?.totalSalesAndOmzet;
+
+  return { totalSalesData, categories, series, setPeriod };
+};
+
+export const useTotalOmzet = () => {
+  const date = useMemo(() => new Date(), []);
+
+  const [period, setPeriod] = useState(1);
+
+  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
+  const timeReduction = timeReductionMap[period] || 1;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  const [series, setSeries] = useState<any>();
+  const [categories, setCategories] = useState<any>();
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+  }, [date, timeReduction]);
+
+  const totalOmzet = useTotalSalesAndOmzetsQuery({
+    variables: {
+      totalSalesAndOmzet: {
+        // 7 hari ke belakang
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+  });
+
+  const chartOmzet = useSalesDataQueryQuery({
+    variables: {
+      salesData: {
+        period:
+          period === 1
+            ? PeriodEnum.Daily
+            : period === 2
+            ? PeriodEnum.Daily
+            : PeriodEnum.Weekly,
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+    onCompleted: async () => {
+      setSeries(chartOmzet.data?.salesDataQuery?.map((value) => value.omzet));
+      setCategories(
+        chartOmzet.data?.salesDataQuery?.map((value: any) => {
+          const date = new Date(value?.period);
+          return formatDate(date.toString()).split(" ").slice(0, 2).join(" ");
+        })
+      );
+    },
+  });
+
+  const totalOmzetData: any = totalOmzet?.data?.totalSalesAndOmzet;
+
+  return {
+    totalOmzetData,
+    categories,
+    series,
+    setPeriod,
+  };
+};
+
+export const useTotalLead = () => {
+  // for label
+
+  const date = useMemo(() => new Date(), []);
+
+  const [period, setPeriod] = useState(1);
+
+  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
+  const timeReduction = timeReductionMap[period] || 1;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  const [series, setSeries] = useState<any>();
+  const [categories, setCategories] = useState<any>();
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+    chartLead.refetch();
+  }, [date, timeReduction]);
+
+  const totalLead = useTotalSalesAndOmzetsQuery({
+    variables: {
+      totalSalesAndOmzet: {
+        // 7 hari ke belakang
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+  });
+
+  const chartLead = useSalesDataQueryQuery({
+    variables: {
+      salesData: {
+        period:
+          period === 1
+            ? PeriodEnum.Daily
+            : period === 2
+            ? PeriodEnum.Daily
+            : PeriodEnum.Weekly,
+        start: dateStart,
+        end: dateEnd,
+      },
+    },
+    onCompleted: () => {
+      setSeries(chartLead.data?.salesDataQuery?.map((value) => value.lead));
+      setCategories(
+        chartLead.data?.salesDataQuery?.map((value: any) => {
+          const date = new Date(value?.period);
+          return formatDate(date.toString()).split(" ").slice(0, 2).join(" ");
+        })
+      );
+    },
+  });
+
+  const totalLeadData: any = totalLead?.data?.totalSalesAndOmzet;
+
+  return {
+    totalLeadData,
+    categories,
+    series,
+    setPeriod,
+  };
+};
+
+export const useOrderCountByCustomPeriod = () => {
+  const date = useMemo(() => new Date(), []);
+
+  const [period, setPeriod] = useState(1);
+
+  const timeReductionMap: any = { 1: 365, 2: 30 };
+  const timeReduction = timeReductionMap[period] || 356;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  const [series, setSeries] = useState<any>();
+  const [categories, setCategories] = useState<any>();
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+  }, [date, timeReduction]);
+
+  const orderCountByCustomPeriod = useOrderCountsByCustomPeriodQuery({
+    variables: {
+      orderCountByCustomPeriod: {
+        start: dateStart,
+        end: dateEnd,
+        period: period === 1 ? PeriodEnum.Monthly : PeriodEnum.Weekly,
+      },
+    },
+    onCompleted: () => {
+      setSeries([
+        {
+          name: "Sales",
+          data: orderCountByCustomPeriod?.data?.orderCountByCustomPeriod?.map(
+            (value: any) => value?.totalOrder
+          ),
+        },
+        {
+          name: "Omzet",
+          data: orderCountByCustomPeriod?.data?.orderCountByCustomPeriod?.map(
+            (value: any) => value?.totalOmzet
+          ),
+        },
+      ]);
+      setCategories(
+        orderCountByCustomPeriod?.data?.orderCountByCustomPeriod?.map(
+          (value: any) => {
+            const datePeriod = new Date(value?.period);
+            const fromatedDate =
+              period === 1
+                ? `${formatDate(datePeriod.toString())
+                    .split(" ")
+                    .slice(1, 3)
+                    .join(" ")}`
+                : `${formatDate(datePeriod.toString()).split(" ").join(" ")}`;
+            return fromatedDate;
+          }
+        )
+      );
+    },
+  });
+  return { series, categories, setPeriod };
+};
+
+export const useNewMember = () => {
+  const date = useMemo(() => new Date(), []);
+
+  const [period, setPeriod] = useState(1);
+
+  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
+  const timeReduction = timeReductionMap[period] || 1;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+  }, [date, pastDate]);
+
+  const newMemberTotal = useUserCountQuery({
+    variables: {
+      where: {
+        createdAt: {
+          lte: dateEnd,
+          gte: dateStart,
+        },
+      },
+    },
+  });
+  return { newMemberTotal, setPeriod };
+};
+
+export const useReferralLink = () => {
+  const { data } = useOmzetsReferralLinkQuery();
+  return { data };
+};
+
+export const useUserCompetitor = () => {
+  const date = useMemo(() => new Date(), []);
+
+  // const [period, setPeriod] = useState(1);
+
+  const timeReduction = 365;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+  }, [date, pastDate]);
+
+  const { data } = useUserCompetitorsQueryQuery({
+    variables: {
+      userCompetitorQuery: {
+        future: dateEnd,
+        past: dateStart,
+        take: 10,
+      },
+    },
+  });
+
+  return { data };
+};
 
 export const listCardItems: ListItem[] = [
   {
@@ -124,59 +491,6 @@ export interface TableRowData {
 export interface AkuisisiTableProps {
   data: TableRowData[];
 }
-
-export const akuisisTableData: TableRowData[] = [
-  {
-    source: "copy_link",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Email",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Facebook Organik",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Facebook",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Instagram",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Instagram Story ",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-  {
-    source: "Line",
-    view: 52235,
-    lead: 1797,
-    sale: 1012,
-    value: "Rp. 1.476.619.696",
-  },
-];
-"/media/products/1.png"
 export interface DashboardTableRow {
   title: string;
   img: string;
@@ -240,7 +554,7 @@ export const dashboardTableMocks: DashboardTableRow[] = [
     img: "/media/products/5.png",
     value: "Rp. 1.476.619.696",
   },
- ]
+];
 
 const usePackages = () => {
   const BigChart = dynamic(
@@ -305,40 +619,21 @@ const useDashboardViewModel = () => {
     },
   ];
 
-  const mockData = {
-    series: [
-      {
-        name: "Sales",
-        data: Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 1000000)
-        ),
-      },
-      {
-        name: "Omzet",
-        data: Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 1000000)
-        ),
-      },
-    ],
-    categories: [
-      "Jan 2024",
-      "Feb 2024",
-      "Mar 2024",
-      "Apr 2024",
-      "May 2024",
-      "Jun 2024",
-      "Jul 2024",
-      "Aug 2024",
-      "Sep 2024",
-      "Oct 2024",
-      "Nov 2024",
-      "Dec 2024",
-    ],
-  };
+  // simplefy number
+  function simplifyNumber(n: string): string {
+    const number = parseInt(n);
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(0) + "M";
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(0) + "k";
+    } else {
+      return number.toString();
+    }
+  }
 
   return {
     breadcrumbs,
-    mockData,
+    simplifyNumber,
   };
 };
 
