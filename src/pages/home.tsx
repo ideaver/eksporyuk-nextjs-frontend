@@ -23,9 +23,7 @@ export default function Home() {
     }
   }, [data, loading]);
 
-  if (session?.user.role === "ADMIN") {
-    router.replace("/admin/dashboard");
-  }
+  router.replace("/admin/dashboard");
 
   return (
     <>

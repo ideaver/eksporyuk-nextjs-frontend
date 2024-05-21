@@ -105,6 +105,28 @@ export const adminMenus: MenuSection[] = [
         title: "Manajemen Produk",
         to: "/admin/products",
         icon: "basket",
+        subItems: [
+          {
+            title: "Semua Produk",
+            to: "/admin/products/product",
+            icon: "parcel",
+          },
+          {
+            title: "Semua Bundle",
+            to: "/admin/products/bundle",
+            icon: "cube-2",
+          },
+          {
+            title: "Semua Layanan",
+            to: "/admin/products/service",
+            icon: "cube-3",
+          },
+        ],
+      },
+      {
+        title: "Manajemen Kelas",
+        to: "/admin/courses",
+        icon: "book-open",
       },
       { title: "Manajemen Order", to: "/admin/orders", icon: "delivery-3" },
       {

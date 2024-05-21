@@ -1,4 +1,9 @@
-query UserFindMany($where: UserWhereInput, $orderBy: [UserOrderByWithRelationInput!], $take: Int, $skip: Int) {
+query UserFindMany(
+  $where: UserWhereInput
+  $orderBy: [UserOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
   userFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
     id
     name
@@ -22,5 +27,10 @@ query UserFindMany($where: UserWhereInput, $orderBy: [UserOrderByWithRelationInp
     gender
     avatarImageId
     referralLinkId
+    admin {
+      id
+      createdAt
+      modifyPlatformSettingId
+    }
   }
 }

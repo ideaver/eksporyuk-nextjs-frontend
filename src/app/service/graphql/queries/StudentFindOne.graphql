@@ -262,6 +262,29 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
         lessonId
         enrollmentId
       }
+      course {
+        id
+        title
+        description
+        prerequisites
+        objective
+        outcome
+        startDate
+        endDate
+        maxEnrollment
+        deepLink
+        isCertificationProvided
+        basePrice
+        sellingPrice
+        createdAt
+        updatedAt
+        status
+        level
+        duration
+        categoryId
+        createdById
+        videoUrlId
+      }
     }
     _count {
       reviewedCourses

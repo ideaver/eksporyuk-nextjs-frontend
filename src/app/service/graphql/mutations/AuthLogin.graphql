@@ -24,6 +24,11 @@ mutation AuthLogin($loginArgs: LoginArgs!) {
       gender
       avatarImageId
       referralLinkId
+      admin {
+        id
+        createdAt
+        modifyPlatformSettingId
+      }
     }
   }
 }
