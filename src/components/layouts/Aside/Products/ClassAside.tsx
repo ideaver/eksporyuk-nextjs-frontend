@@ -91,7 +91,9 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
           )}
 
           <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={handleNext}>
-            {router.pathname === "/admin/products/[action]/certificate" ? "Kirim" : "Selanjutnya"}
+            {router.pathname === "/admin/products/[action]/certificate"
+              ? "Kirim"
+              : "Selanjutnya"}
           </Buttons>
         </div>
       </div>

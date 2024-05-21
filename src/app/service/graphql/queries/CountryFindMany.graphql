@@ -1,0 +1,6 @@
+query CountryFindMany($where: CountryWhereInput, $take: Int, $skip: Int) {
+  countryFindMany(where: $where, take: $take, skip: $skip) {
+    name
+    id
+  }
+}

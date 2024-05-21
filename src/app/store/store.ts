@@ -1,3 +1,4 @@
+import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import { configureStore } from "@reduxjs/toolkit";
@@ -14,6 +15,11 @@ const productPersistConfig = {
   storage,
 };
 
+const buyerPersistConfig = {
+  key: "buyer",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -24,11 +30,14 @@ const persistedProductReducer = persistReducer(
   productReducer
 );
 
+const persistedBuyerReducer = persistReducer(buyerPersistConfig, buyersReducer);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
     navigation: persistedNavigationReducer,
     product: persistedProductReducer,
+    buyer: persistedBuyerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
