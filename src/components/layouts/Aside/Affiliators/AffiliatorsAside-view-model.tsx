@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 
-import { AffiliatorCouponCreateOneMutation, useAffiliatorCouponCreateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { AffiliatorCouponCreateOneMutation, useAffiliatorCouponCreateOneMutation, useCouponCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
   changeIsActive,
@@ -72,7 +72,7 @@ const useClassViewModel = () => {
     dispatch(changeIsActive(status));
   };
 
-  const [affiliatorCouponCreateMutation] = useAffiliatorCouponCreateOneMutation();
+  const [couponCreateMutation] = useCouponCreateOneMutation();
 
   // Reset form data
   const resetFormData = () => {
@@ -87,23 +87,29 @@ const useClassViewModel = () => {
   };
 
   // Mutation Data
-  const handleAffiliatorCouponCreateMutation = async ({ couponCode, value, endDate, isFreeDelivery, isActive }: any) => {
-    const data = await affiliatorCouponCreateMutation({
+  const handleCouponCreateMutation = async ({ couponCode, value, endDate, isFreeDelivery, isActive }: any) => {
+    const data = await couponCreateMutation({
       variables: {
         data: {
-          code: couponCode,
-          coupon: {
+          startDate: new Date(),
+          value,
+          isActive: Boolean(isActive),
+          freeDelivery: isFreeDelivery,
+          endDate,
+          type: DiscountTypeEnum.Amount,
+          affiliatorCoupon: {
             create: {
-              freeDelivery: isFreeDelivery,
-              startDate: new Date(endDate),
-              type: DiscountTypeEnum.Amount,
-              value: value,
-              isActive: Boolean(isActive)
-            }
-          },
-          createdBy: {
-            connect: {
-              id: String(id),
+              code: couponCode,
+              extendedFrom: {
+                connect: {
+                  id: 2,
+                }
+              },
+              createdBy: {
+                connect: {
+                  id: String(id)
+                }
+              }
             }
           }
         }
@@ -115,7 +121,7 @@ const useClassViewModel = () => {
   // Data Mutation
   const onSubmit = async () => {
     try {
-      const data = await handleAffiliatorCouponCreateMutation({couponCode, value, endDate, isFreeDelivery, isActive})
+      const data = await handleCouponCreateMutation({couponCode, value, endDate, isFreeDelivery, isActive})
       resetFormData();
       const result = data.data;
       console.log(result);
