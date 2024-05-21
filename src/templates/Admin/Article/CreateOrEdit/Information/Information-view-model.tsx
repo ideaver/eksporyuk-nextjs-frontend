@@ -116,8 +116,8 @@ export const useCategoryForm = () => {
               name: values.categoryName,
               createdByAdmin: {
                 connect: {
-                  // id: session?.user?.id,
-                  id: "9e5ebc28-85bf-4ca4-b055-438acc210c65",
+                  id: session?.user?.id,
+                  // id: "2d79b348-4fde-4382-b9d6-7c4add6c458b",
                 },
               },
             },
@@ -153,8 +153,8 @@ export const useArticleForm = () => {
         content: articleState.content,
         createdByAdmin: {
           connect: {
-            // id: session?.user.id,
-            id: "9e5ebc28-85bf-4ca4-b055-438acc210c65",
+            id: session?.user.id,
+            // id: "2d79b348-4fde-4382-b9d6-7c4add6c458b",
           },
         },
         isActive: articleState.status === "published" ? true : false,
@@ -211,6 +211,7 @@ export const useArticleForm = () => {
           // );
           articleCreateOne();
           resetArticleState();
+          articleFindMany.refetch();
         } catch (error) {
           console.log(error);
         } finally {
