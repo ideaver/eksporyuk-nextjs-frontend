@@ -91,8 +91,8 @@ const AsideAffiliateLayout = ({ children }: AsideAffiliateLayoutProps) => {
             </Buttons>
           )}
 
-          <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={router.pathname == `/admin/affiliate/coupon/[id]/usage` ? onSubmit : handleNext}>
-            {router.pathname == `/admin/affiliate/coupon/[id]/usage` ? "Buat Kupon" : "Selanjutnya"}
+          <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={router.pathname == `/admin/affiliate/coupon/[id]/affiliation` ? onSubmit : handleNext}>
+            {router.pathname == `/admin/affiliate/coupon/[id]/affiliation` ? "Buat Kupon" : "Selanjutnya"}
           </Buttons>
         </div>
       </div>

@@ -21,10 +21,10 @@ const useClassTabBarViewModel = () => {
       label: "Affiliasi",
       to: `/admin/affiliate/coupon/${id}/affiliation`,
     },
-    {
-      label: "Penggunaan",
-      to: `/admin/affiliate/coupon/${id}/usage`,
-    },
+    // {
+    //   label: "Penggunaan",
+    //   to: `/admin/affiliate/coupon/${id}/usage`,
+    // },
   ];
 
   const breadcrumbs = [

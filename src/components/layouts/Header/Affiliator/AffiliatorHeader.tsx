@@ -66,7 +66,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                     </p>
                   </div>
                 </div>
-                <Link href={`/admin/affiliate/coupon/${id}/information`} className="btn btn-primary">Tambah Kupon</Link>
+                {/* <Link href={`/admin/affiliate/coupon/${id}/information`} className="btn btn-primary">Tambah Kupon</Link> */}
               </div>
 
               <div className="d-flex flex-wrap flex-stack">

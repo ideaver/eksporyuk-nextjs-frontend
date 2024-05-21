@@ -1,6 +1,7 @@
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -11,7 +12,10 @@ import {
   changeStartDate,
   changeValue,
   changeLimitUsage,
+  changeAllowAffiliator,
 } from "@/features/reducers/affiliators/couponReducer";
+import { useCouponCreateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const useField = <T extends string | boolean | number>(
   selector: (state: RootState) => T,
@@ -42,6 +46,11 @@ const useField = <T extends string | boolean | number>(
 };
 
 const useCouponInformationViewModel = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const { id } = router.query;
+
   const [couponCode, setCouponCode] = useField(
     (state: RootState) => state.coupon.couponCode,
     (value) => changeCouponCode(value)
@@ -77,6 +86,73 @@ const useCouponInformationViewModel = () => {
     (value) => changeLimitUsage(value)
   );
 
+  const [allowAffiliator, setAllowAffiliator] = useField(
+    (state: RootState) => state.coupon.allowAffiliator,
+    (value) => changeAllowAffiliator(value)
+  )
+
+  const [couponCreateMutation] = useCouponCreateOneMutation();
+
+  const resetFormData = () => {
+    dispatch(changeCouponCode(""));
+    dispatch(changeEndDate(""));
+    dispatch(changeFreeDelivery(false));
+    dispatch(changeIsActive("false"));
+    dispatch(changeLimitUsage(0));
+    dispatch(changeStartDate(""));
+    dispatch(changeValue(0));
+    dispatch(changeAllowAffiliator(false));
+  };
+
+  const handleStatusChange = (status: string) => {
+    dispatch(changeIsActive(status));
+  };
+
+  // Mutation Data
+  const handleCouponCreateMutation = async ({ couponCode, value, endDate, isActive }: any) => {
+    const data = await couponCreateMutation({
+      variables: {
+        data: {
+          startDate: new Date(),
+          value,
+          isActive: Boolean(isActive),
+          endDate,
+          type: DiscountTypeEnum.Amount,
+          affiliatorCoupon: {
+            create: {
+              code: couponCode,
+              extendedFrom: {
+                connect: {
+                  id: 2,
+                }
+              },
+              createdBy: {
+                connect: {
+                  id: String(id)
+                }
+              }
+            }
+          }
+        }
+      },
+    });
+    return data;
+  };
+
+  // Data Mutation
+  const onSubmit = async () => {
+    try {
+      const data = await handleCouponCreateMutation({couponCode, value, endDate, isActive})
+      resetFormData();
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.push(`/admin/affiliate/affiliator/detail/${id}/profile`);
+    }
+  }
+
   return {
     isFreeDelivery,
     setIsFreeDelivery,
@@ -92,6 +168,10 @@ const useCouponInformationViewModel = () => {
     setStartDate,
     limitUsage,
     setLimitUsage,
+    handleStatusChange,
+    onSubmit,
+    allowAffiliator,
+    setAllowAffiliator,
   };
 };
 
