@@ -1,8 +1,13 @@
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
+import {
+  OrderFindManyQuery,
+  OrderStatusEnum,
+} from "@/app/service/graphql/gen/graphql";
+import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
@@ -10,8 +15,9 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import { QueryResult } from "@apollo/client";
 import Link from "next/link";
-import { Modal } from "react-bootstrap";
+import { useState } from "react";
 import Flatpickr from "react-flatpickr";
 import { breadcrumbs } from "../Products/Products-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
@@ -20,133 +26,52 @@ const OrderPage = ({}) => {
   const {
     exportModalState,
     setExportModalState,
+    orderFindMany,
+    setOrderFindTake,
+    setOrderFindSearch,
+    calculateTotalPage,
+    currentPage,
+    handlePageChange,
+    handleSelectAllCheck,
+    handleSingleCheck,
+    checkedItems,
+    selectAll,
+    setStatusFilter,
   } = useAdminOrderViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Order</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head  />
-          <KTTable utilityGY={5} responsive="table-responsive my-10">
-            <KTTableHead
-              textColor="muted"
-              fontWeight="bold"
-              className="text-uppercase align-middle"
-            >
-              <th className="min-w-150px">
-                <CheckBoxInput
-                  checked={false}
-                  name="check-all"
-                  value="all"
-                  defaultChildren={false}
-                  onChange={() => {}}
-                >
-                  <p className="mb-0">ID ORDER</p>
-                </CheckBoxInput>
-              </th>
-              <th className="min-w-275px">Nama Course</th>
-              <th className="text-end min-w-275px">Pembeli</th>
-              <th className="text-end min-w-200px">Tanggal Pembelian</th>
-              <th className="text-end min-w-200px">Total Harga</th>
-              <th className="text-end min-w-275px">Afiliasi</th>
-              <th className="text-end min-w-200px">Kupon</th>
-              <th className="text-end min-w-150px">Status</th>
-              <th className="text-end min-w-100px">Actions</th>
-            </KTTableHead>
-            <tr>
-              <td className="align-middle">
-                <CheckBoxInput
-                  className="ps-0"
-                  checked={false}
-                  name="check-all"
-                  value="all"
-                  defaultChildren={false}
-                  onChange={() => {}}
-                >
-                  <p className="fw-bold text-black mb-0">INV 12345</p>
-                </CheckBoxInput>
-              </td>
-              <td className="align-middle ">
-                <div className="d-flex align-items-center">
-                  <Link
-                    href="orders/inv1234/detail-order"
-                    className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold mb-0"
-                  >
-                    Ekspor Yuk Automation (EYA)
-                  </Link>
-                </div>
-              </td>
-
-              <td className="align-middle text-end w-250px">
-                <div className="d-flex align-items-center justify-content-end">
-                  <div className="symbol symbol-50px symbol-circle me-5">
-                    <img
-                      className="symbol-label bg-gray-600"
-                      src={"/media/avatars/300-1.jpg"}
-                      width={50}
-                      height={50}
-                      alt=""
-                    />
-                  </div>
-                  <div className="d-flex flex-column">
-                    <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
-                      Cindy Ayu Pradila
-                    </span>
-                  </div>
-                </div>
-              </td>
-              <td className="align-middle text-end text-muted fw-bold w-150px">
-                12 November 2022
-              </td>
-              <td className="align-middle text-end text-muted fw-bold w-150px">
-                Rp 698.342
-              </td>
-              <td className="align-middle text-end w-250px">
-                <div className="d-flex align-items-center justify-content-end">
-                  <div className="symbol symbol-50px symbol-circle me-5">
-                    <img
-                      className="symbol-label bg-gray-600"
-                      src={"/media/avatars/300-1.jpg"}
-                      width={50}
-                      height={50}
-                      alt=""
-                    />
-                  </div>
-                  <div className="d-flex flex-column">
-                    <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
-                      Didik Sugiarto
-                    </span>
-                  </div>
-                </div>
-              </td>
-              <td className="align-middle text-end text-muted fw-bold w-150px">
-                EKSPORYUK
-              </td>
-              <td className="align-middle text-end">
-                <p>
-                  {" "}
-                  <Badge label="Published" badgeColor="success" />{" "}
-                </p>
-              </td>
-              <td className="align-middle text-end ">
-                <Dropdown
-                  styleType="solid"
-                  options={[
-                    { label: "Action", value: "all" },
-                    { label: "Aktif", value: "active" },
-                    { label: "Tidak Aktif", value: "inactive" },
-                  ]}
-                  onValueChange={() => {}}
-                />
-              </td>
-            </tr>
-          </KTTable>
-
-          <Footer />
+          <Head
+            onStatusChanged={(val) => {
+              if (val === "all") return setStatusFilter(undefined);
+              setStatusFilter(val as OrderStatusEnum);
+            }}
+            onSearch={(val) => {
+              setOrderFindSearch(val);
+            }}
+          />
+          <Body
+            orderFindMany={orderFindMany}
+            handleSelectAllCheck={handleSelectAllCheck}
+            handleSingleCheck={handleSingleCheck}
+            checkedItems={checkedItems}
+            selectAll={selectAll}
+          />
+          <Footer
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            setMentorFindSkip={(val) => {}}
+            setMentorFindTake={(val) => {
+              setOrderFindTake(val);
+            }}
+          />
         </KTCardBody>
       </KTCard>
       <ExportModal
-        onClose={()=>{}}
+        onClose={() => {}}
         date={exportModalState}
         onChange={([startDate, endDate]) => {
           setExportModalState([startDate, endDate]);
@@ -156,7 +81,13 @@ const OrderPage = ({}) => {
   );
 };
 
-const Head = () => {
+const Head = ({
+  onStatusChanged,
+  onSearch,
+}: {
+  onStatusChanged: (val: string) => void;
+  onSearch: (val: string) => void;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -164,53 +95,40 @@ const Head = () => {
           styleType="solid"
           preffixIcon="magnifier"
           placeholder="Search"
+          props={{
+            onChange: (e: any) => onSearch(e.target.value),
+          }}
         ></TextField>
       </div>
-      {/* TODO This is for multiple instace, make when integrating */}
-      {/* <div className="row col-lg-auto gy-3 align-items-center">
-        <div className="col-lg-auto">
-          <p className="mb-0 fw-bold">3 Items Selected</p>
-        </div>
-        <div className="col-lg-auto">
-          <Buttons mode="light">Change Status</Buttons>
-        </div>
-        <div className="col-lg-auto">
-          <Buttons
-            data-bs-toggle="modal"
-            data-bs-target="#kt_create_coupon_modalllllsss"
-            buttonColor="danger"
-          >
-            Delete Selected
-          </Buttons>
-        </div>
-      </div> */}
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
-              { label: "Semua Tipe Order", value: "all" },
-              { label: "Aktif", value: "active" },
-              { label: "Tidak Aktif", value: "inactive" },
-            ]}
-            onValueChange={() => {}}
-          />
-        </div>
-        <div className="col-lg-auto">
-          <Dropdown
-            styleType="solid"
-            options={[
               { label: "Semua Status", value: "all" },
-              { label: "Aktif", value: "active" },
-              { label: "Tidak Aktif", value: "inactive" },
+              { label: "PENDING", value: OrderStatusEnum.Pending },
+              { label: "PROCESSING", value: OrderStatusEnum.Processing },
+              { label: "DONE", value: OrderStatusEnum.Done },
+              { label: "SHIPPED", value: OrderStatusEnum.Shipped },
+              { label: "DELIVERED", value: OrderStatusEnum.Delivered },
+              { label: "CANCELLED", value: OrderStatusEnum.Cancelled },
+              { label: "RETURNED", value: OrderStatusEnum.Returned },
             ]}
-            onValueChange={() => {}}
+            onValueChange={(val) => {
+              onStatusChanged(val as string);
+            }}
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons  data-bs-toggle="modal" data-bs-target="#kt_export_order_modal">Export Data</Buttons>
+          <Buttons
+            data-bs-toggle="modal"
+            data-bs-target="#kt_export_order_modal"
+          >
+            Export Data
+          </Buttons>
         </div>
       </div>
+
       <KTModal
         dataBsTarget="kt_create_coupon_modalllllsss"
         title="Tambah Kupon"
@@ -266,7 +184,18 @@ const Head = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({
+  currentPage,
+  setCurrentPage,
+  setMentorFindTake,
+  pageLength,
+}: {
+  setMentorFindTake: (val: number) => void;
+  setMentorFindSkip: (val: number) => void;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+}) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -277,15 +206,15 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => {}}
+          onValueChange={(val) => setMentorFindTake(val as number)}
         />
       </div>
       <div className="col-auto">
         <Pagination
-          total={10}
-          current={1}
+          total={pageLength}
+          current={currentPage}
           maxLength={5}
-          onPageChange={() => {}}
+          onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
     </div>
@@ -310,10 +239,18 @@ const ExportModal = ({
         modalCentered
         onClose={onClose}
         buttonClose={
-          <Buttons buttonColor="secondary" data-bs-dismiss="modal" classNames="fw-bold">Batal</Buttons>
+          <Buttons
+            buttonColor="secondary"
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+          >
+            Batal
+          </Buttons>
         }
         buttonSubmit={
-          <Buttons data-bs-dismiss="modal" classNames="fw-bold">Export</Buttons>
+          <Buttons data-bs-dismiss="modal" classNames="fw-bold">
+            Export
+          </Buttons>
         }
         footerContentCentered
         modalSize="lg"
@@ -335,7 +272,235 @@ const ExportModal = ({
       </KTModal>
     </div>
   );
-}
+};
 
+const Body = ({
+  orderFindMany,
+  handleSelectAllCheck,
+  handleSingleCheck,
+  checkedItems,
+  selectAll,
+}: {
+  orderFindMany: QueryResult<OrderFindManyQuery>;
+  handleSelectAllCheck: () => void;
+  handleSingleCheck: (index: number) => void;
+  checkedItems: { id: number; value: boolean }[];
+  selectAll: boolean;
+}) => {
+  const [selectedMentor, setSelectedOrder] = useState("");
+  function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
+    switch (status) {
+      case OrderStatusEnum.Pending:
+        return "warning";
+      case OrderStatusEnum.Processing:
+        return "primary";
+      case OrderStatusEnum.Done:
+        return "success";
+      case OrderStatusEnum.Shipped:
+        return "info";
+      case OrderStatusEnum.Delivered:
+        return "success";
+      case OrderStatusEnum.Cancelled:
+        return "danger";
+      case OrderStatusEnum.Returned:
+        return "secondary";
+      default:
+        return "info";
+    }
+  }
+  return (
+    <>
+      {orderFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{orderFindMany.error.message}</h3>
+        </div>
+      ) : orderFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <>
+          <KTTable utilityGY={5} responsive="table-responsive my-10">
+            <KTTableHead
+              textColor="muted"
+              fontWeight="bold"
+              className="text-uppercase align-middle"
+            >
+              <th className="min-w-150px">
+                <CheckBoxInput
+                  className="w-150px"
+                  checked={selectAll}
+                  name="check-all"
+                  value="all"
+                  defaultChildren={false}
+                  onChange={handleSelectAllCheck}
+                >
+                  <p className="mb-0">ID ORDER</p>
+                </CheckBoxInput>
+              </th>
+              <th className="min-w-275px">Nama Produk</th>
+              <th className="text-end min-w-275px">Pembeli</th>
+              <th className="text-end min-w-200px">Tanggal Pembelian</th>
+              <th className="text-end min-w-200px">Total Harga</th>
+              <th className="text-end min-w-275px">Afiliasi</th>
+              <th className="text-end min-w-200px">Kupon</th>
+              <th className="text-end min-w-150px">Status</th>
+              <th className="text-end min-w-100px">Actions</th>
+            </KTTableHead>
+            {orderFindMany.data?.orderFindMany?.map((order, index) => {
+              const latestStatus = order?.statuses?.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )[0];
+              const latestInvoices = order?.invoices?.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )[0];
+              function getProductName(cartItems: any[]) {
+                const types: any = [];
+                cartItems.forEach((item, index) => {
+                  if (item.productId !== null) types.push(item.product?.name);
+                  if (item.bundleId !== null) types.push(item.bundle?.name);
+                  if (item.courseId !== null) types.push(item.course?.title);
+                  if (item.membershipCategoryId !== null)
+                    types.push(item.membership?.name);
+                  if (item.productServiceId !== null)
+                    types.push(item.productService?.name);
+                });
+                return types.filter(Boolean).join(", ");
+              }
+              return (
+                <tr key={index}>
+                  <td className="align-middle">
+                    <CheckBoxInput
+                      className="ps-0"
+                      checked={checkedItems[index]?.value ?? false}
+                      name={"check-" + order.id}
+                      value={order.id.toString()}
+                      defaultChildren={false}
+                      onChange={() => handleSingleCheck(index)}
+                    >
+                      <p className="fw-bold text-black mb-0">{order.id}</p>
+                    </CheckBoxInput>
+                  </td>
+                  <td className="align-middle ">
+                    <div className="d-flex align-items-center">
+                      <Link
+                        href={"orders/" + order.id + "/detail-order"}
+                        className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold mb-0"
+                      >
+                        <p key={index} className="mb-0">
+                          {getProductName(order?.cart?.cartItems ?? [])}
+                        </p>
+                      </Link>
+                    </div>
+                  </td>
+
+                  <td className="align-middle text-end w-250px">
+                    <div className="d-flex align-items-center justify-content-end">
+                      <div className="symbol symbol-50px symbol-circle me-5">
+                        <img
+                          className="symbol-label bg-gray-600"
+                          src={
+                            order.createdByUser.avatarImageId ??
+                            "/media/avatars/300-1.jpg"
+                          }
+                          width={50}
+                          height={50}
+                          alt=""
+                        />
+                      </div>
+                      <div className="d-flex flex-column">
+                        <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {order.createdByUser.name}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                    {formatDate(order.createdAt)}
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    }).format(latestInvoices?.amount || 0)}
+                  </td>
+                  <td className="align-middle text-end w-250px">
+                    {order.referralLink == null ? (
+                      <span className="text-muted cursor-pointer fs-6 fw-bold">
+                        Tidak tersedia
+                      </span>
+                    ) : (
+                      <div className="d-flex align-items-center justify-content-end">
+                        <div className="symbol symbol-50px symbol-circle me-5">
+                          <img
+                            className="symbol-label bg-gray-600"
+                            src={
+                              order.referralLink?.createdBy.user
+                                .avatarImageId ?? "/media/avatars/300-1.jpg"
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                          />
+                        </div>
+                        <div className="d-flex flex-column">
+                          <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
+                            {order.referralLink?.createdBy.user.name ??
+                              "Tidak Ada"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                    {order.coupon?.affiliatorCoupon?.code ?? "Tidak Tersedia"}
+                  </td>
+                  <td className="align-middle text-end">
+                    <p>
+                      {" "}
+                      <Badge
+                        label={latestStatus?.status ?? "Tidak Diketahui"}
+                        badgeColor={getStatusBadgeColor(latestStatus?.status)}
+                      />{" "}
+                    </p>
+                  </td>
+                  <td className="align-middle text-end ">
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <button className="dropdown-item">
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Edit</button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </KTTable>
+        </>
+      )}
+    </>
+  );
+};
 
 export default OrderPage;

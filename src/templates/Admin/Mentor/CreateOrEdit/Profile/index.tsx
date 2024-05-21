@@ -5,9 +5,11 @@ import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import ForgotPasswordModal from "../../component/ForgotPasswordModal";
+import { formatAddress } from "@/app/service/utils/addressFormatter";
 
 const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
   const userData = data?.mentorFindOne?.user;
+  const userAddress = userData?.addresses?.find((a) => a.isMain === true);
   const {
     forgotPasswordModalLoading,
     handleForgotPassword,
@@ -16,7 +18,6 @@ const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
     forgotPasswordSuccess,
     forgotPasswordError,
   } = useForgotPassword();
-
   return (
     <>
       {forgotPasswordSuccess && (
@@ -60,8 +61,7 @@ const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
 
             <div className="col-lg-4">
               <span className="fw-bolder fs-6 text-dark ">
-                Jl. Sumarwi, RT01/RW03, Wonosari Wonosari - Kabupaten
-                Gunungkidul - Provinsi D.I. Yogyakarta 54321
+                {formatAddress(userAddress)}
               </span>
             </div>
           </div>

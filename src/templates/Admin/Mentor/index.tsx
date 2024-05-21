@@ -106,7 +106,6 @@ const Footer = ({
   currentPage,
   setCurrentPage,
   setMentorFindTake,
-  setMentorFindSkip,
   pageLength,
 }: {
   setMentorFindTake: (val: number) => void;

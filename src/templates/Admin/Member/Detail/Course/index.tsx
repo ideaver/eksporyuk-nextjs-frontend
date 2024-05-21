@@ -1,10 +1,17 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import {
+  CompletionStatusEnum,
+  StudentFindOneQuery,
+} from "@/app/service/graphql/gen/graphql";
 import { CardInfo } from "@/stories/molecules/Cards/CardInfo/CardInfo";
 import { ColorList } from "@/types/general/utilities";
-import React from "react";
 
-const CoursePage: React.FC = () => {
+const CoursePage = ({
+  data,
+}: {
+  data: StudentFindOneQuery["studentFindOne"];
+}) => {
   return (
     <>
       <div className="row">
@@ -14,7 +21,7 @@ const CoursePage: React.FC = () => {
             description="Enrolled Course"
             icon="book-open"
             showBorder
-            title="2"
+            title={data?.enrollments?.length.toString() ?? "0"}
           />
         </div>
         <div className="col gy-5 gy-lg-0">
@@ -23,7 +30,13 @@ const CoursePage: React.FC = () => {
             description="Active Course"
             icon="bookmark"
             showBorder
-            title="1"
+            title={
+              data?.enrollments
+                ?.filter(
+                  (e) => e.completionStatus != CompletionStatusEnum.Completed
+                )
+                .length.toString() ?? "0"
+            }
           />
         </div>
         <div className="col gy-5 gy-lg-0">
@@ -32,7 +45,13 @@ const CoursePage: React.FC = () => {
             description="Completed Course"
             icon="brifecase-tick"
             showBorder
-            title="1"
+            title={
+              data?.enrollments
+                ?.filter(
+                  (e) => e.completionStatus == CompletionStatusEnum.Completed
+                )
+                .length.toString() ?? "0"
+            }
           />
         </div>
       </div>
@@ -40,24 +59,72 @@ const CoursePage: React.FC = () => {
         <KTCardBody>
           <div className="d-flex justify-content-between">
             <h3>Progress Belajar Siswa</h3>
-            <button className="btn btn-secondary">Lihat Semua</button>
+            {/* <button className="btn btn-secondary">Lihat Semua</button> */}
           </div>
           <div className="mt-5">
             <div className="col">
               <ProgressCard
                 img="/media/illustrations/sketchy-1/17.png"
-                progress={76}
-                title="Kelas Bimbingan EksporYuk"
+                progress={Math.round(
+                  ((data?.enrollments?.filter(
+                    (e) => e.completionStatus == CompletionStatusEnum.Completed
+                  ).length ?? 0) /
+                    (data?._count.enrollments ?? 0)) *
+                    100
+                )}
                 subtitle={
                   <>
                     {" "}
                     Sudah menyelesaikan{" "}
-                    <span className="text-black fw-bold">76</span> dari{" "}
-                    <span className="text-black fw-bold">100</span> Materi
+                    <span className="text-black fw-bold">
+                      {
+                        data?.enrollments?.filter(
+                          (e) =>
+                            e.completionStatus == CompletionStatusEnum.Completed
+                        ).length
+                      }
+                    </span>{" "}
+                    dari{" "}
+                    <span className="text-black fw-bold">
+                      {data?._count.enrollments}
+                    </span>{" "}
+                    Kelas
                   </>
                 }
               />
-          <div className="mt-5">
+              {/* {data?.enrollments?.map((enrollment, index) => {
+                const courseProgress = enrollment.lessonProgresses?.filter(
+                  (lp) => lp.isCompleted === true
+                ).length;
+                const courseTotal = enrollment.lessonProgresses?.length;
+                const progress = Math.round(
+                  ((courseProgress ?? 0) / (courseTotal ?? 0)) * 100
+                );
+                return (
+                  <ProgressCard
+                    key={index}
+                    img="/media/illustrations/sketchy-1/17.png"
+                    progress={progress}
+                    title={enrollment?.course.title ?? ""}
+                    subtitle={
+                      <>
+                        {" "}
+                        Sudah menyelesaikan{" "}
+                        <span className="text-black fw-bold">
+                          {courseProgress}
+                        </span>{" "}
+                        dari{" "}
+                        <span className="text-black fw-bold">
+                          {courseTotal}
+                        </span>{" "}
+                        Kelas
+                      </>
+                    }
+                  />
+                );
+              })} */}
+                 {/* Might be used later */}
+              {/* <div className="mt-5">
           <ProgressCard
                 img="/media/illustrations/sketchy-1/15.png"
                 progress={15}
@@ -72,7 +139,7 @@ const CoursePage: React.FC = () => {
                   </>
                 }
               />
-          </div>
+          </div> */}
             </div>
           </div>
         </KTCardBody>
@@ -83,17 +150,21 @@ const CoursePage: React.FC = () => {
 
 interface IProgressCard {
   img: string;
-  title: string;
   subtitle: JSX.Element;
   progress: number;
-  color?: ColorList
+  color?: ColorList;
 }
-const ProgressCard = ({ img, title, subtitle, progress, color = "primary" }: IProgressCard) => {
+const ProgressCard = ({
+  img,
+  subtitle,
+  progress,
+  color = "primary",
+}: IProgressCard) => {
   return (
     <div className="row">
       <div className="col-lg-2 gy-5 gy-lg-0 align-self-center">
         <img
-        className=""
+          className=""
           src={img}
           width={157}
           style={{
@@ -105,12 +176,21 @@ const ProgressCard = ({ img, title, subtitle, progress, color = "primary" }: IPr
       <div className="col-lg-10 gy-5 gy-lg-0 ">
         <div className={`card bg-light-${color} card-xl-stretch`}>
           <div className="card-body my-3">
-            <h5 className={`card-title fw-bold text-${color} fs-5 mb-3 d-block`}>
+            {/* <h5
+              className={`card-title fw-bold text-${color} fs-5 mb-3 d-block`}
+            >
               {title}
-            </h5>
+            </h5> */}
             <div className="py-1">
-              <span className="text-gray-900 fs-1 fw-bold me-2">{progress}%</span>
-              <span className="fw-semibold text-muted fs-7">{subtitle}</span>
+              <h1
+                className="text-gray-900 fw-bold me-2"
+                style={{
+                  fontSize: "35px",
+                }}
+              >
+                {progress}%
+              </h1>
+              <p className="fw-semibold text-muted fs-4 mb-0">{subtitle}</p>
             </div>
             <div className={`progress h-7px bg-${color} bg-opacity-50 mt-7`}>
               <div

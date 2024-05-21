@@ -1,10 +1,11 @@
 import { KTIcon } from "@/_metronic/helpers/components/KTIcon";
+import { OrderStatusEnum } from "@/app/service/graphql/gen/graphql";
 import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 type TStatus = {
   title: string;
-  value: string;
+  value: OrderStatusEnum;
 };
 const ChangeOrderModal = ({
   onClose,
@@ -16,33 +17,33 @@ const ChangeOrderModal = ({
   onConfirm: (value: TStatus) => void;
 }) => {
   const statuses: TStatus[] = [
-    // {
-    //   title: "Belum dibayarkan",
-    //   value: "belum_dibayarkan",
-    // },
-    // {
-    //   title: "Sudah Dibayarkan",
-    //   value: "sudah_dibayarkan",
-    // },
     {
       title: "Pesanan Diproses",
-      value: "pesanan_diproses",
+      value: OrderStatusEnum.Processing,
     },
-    // {
-    //   title: "Pengiriman",
-    //   value: "pengiriman",
-    // },
-    // {
-    //   title: "Batal",
-    //   value: "batal",
-    // },
     {
       title: "Selesai",
-      value: "selesai",
+      value: OrderStatusEnum.Done,
     },
     {
       title: "Refund",
-      value: "refund",
+      value: OrderStatusEnum.Returned,
+    },
+    {
+      title: "Dikirim",
+      value: OrderStatusEnum.Shipped,
+    },
+    {
+      title: "Terkirim",
+      value: OrderStatusEnum.Delivered,
+    },
+    {
+      title: "Dibatalkan",
+      value: OrderStatusEnum.Cancelled,
+    },
+    {
+      title: "Pending",
+      value: OrderStatusEnum.Pending,
     },
   ];
 
@@ -66,7 +67,10 @@ const ChangeOrderModal = ({
         <h5>Pilih status order</h5>
         <div className="row">
           {statuses.map((item, index) => (
-            <div className={ index > 3 ? "col-4" : "col-12rewfrefer"} key={index}>
+            <div
+              className={index > 3 ? "col-4" : "col-12rewfrefer"}
+              key={index}
+            >
               <RadioInput
                 className={item.value == selectedStatus.value ? "active" : ""}
                 key={item.value}

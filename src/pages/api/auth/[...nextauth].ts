@@ -35,7 +35,7 @@ export default NextAuth({
       },
       async authorize(credentials, req) {
         var user;
-        if(process.env.NEXT_PUBLIC_MAINTENANCE == "false") {
+        if(process.env.NEXT_PUBLIC_MAINTENANCE == "true") {
           user = {
             id: "1",
             name: "admin",

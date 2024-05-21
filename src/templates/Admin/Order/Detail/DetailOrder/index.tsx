@@ -7,9 +7,9 @@ import { AlamatTujuan } from "@/stories/organism/Tables/AlamatTujuan/AlamatTujua
 import { OrderDetails } from "@/stories/organism/Tables/OrderDetails/OrderDetails";
 import { useEffect, useState } from "react";
 
-const DetailOrder = ({ orderId }: IDetailOrderProps) => {
+const DetailOrder = ({ orderId, data }: IDetailOrderProps) => {
   const { orderDatas, orderDetailData } = useDetailOrderViewModel({
-    orderId,
+    orderId, data
   });
 
   const [isClient, setIsClient] = useState(false);
@@ -21,10 +21,10 @@ const DetailOrder = ({ orderId }: IDetailOrderProps) => {
     <>
       {isClient && (
         <>
-          <OrderData
+          {/* <OrderData
             addressDetail={orderDatas.addressDetail}
             paymentProof={orderDatas.paymentProof}
-          />
+          /> */}
           <OrderDetails data={orderDetailData} />
         </>
       )}
