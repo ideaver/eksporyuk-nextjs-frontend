@@ -1,9 +1,9 @@
 import Document, {
-  Html,
+  DocumentContext,
   Head,
+  Html,
   Main,
   NextScript,
-  DocumentContext,
 } from "next/document";
 
 class MyDocument extends Document {
@@ -16,17 +16,13 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <meta content="YDDS Cash Plan" name="YDDS Cash Plan" />
-          <meta content="YDDS Cash Plan" property="og:title" />
-          <meta content="YDDS Cash Plan" property="og:description" />
+          <meta content="EksporYuk" name="EksporYuk" />
+          <meta content="EksporYuk" property="og:title" />
+          <meta content="EksporYuk" property="og:description" />
           <meta content="%PUBLIC_URL%/fb-og-image.png" property="og:image" />
-          {/* <meta
-                          property="og:url"
-                          content="https://ui8.net/pickolab-studio/products/finlab---finance-dashboard-ui"
-                      /> */}
-          <meta property="og:site_name" content="YDDS Cash Plan" />
-          <meta content="YDDS Cash Plan" property="twitter:title" />
-          <meta content="YDDS Cash Plan" property="twitter:description" />
+          <meta property="og:site_name" content="EksporYuk" />
+          <meta content="EksporYuk" property="twitter:title" />
+          <meta content="EksporYuk" property="twitter:description" />
           <meta
             content="%PUBLIC_URL%/twitter-card.png"
             property="twitter:image"

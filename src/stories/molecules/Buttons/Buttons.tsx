@@ -57,7 +57,7 @@ interface ButtonsProps {
   /**
    * Optional click handler
    */
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 /**
@@ -75,6 +75,7 @@ export const Buttons = ({
   children,
   disabled,
   classNames,
+  onClick,
   ...props
 }: ButtonsProps) => {
   const btnSizeHandle = (size: string): string => {
@@ -119,7 +120,7 @@ export const Buttons = ({
 
   return (
     <button
-    disabled={disabled}
+    disabled={disabled} onClick={onClick}
       type={type}
       className={clsx(
         classNames,

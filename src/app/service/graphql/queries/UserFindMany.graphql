@@ -1,0 +1,36 @@
+query UserFindMany(
+  $where: UserWhereInput
+  $orderBy: [UserOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  userFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+    name
+    email
+    username
+    couponCodeRegister
+    emailVerifiedAt
+    referralCode
+    password
+    passwordUpdatedAt
+    birthDate
+    personalId
+    npwpId
+    createdAt
+    updatedAt
+    deletedAt
+    deletedReason
+    phoneId
+    referredById
+    role
+    gender
+    avatarImageId
+    referralLinkId
+    admin {
+      id
+      createdAt
+      modifyPlatformSettingId
+    }
+  }
+}

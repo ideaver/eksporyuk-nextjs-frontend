@@ -1,0 +1,14 @@
+mutation ArticleUpdateOne(
+  $data: ArticleUpdateInput!
+  $where: ArticleWhereUniqueInput!
+) {
+  articleUpdateOne(data: $data, where: $where) {
+    id
+    title
+    content
+    isActive
+    createdByAdminId
+    createdAt
+    updatedAt
+  }
+}

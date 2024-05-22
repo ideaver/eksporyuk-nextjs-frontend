@@ -1,0 +1,6 @@
+query MentorFindLength {
+ mentorFindMany 
+  {
+   id
+  }
+}

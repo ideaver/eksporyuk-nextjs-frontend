@@ -1,0 +1,40 @@
+query MentorFindMany($take: Int, $skip: Int, $where: MentorWhereInput) {
+  mentorFindMany(take: $take, skip: $skip, where: $where) {
+    id
+    updatedAt
+    description
+    tagLine
+    user {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+    _count {
+      courses
+      createdCourses
+      createdAnnouncements
+      favorites
+      createdCoupons
+      creditCards
+    }
+  }
+}

@@ -34,14 +34,26 @@ export default NextAuth({
         image: { label: "Image", type: "text" },
       },
       async authorize(credentials, req) {
-        const user = {
-          id: req?.body?.id,
-          name: req?.body?.name,
-          email: req?.body?.email,
-          password: req?.body?.password,
-          role: req?.body?.role,
-          image: req?.body?.image,
-        };
+        var user;
+        if(process.env.NEXT_PUBLIC_MAINTENANCE == "true") {
+          user = {
+            id: "1",
+            name: "admin",
+            email: "admin@mail.com",
+            password: "admin",
+            role: "ADMIN",
+            image: "/media/avatars/300-1.jpg",
+          };
+        } else {
+          user = {
+            id: req?.body?.id,
+            name: req?.body?.name,
+            email: req?.body?.email,
+            password: req?.body?.password,
+            role: req?.body?.role,
+            image: req?.body?.image,
+          };
+        }
         if (
           user.email === credentials?.email &&
           user.password === credentials?.password

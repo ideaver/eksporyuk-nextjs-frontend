@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { FC } from "react";
 // import {useAuth} from '../../../../app/modules/auth'
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const HeaderUserMenu: FC = () => {
   const { data: session, status } = useSession();
-  
 
   return (
     <>
@@ -70,9 +69,10 @@ const HeaderUserMenu: FC = () => {
           Sign Out
         </a> */}
           <a
-            data-bs-target="#kt_logout_modal"
-            data-bs-toggle="modal"
+            // data-bs-target="#kt_logout_modal"
+            // data-bs-toggle="modal"
             className="menu-link px-5"
+            onClick={() => signOut()}
           >
             Keluar Akun
           </a>

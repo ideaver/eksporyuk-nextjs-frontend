@@ -1,0 +1,6 @@
+mutation ArticleCreateOne($data: ArticleCreateInput!) {
+  articleCreateOne(data: $data) {
+    id
+    title
+  }
+}

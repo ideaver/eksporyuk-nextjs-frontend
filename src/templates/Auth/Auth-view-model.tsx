@@ -39,19 +39,34 @@ const useAuthViewModel = () => {
   };
 
   const handleSignIn = async (
-    data: FetchResult<AuthLoginMutation>,
+    data: FetchResult<AuthLoginMutation> | undefined,
     password: string
   ) => {
-    const fetchResult = data.data;
-    const result = await signIn("credentials", {
-      id: fetchResult?.authLogin?.user?.id!,
-      name: fetchResult?.authLogin?.user?.name!,
-      email: fetchResult?.authLogin?.user?.email!,
-      password: password,
-      role: fetchResult?.authLogin?.user?.role,
-      image: fetchResult?.authLogin?.user?.avatarImageId,
-      redirect: false,
-    });
+    const fetchResult = data?.data;
+    var result;
+    if (process.env.NEXT_PUBLIC_MAINTENANCE == "false") {
+      result = await signIn("credentials", {
+        id: fetchResult?.authLogin?.user?.id!,
+        name: fetchResult?.authLogin?.user?.name!,
+        email: fetchResult?.authLogin?.user?.email!,
+        password: password,
+        role: fetchResult?.authLogin?.user?.role,
+        image: fetchResult?.authLogin?.user?.avatarImageId,
+        redirect: false,
+      });
+    } else {
+      result = await signIn("credentials", {
+        id: "1",
+        name: "admin",
+        email: "admin@mail.com",
+        password: "admin",
+        role: "ADMIN",
+        image: "/media/avatars/300-1.jpg",
+
+        redirect: false,
+      });
+    }
+
     return result;
   };
 
@@ -59,29 +74,36 @@ const useAuthViewModel = () => {
     email: string | undefined,
     password: string | undefined
   ) => {
-    try {
-      setIsLoading(true);
-      const data = await handleAuthLoginMutation(email!, password!);
-      const fetchResult = data.data;
-      if (fetchResult?.authLogin?.user?.role === "ADMIN") {
-        const result = await handleSignIn(data, password!);
-        setIsLoading(false);
-        if (result?.ok) {
-          router.push("/home");
-          dispatch(setMenus(adminMenus));
+    // DEV  ONLY
+    if (process.env.NEXT_PUBLIC_MAINTENANCE == "false") {
+      try {
+        setIsLoading(true);
+        const data = await handleAuthLoginMutation(email!, password!);
+        const fetchResult = data.data;
+        if (fetchResult?.authLogin?.user.admin !== undefined) {
+          const result = await handleSignIn(data, password!);
+          setIsLoading(false);
+          if (result?.ok) {
+            router.push("/home");
+            dispatch(setMenus(adminMenus));
+          } else {
+            setErrorMessage(
+              "Terjadi Kesalahan saat Login, periksa Email dan password anda"
+            );
+          }
         } else {
-          setErrorMessage(
-            "Terjadi Kesalahan saat Login, periksa Email dan password anda"
-          );
+          setIsLoading(false);
+          setErrorMessage(`Anda tidak memiliki akses ke halaman ini`);
         }
-      } else {
+      } catch (error: ApolloError | any) {
         setIsLoading(false);
-        setErrorMessage(`Anda tidak memiliki akses ke halaman ini`);
+        console.log("Try Catch Error:", error);
+        setErrorMessage(`Terjadi Kesalahan saat Login, ${error.message}`);
       }
-    } catch (error: ApolloError | any) {
-      setIsLoading(false);
-      console.log("Try Catch Error:", error);
-      setErrorMessage(`Terjadi Kesalahan saat Login, ${error.message}`);
+    } else {
+      await handleSignIn(undefined, password!);
+      router.push("/home");
+      dispatch(setMenus(adminMenus));
     }
   };
 

@@ -2,7 +2,6 @@ import { KTIcon } from "@/_metronic/helpers";
 import { HeaderUserMenu } from "@/_metronic/partials";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 const AsideToolbar = () => {
@@ -41,7 +40,9 @@ const AsideToolbar = () => {
 
               {/*begin::Description*/}
               <span className="text-gray-600 fw-bold d-block fs-8 mb-1">
-                {session?.user.role}
+                {session?.user.role === "ADMIN"
+                  ? "ADMIN"
+                  : `${session?.user.role} | ADMIN`}
               </span>
               {/*end::Description*/}
 

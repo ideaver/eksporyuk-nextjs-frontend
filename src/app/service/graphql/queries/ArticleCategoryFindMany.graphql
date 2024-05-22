@@ -1,0 +1,14 @@
+query ArticleCategoryFindMany(
+  $where: ArticleCategoryWhereInput
+  $take: Int
+  $skip: Int
+) {
+  articleCategoryFindMany(where: $where, take: $take, skip: $skip) {
+    _count {
+      articles
+    }
+    createdAt
+    id
+    name
+  }
+}

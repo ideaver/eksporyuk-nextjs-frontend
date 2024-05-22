@@ -22,7 +22,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 const client = new ApolloClient({
-  uri: "http://109.123.232.206:3002/graphql",
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_SCHEMA,
   cache: new InMemoryCache(),
 });
 
@@ -63,11 +63,8 @@ export default function App({
                   <ThemeModeProvider>
                     <ApolloProvider client={client}>
                       <MasterLayout>
-                        {" "}
-                        {/* TODO: Make this work with auth */}
                         <Component {...pageProps} />
                       </MasterLayout>
-
                       <MasterInit />
                     </ApolloProvider>
                   </ThemeModeProvider>

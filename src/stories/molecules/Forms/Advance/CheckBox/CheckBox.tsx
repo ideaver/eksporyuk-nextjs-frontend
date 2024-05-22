@@ -26,7 +26,7 @@ export const CheckBoxInput = ({
         className
       )}
     >
-      <div className="d-flex align-items-start">
+      <div className="d-flex align-items-center">
         <div className="form-check form-check-custom form-check-solid form-check-primary me-6">
           <input
             className="form-check-input p-6"

@@ -96,14 +96,69 @@ export const adminMenus: MenuSection[] = [
   {
     items: [
       { title: "Dashboard Admin", to: "/admin/dashboard", icon: "category" },
-      { title: "Order Saya", to: "/member/order", icon: "basket" },
-      { title: "Langganan", to: "/member/langganan", icon: "timer" },
-      { title: "Katalog Produk", to: "/dwde", icon: "cube-2" },
       {
-        title: "Komunitas",
-        to: "/dwde",
-        icon: "abstract-39",
-        subItems: [{ title: "Komunitas 1", to: "/dwde/d", icon: "cube-2" }],
+        title: "Manajemen Afiliasi",
+        to: "/admin/affiliators",
+        icon: "gift",
+      },
+      {
+        title: "Manajemen Produk",
+        to: "/admin/products",
+        icon: "basket",
+        subItems: [
+          {
+            title: "Semua Produk",
+            to: "/admin/products/product",
+            icon: "parcel",
+          },
+          {
+            title: "Semua Bundle",
+            to: "/admin/products/bundle",
+            icon: "cube-2",
+          },
+          {
+            title: "Semua Layanan",
+            to: "/admin/products/service",
+            icon: "cube-3",
+          },
+        ],
+      },
+      {
+        title: "Manajemen Kelas",
+        to: "/admin/courses",
+        icon: "book-open",
+      },
+      { title: "Manajemen Order", to: "/admin/orders", icon: "delivery-3" },
+      {
+        title: "Manajemen Mentor",
+        to: "/admin/mentors",
+        icon: "lots-shopping",
+      },
+      {
+        title: "Manajemen Member",
+        to: "/admin/members",
+        icon: "people",
+      },
+      {
+        title: "Manajemen Artikel",
+        to: "/admin/articles",
+        icon: "tablet-text-up",
+      },
+      { title: "Manajemen Buyer", to: "/admin/buyers", icon: "parcel" },
+      {
+        title: "Support Center",
+        to: "/admin/support",
+        icon: "message-question",
+      },
+      {
+        title: "Manajemen Notifikasi",
+        to: "/admin/notifications",
+        icon: "notification-on",
+      },
+      {
+        title: "Manajemen Feedback & Reports",
+        to: "/admin/feedback",
+        icon: "message-notif",
       },
     ],
     section: "Menu Admin",
