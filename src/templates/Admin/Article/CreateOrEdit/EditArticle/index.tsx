@@ -150,7 +150,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                 <Buttons
                   buttonColor="secondary"
                   onClick={() => {
-                    router.push("/admin/articles");
+                    router.back();
                   }}
                 >
                   Batal

@@ -25,7 +25,15 @@ export const breadcrumbs = [
   },
 ];
 
-const usePagination = (articleFindTake:number, articleFindSkip:number, setArticleFindSkip:Dispatch<SetStateAction<number>>, setArticleFindTake:Dispatch<SetStateAction<number>>, articleFindSearch:string, articleFindStatus:string, articleFindCategory:number) => {
+const usePagination = (
+  articleFindTake: number,
+  articleFindSkip: number,
+  setArticleFindSkip: Dispatch<SetStateAction<number>>,
+  setArticleFindTake: Dispatch<SetStateAction<number>>,
+  articleFindSearch: string,
+  articleFindStatus: string,
+  articleFindCategory: number
+) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const articleLength = useArticleFindLengthQuery({
@@ -86,25 +94,21 @@ const usePagination = (articleFindTake:number, articleFindSkip:number, setArticl
           },
         ],
       },
-    }
+    },
   });
-
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setArticleFindSkip((page - 1) * articleFindTake);
-    if (currentPage >=2){
-      setArticleFindSkip(0)
+    if (currentPage >= 2) {
+      setArticleFindSkip(0);
     }
   };
 
-  const length : any = articleLength.data?.articleFindMany?.length
+  const length: any = articleLength.data?.articleFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil(
-      (length / 10)
-    );
-
+    return Math.ceil(length / 10);
   };
   return {
     currentPage,
@@ -144,7 +148,7 @@ export const useCategoriesDropdown = () => {
         },
       },
     });
-    result.unshift({value:0, label:"Semua Kategori"})
+    result.unshift({ value: 0, label: "Semua Kategori" });
     return {
       options: result,
       hasMore: false,
@@ -154,11 +158,8 @@ export const useCategoriesDropdown = () => {
 };
 
 const useArticleViewModel = () => {
-
   const [articleFindSkip, setArticleFindSkip] = useState(0);
   const [articleFindTake, setArticleFindTake] = useState(10);
-
- 
 
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
@@ -227,7 +228,7 @@ const useArticleViewModel = () => {
     },
   });
 
-  const [articleDeleteOne] = useArticleDeleteOneMutation()
+  const [articleDeleteOne] = useArticleDeleteOneMutation();
 
   const {
     currentPage,
@@ -235,25 +236,33 @@ const useArticleViewModel = () => {
     handlePageChange,
     calculateTotalPage,
     articleLength,
-  } = usePagination( articleFindTake, articleFindSkip, setArticleFindSkip, setArticleFindTake, articleFindSearch, articleFindStatus, articleFindCategory)
+  } = usePagination(
+    articleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindSearch,
+    articleFindStatus,
+    articleFindCategory
+  );
 
- useEffect(()=>{
-  if(articleFindSearch.length !== 0 || articleFindCategory !== 0 || articleFindStatus !== "all" ){
-    setCurrentPage(1)
-    setArticleFindSkip(0)
-    articleFindMany.refetch()
-  }
-  
- },[articleFindSearch, articleFindCategory,articleFindStatus])
-  console.log(articleFindSkip)
-    
-
+  useEffect(() => {
+    if (
+      articleFindSearch.length !== 0 ||
+      articleFindCategory !== 0 ||
+      articleFindStatus !== "all"
+    ) {
+      setCurrentPage(1);
+      setArticleFindSkip(0);
+      articleFindMany.refetch();
+    }
+  }, [articleFindSearch, articleFindCategory, articleFindStatus]);
 
   return {
     articleDeleteOne,
     articleFindMany,
     articleFindTake,
-    setArticleFindTake, 
+    setArticleFindTake,
     articleFindSkip,
     setArticleFindSkip,
     articleFindSearch,

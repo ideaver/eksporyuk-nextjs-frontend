@@ -36,9 +36,9 @@ const ArticlePage = () => {
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
-    articleDeleteOne
+    articleDeleteOne,
   } = useArticleViewModel();
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <>
@@ -94,9 +94,16 @@ const ArticlePage = () => {
                   return (
                     <tr key={article.id} className="">
                       <td className="">
-                        <p className="fw-bold text-black mb-0 min-w-250px align-middle">
+                        <Link
+                          href={`/admin/articles/detail/${article.id}`}
+                          className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                          style={{
+                            maxWidth: "90px",
+                            display: "inline-block",
+                          }}
+                        >
                           {article.title}
-                        </p>
+                        </Link>
                       </td>
 
                       <td className="min-w-250px text-end fw-bold text-muted">
@@ -170,24 +177,29 @@ const ArticlePage = () => {
                             </li>
                             <li></li>
                             <li>
-                              <button className="dropdown-item" onClick={async ()=>{
-                                try {
-                                  await articleDeleteOne({
-                                    variables:{
-                                      where:{
-                                        id:article.id
-                                      }
-                                    }
-                                  })
-                                  await articleFindMany.refetch()
-                                  await articleLength.refetch()
-                                } catch (error) {
-                                  console.log(error)
-                                } finally{
-                                  await articleFindMany.refetch()
-                                  await articleLength.refetch()
-                                }
-                              }}>Hapus</button>
+                              <button
+                                className="dropdown-item"
+                                onClick={async () => {
+                                  try {
+                                    await articleDeleteOne({
+                                      variables: {
+                                        where: {
+                                          id: article.id,
+                                        },
+                                      },
+                                    });
+                                    await articleFindMany.refetch();
+                                    await articleLength.refetch();
+                                  } catch (error) {
+                                    console.log(error);
+                                  } finally {
+                                    await articleFindMany.refetch();
+                                    await articleLength.refetch();
+                                  }
+                                }}
+                              >
+                                Hapus
+                              </button>
                             </li>
                           </ul>
                         </div>

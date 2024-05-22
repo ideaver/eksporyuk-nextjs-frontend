@@ -13,6 +13,7 @@ export interface IEditArticle {
   id: string | string[] | undefined;
   data: ArticleFindOneQuery | undefined;
 }
+
 interface dataProps {
   content: string | undefined;
   status: string | undefined;
@@ -114,11 +115,11 @@ const useArticleForm = ({
               },
             },
           },
-          onCompleted:  () => {
+          onCompleted: () => {
             articleFindMany.refetch();
           },
         });
-        await articleFindMany.refetch()
+        await articleFindMany.refetch();
       } catch (error) {
         console.log(error);
       } finally {
@@ -137,12 +138,14 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
   const [status, setStatus] = useState(
     articleData?.isActive === true ? "published" : "private"
   );
+
   const [category, setCategory] = useState(
     articleData?.category?.map((val: any) => ({
       value: val?.id,
       label: val?.name,
     }))
   );
+
   const { articleForm: formik, response } = useArticleForm({
     data,
     id,
