@@ -48,6 +48,7 @@ const useField = <T extends string | boolean | number>(
 const useCouponInformationViewModel = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { id } = router.query;
 
@@ -141,6 +142,11 @@ const useCouponInformationViewModel = () => {
 
   // Data Mutation
   const onSubmit = async () => {
+    if (!couponCode || !value || !endDate || !isActive || !limitUsage) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
     try {
       const data = await handleCouponCreateMutation({couponCode, value, endDate, isActive})
       resetFormData();
@@ -172,6 +178,7 @@ const useCouponInformationViewModel = () => {
     onSubmit,
     allowAffiliator,
     setAllowAffiliator,
+    errorMessage,
   };
 };
 

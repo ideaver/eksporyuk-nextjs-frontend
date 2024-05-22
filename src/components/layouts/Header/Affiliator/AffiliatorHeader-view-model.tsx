@@ -4,26 +4,26 @@ const useAffiliatorHeaderViewModel = ({ id }: any) => {
       label: "Profile",
       to: `/admin/affiliate/affiliator/detail/${id}/profile`,
     },
-    {
-      label: "Riwayat Affiliasi",
-      to: `/admin/affiliate/affiliator/detail/${id}/riwayat-affiliasi`,
-    },
+    // {
+    //   label: "Riwayat Affiliasi",
+    //   to: `/admin/affiliate/affiliator/detail/${id}/riwayat-affiliasi`,
+    // },
     {
       label: "Kupon Affiliasi",
       to: `/admin/affiliate/affiliator/detail/${id}/kupon-affiliasi`,
     },
-    {
-      label: "Social Profile",
-      to: `/admin/affiliate/affiliator/detail/${id}/social-profile`,
-    },
-    {
-      label: "Informasi Rekening",
-      to: `/admin/affiliate/affiliator/detail/${id}/informasi-rekening`,
-    },
-    {
-      label: "Riwayat Order",
-      to: `/admin/affiliate/affiliator/detail/${id}/riwayat-order`,
-    },
+    // {
+    //   label: "Social Profile",
+    //   to: `/admin/affiliate/affiliator/detail/${id}/social-profile`,
+    // },
+    // {
+    //   label: "Informasi Rekening",
+    //   to: `/admin/affiliate/affiliator/detail/${id}/informasi-rekening`,
+    // },
+    // {
+    //   label: "Riwayat Order",
+    //   to: `/admin/affiliate/affiliator/detail/${id}/riwayat-order`,
+    // },
   ];
 
   const breadcrumbs = [

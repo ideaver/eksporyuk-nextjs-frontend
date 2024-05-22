@@ -41,6 +41,7 @@ const CreateCouponModal = ({ show, onClose }: any) => {
     allowAffiliator,
     setAllowAffiliator,
     onSubmit,
+    errorMessage,
   } = useCouponInformationViewModel();
 
   return (
@@ -65,6 +66,7 @@ const CreateCouponModal = ({ show, onClose }: any) => {
         {/* end::Close */}
       </Modal.Header>
       <Modal.Body>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
         <h2 className="pb-2">Informasi Kupon</h2>
         <div>
           <h4 className="required fw-bold text-gray-700">Kode Kupon</h4>

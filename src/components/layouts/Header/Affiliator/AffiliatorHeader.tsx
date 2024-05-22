@@ -24,8 +24,6 @@ const AffiliatorHeader = ({ id, data }: any) => {
     return total + (orderQuantity ?? 0);
   } , 0);
 
-  console.log(id);
-
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Detail Affiliator</PageTitle>
