@@ -1,0 +1,10 @@
+query CourseFindLength(
+  $where: CourseWhereInput
+  $orderBy: [CourseOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  courseFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+  }
+}

@@ -1,4 +1,4 @@
-import Course from "@/templates/Admin/Products";
+import Course from "@/templates/Admin/Course";
 import { NextPage } from "next";
 
 const CoursePage: NextPage = () => {
