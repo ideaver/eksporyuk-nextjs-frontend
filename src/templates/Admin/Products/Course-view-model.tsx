@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Produk",
-    path: "/admin/products",
+    title: "Manajemen Kelas",
+    path: "/admin/courses",
     isSeparator: false,
     isActive: false,
   },
@@ -17,14 +17,10 @@ export const breadcrumbs = [
 ];
 
 const useProductsViewModel = () => {
-
   const dispatch = useDispatch();
   const selectorOfCreateProduct = useSelector(
     (state: RootState) => state.product
   );
+};
 
-  
-
-}
-
-export default useProductsViewModel
+export default useProductsViewModel;

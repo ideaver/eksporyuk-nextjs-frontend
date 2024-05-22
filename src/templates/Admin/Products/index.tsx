@@ -11,11 +11,9 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import Link from "next/link";
-import { useEffect } from "react";
-import { breadcrumbs } from "./Products-view-model";
+import { breadcrumbs } from "./Course-view-model";
 
-const Products = ({}) => {
-
+const CoursePage = ({}) => {
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Kelas</PageTitle>
@@ -192,7 +190,7 @@ const Head = () => {
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons >
+          <Buttons>
             <Link href={"products/create/information"} className="text-white">
               Tambah Kelas Baru
             </Link>
@@ -280,4 +278,4 @@ const Footer = () => {
   );
 };
 
-export default Products;
+export default CoursePage;

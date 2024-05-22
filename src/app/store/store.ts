@@ -1,4 +1,5 @@
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
+import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
@@ -21,6 +22,11 @@ const buyerPersistConfig = {
   storage,
 };
 
+const articlePersistConfig = {
+  key: "article",
+  storage,
+};
+
 const dashboardPersistConfig = {
   key: "dashboard",
   storage,
@@ -38,6 +44,11 @@ const persistedProductReducer = persistReducer(
 
 const persistedBuyerReducer = persistReducer(buyerPersistConfig, buyersReducer);
 
+const persistedArticleReducer = persistReducer(
+  articlePersistConfig,
+  articlesReducer
+);
+
 const persistedDashboardReducer = persistReducer(
   dashboardPersistConfig,
   dashboardReducer
@@ -49,6 +60,7 @@ export const store = configureStore({
     navigation: persistedNavigationReducer,
     product: persistedProductReducer,
     buyer: persistedBuyerReducer,
+    article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
