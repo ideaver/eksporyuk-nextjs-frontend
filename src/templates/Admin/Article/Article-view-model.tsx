@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   ArticleFindManyQuery,
   QueryMode,
   useArticleCategoryFindManyQuery,
+  useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
   useArticleFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -24,21 +25,86 @@ export const breadcrumbs = [
   },
 ];
 
-const usePagination = () => {
+const usePagination = (articleFindTake:number, articleFindSkip:number, setArticleFindSkip:Dispatch<SetStateAction<number>>, setArticleFindTake:Dispatch<SetStateAction<number>>, articleFindSearch:string, articleFindStatus:string, articleFindCategory:number) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [articleFindSkip, setArticleFindSkip] = useState(0);
-  const [articleFindTake, setArticleFindTake] = useState(10);
-  const articleLength = useArticleFindLengthQuery();
+
+  const articleLength = useArticleFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
+            },
+          },
+          {
+            createdByAdmin: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: articleFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
+            },
+          },
+        ],
+      },
+    }
+  });
+
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setArticleFindSkip((page - 1) * articleFindTake);
+    if (currentPage >=2){
+      setArticleFindSkip(0)
+    }
   };
+
+  const length : any = articleLength.data?.articleFindMany?.length
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (articleLength.data?.articleFindMany?.length ?? 0) / articleFindTake
+      (length / 10)
     );
+
   };
   return {
     currentPage,
@@ -78,7 +144,7 @@ export const useCategoriesDropdown = () => {
         },
       },
     });
-
+    result.unshift({value:0, label:"Semua Kategori"})
     return {
       options: result,
       hasMore: false,
@@ -88,17 +154,11 @@ export const useCategoriesDropdown = () => {
 };
 
 const useArticleViewModel = () => {
-  const {
-    currentPage,
-    setCurrentPage,
-    articleFindSkip,
-    setArticleFindSkip,
-    articleFindTake,
-    setArticleFindTake,
-    handlePageChange,
-    calculateTotalPage,
-    articleLength,
-  } = usePagination();
+
+  const [articleFindSkip, setArticleFindSkip] = useState(0);
+  const [articleFindTake, setArticleFindTake] = useState(10);
+
+ 
 
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
@@ -167,10 +227,33 @@ const useArticleViewModel = () => {
     },
   });
 
+  const [articleDeleteOne] = useArticleDeleteOneMutation()
+
+  const {
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+    articleLength,
+  } = usePagination( articleFindTake, articleFindSkip, setArticleFindSkip, setArticleFindTake, articleFindSearch, articleFindStatus, articleFindCategory)
+
+ useEffect(()=>{
+  if(articleFindSearch.length !== 0 || articleFindCategory !== 0 || articleFindStatus !== "all" ){
+    setCurrentPage(1)
+    setArticleFindSkip(0)
+    articleFindMany.refetch()
+  }
+  
+ },[articleFindSearch, articleFindCategory,articleFindStatus])
+  console.log(articleFindSkip)
+    
+
+
   return {
+    articleDeleteOne,
     articleFindMany,
     articleFindTake,
-    setArticleFindTake,
+    setArticleFindTake, 
     articleFindSkip,
     setArticleFindSkip,
     articleFindSearch,

@@ -33,6 +33,7 @@ const InformationPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+
   const {
     thumbnail,
     handleFileChange,

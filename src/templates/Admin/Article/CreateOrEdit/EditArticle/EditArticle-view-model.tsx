@@ -86,7 +86,7 @@ const useArticleForm = ({
     validationSchema: articleSchema,
     onSubmit: async () => {
       try {
-        articleUpdateOne({
+        await articleUpdateOne({
           variables: {
             where: {
               id: Number(id),
@@ -114,10 +114,11 @@ const useArticleForm = ({
               },
             },
           },
-          onCompleted: () => {
+          onCompleted:  () => {
             articleFindMany.refetch();
           },
         });
+        await articleFindMany.refetch()
       } catch (error) {
         console.log(error);
       } finally {

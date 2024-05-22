@@ -17,6 +17,8 @@ import { ArticleFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 const ArticlePage = () => {
   const {
@@ -34,7 +36,9 @@ const ArticlePage = () => {
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
+    articleDeleteOne
   } = useArticleViewModel();
+  const router = useRouter()
 
   return (
     <>
@@ -45,12 +49,15 @@ const ArticlePage = () => {
           <Head
             onSearch={(val) => {
               setArticleFindSearch(val);
+              // articleLength.refetch()
             }}
             setStatus={(val) => {
               setArticleFindStatus(val);
+              // articleLength.refetch()
             }}
             setCategory={(val) => {
               setArticleFindCategory(val?.value);
+              // articleLength.refetch()
             }}
           />
           {articleFindMany.error ? (
@@ -163,7 +170,24 @@ const ArticlePage = () => {
                             </li>
                             <li></li>
                             <li>
-                              <button className="dropdown-item">Hapus</button>
+                              <button className="dropdown-item" onClick={async ()=>{
+                                try {
+                                  await articleDeleteOne({
+                                    variables:{
+                                      where:{
+                                        id:article.id
+                                      }
+                                    }
+                                  })
+                                  await articleFindMany.refetch()
+                                  await articleLength.refetch()
+                                } catch (error) {
+                                  console.log(error)
+                                } finally{
+                                  await articleFindMany.refetch()
+                                  await articleLength.refetch()
+                                }
+                              }}>Hapus</button>
                             </li>
                           </ul>
                         </div>

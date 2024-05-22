@@ -108,9 +108,9 @@ export const useCategoryForm = () => {
       categoryName: "",
     },
     validationSchema: categorySchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       try {
-        articleCategoryCreateOne({
+        await articleCategoryCreateOne({
           variables: {
             data: {
               name: values.categoryName,
@@ -123,10 +123,12 @@ export const useCategoryForm = () => {
             },
           },
         });
+        console.log(values.categoryName)
+        console.log(session?.user.id)
       } catch (error) {
         console.log(error);
       } finally {
-        getCategory.refetch();
+        await getCategory.refetch();
       }
     },
   });
@@ -136,7 +138,7 @@ export const useArticleForm = () => {
   const articleState = useSelector((state: RootState) => state.article);
   const [state, setState] = useState<File | null>(null);
   //refetch
-  const { articleFindMany } = useArticleViewModel();
+  const { articleFindMany, articleLength } = useArticleViewModel();
 
   //parse to { id:value }
   const categoryArticle = articleState.category.map((e) => ({ id: e.value }));
@@ -209,13 +211,16 @@ export const useArticleForm = () => {
           //     },
           //   }
           // );
-          articleCreateOne();
+          await articleCreateOne();
           resetArticleState();
-          articleFindMany.refetch();
+          await articleFindMany.refetch();
+          await articleLength.refetch()
         } catch (error) {
           console.log(error);
         } finally {
-          router.push("/admin/articles");
+          router.push("/admin/articles")
+          articleFindMany.refetch();
+        
         }
       }
     },
