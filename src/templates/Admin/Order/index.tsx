@@ -19,7 +19,7 @@ import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
 import Flatpickr from "react-flatpickr";
-import { breadcrumbs } from "../Products/Products-view-model";
+import { breadcrumbs } from "../Products/Course-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
 
 const OrderPage = ({}) => {
