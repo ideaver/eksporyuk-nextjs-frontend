@@ -5,23 +5,39 @@ import {
   TotalSalesAndOmzetQuery,
   useOmzetsReferralLinkQuery,
   useOrderCountsByCustomPeriodQuery,
+  usePopularCoursesQuery,
   useSalesDataQueryQuery,
+  useTopOmzetItemsQuery,
+  useTopSalesItemsQuery,
   useTotalSalesAndOmzetsQuery,
   useUserCompetitorsQueryQuery,
   useUserCountQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { QueryResult } from "@apollo/client";
+import { useSelector, useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { RootState } from "@/app/store/store";
+import {
+  changeLeadPeriod,
+  changeNewMemberPeriod,
+  changeOmzetPeriod,
+  changeOrderCountPeriod,
+  changeSalesPeriod,
+} from "@/features/reducers/dashboard/dashboardReducer";
 
 export const useTotalSales = () => {
   const date = useMemo(() => new Date(), []);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(1);
+  const period = useSelector((state: RootState) => state.dashboard.salesPeriod);
 
-  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
-  const timeReduction = timeReductionMap[period] || 1;
+  const handleChangeSalesPeriod = (e: number) => {
+    dispatch(changeSalesPeriod(e));
+  };
+  const timeReductionMap: any = { 1: 7, 2: 7, 3: 30 };
+  const timeReduction = timeReductionMap[period] || 3;
 
   const pastDate = useMemo(() => {
     const pd = new Date(date);
@@ -45,7 +61,6 @@ export const useTotalSales = () => {
   const totalSales = useTotalSalesAndOmzetsQuery({
     variables: {
       totalSalesAndOmzet: {
-        // 7 hari ke belakang
         start: dateStart,
         end: dateEnd,
       },
@@ -78,13 +93,24 @@ export const useTotalSales = () => {
 
   const totalSalesData: any = totalSales?.data?.totalSalesAndOmzet;
 
-  return { totalSalesData, categories, series, setPeriod };
+  return {
+    totalSalesData,
+    categories,
+    series,
+    handleChangeSalesPeriod,
+    period,
+  };
 };
 
 export const useTotalOmzet = () => {
   const date = useMemo(() => new Date(), []);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(1);
+  const period = useSelector((state: RootState) => state.dashboard.omzetPeriod);
+
+  const handleChangeOmzetPeriod = (e: number) => {
+    dispatch(changeOmzetPeriod(e));
+  };
 
   const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
   const timeReduction = timeReductionMap[period] || 1;
@@ -147,16 +173,20 @@ export const useTotalOmzet = () => {
     totalOmzetData,
     categories,
     series,
-    setPeriod,
+    period,
+    handleChangeOmzetPeriod,
   };
 };
 
 export const useTotalLead = () => {
-  // for label
-
   const date = useMemo(() => new Date(), []);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(1);
+  const period = useSelector((state: RootState) => state.dashboard.leadPeriod);
+
+  const handleChangeLeadPeriod = (e: number) => {
+    dispatch(changeLeadPeriod(e));
+  };
 
   const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
   const timeReduction = timeReductionMap[period] || 1;
@@ -220,14 +250,22 @@ export const useTotalLead = () => {
     totalLeadData,
     categories,
     series,
-    setPeriod,
+    period,
+    handleChangeLeadPeriod,
   };
 };
 
 export const useOrderCountByCustomPeriod = () => {
   const date = useMemo(() => new Date(), []);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(1);
+  const period = useSelector(
+    (state: RootState) => state.dashboard.orderCountPeriod
+  );
+
+  const handleChangeOrderCountPeriod = (e: number) => {
+    dispatch(changeOrderCountPeriod(e));
+  };
 
   const timeReductionMap: any = { 1: 365, 2: 30 };
   const timeReduction = timeReductionMap[period] || 356;
@@ -290,13 +328,20 @@ export const useOrderCountByCustomPeriod = () => {
       );
     },
   });
-  return { series, categories, setPeriod };
+  return { series, categories, period, handleChangeOrderCountPeriod };
 };
 
 export const useNewMember = () => {
   const date = useMemo(() => new Date(), []);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(1);
+  const period = useSelector(
+    (state: RootState) => state.dashboard.newMemberPeriod
+  );
+
+  const handleChangeNewMemberPeriod = (e: number) => {
+    dispatch(changeNewMemberPeriod(e));
+  };
 
   const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
   const timeReduction = timeReductionMap[period] || 1;
@@ -325,7 +370,7 @@ export const useNewMember = () => {
       },
     },
   });
-  return { newMemberTotal, setPeriod };
+  return { newMemberTotal, period, handleChangeNewMemberPeriod };
 };
 
 export const useReferralLink = () => {
@@ -367,118 +412,38 @@ export const useUserCompetitor = () => {
   return { data };
 };
 
-export const listCardItems: ListItem[] = [
-  {
-    icon: {
-      name: "abstract-24",
-      color: "light-info",
-      textColor: "text-info",
+export const useTopSales = () => {
+  const { data } = useTopSalesItemsQuery({
+    variables: {
+      topSalesItem: {
+        take: 10,
+      },
     },
-    title: "Kelas Bimbingan EksporYuk",
-    rows: [
-      {
-        name: "Total Lead",
-        value: "51",
+  });
+  return { data };
+};
+
+export const useTopOmzet = () => {
+  const { data } = useTopOmzetItemsQuery({
+    variables: {
+      topOmzetItem: {
+        take: 10,
       },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-    ],
-  },
-  {
-    icon: {
-      name: "flask",
-      color: "light-success",
-      textColor: "text-success",
     },
-    title: "Ekspor Yuk Automation",
-    rows: [
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-    ],
-  },
-  {
-    icon: {
-      name: "abstract-33",
-      color: "light-danger",
-      textColor: "text-danger",
-    },
-    title: "Bundling Kelas Ekspor + Aplikasi EYA",
-    rows: [
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-    ],
-  },
-  {
-    icon: {
-      name: "abstract-19",
-      color: "light-primary",
-      textColor: "text-primary",
-    },
-    title: "Jasa Website Ekspor Bisnis",
-    rows: [
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-    ],
-  },
-  {
-    icon: {
-      name: "technology-2",
-      color: "light-warning",
-      textColor: "text-warning",
-    },
-    title: "Legalitas Ekspor",
-    rows: [
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-      {
-        name: "Total Lead",
-        value: "51",
-      },
-    ],
-  },
-];
+  });
+  return { data };
+};
+
+export const usePopularCourse = () => {
+  const { data } = usePopularCoursesQuery({
+    // variables: {
+    //    popularCourse:{
+    //     take: 4
+    //    }
+    // },
+  });
+  return { data };
+};
 
 export interface TableRowData {
   source: string;

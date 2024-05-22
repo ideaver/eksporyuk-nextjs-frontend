@@ -2,58 +2,75 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
 import dashboardViewModel, {
   AkuisisiTableProps,
-  dashboardTableMocks,
-  DashboardTableProps,
   useNewMember,
   useOrderCountByCustomPeriod,
+  usePopularCourse,
   useReferralLink,
+  useTopOmzet,
+  useTopSales,
   useTotalLead,
   useTotalOmzet,
   useTotalSales,
   useUserCompetitor,
 } from "./Dashboard-view-model";
-import { useCallback, useMemo, useRef } from "react";
-import { QueryResult } from "@apollo/client";
 import {
   OmzetsReferralLinkQuery,
+  PopularCoursesQuery,
+  TopOmzetItemsQuery,
+  TopSalesItemsQuery,
   UserCompetitorsQueryQuery,
 } from "@/app/service/graphql/gen/graphql";
 
 const Dashboard = ({}) => {
   const { breadcrumbs, simplifyNumber } =
     dashboardViewModel.useDashboardViewModel();
+
   const {
     series: salesSeries,
     categories: salesCategories,
     totalSalesData,
-    setPeriod: setPeriodSales,
+    handleChangeSalesPeriod,
+    period: salesPeriod,
   } = useTotalSales();
 
   const {
     series: leadSeries,
     categories: leadCategories,
     totalLeadData,
-    setPeriod: setPeriodLead,
+    handleChangeLeadPeriod,
+    period: leadPeriod,
   } = useTotalLead();
 
   const {
     series: omzetSeries,
     categories: omzetCategories,
     totalOmzetData,
-    setPeriod: setPeriodOmzet,
+    handleChangeOmzetPeriod,
+    period: omzetPeriod,
   } = useTotalOmzet();
 
-  const { newMemberTotal, setPeriod: setMemberPeriod } = useNewMember();
+  const {
+    newMemberTotal,
+    handleChangeNewMemberPeriod,
+    period: newMemberPeriod,
+  } = useNewMember();
 
   const {
     series: orderPeriodSeries,
     categories: orderPeriodCategories,
-    setPeriod: setOrderCountPeriod,
+    period: orderCountPeriod,
+    handleChangeOrderCountPeriod,
   } = useOrderCountByCustomPeriod();
 
   const { data: userCompetitorData } = useUserCompetitor();
 
   const { data: omzetReferralLinkData } = useReferralLink();
+
+  const { data: topOmzetItem } = useTopOmzet();
+
+  const { data: topSalesItem } = useTopSales();
+
+  const { data: popularCourseItem } = usePopularCourse();
 
   const isFullHeightChart = window.innerWidth > 768; // Change 768 to your desired breakpoint
 
@@ -73,8 +90,9 @@ const Dashboard = ({}) => {
             subLabel="Total Lead"
             dataSeries={leadSeries}
             categoriesXAxis={leadCategories}
+            dropdownValue={leadPeriod.toString()}
             onDropdownValueChanged={(e) => {
-              setPeriodLead(Number(e));
+              handleChangeLeadPeriod(Number(e));
             }}
           />
         </div>
@@ -90,11 +108,12 @@ const Dashboard = ({}) => {
             labelColorBG="success-subtle"
             baseChartColor="info"
             lightChartColor="info-light"
-            label="2.2%"
+            // label={precentage?.toString()}
             dataSeries={salesSeries}
             categoriesXAxis={salesCategories}
+            dropdownValue={salesPeriod.toString()}
             onDropdownValueChanged={(e) => {
-              setPeriodSales(Number(e));
+              handleChangeSalesPeriod(Number(e));
             }}
           />
         </div>
@@ -110,11 +129,12 @@ const Dashboard = ({}) => {
             labelColorBG="success-subtle"
             baseChartColor="danger"
             lightChartColor="danger-light"
-            label="3.2%"
+            // label="3.2%"
             dataSeries={omzetSeries}
             categoriesXAxis={omzetCategories}
+            dropdownValue={omzetPeriod.toString()}
             onDropdownValueChanged={(e) => {
-              setPeriodOmzet(Number(e));
+              handleChangeOmzetPeriod(Number(e));
             }}
           />
         </div>
@@ -125,8 +145,9 @@ const Dashboard = ({}) => {
         className="mb-10"
         title="Riwayat Penjualan"
         subTitle="Sales(Jumlah Pembelian) dan Omzet (Dalam hitungan Juta)"
+        dropdownValue={orderCountPeriod.toString()}
         onDropdownValueChange={(e) => {
-          setOrderCountPeriod(Number(e));
+          handleChangeOrderCountPeriod(Number(e));
         }}
       />
       <div className="row gy-5 g-xl-8 mb-10">
@@ -141,21 +162,21 @@ const Dashboard = ({}) => {
             labelColorBG="danger-subtle"
             textColor="danger"
             dataSeries={[30, 40, 32, 5]}
-            fullHeightChart={isFullHeightChart}
+            // fullHeightChart={isFullHeightChart}
             categoriesXAxis={["Feb", "Mar", "Apr", "May"]}
+            dropdownValue={newMemberPeriod.toString()}
             onDropdownValueChanged={(value) => {
-              setMemberPeriod(Number(value));
+              handleChangeNewMemberPeriod(Number(value));
             }}
           />
         </div>
         <div className="col">
-          <DashboardTable
+          <PopularCourseTable
             title="Kelas Terpopuler"
-            subtitle="Siswa baru tiap kelas"
             data={{
               title: "NAMA COURSE",
-              value: "SISWA  BARU",
-              data: dashboardTableMocks,
+              value: "SISWA BARU",
+              data: popularCourseItem,
             }}
           />
         </div>
@@ -163,33 +184,27 @@ const Dashboard = ({}) => {
 
       <div className="row gy-5 g-xl-8 mb-10">
         <div className="col-xl-4">
-          <DashboardTable
+          <OmzetTable
             title="Top 10 Omzet"
-            subtitle="1,3 M total omzet"
             data={{
               title: "PRODUK",
               value: "TOTAL OMZET",
-              data: dashboardTableMocks,
+              data: topOmzetItem,
             }}
           />
         </div>
         <div className="col-xl-4">
-          <DashboardTable
+          <SalesTable
             title="Top 10 Produk"
-            subtitle="2,2 rb total sales"
             data={{
               title: "PRODUK",
               value: "TOTAL SALES",
-              data: dashboardTableMocks,
+              data: topSalesItem,
             }}
           />
         </div>
         <div className="col-xl-4">
-          <AffiliateTable
-            title="Top 10 Affiliasi"
-            subtitle="420 jt omzet affiliasi"
-            data={userCompetitorData}
-          />
+          <AffiliateTable title="Top 10 Affiliasi" data={userCompetitorData} />
         </div>
       </div>
       {/* <div className="row gy-5 g-xl-8 mb-10">
@@ -294,14 +309,16 @@ const Dashboard = ({}) => {
 
 export default Dashboard;
 
-const DashboardTable = ({
+const OmzetTable = ({
   title,
-  subtitle,
   data,
 }: {
   title: string;
-  subtitle: string;
-  data: DashboardTableProps;
+  data: {
+    title: string;
+    value: string;
+    data: TopOmzetItemsQuery | undefined;
+  };
 }) => {
   return (
     <KTCard className="h-100">
@@ -310,7 +327,6 @@ const DashboardTable = ({
           <h3 className="card-title align-items-start flex-column">
             <span className="card-label fw-bold fs-3 mb-1">{title}</span>
           </h3>
-          <span className="text-muted mt-1 fw-semibold fs-7">{subtitle}</span>
         </div>
         <div className="table-responsive">
           <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
@@ -321,23 +337,23 @@ const DashboardTable = ({
               </tr>
             </thead>
             <tbody>
-              {data.data.map((row, index) => (
+              {data?.data?.topOmzetItem?.map((row, index) => (
                 <tr key={index}>
-                  <td className="fw-bold">
-                    <div className="d-flex align-items-center ">
-                      <div className="symbol symbol-50px me-5">
+                  <td className="fw-bold ">
+                    <div className="d-flex align-items-center my-2">
+                      {/* <div className="symbol symbol-50px me-5">
                         <span className="symbol-label bg-gray-600">
                           <img src={row.img} width={50} height={50} alt="" />
                         </span>
-                      </div>
+                      </div> */}
                       <div className="d-flex flex-column">
                         <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                          {row.title}
+                          {row.name}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td className="fw-bold text-end"> {row.value}</td>
+                  <td className="fw-bold text-end"> {row.omzet}</td>
                 </tr>
               ))}
             </tbody>
@@ -347,13 +363,122 @@ const DashboardTable = ({
     </KTCard>
   );
 };
-const AffiliateTable = ({
+
+const SalesTable = ({
   title,
-  subtitle,
   data,
 }: {
   title: string;
-  subtitle: string;
+  data: {
+    title: string;
+    value: string;
+    data: TopSalesItemsQuery | undefined;
+  };
+}) => {
+  return (
+    <KTCard className="h-100">
+      <KTCardBody>
+        <div className="mb-5 ">
+          <h3 className="card-title align-items-start flex-column">
+            <span className="card-label fw-bold fs-3 mb-1">{title}</span>
+          </h3>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+            <thead>
+              <tr className="fw-bold text-muted">
+                <th className="min-w-150px">{data.title}</th>
+                <th className="text-end min-w-125px">{data.value}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.data?.topSalesItem?.map((row, index) => (
+                <tr key={index}>
+                  <td className="fw-bold ">
+                    <div className="d-flex align-items-center my-2">
+                      {/* <div className="symbol symbol-50px me-5">
+                        <span className="symbol-label bg-gray-600">
+                          <img src={row.img} width={50} height={50} alt="" />
+                        </span>
+                      </div> */}
+                      <div className="d-flex flex-column">
+                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {row.name}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="fw-bold text-end"> {row.sales}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </KTCardBody>
+    </KTCard>
+  );
+};
+
+const PopularCourseTable = ({
+  title,
+  data,
+}: {
+  title: string;
+  data: {
+    title: string;
+    value: string;
+    data: PopularCoursesQuery | undefined;
+  };
+}) => {
+  return (
+    <KTCard className="h-100">
+      <KTCardBody>
+        <div className="mb-5 ">
+          <h3 className="card-title align-items-start flex-column">
+            <span className="card-label fw-bold fs-3 mb-1">{title}</span>
+          </h3>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+            <thead>
+              <tr className="fw-bold text-muted">
+                <th className="min-w-150px">{data.title}</th>
+                <th className="text-end min-w-125px">{data.value}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.data?.popularCourse?.map((row, index) => (
+                <tr key={index}>
+                  <td className="fw-bold ">
+                    <div className="d-flex align-items-center my-2">
+                      {/* <div className="symbol symbol-50px me-5">
+                        <span className="symbol-label bg-gray-600">
+                          <img src={row.img} width={50} height={50} alt="" />
+                        </span>
+                      </div> */}
+                      <div className="d-flex flex-column">
+                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {row.name}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="fw-bold text-end"> {row.newStudent}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </KTCardBody>
+    </KTCard>
+  );
+};
+
+const AffiliateTable = ({
+  title,
+  data,
+}: {
+  title: string;
   data: UserCompetitorsQueryQuery | undefined;
 }) => {
   return (
@@ -363,7 +488,7 @@ const AffiliateTable = ({
           <h3 className="card-title align-items-start flex-column">
             <span className="card-label fw-bold fs-3 mb-1">{title}</span>
           </h3>
-          <span className="text-muted mt-1 fw-semibold fs-7">{subtitle}</span>
+          {/* <span className="text-muted mt-1 fw-semibold fs-7">{subtitle}</span> */}
         </div>
         <div className="table-responsive">
           <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">

@@ -104,6 +104,9 @@ interface ChartProps {
    */
   dropdownOptions?: { value: string; label: string }[];
 
+  // dropdown value
+  dropdownValue?: any;
+
   /**
    * toolbar dropdown click handler
    */
@@ -136,6 +139,7 @@ export const Charts = ({
     { value: "2", label: "Minggu Ini" },
     { value: "3", label: "Bulan Ini" },
   ],
+  dropdownValue,
   onDropdownValueChanged,
 }: ChartProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
@@ -265,6 +269,7 @@ export const Charts = ({
             <Dropdown
               styleType="solid"
               onValueChange={onDropdownValueChanged}
+              value={dropdownValue}
               options={dropdownOptions}
             />
           </div>

@@ -23,6 +23,7 @@ type BigChartProps = ChartOptionsParams & {
   footer?: JSX.Element;
   useDefaultFooter?: boolean;
   onDropdownValueChange?: (value: string | number) => void;
+  dropdownValue?: string | number;
 };
 
 const BigChart = ({
@@ -36,10 +37,12 @@ const BigChart = ({
   title = "Riwayat Order Affiliasi",
   subTitle = "Sales (Jumlah Pembelian) dan Omzet (Dalam hitungan Juta)",
   onDropdownValueChange,
+  dropdownValue,
   toolbar = (
     <Dropdown
       styleType="solid"
       onValueChange={onDropdownValueChange ?? function () {}}
+      value={dropdownValue}
       options={[
         { value: "1", label: "12 Bulan Terakhir" },
         { value: "2", label: "30 Hari Terakhir" },
