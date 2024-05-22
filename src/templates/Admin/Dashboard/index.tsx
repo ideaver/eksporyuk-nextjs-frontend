@@ -51,8 +51,11 @@ const Dashboard = ({}) => {
 
   const {
     newMemberTotal,
+    newMemberTotalData,
     handleChangeNewMemberPeriod,
     period: newMemberPeriod,
+    series: newMemberSeries,
+    categories: newMemberCategories,
   } = useNewMember();
 
   const {
@@ -64,7 +67,14 @@ const Dashboard = ({}) => {
 
   const { data: userCompetitorData } = useUserCompetitor();
 
-  const { data: omzetReferralLinkData } = useReferralLink();
+  const {
+    data: omzetReferralLinkData,
+    topSalesFacebook,
+    topSalesInstagram,
+    topSalesTikTok,
+    topSalesWhatsApp,
+    topSalesYoutube,
+  } = useReferralLink();
 
   const { data: topOmzetItem } = useTopOmzet();
 
@@ -152,21 +162,44 @@ const Dashboard = ({}) => {
       />
       <div className="row gy-5 g-xl-8 mb-10">
         <div className="col-xxl-8">
-          <Charts
+          {/* <Charts
             classNames="h-100"
-            value={newMemberTotal.data?.userCount?.toString()}
+            value={
+              newMemberTotal.data?.userCount?.toString() &&
+              simplifyNumber(newMemberTotal.data?.userCount.toString())
+            }
             title="Member Baru"
             subTitle="Perkembangan member baru"
             subLabel="Member baru bulan ini"
             labelIcon="arrow-down"
             labelColorBG="danger-subtle"
             textColor="danger"
-            dataSeries={[30, 40, 32, 5]}
-            // fullHeightChart={isFullHeightChart}
-            categoriesXAxis={["Feb", "Mar", "Apr", "May"]}
+            fullHeightChart={isFullHeightChart}
+            dataSeries={newMemberSeries}
+            categoriesXAxis={newMemberCategories}
             dropdownValue={newMemberPeriod.toString()}
-            onDropdownValueChanged={(value) => {
-              handleChangeNewMemberPeriod(Number(value));
+            onDropdownValueChanged={(e) => {
+              handleChangeNewMemberPeriod(Number(e));
+            }}
+          /> */}
+          <Charts
+            classNames="h-100"
+            value={
+              totalSalesData?.totalSales &&
+              simplifyNumber(totalSalesData?.totalSales)
+            }
+            subLabel="Member Baru"
+            labelIcon="arrow-up"
+            labelColorBG="success-subtle"
+            baseChartColor="info"
+            lightChartColor="info-light"
+            // label={precentage?.toString()}
+            fullHeightChart={isFullHeightChart}
+            dataSeries={newMemberSeries}
+            categoriesXAxis={newMemberCategories}
+            dropdownValue={newMemberPeriod.toString()}
+            onDropdownValueChanged={(e) => {
+              handleChangeNewMemberPeriod(Number(e));
             }}
           />
         </div>
@@ -247,43 +280,44 @@ const Dashboard = ({}) => {
             items={[
               {
                 icon: "/media/svg/brand-logos/whatsapp.svg",
-                title: "Whatsapp",
-                salesValue: 1476619696,
-                precentageValue: 70,
+                title: "WhatsApp",
+                salesValue: topSalesWhatsApp?.[0].sales as number,
+                precentageValue: topSalesWhatsApp?.[0].conversionRate as number,
                 colorPrecentage: "success",
                 colorSubtle: "success-subtle",
               },
               {
                 icon: "/media/svg/brand-logos/instagram-2-1.svg",
                 title: "Instagram",
-                salesValue: 21321,
-                precentageValue: 70,
+                salesValue: topSalesInstagram?.[0].sales as number,
+                precentageValue: topSalesInstagram?.[0]
+                  .conversionRate as number,
                 colorPrecentage: "warning",
                 colorSubtle: "warning-subtle",
               },
               {
                 icon: "/media/svg/brand-logos/facebook-5.svg",
                 title: "Facebook",
-                salesValue: 123,
-                precentageValue: 70,
+                salesValue: topSalesFacebook?.[0].sales as number,
+                precentageValue: topSalesFacebook?.[0].conversionRate as number,
                 colorPrecentage: "primary",
                 colorSubtle: "primary-subtle",
               },
               {
                 icon: "/media/svg/brand-logos/tiktok.svg",
-                title: "Tiktok",
-                salesValue: 123,
-                precentageValue: 70,
+                title: "TikTok",
+                salesValue: topSalesTikTok?.[0].sales as number,
+                precentageValue: topSalesTikTok?.[0].conversionRate as number,
                 colorPrecentage: "info",
                 colorSubtle: "info-subtle",
               },
               {
-                icon: "/media/svg/brand-logos/google-icon.svg",
-                title: "E-mail",
-                salesValue: 123,
-                precentageValue: 70,
-                colorPrecentage: "success",
-                colorSubtle: "success-subtle",
+                icon: "/media/svg/brand-logos/youtube-play.svg",
+                title: "YouTube",
+                salesValue: topSalesYoutube?.[0].sales as number,
+                precentageValue: topSalesYoutube?.[0].conversionRate as number,
+                colorPrecentage: "danger",
+                colorSubtle: "danger-subtle",
               },
             ]}
             categories={[

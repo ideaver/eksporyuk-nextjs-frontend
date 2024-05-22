@@ -7,6 +7,7 @@ import {
   useOrderCountsByCustomPeriodQuery,
   usePopularCoursesQuery,
   useSalesDataQueryQuery,
+  useStudentsCountByCustomPeriodQuery,
   useTopOmzetItemsQuery,
   useTopSalesItemsQuery,
   useTotalSalesAndOmzetsQuery,
@@ -338,7 +339,6 @@ export const useNewMember = () => {
   const period = useSelector(
     (state: RootState) => state.dashboard.newMemberPeriod
   );
-
   const handleChangeNewMemberPeriod = (e: number) => {
     dispatch(changeNewMemberPeriod(e));
   };
@@ -355,10 +355,15 @@ export const useNewMember = () => {
   const [dateEnd, setDateEnd] = useState<string>();
   const [dateStart, setDateStart] = useState<string>();
 
+  const [series, setSeries] = useState<any>();
+  const [categories, setCategories] = useState<any>();
+
+  //convert to ISOstring
   useEffect(() => {
     setDateEnd(date.toISOString());
     setDateStart(pastDate.toISOString());
-  }, [date, pastDate]);
+    // chartLead.refetch();
+  }, [date, timeReduction]);
 
   const newMemberTotal = useUserCountQuery({
     variables: {
@@ -370,12 +375,76 @@ export const useNewMember = () => {
       },
     },
   });
-  return { newMemberTotal, period, handleChangeNewMemberPeriod };
+
+  const studentCountByCustomPeriod = useStudentsCountByCustomPeriodQuery({
+    variables: {
+      studentCountByCustomPeriod: {
+        start: dateStart,
+        end: dateEnd,
+        period:
+          period === 1
+            ? PeriodEnum.Daily
+            : period === 2
+            ? PeriodEnum.Daily
+            : PeriodEnum.Weekly,
+      },
+    },
+    onCompleted: () => {
+      setSeries(
+        studentCountByCustomPeriod.data?.studentCountByCustomPeriod?.map(
+          (value) => value.totalStudent
+        )
+      );
+      setCategories(
+        studentCountByCustomPeriod.data?.studentCountByCustomPeriod?.map(
+          (value: any) => {
+            const date = new Date(value?.period);
+            return formatDate(date.toString()).split(" ").slice(0, 2).join(" ");
+          }
+        )
+      );
+    },
+  });
+
+  const newMemberTotalData: any = newMemberTotal?.data?.userCount;
+
+  return {
+    newMemberTotal,
+    newMemberTotalData,
+    period,
+    series,
+    categories,
+    handleChangeNewMemberPeriod,
+  };
 };
 
 export const useReferralLink = () => {
   const { data } = useOmzetsReferralLinkQuery();
-  return { data };
+
+  const topSalesWhatsApp = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "WHATSAPP"
+  );
+  const topSalesInstagram = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "INSTAGRAM"
+  );
+  const topSalesFacebook = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "FACEBOOK"
+  );
+  const topSalesTikTok = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "TIKTOK"
+  );
+  const topSalesYoutube = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "YOUTUBE"
+  );
+
+  return {
+    data,
+    topSalesFacebook,
+    topSalesInstagram,
+    topSalesTikTok,
+    topSalesWhatsApp,
+    topSalesYoutube,
+  };
 };
 
 export const useUserCompetitor = () => {
@@ -435,12 +504,32 @@ export const useTopOmzet = () => {
 };
 
 export const usePopularCourse = () => {
+  const date = useMemo(() => new Date(), []);
+
+  const timeReduction = 365;
+
+  const pastDate = useMemo(() => {
+    const pd = new Date(date);
+    pd.setDate(date.getDate() - timeReduction);
+    return pd;
+  }, [date, timeReduction]);
+
+  const [dateEnd, setDateEnd] = useState<string>();
+  const [dateStart, setDateStart] = useState<string>();
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+  }, [date, timeReduction]);
   const { data } = usePopularCoursesQuery({
-    // variables: {
-    //    popularCourse:{
-    //     take: 4
-    //    }
-    // },
+    variables: {
+      popularCourse: {
+        end: dateEnd,
+        start: dateStart,
+        take: 5,
+      },
+    },
   });
   return { data };
 };
