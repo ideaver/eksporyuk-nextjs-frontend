@@ -1,5 +1,6 @@
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
+import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import { configureStore } from "@reduxjs/toolkit";
@@ -26,6 +27,11 @@ const articlePersistConfig = {
   storage,
 };
 
+const dashboardPersistConfig = {
+  key: "dashboard",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -43,6 +49,11 @@ const persistedArticleReducer = persistReducer(
   articlesReducer
 );
 
+const persistedDashboardReducer = persistReducer(
+  dashboardPersistConfig,
+  dashboardReducer
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -50,6 +61,7 @@ export const store = configureStore({
     product: persistedProductReducer,
     buyer: persistedBuyerReducer,
     article: persistedArticleReducer,
+    dashboard: persistedDashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
