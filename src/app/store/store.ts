@@ -4,6 +4,7 @@ import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import couponReducer from "@/features/reducers/affiliators/couponReducer";
+import rewardReducer from "@/features/reducers/affiliators/rewardReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
@@ -37,6 +38,11 @@ const dashboardPersistConfig = {
   storage,
 };
 
+const rewardPersistConfig = {
+  key: "reward",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer,
@@ -60,6 +66,8 @@ const persistedDashboardReducer = persistReducer(
   dashboardReducer
 );
 
+const persistedRewardReducer = persistReducer(rewardPersistConfig, rewardReducer);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -69,6 +77,7 @@ export const store = configureStore({
     coupon: persistedCouponReducer,
     article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
+    reward: persistedRewardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

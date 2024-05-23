@@ -179,7 +179,7 @@ const Body = ({
                     {dateFormatter(reward.createdAt)}
                   </td>
                   <td className="align-middle text-end text-muted fw-bold">
-                    {reward._count.RewardsRedeem}
+                    0
                   </td>
                   <td className="align-middle text-end">
                     <Badge
@@ -207,65 +207,6 @@ const Body = ({
               );
             }
           )}
-
-          {/* Query data */}
-          {/* {rewardsData.map((reward) => {
-            return (
-              <KTTableBody key={reward.id}>
-                <td className="align-middle text-end w-200px">
-                  <CheckBoxInput
-                    className="ps-0"
-                    checked={false}
-                    name={"check-"}
-                    value={"20"}
-                    defaultChildren={false}
-                    onChange={() => {}}
-                  >
-                    <div className="d-flex align-items-center gap-5">
-                      <img
-                        src="/media/avatars/300-2.jpg"
-                        width={50}
-                        height={50}
-                        alt=""
-                      />
-                      <p className="min-w-200px">{reward.name}</p>
-                    </div>
-                  </CheckBoxInput>
-                </td>
-                <td className="align-middle text-end text-muted fw-bold w-150px">
-                  {reward.price}
-                </td>
-                <td className="align-middle text-end text-muted fw-bold">
-                  {reward.creationDate}
-                </td>
-                <td className="align-middle text-end text-muted fw-bold">
-                  {reward.redemptionCount}
-                </td>
-                <td className="align-middle text-end">
-                  <Badge
-                    badgeColor={reward.status === "Buka" ? "success" : "danger"}
-                    label={reward.status}
-                    onClick={function noRefCheck() {}}
-                  />
-                </td>
-                <td className="align-middle text-end">
-                  <Dropdown
-                    styleType="solid"
-                    options={[
-                      { label: "Action", value: "all" },
-                      {
-                        label: "Ubah Status",
-                        value: "edit-status",
-                      },
-                      { label: "Edit", value: "edit" },
-                      { label: "Hapus", value: "delete" },
-                    ]}
-                    onValueChange={() => {}}
-                  />
-                </td>
-              </KTTableBody>
-            );
-          })} */}
         </KTTable>
       )}
     </>

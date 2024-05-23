@@ -7,9 +7,6 @@ query RewardsCatalogFindMany($take: Int, $skip: Int, $where: RewardsCatalogWhere
       status
     }
     pointsRequired
-    _count {
-      RewardsRedeem
-    }
     createdAt
   }
 }
