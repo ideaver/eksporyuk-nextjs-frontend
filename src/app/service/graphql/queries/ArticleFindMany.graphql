@@ -1,0 +1,20 @@
+query ArticleFindMany($where: ArticleWhereInput, $take: Int, $skip: Int) {
+  articleFindMany(where: $where, take: $take, skip: $skip) {
+    id
+    createdByAdmin {
+      id
+      user {
+        id
+        name
+        avatarImageId
+      }
+    }
+    category {
+      name
+      id
+    }
+    isActive
+    title
+    updatedAt
+  }
+}

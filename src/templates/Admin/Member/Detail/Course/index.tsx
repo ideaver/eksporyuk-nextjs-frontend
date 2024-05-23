@@ -63,28 +63,67 @@ const CoursePage = ({
           </div>
           <div className="mt-5">
             <div className="col">
-              {data?.enrollments?.map((enrollment, index) => {
-                const courseProgress = enrollment.lessonProgresses?.filter((lp) => lp.isCompleted === true).length
-                const courseTotal = enrollment.lessonProgresses?.length
-                const progress = Math.round(((courseProgress ?? 0) / (courseTotal ?? 0)) * 100)
+              <ProgressCard
+                img="/media/illustrations/sketchy-1/17.png"
+                progress={Math.round(
+                  ((data?.enrollments?.filter(
+                    (e) => e.completionStatus == CompletionStatusEnum.Completed
+                  ).length ?? 0) /
+                    (data?._count.enrollments ?? 0)) *
+                    100
+                )}
+                subtitle={
+                  <>
+                    {" "}
+                    Sudah menyelesaikan{" "}
+                    <span className="text-black fw-bold">
+                      {
+                        data?.enrollments?.filter(
+                          (e) =>
+                            e.completionStatus == CompletionStatusEnum.Completed
+                        ).length
+                      }
+                    </span>{" "}
+                    dari{" "}
+                    <span className="text-black fw-bold">
+                      {data?._count.enrollments}
+                    </span>{" "}
+                    Kelas
+                  </>
+                }
+              />
+              {/* {data?.enrollments?.map((enrollment, index) => {
+                const courseProgress = enrollment.lessonProgresses?.filter(
+                  (lp) => lp.isCompleted === true
+                ).length;
+                const courseTotal = enrollment.lessonProgresses?.length;
+                const progress = Math.round(
+                  ((courseProgress ?? 0) / (courseTotal ?? 0)) * 100
+                );
                 return (
                   <ProgressCard
                     key={index}
                     img="/media/illustrations/sketchy-1/17.png"
                     progress={progress}
-                    title="Kelas Bimbingan EksporYuk"
+                    title={enrollment?.course.title ?? ""}
                     subtitle={
                       <>
                         {" "}
                         Sudah menyelesaikan{" "}
-                        <span className="text-black fw-bold">{courseProgress}</span> dari{" "}
-                        <span className="text-black fw-bold">{courseTotal}</span> Kelas
+                        <span className="text-black fw-bold">
+                          {courseProgress}
+                        </span>{" "}
+                        dari{" "}
+                        <span className="text-black fw-bold">
+                          {courseTotal}
+                        </span>{" "}
+                        Kelas
                       </>
                     }
                   />
                 );
-              })}
-              {/* Might be used later */}
+              })} */}
+                 {/* Might be used later */}
               {/* <div className="mt-5">
           <ProgressCard
                 img="/media/illustrations/sketchy-1/15.png"
@@ -111,14 +150,12 @@ const CoursePage = ({
 
 interface IProgressCard {
   img: string;
-  title: string;
   subtitle: JSX.Element;
   progress: number;
   color?: ColorList;
 }
 const ProgressCard = ({
   img,
-  title,
   subtitle,
   progress,
   color = "primary",
@@ -139,16 +176,21 @@ const ProgressCard = ({
       <div className="col-lg-10 gy-5 gy-lg-0 ">
         <div className={`card bg-light-${color} card-xl-stretch`}>
           <div className="card-body my-3">
-            <h5
+            {/* <h5
               className={`card-title fw-bold text-${color} fs-5 mb-3 d-block`}
             >
               {title}
-            </h5>
+            </h5> */}
             <div className="py-1">
-              <span className="text-gray-900 fs-1 fw-bold me-2">
+              <h1
+                className="text-gray-900 fw-bold me-2"
+                style={{
+                  fontSize: "35px",
+                }}
+              >
                 {progress}%
-              </span>
-              <span className="fw-semibold text-muted fs-7">{subtitle}</span>
+              </h1>
+              <p className="fw-semibold text-muted fs-4 mb-0">{subtitle}</p>
             </div>
             <div className={`progress h-7px bg-${color} bg-opacity-50 mt-7`}>
               <div

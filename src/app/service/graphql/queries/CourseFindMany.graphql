@@ -1,0 +1,128 @@
+query CourseFindMany(
+  $where: CourseWhereInput
+  $orderBy: [CourseOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  courseFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+    title
+    description
+    prerequisites
+    objective
+    outcome
+    startDate
+    endDate
+    maxEnrollment
+    deepLink
+    isCertificationProvided
+    basePrice
+    sellingPrice
+    createdAt
+    updatedAt
+    status
+    level
+    duration
+    categoryId
+    createdById
+    videoUrlId
+    featured {
+      id
+      createdAt
+      updatedAt
+      createdById
+      type
+      courseId
+      mentorId
+      productId
+      supplierId
+      forwarderId
+      agentId
+      groupId
+    }
+    enrollments {
+      id
+      createdAt
+      updatedAt
+      completedAt
+      progress
+      completionStatus
+      courseId
+      studentId
+      orderId
+      certificateId
+    }
+    sections {
+      id
+      name
+      description
+      orderIndex
+      createdAt
+      updatedAt
+      accessibility
+      courseId
+    }
+    createdBy {
+      id
+      updatedAt
+      description
+      tagLine
+      user {
+        id
+        name
+        email
+        username
+        couponCodeRegister
+        emailVerifiedAt
+        referralCode
+        password
+        passwordUpdatedAt
+        birthDate
+        personalId
+        npwpId
+        createdAt
+        updatedAt
+        deletedAt
+        deletedReason
+        phoneId
+        referredById
+        role
+        gender
+        avatarImageId
+        referralLinkId
+      }
+    }
+    _count {
+      bundle
+      sections
+      requiredCourses
+      requiredByCourses
+      mentors
+      announcements
+      groups
+      enrollments
+      reviews
+      favorites
+      images
+      onAvailableCoupon
+      certificates
+      reminders
+      affiliatorLink
+      courseCoupon
+      posts
+      CartItem
+      RewardsCatalog
+    }
+    images {
+      path
+    }
+    category {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+      createdById
+    }
+  }
+}
