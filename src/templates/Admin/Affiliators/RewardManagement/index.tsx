@@ -189,19 +189,29 @@ const Body = ({
                     />
                   </td>
                   <td className="align-middle text-end">
-                    <Dropdown
-                      styleType="solid"
-                      options={[
-                        { label: "Action", value: "all" },
-                        {
-                          label: "Ubah Status",
-                          value: "edit-status",
-                        },
-                        { label: "Edit", value: "edit" },
-                        { label: "Hapus", value: "delete" },
-                      ]}
-                      onValueChange={() => {}}
-                    />
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu d-none">
+                        <li>
+                          <button className="dropdown-item" onClick={() => {}}>
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Edit</button>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
                   </td>
                 </KTTableBody>
               );
@@ -213,7 +223,13 @@ const Body = ({
   );
 };
 
-const Footer = ({ skipPage, setSkipPage, takePage, setTakePage, totalPage }: any) => {
+const Footer = ({
+  skipPage,
+  setSkipPage,
+  takePage,
+  setTakePage,
+  totalPage,
+}: any) => {
   if (skipPage === 0) skipPage = 1;
 
   return (
