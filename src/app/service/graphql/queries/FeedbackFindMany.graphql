@@ -1,0 +1,18 @@
+query FeedbackFindMany($skip: Int, $take: Int, $where: FeedbackWhereInput) {
+  feedbackFindMany(skip: $skip, take: $take, where: $where) {
+    id
+    content
+    FeedbackCategoryTypeEnum
+    createdAt
+    updatedAt
+    userId
+    isCleared
+    isRead
+    resolvedById
+    user {
+      id
+      name
+      avatarImageId
+    }
+  }
+}

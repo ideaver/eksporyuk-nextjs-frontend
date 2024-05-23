@@ -1,0 +1,22 @@
+query FeedbackFindOne($where: FeedbackWhereUniqueInput!) {
+  feedbackFindOne(where: $where) {
+    id
+    content
+    FeedbackCategoryTypeEnum
+    isRead
+    isCleared
+    createdAt
+    updatedAt
+    resolvedById
+    userId
+    user {
+      email
+      id
+      phone {
+        phoneNumber
+      }
+      name
+      avatarImageId
+    }
+  }
+}

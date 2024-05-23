@@ -56,7 +56,7 @@ const usePagination = () => {
 export const useCategoriesDropdown = () => {
   const getCategory = useArticleCategoryFindManyQuery({
     variables: {
-      take: null,
+      where: {},
     },
   });
 
