@@ -4,7 +4,10 @@ import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import { StudentFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+import useUserEdit from "@/app/service/utils/crud/user/userEdit";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
+import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -13,7 +16,6 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
-import ForgotPasswordModal from "../Mentor/component/ForgotPasswordModal";
 import useMemberViewModel, { breadcrumbs } from "./Member-view-model";
 
 const MemberPage = ({}) => {
@@ -147,10 +149,15 @@ const Body = ({
     handleForgotPassword,
     setShowForgotPasswordModal,
     showForgotPasswordModal,
-    forgotPasswordSuccess,
-    forgotPasswordError,
   } = useForgotPassword();
-  const [selectedStudent, setSelectedStudent] = useState("");
+  const {
+    showEditUserModal,
+    editUserModalLoading,
+    handleUserUpdate,
+    setShowEditUserModal,
+  } = useUserEdit();
+  const [selectedStudentEmail, setSelectedStudentEmailEmail] = useState("");
+  const [selectedStudentId, setSelectedStudentId] = useState("");
   return (
     <>
       {studentFindMany.error ? (
@@ -297,7 +304,7 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() => {
-                            setSelectedStudent(student.user.email);
+                            setSelectedStudentEmailEmail(student.user.email);
                             setShowForgotPasswordModal(true);
                           }}
                         >
@@ -305,7 +312,15 @@ const Body = ({
                         </button>
                       </li>
                       <li>
-                        <button className="dropdown-item">Edit</button>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            setSelectedStudentId(student.user.id);
+                            setShowEditUserModal(true);
+                          }}
+                        >
+                          Edit
+                        </button>
                       </li>
                       <li>
                         <button className="dropdown-item">Hapus</button>
@@ -321,8 +336,17 @@ const Body = ({
       <ForgotPasswordModal
         handleClose={() => setShowForgotPasswordModal(false)}
         show={showForgotPasswordModal}
-        handleSubmit={() => handleForgotPassword(selectedStudent)}
+        handleSubmit={() => handleForgotPassword(selectedStudentEmail)}
         isLoading={forgotPasswordModalLoading}
+      />
+      <EditUserModal
+        handleClose={() => setShowEditUserModal(false)}
+        show={showEditUserModal}
+        userId={selectedStudentId}
+        handleSubmit={(value, file) =>
+          handleUserUpdate(selectedStudentId, value, file)
+        }
+        isLoading={editUserModalLoading}
       />
     </>
   );

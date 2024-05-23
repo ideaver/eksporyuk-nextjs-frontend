@@ -3,6 +3,8 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import { MentorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+import useUserEdit from "@/app/service/utils/crud/user/userEdit";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
@@ -11,11 +13,11 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
+import { useState } from "react";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
-import ForgotPasswordModal from "./component/ForgotPasswordModal";
-import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
-import { useState } from "react";
+import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
+import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
 
 const MentorPage = ({}) => {
   const {
@@ -32,7 +34,6 @@ const MentorPage = ({}) => {
     checkedItems,
     selectAll,
   } = useMentorViewModel();
-
 
   return (
     <>
@@ -157,10 +158,15 @@ const Body = ({
     handleForgotPassword,
     setShowForgotPasswordModal,
     showForgotPasswordModal,
-    forgotPasswordSuccess,
-    forgotPasswordError,
   } = useForgotPassword();
-  const [selectedMentor, setSelectedMentor]= useState("");
+  const {
+    showEditUserModal,
+    editUserModalLoading,
+    handleUserUpdate,
+    setShowEditUserModal,
+  } = useUserEdit();
+  const [selectedUserEmail, setSelectedUserEmail] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
   return (
     <>
       {mentorFindMany.error ? (
@@ -239,7 +245,10 @@ const Body = ({
                           />
                         </span>
                       </div>
-                      <Link  href={`/admin/mentors/detail/${mentor.id}/profile`} className="d-flex flex-column">
+                      <Link
+                        href={`/admin/mentors/detail/${mentor.id}/profile`}
+                        className="d-flex flex-column"
+                      >
                         <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
                           {mentor.user.name}
                         </span>
@@ -287,15 +296,26 @@ const Body = ({
                       </button>
                       <ul className="dropdown-menu">
                         <li>
-                          <button className="dropdown-item" onClick={()=>{
-                            setSelectedMentor(mentor.user.email)
-                            setShowForgotPasswordModal(true)
-                          }}>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setSelectedUserEmail(mentor.user.email);
+                              setShowForgotPasswordModal(true);
+                            }}
+                          >
                             Kirim Pengaturan ulang kata sandi
                           </button>
                         </li>
                         <li>
-                          <button className="dropdown-item">Edit</button>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setSelectedUserId(mentor.user.id);
+                              setShowEditUserModal(true);
+                            }}
+                          >
+                            Edit
+                          </button>
                         </li>
                         <li>
                           <button className="dropdown-item">Hapus</button>
@@ -309,11 +329,18 @@ const Body = ({
           </KTTable>
         </>
       )}
-       <ForgotPasswordModal
+      <ForgotPasswordModal
         handleClose={() => setShowForgotPasswordModal(false)}
         show={showForgotPasswordModal}
-        handleSubmit={() => handleForgotPassword(selectedMentor)}
+        handleSubmit={() => handleForgotPassword(selectedUserEmail)}
         isLoading={forgotPasswordModalLoading}
+      />
+      <EditUserModal
+        handleClose={() => setShowEditUserModal(false)}
+        show={showEditUserModal}
+        userId={selectedUserId}
+        handleSubmit={(value, file) => handleUserUpdate(selectedUserId, value, file)}
+        isLoading={editUserModalLoading}
       />
     </>
   );
