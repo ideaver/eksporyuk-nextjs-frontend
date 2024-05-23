@@ -7,9 +7,12 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import CreateCouponModal from "../../component/CreateCouponModal";
+import useKuponAffiliasiViewModel from "./KuponAffiliasi-view-model";
 
 const CouponAffiliatePage = ({ data }: any) => {
   const [showModal, setShowModal] = useState(false);
+
+  const { onDelete } = useKuponAffiliasiViewModel();
 
   return (
     <>
@@ -103,18 +106,10 @@ const CouponAffiliatePage = ({ data }: any) => {
                         </button>
                         <ul className="dropdown-menu">
                           <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => {}}
-                            >
-                              Kirim Pengaturan ulang kata sandi
-                            </button>
-                          </li>
-                          <li>
-                            <button className="dropdown-item">Edit</button>
-                          </li>
-                          <li>
-                            <button className="dropdown-item">Hapus</button>
+                            <button className="dropdown-item" onClick={() => {
+                              onDelete(coupon.id);
+                              console.log(coupon.id);
+                            }}>Hapus</button>
                           </li>
                         </ul>
                       </div>

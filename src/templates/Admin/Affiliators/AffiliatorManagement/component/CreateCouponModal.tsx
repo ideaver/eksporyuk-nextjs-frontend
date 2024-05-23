@@ -1,31 +1,12 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Modal } from "react-bootstrap";
 
 import { KTIcon } from "@/_metronic/helpers";
-import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
-import useCouponInformationViewModel from "../../AddNewCoupon/Information/CouponInformation-view-model";
-import { RootState } from "@/app/store/store";
-import {
-  changeIsActive,
-  changeThumbnail,
-  changeCouponCode,
-  changeEndDate,
-  changeFreeDelivery,
-  changeLimitUsage,
-  changeStartDate,
-  changeValue,
-} from "@/features/reducers/affiliators/couponReducer";
+import useKuponAffiliasiViewModel from "../Detail/KuponAffiliasi/KuponAffiliasi-view-model";
 
 const CreateCouponModal = ({ show, onClose }: any) => {
-  const dispatch = useDispatch();
-
-  // redux stuff
-  const thumbnail = useSelector((state: RootState) => state.coupon.thumbnail);
-
   const {
     couponCode,
     setCouponCode,
@@ -42,7 +23,7 @@ const CreateCouponModal = ({ show, onClose }: any) => {
     setAllowAffiliator,
     onSubmit,
     errorMessage,
-  } = useCouponInformationViewModel();
+  } = useKuponAffiliasiViewModel();
 
   return (
     <Modal
