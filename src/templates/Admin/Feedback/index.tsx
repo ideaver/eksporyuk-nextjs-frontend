@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeFeedbackCategoryType } from "@/features/reducers/feedback/feedbackReducer";
 import { RootState } from "@/app/store/store";
 import { useEffect } from "react";
+import { formatCategoryType } from "@/app/service/utils/categoryTypeEnumFormatter";
 
 const Feedback = () => {
   const {
@@ -29,7 +30,6 @@ const Feedback = () => {
     handlePageChange,
     calculateTotalPage,
     feedbackFindMany,
-    formatFeedbackCategoryType,
     setFeedbackSkip,
     setFeedbackTake,
     setFilter,
@@ -68,7 +68,7 @@ const Feedback = () => {
               />
               <Body
                 data={data}
-                formatter={formatFeedbackCategoryType}
+                formatter={formatCategoryType}
                 feedbackFindMany={feedbackFindMany}
               />
               <Footer
@@ -111,10 +111,6 @@ const Aside = ({
   const feedbackCategoryState = useSelector(
     (state: RootState) => state.feedback.feedbackCategoryType
   );
-  useEffect(() => {
-    console.log(feedbackCategoryState);
-  }, [feedbackCategoryState]);
-  console.log(feedbackCategoryState);
   return (
     <div className="col-lg-3">
       <KTCard>
@@ -138,7 +134,7 @@ const Aside = ({
             </span>
 
             <Badge
-              label={categoryAll?.toString() as string}
+              label={(categoryAll?.toString() as string) ?? 0}
               size="large"
               badgeColor="dark"
             />
@@ -168,7 +164,10 @@ const Aside = ({
               Tidak Bisa Order
             </span>
 
-            <Badge label={categoryOrder?.toString() as string} size="large" />
+            <Badge
+              label={(categoryOrder?.toString() as string) ?? 0}
+              size="large"
+            />
           </button>
           <button
             className={`btn gap-3 text-hover-info fw-bold fs-5 ${
@@ -196,7 +195,7 @@ const Aside = ({
             </span>
 
             <Badge
-              label={categoryCourse?.toString() as string}
+              label={(categoryCourse?.toString() as string) ?? 0}
               size="large"
               badgeColor="info"
             />
@@ -227,7 +226,7 @@ const Aside = ({
             </span>
 
             <Badge
-              label={categoryPayment?.toString() as string}
+              label={(categoryPayment?.toString() as string) ?? 0}
               size="large"
               badgeColor="success"
             />
@@ -257,7 +256,7 @@ const Aside = ({
             </span>
 
             <Badge
-              label={categoryOther?.toString() as string}
+              label={(categoryOther?.toString() as string) ?? 0}
               size="large"
               badgeColor="warning"
             />
@@ -285,7 +284,7 @@ const Aside = ({
             </span>
 
             <Badge
-              label={categorySuggestion?.toString() as string}
+              label={(categorySuggestion?.toString() as string) ?? 0}
               size="large"
               badgeColor="danger"
             />
@@ -441,7 +440,7 @@ const Footer = ({
           styleType="solid"
           options={[
             { label: "10", value: 10 },
-            { label: "20", value: 5 },
+            { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
           onValueChange={(val) => setFeedbackFindTake(val as number)}
@@ -494,7 +493,6 @@ const Body = ({
                               row.isCleared ? "text-success" : null
                             }`}
                           />
-                          {/* <KTIcon iconName="star" /> */}
                           <div className="symbol symbol-50px me-2">
                             <span className="symbol-label bg-gray-600 ">
                               <img
@@ -517,20 +515,25 @@ const Body = ({
                         </div>
                       </td>
                       <td className="fw-bold ">
-                        <div className="d-flex flex-column justify-items-center justify-content-center align-start-center">
-                          <h5>{formatter(row.FeedbackCategoryTypeEnum)}</h5>
-                          <p
-                            className="h-40px mw-450px"
-                            style={{
-                              WebkitLineClamp: 3,
-                              display: "-webkit-flex",
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
-                            {row.content}
-                          </p>
-                        </div>
+                        <Link
+                          href={`/admin/feedback/detail/${row.id}`}
+                          className=""
+                        >
+                          <div className="d-flex flex-column justify-items-center justify-content-center align-start-center text-dark text-hover-primary">
+                            <h5>{formatter(row.FeedbackCategoryTypeEnum)}</h5>
+                            <p
+                              className="h-40px mw-450px"
+                              style={{
+                                WebkitLineClamp: 3,
+                                display: "-webkit-flex",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                              }}
+                            >
+                              {row.content}
+                            </p>
+                          </div>
+                        </Link>
                       </td>
                       <td className="text-end pe-5 fs-5">
                         {formatDate(row.createdAt)}

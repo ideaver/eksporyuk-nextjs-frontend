@@ -1,0 +1,16 @@
+mutation FeedbackUpdateOne(
+  $data: FeedbackUpdateInput!
+  $where: FeedbackWhereUniqueInput!
+) {
+  feedbackUpdateOne(data: $data, where: $where) {
+    id
+    content
+    FeedbackCategoryTypeEnum
+    isRead
+    isCleared
+    createdAt
+    updatedAt
+    resolvedById
+    userId
+  }
+}

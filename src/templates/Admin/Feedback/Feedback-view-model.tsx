@@ -108,7 +108,7 @@ export type TFilter = "ALL" | "UNSOLVED" | "SOLVED" | "UNREADED" | "READED";
 const useFeedbackViewModel = () => {
   const [feedbackTake, setFeedbackTake] = useState<number>(10);
   const [feedbackSkip, setFeedbackSkip] = useState<number>(0);
-  const [filter, setFilter] = useState<TFilter>();
+  const [filter, setFilter] = useState<TFilter>("ALL");
 
   const feedbackCategoryState = useSelector(
     (state: RootState) => state.feedback.feedbackCategoryType
@@ -197,14 +197,6 @@ const useFeedbackViewModel = () => {
     categorySuggestion,
   } = useCategoryLength();
 
-  const formatFeedbackCategoryType = (str: string | undefined) => {
-    const temp = str?.split("_").map((e) => e.toLowerCase());
-    const result = temp
-      ?.map((e) => e[0].toUpperCase() + e.slice(1, e.length))
-      .join(" ");
-    return result;
-  };
-
   return {
     feedbackFindMany,
     currentPage,
@@ -212,7 +204,6 @@ const useFeedbackViewModel = () => {
     handlePageChange,
     calculateTotalPage,
     setFeedbackFindSearch,
-    formatFeedbackCategoryType,
     setFeedbackSkip,
     setFeedbackTake,
     setFilter,
