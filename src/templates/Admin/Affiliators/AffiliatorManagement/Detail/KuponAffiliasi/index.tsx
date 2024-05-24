@@ -13,10 +13,14 @@ const CouponAffiliatePage = ({ data }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [couponId, setCoupon] = useState(0);
+  const [isEdit, setIsEdit] = useState(false);
 
   return (
     <>
-      <CreateCouponModal show={showModal} onClose={() => setShowModal(false)} />
+      <CreateCouponModal show={showModal} onClose={() => {
+        setShowModal(false);
+        setIsEdit(false);
+      }} isEdit={isEdit} couponId={couponId} />
       <DeleteCouponModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
@@ -116,7 +120,11 @@ const CouponAffiliatePage = ({ data }: any) => {
                           <li>
                             <button
                               className="dropdown-item"
-                              onClick={() => {}}
+                              onClick={() => {
+                                setShowModal(true);
+                                setIsEdit(true);
+                                setCoupon(coupon.id);
+                              }}
                             >
                               Edit
                             </button>

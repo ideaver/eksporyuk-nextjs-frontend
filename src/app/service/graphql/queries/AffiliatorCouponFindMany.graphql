@@ -1,0 +1,11 @@
+query AffiliatorCouponFindMany($where: AffiliatorCouponWhereInput) {
+  affiliatorCouponFindMany(where: $where) {
+    code
+    coupon {
+      isActive
+      value
+      description
+      endDate
+    }
+  }
+}

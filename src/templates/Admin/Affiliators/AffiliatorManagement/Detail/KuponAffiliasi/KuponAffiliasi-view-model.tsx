@@ -14,7 +14,7 @@ import {
   changeLimitUsage,
   changeAllowAffiliator,
 } from "@/features/reducers/affiliators/couponReducer";
-import { useCouponCreateOneMutation, useAffiliatorCouponDeleteOneMutation } from "@/app/service/graphql/gen/graphql";
+import { useCouponCreateOneMutation, useAffiliatorCouponDeleteOneMutation, useCouponUpdateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const useField = <T extends string | boolean | number>(
@@ -43,6 +43,36 @@ const useField = <T extends string | boolean | number>(
   };
 
   return [value, handleChange] as const;
+};
+
+export const dateFormatter = (dateStr: string) => {
+  const date = new Date(dateStr);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  const day = date.getDay();
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  const formattedDate = `${day} ${month} ${year}`;
+  return formattedDate;
 };
 
 const useKuponAffiliasiViewModel = () => {
@@ -92,9 +122,7 @@ const useKuponAffiliasiViewModel = () => {
     (value) => changeAllowAffiliator(value)
   )
 
-  const [couponCreateMutation] = useCouponCreateOneMutation();
-  const [affiliatorCouponDeleteMutation] = useAffiliatorCouponDeleteOneMutation();
-
+  
   const resetFormData = () => {
     dispatch(changeCouponCode(""));
     dispatch(changeEndDate(""));
@@ -105,10 +133,15 @@ const useKuponAffiliasiViewModel = () => {
     dispatch(changeValue(0));
     dispatch(changeAllowAffiliator(false));
   };
-
+  
   const handleStatusChange = (status: string) => {
     dispatch(changeIsActive(status));
   };
+  
+  // Graphql
+  const [couponCreateMutation] = useCouponCreateOneMutation();
+  const [affiliatorCouponDeleteMutation] = useAffiliatorCouponDeleteOneMutation();
+  const [couponUpdateMutation] = useCouponUpdateOneMutation();
 
   // Mutation Data
   const handleCouponCreateMutation = async ({ couponCode, value, endDate, isActive }: any) => {
@@ -156,6 +189,38 @@ const useKuponAffiliasiViewModel = () => {
     return data;
   };
 
+  const handleCouponUpdateMutation = async ({ couponCode, isActive, value, endDate, couponId }: any) => {
+    const data = await couponUpdateMutation({
+      variables: {
+        where: {
+          id: couponId,
+        },
+        data: {
+          isActive: {
+            set: Boolean(isActive)
+          },
+          value: {
+            set: value,
+          },
+          endDate: {
+            set: endDate,
+          },
+          affiliatorCoupon: {
+            update: {
+              data: {
+                code: {
+                  set: couponCode,
+                },
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return data;
+  };
+
   // Data Mutation
   const onSubmit = async () => {
     if (!couponCode || !value || !endDate || !isActive || !limitUsage) {
@@ -188,6 +253,24 @@ const useKuponAffiliasiViewModel = () => {
     }
   }
 
+  const onEdit = async (couponId: any) => {
+    if (!couponCode) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    try {
+      const data = await handleCouponUpdateMutation({ couponCode, isActive, value, endDate, couponId });
+      const result = data.data;
+      resetFormData();
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.reload();
+    }
+  }
+
   return {
     isFreeDelivery,
     setIsFreeDelivery,
@@ -209,6 +292,9 @@ const useKuponAffiliasiViewModel = () => {
     setAllowAffiliator,
     errorMessage,
     onDelete,
+    onEdit,
+    dateFormatter,
+    resetFormData,
   };
 };
 

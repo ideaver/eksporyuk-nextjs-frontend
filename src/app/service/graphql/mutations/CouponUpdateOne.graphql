@@ -1,0 +1,14 @@
+mutation CouponUpdateOne(
+  $where: CouponWhereUniqueInput!
+  $data: CouponUpdateInput!
+) {
+  couponUpdateOne(where: $where, data: $data) {
+    id
+    affiliatorCoupon {
+      id
+      code
+      extendedFromId
+      createdById
+    }
+  }
+}

@@ -1,12 +1,32 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Modal } from "react-bootstrap";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+
+import {
+  useAffiliatorCouponFindManyQuery,
+} from "@/app/service/graphql/gen/graphql";
+import useKuponAffiliasiViewModel from "../Detail/KuponAffiliasi/KuponAffiliasi-view-model";
 
 import { KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
-import useKuponAffiliasiViewModel from "../Detail/KuponAffiliasi/KuponAffiliasi-view-model";
 
-const CreateCouponModal = ({ show, onClose }: any) => {
+import {
+  changeCouponCode,
+  changeEndDate,
+  changeFreeDelivery,
+  changeIsActive,
+  changeLimitUsage,
+  changeStartDate,
+  changeValue,
+  changeAllowAffiliator,
+} from "@/features/reducers/affiliators/couponReducer";
+
+const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
+  const dispatch = useDispatch();
+
   const {
     couponCode,
     setCouponCode,
@@ -14,7 +34,6 @@ const CreateCouponModal = ({ show, onClose }: any) => {
     setValue,
     setEndDate,
     isActive,
-    setIsActive,
     limitUsage,
     setLimitUsage,
     endDate,
@@ -23,7 +42,47 @@ const CreateCouponModal = ({ show, onClose }: any) => {
     setAllowAffiliator,
     onSubmit,
     errorMessage,
+    onEdit,
   } = useKuponAffiliasiViewModel();
+
+  const affiliatorCoupon = useAffiliatorCouponFindManyQuery({
+    variables: {
+      where: {
+        coupon: {
+          is: {
+            id: {
+              equals: couponId,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  useEffect(() => {
+    const resetFormData = () => {
+      dispatch(changeCouponCode(""));
+      dispatch(changeEndDate(""));
+      dispatch(changeFreeDelivery(false));
+      dispatch(changeIsActive(""));
+      dispatch(changeLimitUsage(0));
+      dispatch(changeStartDate(""));
+      dispatch(changeValue(0));
+      dispatch(changeAllowAffiliator(false));
+    };
+
+
+    if (isEdit) {
+      affiliatorCoupon.data?.affiliatorCouponFindMany?.map((coupon) => {
+        dispatch(changeCouponCode(coupon.code));
+        dispatch(changeIsActive(String(coupon.coupon.isActive)));
+        dispatch(changeValue(coupon.coupon.value));
+        dispatch(changeEndDate(coupon.coupon.endDate));
+      });
+    } else {
+      resetFormData();
+    }
+  }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dispatch, isEdit]);
 
   return (
     <Modal
@@ -36,7 +95,7 @@ const CreateCouponModal = ({ show, onClose }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Tambahkan Kupon Affiliasi</h2>
+        <h2>{isEdit ? "Ubah" : "Tambahkan"} Kupon Affiliasi</h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -47,7 +106,9 @@ const CreateCouponModal = ({ show, onClose }: any) => {
         {/* end::Close */}
       </Modal.Header>
       <Modal.Body>
-        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
         <h2 className="pb-2">Informasi Kupon</h2>
         <div>
           <h4 className="required fw-bold text-gray-700">Kode Kupon</h4>
@@ -67,10 +128,10 @@ const CreateCouponModal = ({ show, onClose }: any) => {
           <Dropdown
             options={[
               { value: "true", label: "Aktif" },
-              { value: "false", label: "Tidak Aktif" },
+              { value: "", label: "Tidak Aktif" },
             ]}
             value={isActive}
-            onValueChange={(value) => handleStatusChange(value as string)}
+            onValueChange={(value: any) => handleStatusChange(value)}
           ></Dropdown>
           <p className="text-muted fw-bold mt-5">Atur Status</p>
         </div>
@@ -147,7 +208,19 @@ const CreateCouponModal = ({ show, onClose }: any) => {
             </p>
           </div>
         </div>
-        <button className="btn btn-primary w-100 mt-3" onClick={onSubmit}>Buat Kupon</button>
+        <button
+          className="btn btn-primary w-100 mt-3"
+          onClick={
+            isEdit
+              ? () => {
+                  console.log("edit");
+                  onEdit(couponId);
+                }
+              : onSubmit
+          }
+        >
+          {isEdit ? "Ubah Kupon" : "Buat Kupon"}
+        </button>
       </Modal.Body>
     </Modal>
   );
