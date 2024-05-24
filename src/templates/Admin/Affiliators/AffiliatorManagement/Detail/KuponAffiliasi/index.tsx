@@ -1,31 +1,39 @@
 import { useState } from "react";
 
-import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import CreateCouponModal from "../../component/CreateCouponModal";
+import DeleteCouponModal from "../../component/DeleteCouponModal";
+
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import CreateCouponModal from "../../component/CreateCouponModal";
-import useKuponAffiliasiViewModel from "./KuponAffiliasi-view-model";
 
 const CouponAffiliatePage = ({ data }: any) => {
   const [showModal, setShowModal] = useState(false);
-
-  const { onDelete } = useKuponAffiliasiViewModel();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [couponId, setCoupon] = useState(0);
 
   return (
     <>
-      <CreateCouponModal 
-        show={showModal} 
-        onClose={() => setShowModal(false)} 
+      <CreateCouponModal show={showModal} onClose={() => setShowModal(false)} />
+      <DeleteCouponModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        couponId={couponId}
       />
+
       <div className="card mb-5 mb-xl-10" id="kt_profile_details_view z-0">
         <div className="card-header cursor-pointer d-flex justify-content-between align-items-center">
           <div className="card-title m-0">
             <h3 className="fw-bolder m-0">Kupon Affiliasi</h3>
           </div>
-          <button className="ms-auto d-inline btn btn-primary" onClick={() => setShowModal(true)}>Tambah Kupon</button>
+          <button
+            className="ms-auto d-inline btn btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            Tambah Kupon
+          </button>
         </div>
         {data?.error ? (
           <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -106,10 +114,21 @@ const CouponAffiliatePage = ({ data }: any) => {
                         </button>
                         <ul className="dropdown-menu">
                           <li>
-                            <button className="dropdown-item" onClick={() => {
-                              onDelete(coupon.id);
-                              console.log(coupon.id);
-                            }}>Hapus</button>
+                            <button
+                              className="dropdown-item"
+                              onClick={() => {}}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="dropdown-item"
+                              onClick={() => {
+                                setShowDeleteModal(true);
+                                setCoupon(coupon.id);
+                              }}
+                            >
+                              Hapus
+                            </button>
                           </li>
                         </ul>
                       </div>

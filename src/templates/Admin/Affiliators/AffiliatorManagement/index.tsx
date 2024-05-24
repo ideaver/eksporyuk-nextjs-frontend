@@ -2,6 +2,15 @@ import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
 
+import ForgotPasswordModal from "./component/ForgotPasswordModal";
+import useAffiliatorViewModel, {
+  breadcrumbs,
+  dateFormatter,
+} from "./Affiliator-view-model";
+
+import { AffiliatorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
@@ -12,14 +21,7 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import useAffiliatorViewModel, {
-  breadcrumbs,
-  dateFormatter,
-} from "./Affiliator-view-model";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
-import { AffiliatorFindManyQuery } from "@/app/service/graphql/gen/graphql";
-import ForgotPasswordModal from "./component/ForgotPasswordModal";
-import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 
 const AffiliatorPage = () => {
   const {
