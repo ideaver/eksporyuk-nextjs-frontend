@@ -4,7 +4,11 @@ import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import { MentorFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+import useDeleteUser from "@/app/service/utils/crud/user/userDelete";
 import useUserEdit from "@/app/service/utils/crud/user/userEdit";
+import DeleteUserModal from "@/components/partials/Modals/Mutations/DeleteUserModal";
+import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
+import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
@@ -16,8 +20,6 @@ import Link from "next/link";
 import { useState } from "react";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
-import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
-import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
 
 const MentorPage = ({}) => {
   const {
@@ -165,6 +167,12 @@ const Body = ({
     handleUserUpdate,
     setShowEditUserModal,
   } = useUserEdit();
+  const {
+    deleteUserLoading,
+    handleDeleteUser,
+    setShowDeleteUserModal,
+    showDeleteUserModal,
+  } = useDeleteUser();
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
   return (
@@ -318,7 +326,15 @@ const Body = ({
                           </button>
                         </li>
                         <li>
-                          <button className="dropdown-item">Hapus</button>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setSelectedUserId(mentor.user.id);
+                              setShowDeleteUserModal(true);
+                            }}
+                          >
+                            Hapus
+                          </button>
                         </li>
                       </ul>
                     </div>
@@ -339,8 +355,16 @@ const Body = ({
         handleClose={() => setShowEditUserModal(false)}
         show={showEditUserModal}
         userId={selectedUserId}
-        handleSubmit={(value, file) => handleUserUpdate(selectedUserId, value, file)}
+        handleSubmit={(value, file) =>
+          handleUserUpdate(selectedUserId, value, file)
+        }
         isLoading={editUserModalLoading}
+      />
+      <DeleteUserModal
+        handleClose={() => setShowDeleteUserModal(false)}
+        show={showDeleteUserModal}
+        handleSubmit={(reason) => handleDeleteUser(selectedUserId, reason)}
+        isLoading={deleteUserLoading}
       />
     </>
   );

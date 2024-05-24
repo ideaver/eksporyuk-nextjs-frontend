@@ -4,8 +4,10 @@ import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import { StudentFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
+import useDeleteUser from "@/app/service/utils/crud/user/userDelete";
 import useUserEdit from "@/app/service/utils/crud/user/userEdit";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import DeleteUserModal from "@/components/partials/Modals/Mutations/DeleteUserModal";
 import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -156,6 +158,12 @@ const Body = ({
     handleUserUpdate,
     setShowEditUserModal,
   } = useUserEdit();
+  const {
+    deleteUserLoading,
+    handleDeleteUser,
+    setShowDeleteUserModal,
+    showDeleteUserModal,
+  } = useDeleteUser();
   const [selectedStudentEmail, setSelectedStudentEmailEmail] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
   return (
@@ -323,7 +331,15 @@ const Body = ({
                         </button>
                       </li>
                       <li>
-                        <button className="dropdown-item">Hapus</button>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            setSelectedStudentId(student.user.id);
+                            setShowDeleteUserModal(true);
+                          }}
+                        >
+                          Hapus
+                        </button>
                       </li>
                     </ul>
                   </div>
@@ -347,6 +363,12 @@ const Body = ({
           handleUserUpdate(selectedStudentId, value, file)
         }
         isLoading={editUserModalLoading}
+      />
+      <DeleteUserModal
+        handleClose={() => setShowDeleteUserModal(false)}
+        show={showDeleteUserModal}
+        handleSubmit={(reason) => handleDeleteUser(selectedStudentId, reason)}
+        isLoading={deleteUserLoading}
       />
     </>
   );
