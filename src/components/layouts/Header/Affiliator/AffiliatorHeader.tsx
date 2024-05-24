@@ -97,7 +97,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                     <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                       <div className="d-flex align-items-center">
                         <div className="fs-2 fw-bolder">
-                          {userData?.orders[0]._count.enrollment ?? "1"}
+                          {userData?.orders[0]?._count.enrollment ?? "1"}
                         </div>
                       </div>
 
