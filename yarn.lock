@@ -8053,6 +8053,7 @@ __metadata:
     react-scripts: "npm:^5.0.1"
     react-select: "npm:^5.8.0"
     react-select-async-paginate: "npm:^0.7.4"
+    react-sweetalert2: "npm:^0.6.0"
     react-table: "npm:^7.8.0"
     react-topbar-progress-indicator: "npm:^4.1.1"
     redux-persist: "npm:^6.0.0"
@@ -19910,6 +19911,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-sweetalert2@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "react-sweetalert2@npm:0.6.0"
+  dependencies:
+    sweetalert2: "npm:^11.7.5"
+  peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 10c0/691df0a6dc4b7afb52f5c561bac723e1dba6daafa8ed58a34afd24acfb72e9e6c5738e1fd0026f3994866bc08534a1d8ac241dc9e007bf51d861ad2c9371ed8d
+  languageName: node
+  linkType: hard
+
 "react-table@npm:^7.8.0":
   version: 7.8.0
   resolution: "react-table@npm:7.8.0"
@@ -22092,6 +22105,13 @@ __metadata:
     "@swc/core": ^1.2.147
     webpack: ">=2"
   checksum: 10c0/cb3f9b116fbd292b881e804a4fe66cd6d543a7de2572f5a68e067e4780ee2d59a8da87a90736ba6e8e286e4368c98214ae3486b1b872080292814e5d3062f09c
+  languageName: node
+  linkType: hard
+
+"sweetalert2@npm:^11.7.5":
+  version: 11.11.0
+  resolution: "sweetalert2@npm:11.11.0"
+  checksum: 10c0/7cd9d735f0516a3ef5f7eac67e37a4a8ffbc5f94c6f0c7f7020cabf99ecc5eadba081a00d3529ef4e1cdb585693ec8606ab1b3d3f2c70c9e46fc829e9731b83e
   languageName: node
   linkType: hard
 
