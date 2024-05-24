@@ -1,0 +1,6 @@
+mutation UserSoftDelete(
+  $data: UserUpdateInput!
+  $where: UserWhereUniqueInput!
+) {
+  userSoftDelete(data: $data, where: $where)
+}

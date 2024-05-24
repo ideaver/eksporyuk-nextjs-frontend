@@ -60,5 +60,17 @@ query UserFindOne($where: UserWhereUniqueInput!) {
         createdById
       }
     }
+    username
+    couponCodeRegister
+    personalId
+    npwpId
+    deletedReason
+    phoneId
+    referredById
+    avatarImageId
+    referralLinkId
+    phone {
+      phoneNumber
+    }
   }
 }
