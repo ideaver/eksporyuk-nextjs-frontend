@@ -1,0 +1,8 @@
+query TopOmzetItems($topOmzetItem: TopOmzetItemArgs) {
+  topOmzetItem(topOmzetItem: $topOmzetItem) {
+    name
+    id
+    omzet
+    type
+  }
+}

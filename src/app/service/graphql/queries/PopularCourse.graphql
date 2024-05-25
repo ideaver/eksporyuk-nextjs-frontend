@@ -1,0 +1,9 @@
+query PopularCourses($popularCourse: PopularCourseArgs) {
+  popularCourse(popularCourse: $popularCourse) {
+    id
+    name
+    newStudent
+    sales
+    type
+  }
+}

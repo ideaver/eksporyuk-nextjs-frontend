@@ -1,0 +1,8 @@
+query TopSalesItems($topSalesItem: TopSalesItemArgs) {
+  topSalesItem(topSalesItem: $topSalesItem) {
+    id
+    name
+    sales
+    type
+  }
+}

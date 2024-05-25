@@ -1,13 +1,15 @@
 import { KTIcon } from "@/_metronic/helpers";
 import {
   QueryMode,
+  useMentorCreateOneMutation,
   UserFindManyQuery,
-  UserRoleEnum,
   useUserFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { ApolloError } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
+import SweetAlert2 from "react-sweetalert2";
 
 interface SelectMentorModalProps {
   show: boolean;
@@ -23,9 +25,11 @@ const SelectMentorModal = ({
   const take = 10;
   const [skip, setSkip] = useState(0);
   const [search, setSearch] = useState<string>("");
-  const [userData, setUserData] = useState<UserFindManyQuery | undefined>();
+  const [userData, setUserData] = useState<
+    UserFindManyQuery | undefined | null
+  >();
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const { data, loading, error, fetchMore, refetch } = useUserFindManyQuery({
     variables: {
       take: take,
@@ -33,8 +37,12 @@ const SelectMentorModal = ({
       where: {
         AND: [
           {
-            role: {
-              notIn: [UserRoleEnum.Admin, UserRoleEnum.Mentor],
+            mentor: {
+              isNot: {
+                id: {
+                  contains: "",
+                },
+              },
             },
           },
           {
@@ -76,8 +84,12 @@ const SelectMentorModal = ({
       where: {
         AND: [
           {
-            role: {
-              notIn: [UserRoleEnum.Admin, UserRoleEnum.Mentor],
+            mentor: {
+              isNot: {
+                id: {
+                  contains: "",
+                },
+              },
             },
           },
           {
@@ -131,6 +143,52 @@ const SelectMentorModal = ({
     }
   }, [data, search]);
 
+  const [mentorCreateOne] = useMentorCreateOneMutation();
+  const [swalProps, setSwalProps] = useState({});
+
+  const handleSubmit = async (id: string | null) => {
+    setIsLoading(true);
+    try {
+      const res = await mentorCreateOne({
+        variables: {
+          data: {
+            user: {
+              connect: {
+                id: id,
+              },
+            },
+          },
+        },
+      });
+      setIsLoading(false);
+      console.log(res.data?.mentorCreateOne);
+      if (res.data?.mentorCreateOne) {
+        console.log("JIR CALLED NIH");
+        setSwalProps({
+          show: true,
+          title: "Berhasil",
+          text: "Mentor berhasil ditambahkan",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      setIsLoading(false);
+
+      console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan saat menambahkan mentor",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+    const refetchData = await refetch();
+    setUserData(refetchData.data);
+    setSelectedMentor(null);
+  };
+
   return (
     <Modal
       show={show}
@@ -138,7 +196,9 @@ const SelectMentorModal = ({
       centered={true}
       tabIndex={-1}
       aria-hidden="true"
-      dialogClassName="modal-dialog modal-dialog-centered"
+      dialogClassName={`modal-dialog modal-dialog-centered ${
+        isLoading ? "overlay overlay-block rounded" : ""
+      }`}
       scrollable={true}
     >
       <div className="modal-header">
@@ -215,11 +275,28 @@ const SelectMentorModal = ({
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => onSumbit(selectedMentor)}
+          onClick={() => handleSubmit(selectedMentor)}
         >
           Selanjutnya
         </button>
       </div>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+        }}
+      />
+      {isLoading && (
+        <div className="overlay-layer rounded bg-dark bg-opacity-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };

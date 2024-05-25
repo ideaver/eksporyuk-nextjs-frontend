@@ -71,11 +71,11 @@ interface ChartProps {
 
   labelChartColor?: ColorList;
 
-   /**
+  /**
    * What Label Chart Color to use
    */
 
-   fullHeightChart?: boolean;
+  fullHeightChart?: boolean;
 
   /**
    * What Border Chart Color to use
@@ -103,6 +103,9 @@ interface ChartProps {
    * toolbar dropdown option
    */
   dropdownOptions?: { value: string; label: string }[];
+
+  // dropdown value
+  dropdownValue?: any;
 
   /**
    * toolbar dropdown click handler
@@ -136,7 +139,8 @@ export const Charts = ({
     { value: "2", label: "Minggu Ini" },
     { value: "3", label: "Bulan Ini" },
   ],
-  onDropdownValueChanged
+  dropdownValue,
+  onDropdownValueChanged,
 }: ChartProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
   const { mode } = useThemeMode();
@@ -265,6 +269,7 @@ export const Charts = ({
             <Dropdown
               styleType="solid"
               onValueChange={onDropdownValueChanged}
+              value={dropdownValue}
               options={dropdownOptions}
             />
           </div>
@@ -332,7 +337,11 @@ export const Charts = ({
       {/* begin::Body */}
       <div className="card-body">
         {/* begin::Chart */}
-        <div ref={chartRef} id="chart" style={{ height: fullHeightChart ? "100%" : "350px"}}></div>
+        <div
+          ref={chartRef}
+          id="chart"
+          style={{ height: fullHeightChart ? "100%" : "350px" }}
+        ></div>
         {/* end::Chart */}
       </div>
       {/* end::Body */}
@@ -348,8 +357,8 @@ function getChartOptions(
     baseChartColor = "info",
     lightChartColor = "info-light",
     nameSeries = "Net Profit",
-    dataSeries = [30, 40, 90, 70],
-    categoriesXAxis = ["Feb", "Mar", "Apr", "May"],
+    dataSeries = [30],
+    categoriesXAxis = ["Feb"],
   }
 ): ApexOptions {
   const labelColor = getCSSVariableValue(`--bs-${labelChartColor}`);

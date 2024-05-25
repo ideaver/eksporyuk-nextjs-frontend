@@ -1,0 +1,8 @@
+mutation MentorCreateOne($data: MentorCreateInput!) {
+  mentorCreateOne(data: $data) {
+    id
+    updatedAt
+    description
+    tagLine
+  }
+}

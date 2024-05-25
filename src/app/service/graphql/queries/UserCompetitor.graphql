@@ -1,0 +1,22 @@
+query UserCompetitorsQuery($userCompetitorQuery: UserCompetitorArgs!) {
+  userCompetitorQuery(userCompetitorQuery: $userCompetitorQuery) {
+    commission
+    linkActive
+    couponActive
+    linkGrowth
+    couponGrowth
+    referralLinkAndCouponUsed
+    referralLinkAndCouponSales
+    referralLinkAndCouponUsedGrowth
+    referralLinkAndCouponSalesGrowth
+    topReferredCourse
+    User {
+      id
+      name
+      avatarImage {
+        path
+      }
+      avatarImageId
+    }
+  }
+}
