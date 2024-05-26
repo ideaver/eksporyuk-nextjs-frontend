@@ -174,8 +174,12 @@ const useKuponAffiliasiViewModel = () => {
     dispatch(changeIsActive(false));
     dispatch(changeLimitUsage(0));
     dispatch(changeStartDate(""));
-    dispatch(changeValue(0));
+    dispatch(changeValue(""));
     dispatch(changeAllowAffiliator(false));
+  };
+
+  const handleChangeValue = (price: string) => {
+    dispatch(changeValue(price));
   };
   
   const handleStatusChange = (status: string) => {
@@ -194,7 +198,7 @@ const useKuponAffiliasiViewModel = () => {
       variables: {
         data: {
           startDate: new Date(),
-          value,
+          value: Number(value),
           isActive: Boolean(isActive),
           endDate,
           type: DiscountTypeEnum.Amount,
@@ -245,7 +249,7 @@ const useKuponAffiliasiViewModel = () => {
             set: Boolean(isActive)
           },
           value: {
-            set: value,
+            set: Number(value),
           },
           endDate: {
             set: endDate,
@@ -295,11 +299,10 @@ const useKuponAffiliasiViewModel = () => {
       const data = await handleCouponCreateMutation({couponCode, value, endDate, isActive})
       resetFormData();
       const result = data.data;
+      router.reload();
       console.log(result);
     } catch (error) {
       console.log("error", error);
-    } finally {
-      router.push(`/admin/affiliate/affiliator/detail/${id}/profile`);
     }
   }
 
@@ -370,6 +373,7 @@ const useKuponAffiliasiViewModel = () => {
     resetFormData,
     useCheckbox,
     onDeleteMany,
+    handleChangeValue,
   };
 };
 

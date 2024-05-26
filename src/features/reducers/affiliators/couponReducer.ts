@@ -8,7 +8,7 @@ interface CouponState {
   couponCode: string;
   freeDelivery: boolean;
   startDate: string;
-  value: number;
+  value: string;
   endDate: string;
   limitUsage: number;
   allowAffiliator: boolean;
@@ -20,7 +20,7 @@ const initialState: CouponState = {
   couponCode: "",
   freeDelivery: false,
   startDate: "2024-06-01",
-  value: 0,
+  value: "0",
   endDate: "2024-06-01",
   limitUsage: 0,
   allowAffiliator: false,
@@ -45,7 +45,7 @@ export const couponSlice = createSlice({
     changeStartDate: (state, action: PayloadAction<string>) => {
       state.startDate = action.payload;
     },
-    changeValue: (state, action: PayloadAction<number>) => {
+    changeValue: (state, action: PayloadAction<string>) => {
       state.value = action.payload;
     },
     changeEndDate: (state, action: PayloadAction<string>) => {

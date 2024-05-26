@@ -119,8 +119,8 @@ const CouponAffiliatePage = ({ data }: any) => {
                     </td>
                     <td className="align-middle text-end text-muted fw-bold w-150px">
                       <Badge
-                        badgeColor="success"
-                        label="Active"
+                        badgeColor={coupon.coupon.isActive ? "success" : "danger"}
+                        label={coupon.coupon.isActive ? "Aktif" : "Tidak Aktif"}
                         onClick={function noRefCheck() {}}
                       />
                     </td>

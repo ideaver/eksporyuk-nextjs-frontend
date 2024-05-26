@@ -2,6 +2,7 @@
 import { Modal } from "react-bootstrap";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import CurrencyInput from "react-currency-input-field";
 
 import {
   useAffiliatorCouponFindManyQuery,
@@ -43,7 +44,8 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
     onSubmit,
     errorMessage,
     onEdit,
-    dateFormatter
+    dateFormatter,
+    handleChangeValue,
   } = useKuponAffiliasiViewModel();
 
   const affiliatorCoupon = useAffiliatorCouponFindManyQuery({
@@ -68,24 +70,22 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
       dispatch(changeIsActive(false));
       dispatch(changeLimitUsage(0));
       dispatch(changeStartDate(""));
-      dispatch(changeValue(0));
+      dispatch(changeValue("0"));
       dispatch(changeAllowAffiliator(false));
     };
 
 
     if (isEdit) {
-      affiliatorCoupon.data?.affiliatorCouponFindMany?.map((coupon) => {
+      affiliatorCoupon.data?.affiliatorCouponFindMany?.map((coupon: any) => {
         dispatch(changeCouponCode(coupon.code));
         dispatch(changeIsActive(coupon.coupon.isActive));
-        dispatch(changeValue(coupon.coupon.value));
+        dispatch(changeValue(String(coupon.coupon.value)));
         dispatch(changeEndDate(dateFormatter(coupon.coupon.endDate)));
       });
     } else {
       resetFormData();
     }
   }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dateFormatter, dispatch, isEdit]);
-
-  console.log("user", affiliatorCoupon.data?.affiliatorCouponFindMany);
 
   return (
     <Modal
@@ -141,7 +141,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
         <div>
           <h4 className="required fw-bold text-gray-700">Besar Potongan</h4>
           <div className="w-100">
-            <TextField
+            {/* <TextField
               classNames=""
               styleType="outline"
               size="medium"
@@ -151,6 +151,19 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
                 value: value,
                 onChange: setValue,
               }}
+            /> */}
+            <CurrencyInput
+              className="form-control"
+              id="price-field"
+              name="price"
+              placeholder="Masukan Jumlah Point"
+              intlConfig={{ locale: "id-ID" }}
+              defaultValue={0}
+              value={value}
+              decimalsLimit={2}
+              onValueChange={(value, name, values): any =>
+                handleChangeValue(value ?? "")
+              }
             />
           </div>
           <p className="fw-bold fs-6 text-muted">
@@ -216,7 +229,6 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
           onClick={
             isEdit
               ? () => {
-                  console.log("edit");
                   onEdit(couponId);
                 }
               : onSubmit
