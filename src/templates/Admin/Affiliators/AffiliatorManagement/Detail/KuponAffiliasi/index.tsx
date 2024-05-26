@@ -10,6 +10,7 @@ import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import useKuponAffiliasiViewModel from "./KuponAffiliasi-view-model";
 
+let couponIds: number[] = [];
 const CouponAffiliatePage = ({ data }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -19,6 +20,9 @@ const CouponAffiliatePage = ({ data }: any) => {
   const { useCheckbox } = useKuponAffiliasiViewModel();
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } = useCheckbox(data);
+
+  // An array of checked coupon ids
+  couponIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
   return (
     <>
@@ -30,6 +34,7 @@ const CouponAffiliatePage = ({ data }: any) => {
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
         couponId={couponId}
+        couponIds={couponIds}
       />
 
       <div className="card mb-5 mb-xl-10" id="kt_profile_details_view z-0">
@@ -37,12 +42,20 @@ const CouponAffiliatePage = ({ data }: any) => {
           <div className="card-title m-0">
             <h3 className="fw-bolder m-0">Kupon Affiliasi</h3>
           </div>
-          <button
-            className="ms-auto d-inline btn btn-primary"
-            onClick={() => setShowModal(true)}
-          >
-            Tambah Kupon
-          </button>
+          <div>
+            <button
+              className="ms-auto d-inline btn btn-primary me-2"
+              onClick={() => setShowModal(true)}
+            >
+              Tambah Kupon
+            </button>
+            <button
+              className={`ms-auto d-inline btn btn-danger ${couponIds.length !== 0 ? "d-inline-block" : "d-none"}`}
+              onClick={() => setShowDeleteModal(true)}
+            >
+              Hapus Kupon
+            </button>
+          </div>
         </div>
         {data?.error ? (
           <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -80,7 +93,6 @@ const CouponAffiliatePage = ({ data }: any) => {
             </KTTableHead>
             {data?.data?.affiliatorFindOne?.createdCoupons?.map(
               (coupon: any, index: any) => {
-                // console.log(checkedItems[index]?.value);
                 return (
                   <KTTableBody key={index}>
                     <td className="align-middle">

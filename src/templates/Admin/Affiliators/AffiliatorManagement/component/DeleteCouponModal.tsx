@@ -9,15 +9,16 @@ interface deleteCouponModal {
   show: boolean;
   handleClose: () => void;
   couponId: number;
+  couponIds: number[];
 }
 
-const DeleteCouponModal = ({ show, handleClose, couponId }: deleteCouponModal) => {
-  const { onDelete } = useKuponAffiliasiViewModel();
+const DeleteCouponModal = ({ show, handleClose, couponId, couponIds }: deleteCouponModal) => {
+  const { onDelete, onDeleteMany } = useKuponAffiliasiViewModel();
 
   return (
     <Modal show={show} centered={true}>
       <div className="modal-header">
-        <h2>Hapus Akun</h2>
+        <h2>Hapus {couponIds.length > 1 ? "Semua" : undefined} Kupon</h2>
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
           onClick={handleClose}
@@ -27,7 +28,7 @@ const DeleteCouponModal = ({ show, handleClose, couponId }: deleteCouponModal) =
       </div>
 
       <div className="modal-body">
-        <h5 className="text-center">Apakah anda yakin untuk menghapus kupon ini?</h5>
+        <h5 className="text-center">Apakah anda yakin untuk menghapus {couponIds.length > 1 ? "semua" : undefined} kupon ini?</h5>
       </div>
 
       <div className="modal-footer mx-auto">
@@ -41,7 +42,13 @@ const DeleteCouponModal = ({ show, handleClose, couponId }: deleteCouponModal) =
         <Buttons
           buttonColor="danger"
           classNames="btn-lg"
-          onClick={() => onDelete(couponId)}
+          onClick={() => {
+            if (couponIds.length !== 0) {
+              onDeleteMany(couponIds);
+            } else {
+              onDelete(couponId);
+            }
+          }}
         >
           Iya
         </Buttons>
