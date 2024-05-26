@@ -2,6 +2,7 @@ import { UnknownAction } from "@reduxjs/toolkit";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { QueryResult } from "@apollo/client";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -14,7 +15,7 @@ import {
   changeLimitUsage,
   changeAllowAffiliator,
 } from "@/features/reducers/affiliators/couponReducer";
-import { useCouponCreateOneMutation, useAffiliatorCouponDeleteOneMutation, useCouponUpdateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { useCouponCreateOneMutation, useAffiliatorCouponDeleteOneMutation, useCouponUpdateOneMutation, AffiliatorFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const useField = <T extends string | boolean | number>(
@@ -60,6 +61,56 @@ export const dateFormatter = (dateStr: string): string => {
 
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
+};
+
+const useCheckbox = (
+  affiliatorFindOne: QueryResult<AffiliatorFindOneQuery>
+) => {
+  const [selectAll, setSelectAll] = useState(false);
+  const [checkedItems, setCheckedItems] = useState(
+    (affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons ?? []).map((item) => ({
+      id: item.id,
+      value: false,
+    }))
+  );
+
+  useEffect(() => {
+    setCheckedItems(
+      (affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons ?? []).map(
+        (item) => ({
+          id: item.id,
+          value: false,
+        })
+      )
+    );
+  }, [affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons]);
+
+  const handleSingleCheck = (index: number) => {
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[index].value = !newCheckedItems[index]?.value;
+    setCheckedItems(newCheckedItems);
+    setSelectAll(newCheckedItems.every((item) => item.value));
+  };
+  console.log("singleCheck", checkedItems.filter((x) => x.value === true));
+
+  const handleSelectAllCheck = () => {
+    setSelectAll(!selectAll);
+    setCheckedItems(
+      Array.isArray(affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons)
+        ? affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons?.map((item) => ({
+            id: item.id,
+            value: !selectAll,
+          }))
+        : []
+    );
+  };
+
+  return {
+    selectAll,
+    checkedItems,
+    handleSingleCheck,
+    handleSelectAllCheck,
+  };
 };
 
 const useKuponAffiliasiViewModel = () => {
@@ -282,6 +333,7 @@ const useKuponAffiliasiViewModel = () => {
     onEdit,
     dateFormatter,
     resetFormData,
+    useCheckbox
   };
 };
 

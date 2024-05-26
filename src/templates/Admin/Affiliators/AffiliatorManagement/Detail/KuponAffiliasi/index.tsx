@@ -8,12 +8,17 @@ import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
+import useKuponAffiliasiViewModel from "./KuponAffiliasi-view-model";
 
 const CouponAffiliatePage = ({ data }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [couponId, setCoupon] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
+
+  const { useCheckbox } = useKuponAffiliasiViewModel();
+
+  const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } = useCheckbox(data);
 
   return (
     <>
@@ -57,11 +62,11 @@ const CouponAffiliatePage = ({ data }: any) => {
               <th className="w-150px">
                 <CheckBoxInput
                   className="w-150px"
-                  checked={false}
+                  checked={selectAll}
                   name="check-all"
                   value="all"
                   defaultChildren={false}
-                  onChange={() => {}}
+                  onChange={handleSelectAllCheck}
                 >
                   <>Kode Kupon</>
                 </CheckBoxInput>
@@ -75,16 +80,17 @@ const CouponAffiliatePage = ({ data }: any) => {
             </KTTableHead>
             {data?.data?.affiliatorFindOne?.createdCoupons?.map(
               (coupon: any, index: any) => {
+                // console.log(checkedItems[index]?.value);
                 return (
                   <KTTableBody key={index}>
                     <td className="align-middle">
                       <CheckBoxInput
                         className="ps-0"
-                        checked={false}
-                        name={"check-"}
-                        value={""}
+                        checked={checkedItems[index]?.value ?? false}
+                        name={"check-" + coupon.id}
+                        value={coupon.id}
                         defaultChildren={false}
-                        onChange={() => {}}
+                        onChange={() => handleSingleCheck(index)}
                       >
                         <>{coupon.code}</>
                       </CheckBoxInput>
