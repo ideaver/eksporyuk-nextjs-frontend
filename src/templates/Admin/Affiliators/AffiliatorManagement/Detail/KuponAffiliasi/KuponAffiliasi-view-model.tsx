@@ -45,33 +45,20 @@ const useField = <T extends string | boolean | number>(
   return [value, handleChange] as const;
 };
 
-export const dateFormatter = (dateStr: string) => {
+export const dateFormatter = (dateStr: string): string => {
   const date = new Date(dateStr);
 
   if (isNaN(date.getTime())) {
     throw new Error("Invalid date string");
   }
 
-  const monthNames = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
+  const padZero = (num: number) => (num < 10 ? `0${num}` : num.toString());
 
-  const day = date.getDay();
-  const month = monthNames[date.getMonth()];
   const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1); // Months are zero-based in JavaScript Date
+  const day = padZero(date.getDate());
 
-  const formattedDate = `${day} ${month} ${year}`;
+  const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
 };
 

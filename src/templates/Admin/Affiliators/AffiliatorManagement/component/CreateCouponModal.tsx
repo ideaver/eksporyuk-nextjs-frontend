@@ -43,6 +43,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
     onSubmit,
     errorMessage,
     onEdit,
+    dateFormatter
   } = useKuponAffiliasiViewModel();
 
   const affiliatorCoupon = useAffiliatorCouponFindManyQuery({
@@ -77,12 +78,12 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
         dispatch(changeCouponCode(coupon.code));
         dispatch(changeIsActive(coupon.coupon.isActive));
         dispatch(changeValue(coupon.coupon.value));
-        dispatch(changeEndDate(coupon.coupon.endDate));
+        dispatch(changeEndDate(dateFormatter(coupon.coupon.endDate)));
       });
     } else {
       resetFormData();
     }
-  }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dispatch, isEdit]);
+  }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dateFormatter, dispatch, isEdit]);
 
   console.log("user", affiliatorCoupon.data?.affiliatorCouponFindMany);
 
