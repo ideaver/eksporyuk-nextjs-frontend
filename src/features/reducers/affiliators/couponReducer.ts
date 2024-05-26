@@ -4,7 +4,7 @@ import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 interface CouponState {
   thumbnail: string;
-  isActive: string;
+  isActive: boolean;
   couponCode: string;
   freeDelivery: boolean;
   startDate: string;
@@ -16,7 +16,7 @@ interface CouponState {
 
 const initialState: CouponState = {
   thumbnail: "/media/avatars/300-1.jpg",
-  isActive: "false",
+  isActive: false,
   couponCode: "",
   freeDelivery: false,
   startDate: "2024-06-01",
@@ -33,7 +33,7 @@ export const couponSlice = createSlice({
     changeThumbnail: (state, action: PayloadAction<string>) => {
       state.thumbnail = action.payload;
     },
-    changeIsActive: (state, action: PayloadAction<string>) => {
+    changeIsActive: (state, action: PayloadAction<boolean>) => {
       state.isActive = action.payload;
     },
     changeCouponCode: (state, action: PayloadAction<string>) => {

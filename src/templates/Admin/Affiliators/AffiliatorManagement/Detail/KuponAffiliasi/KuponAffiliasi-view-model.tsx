@@ -127,7 +127,7 @@ const useKuponAffiliasiViewModel = () => {
     dispatch(changeCouponCode(""));
     dispatch(changeEndDate(""));
     dispatch(changeFreeDelivery(false));
-    dispatch(changeIsActive("false"));
+    dispatch(changeIsActive(false));
     dispatch(changeLimitUsage(0));
     dispatch(changeStartDate(""));
     dispatch(changeValue(0));
@@ -135,7 +135,7 @@ const useKuponAffiliasiViewModel = () => {
   };
   
   const handleStatusChange = (status: string) => {
-    dispatch(changeIsActive(status));
+    dispatch(changeIsActive(status === "true"));
   };
   
   // Graphql

@@ -64,7 +64,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
       dispatch(changeCouponCode(""));
       dispatch(changeEndDate(""));
       dispatch(changeFreeDelivery(false));
-      dispatch(changeIsActive(""));
+      dispatch(changeIsActive(false));
       dispatch(changeLimitUsage(0));
       dispatch(changeStartDate(""));
       dispatch(changeValue(0));
@@ -75,7 +75,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
     if (isEdit) {
       affiliatorCoupon.data?.affiliatorCouponFindMany?.map((coupon) => {
         dispatch(changeCouponCode(coupon.code));
-        dispatch(changeIsActive(String(coupon.coupon.isActive)));
+        dispatch(changeIsActive(coupon.coupon.isActive));
         dispatch(changeValue(coupon.coupon.value));
         dispatch(changeEndDate(coupon.coupon.endDate));
       });
@@ -83,6 +83,8 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
       resetFormData();
     }
   }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dispatch, isEdit]);
+
+  console.log("user", affiliatorCoupon.data?.affiliatorCouponFindMany);
 
   return (
     <Modal
@@ -130,7 +132,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
               { value: "true", label: "Aktif" },
               { value: "", label: "Tidak Aktif" },
             ]}
-            value={isActive}
+            value={isActive ? "true" : ""}
             onValueChange={(value: any) => handleStatusChange(value)}
           ></Dropdown>
           <p className="text-muted fw-bold mt-5">Atur Status</p>
