@@ -30,7 +30,6 @@ const InformationPage = () => {
     () => dynamic(() => import("react-quill"), { ssr: false }),
     []
   );
-  const router = useRouter();
   const dispatch = useDispatch();
 
   const {
@@ -41,10 +40,9 @@ const InformationPage = () => {
     category,
     handleCategoryChange,
     resetArticleState,
-    // inputContent,
-    // setInputContent,
+    isLoading,
+    handleArticleCreateOne,
   } = useInformationViewModel();
-  const { response } = useArticleForm();
 
   const { formik } = useArticleForm();
 
@@ -65,13 +63,12 @@ const InformationPage = () => {
             },
           }),
         }}
-        active={response.loading}
+        active={isLoading}
         spinner
       >
         <form onSubmit={formik.handleSubmit}>
           <div className="row gx-8">
             <Aside
-              // typeOption={[{ value: "sdnaw", label: "sjdnkw" }]}
               handleCategoryChange={handleCategoryChange}
               category={category}
               thumbnail={thumbnail}
@@ -161,7 +158,9 @@ const InformationPage = () => {
                 >
                   Batal
                 </Buttons>
-                <Buttons type="submit">Simpan</Buttons>
+                <Buttons type="submit" onClick={handleArticleCreateOne}>
+                  Simpan
+                </Buttons>
               </div>
             </div>
           </div>
@@ -180,7 +179,7 @@ const Aside = ({
   handleFileChange,
   handleStatusChange,
 }: {
-  thumbnail: string | null;
+  thumbnail: string | null | undefined;
   status: string;
   category: TypeCategory[];
   handleCategoryChange: (e: TypeCategory[]) => void;
@@ -256,11 +255,6 @@ const Aside = ({
               handleCategoryChange([...category, value as TypeCategory]);
             }}
           ></AsyncPaginate>
-          {/* <Dropdown
-            options={typeOption}
-            value={category}
-            onValueChange={(value) => handleCategoryChange(value as string)}
-          ></Dropdown> */}
           <p className="text-muted fw-bold mt-5">Atur Kategori</p>
           <Buttons
             showIcon={true}
