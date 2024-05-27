@@ -1,4 +1,5 @@
 import { QueryResult } from "@apollo/client";
+import Link from "next/link";
 
 import useNotificationsViewModel, {
   breadcrumbs,
@@ -192,7 +193,9 @@ const Body = ({
                           style={{ fontSize: "30px" }}
                         ></i>
                       </div>
-                      <p className="m-0 text-truncate">{notif.title}</p>
+                      <Link href={`/admin/notifications/detail/${notif.id}`} className="text-muted fw-bold text-truncate">
+                        {notif.title}
+                      </Link>
                     </div>
                   </CheckBoxInput>
                 </td>
