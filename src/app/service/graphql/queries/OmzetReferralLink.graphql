@@ -1,0 +1,10 @@
+query OmzetsReferralLink {
+  omzetReferralLink {
+    sales
+    clicks
+    conversionRate
+    omzet
+    typeSocialMedia
+    totalLead
+  }
+}

@@ -102,7 +102,7 @@ $flatpickr-time-height: 46px;
 .flatpickr-current-month {
   font-weight: $font-weight-semibold;
   color: inherit;
-
+  display: flex !important;
   .numInputWrapper {
     @include border-radius($border-radius);
     width: 65px;

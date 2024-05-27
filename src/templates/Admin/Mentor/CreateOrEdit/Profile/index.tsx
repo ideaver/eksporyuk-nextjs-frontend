@@ -4,8 +4,8 @@ import { MentorFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Alert } from "@/stories/molecules/Alert/Alert";
-import ForgotPasswordModal from "../../component/ForgotPasswordModal";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
+import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 
 const MentorProfilePage = ({ data }: { data: MentorFindOneQuery }) => {
   const userData = data?.mentorFindOne?.user;

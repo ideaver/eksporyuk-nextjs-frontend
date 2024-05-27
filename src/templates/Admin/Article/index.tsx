@@ -8,34 +8,29 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import Link from "next/link";
-import { QueryResult } from "@apollo/client";
-import { ArticleFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { SortOrder } from "@/app/service/graphql/gen/graphql";
 
 const ArticlePage = () => {
   const {
     articleFindMany,
-    articleFindTake,
     setArticleFindTake,
-    articleFindSkip,
-    setArticleFindSkip,
-    articleFindSearch,
     setArticleFindSearch,
     articleLength,
     currentPage,
-    setCurrentPage,
     handlePageChange,
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
+    setArticleOrderBy,
+    articleDeleteOne,
+    formatWIB,
   } = useArticleViewModel();
-
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Artikel</PageTitle>
@@ -51,6 +46,9 @@ const ArticlePage = () => {
             }}
             setCategory={(val) => {
               setArticleFindCategory(val?.value);
+            }}
+            setOrder={(val) => {
+              setArticleOrderBy(val);
             }}
           />
           {articleFindMany.error ? (
@@ -87,9 +85,16 @@ const ArticlePage = () => {
                   return (
                     <tr key={article.id} className="">
                       <td className="">
-                        <p className="fw-bold text-black mb-0 min-w-250px align-middle">
+                        <Link
+                          href={`/admin/articles/detail/${article.id}`}
+                          className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                          style={{
+                            maxWidth: "90px",
+                            display: "inline-block",
+                          }}
+                        >
                           {article.title}
-                        </p>
+                        </Link>
                       </td>
 
                       <td className="min-w-250px text-end fw-bold text-muted">
@@ -110,21 +115,10 @@ const ArticlePage = () => {
                       <td className="min-w-200px text-end fw-bold text-muted">
                         <div className="d-flex flex-column">
                           <span>{formatDate(article.updatedAt)}</span>
-                          <span>
-                            {article.updatedAt
-                              .toString()
-                              .split("T")[1]
-                              .split(".")[0] + " UTC"}
-                          </span>
+                          <span>{formatWIB(article.updatedAt)}</span>
                         </div>
                       </td>
                       <td className="min-w-175px text-end fw-bold text-muted">
-                        {/* <Badge
-                          key={article.id + article.type}
-                          label={article.type}
-                          badgeColor="dark"
-                          classNames="mx-1"
-                        /> */}
                         {article.category?.map((val) => (
                           <Badge
                             key={val.id}
@@ -163,7 +157,29 @@ const ArticlePage = () => {
                             </li>
                             <li></li>
                             <li>
-                              <button className="dropdown-item">Hapus</button>
+                              <button
+                                className="dropdown-item"
+                                onClick={async () => {
+                                  try {
+                                    await articleDeleteOne({
+                                      variables: {
+                                        where: {
+                                          id: article.id,
+                                        },
+                                      },
+                                    });
+                                    await articleFindMany.refetch();
+                                    await articleLength.refetch();
+                                  } catch (error) {
+                                    console.log(error);
+                                  } finally {
+                                    await articleFindMany.refetch();
+                                    await articleLength.refetch();
+                                  }
+                                }}
+                              >
+                                Hapus
+                              </button>
                             </li>
                           </ul>
                         </div>
@@ -193,10 +209,12 @@ const Head = ({
   onSearch,
   setStatus,
   setCategory,
+  setOrder,
 }: {
   onSearch: (val: string) => void;
   setStatus: (val: string) => void;
   setCategory: (val: any) => void;
+  setOrder: (val: any) => void;
 }) => {
   const { loadOptions } = useCategoriesDropdown();
   return (
@@ -213,13 +231,6 @@ const Head = ({
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
-          {/* <Dropdown
-            styleType="solid"
-            options={[{ label: "Semua Kategori", value: "all" }, ...option]}
-            onValueChange={(e) => {
-              setCategory(e as string);
-            }}
-          /> */}
           <AsyncPaginate
             className="min-w-200px"
             loadOptions={loadOptions}
@@ -238,6 +249,18 @@ const Head = ({
             ]}
             onValueChange={(e) => {
               setStatus(e as string);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrder(e);
             }}
           />
         </div>

@@ -1,0 +1,8 @@
+query SalesDataQuery($salesData: SalesDataArgs) {
+  salesDataQuery(salesData: $salesData) {
+    lead
+    omzet
+    period
+    sales
+  }
+}

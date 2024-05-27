@@ -1,0 +1,7 @@
+query TotalSalesAndOmzets($totalSalesAndOmzet: TotalSalesAndOmzetArgs) {
+  totalSalesAndOmzet(totalSalesAndOmzet: $totalSalesAndOmzet) {
+    totalSales
+    totalLead
+    totalOmzet
+  }
+}

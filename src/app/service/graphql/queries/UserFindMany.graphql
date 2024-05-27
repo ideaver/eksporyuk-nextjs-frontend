@@ -32,5 +32,25 @@ query UserFindMany(
       createdAt
       modifyPlatformSettingId
     }
+    mentor {
+      id
+      updatedAt
+      description
+      tagLine
+    }
+    student {
+      id
+      updatedAt
+      createdAt
+    }
+    affiliator {
+      id
+      updatedAt
+      totalAffiliatedItems
+    }
+    customer {
+      id
+      updatedAt
+    }
   }
 }

@@ -6,8 +6,6 @@ export interface TypeCategory {
 }
 
 interface ArticleState {
-  thumbnail: string | null;
-  file: File | null;
   category: TypeCategory[];
   status: string;
   title: string;
@@ -15,8 +13,6 @@ interface ArticleState {
 }
 
 const initialState: ArticleState = {
-  thumbnail: null,
-  file: null,
   category: [],
   status: "published",
   title: "",
@@ -27,12 +23,6 @@ export const articleSlice = createSlice({
   name: "article",
   initialState,
   reducers: {
-    changeThumbnail: (state, action: PayloadAction<string | null>) => {
-      state.thumbnail = action.payload;
-    },
-    changeFile: (state, action: PayloadAction<File | null>) => {
-      state.file = action.payload ? action.payload : null;
-    },
     changeCategory: (state, action: PayloadAction<TypeCategory[]>) => {
       state.category = action.payload;
     },
@@ -48,13 +38,7 @@ export const articleSlice = createSlice({
   },
 });
 
-export const {
-  changeCategory,
-  changeContent,
-  changeStatus,
-  changeThumbnail,
-  changeTitle,
-  changeFile,
-} = articleSlice.actions;
+export const { changeCategory, changeContent, changeStatus, changeTitle } =
+  articleSlice.actions;
 
 export default articleSlice.reducer;

@@ -4,8 +4,8 @@ import { StudentFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Alert } from "@/stories/molecules/Alert/Alert";
-import ForgotPasswordModal from "@/templates/Admin/Mentor/component/ForgotPasswordModal";
 
 const ProfilePage = ({
   data,

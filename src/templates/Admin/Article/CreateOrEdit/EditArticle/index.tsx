@@ -8,8 +8,7 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { useCategoriesDropdown } from "../../Article-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { useMemo, useState } from "react";
-import { TypeCategory } from "@/features/reducers/articles/articlesReducer";
+import { ChangeEvent, useMemo } from "react";
 import { useCategoryForm } from "../Information/Information-view-model";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -26,17 +25,18 @@ const EditArticle = ({ id, data }: IEditArticle) => {
   );
 
   const {
-    content,
     setContent,
-    title,
     setTitle,
     status,
     setStatus,
     category,
     setCategory,
     formik,
-    response,
     thumbnail,
+    editedThumbnail,
+    handleUpdateFile,
+    handleArticleUpdateOne,
+    isLoading,
   } = useEditArticleViewModel({ data, id });
 
   const router = useRouter();
@@ -45,7 +45,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Edit Article</PageTitle>
       <LoadingOverlayWrapper
-        active={response.loading}
+        active={isLoading}
         styles={{
           overlay: (base) => ({
             ...base,
@@ -64,11 +64,13 @@ const EditArticle = ({ id, data }: IEditArticle) => {
         <form onSubmit={formik.handleSubmit}>
           <div className="row gx-8">
             <Aside
+              handleFileChange={handleUpdateFile}
               status={status}
               handleCategoryChange={setCategory}
               category={category ?? [{ value: 0, label: "kategori nol" }]}
               handleStatusChange={setStatus}
               thumbnail={thumbnail}
+              editedThumbnail={editedThumbnail}
             />
             <div className="col-lg-8">
               <KTCard className="">
@@ -150,12 +152,14 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                 <Buttons
                   buttonColor="secondary"
                   onClick={() => {
-                    router.push("/admin/articles");
+                    router.back();
                   }}
                 >
                   Batal
                 </Buttons>
-                <Buttons type="submit">Simpan</Buttons>
+                <Buttons type="submit" onClick={handleArticleUpdateOne}>
+                  Simpan
+                </Buttons>
               </div>
             </div>
           </div>
@@ -173,6 +177,8 @@ const Aside = ({
   category,
   handleStatusChange,
   thumbnail,
+  handleFileChange,
+  editedThumbnail,
 }: {
   thumbnail:
     | {
@@ -181,9 +187,10 @@ const Aside = ({
       }
     | undefined;
   status: string;
+  editedThumbnail: string | null | undefined;
   category: { value: any; label: any }[];
   handleCategoryChange: (e: { value: any; label: any }[] | undefined) => void;
-  // handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleStatusChange: (e: string) => void;
 }) => {
   const { loadOptions } = useCategoriesDropdown();
@@ -192,10 +199,9 @@ const Aside = ({
       <KTCard>
         <KTCardBody className="d-flex flex-column">
           <h3>Thumbnail</h3>
-
           <input
             type="file"
-            // onChange={handleFileChange}
+            onChange={handleFileChange}
             className="d-none"
             accept=".jpg, .jpeg, .png"
             id="thumbnail-input"
@@ -215,9 +221,12 @@ const Aside = ({
             </div>
             <div className="card-body">
               <img
-                src={thumbnail?.path ?? "/media/svg/files/blank-image.svg"}
-                // src={"/media/svg/files/blank-image.svg"}
-                alt=""
+                src={
+                  editedThumbnail
+                    ? editedThumbnail
+                    : thumbnail?.path ?? "/media/svg/files/blank-image.svg"
+                }
+                alt="thumbnail"
                 className="img-fluid rounded object-fit-cover"
               />
             </div>
@@ -253,18 +262,12 @@ const Aside = ({
             className="min-w-200px"
             loadOptions={loadOptions}
             onChange={(value) => {
-              console.log(value);
               handleCategoryChange([
                 ...category,
                 value as { label: any; value: any },
               ]);
             }}
           ></AsyncPaginate>
-          {/* <Dropdown
-              options={typeOption}
-              value={category}
-              onValueChange={(value) => handleCategoryChange(value as string)}
-            ></Dropdown> */}
           <p className="text-muted fw-bold mt-5">Atur Kategori</p>
           <Buttons
             showIcon={true}
