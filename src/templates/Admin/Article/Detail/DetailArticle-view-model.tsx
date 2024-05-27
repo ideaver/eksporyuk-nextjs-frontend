@@ -22,14 +22,14 @@ export const breadcrumbs = [
 ];
 
 const useDetailArticleViewModel = ({ id, data }: IDetailArticle) => {
-  const articleData = data?.articleFindOne;
-  const [thumbnail, setThumbnail] = useState(articleData?.fileUrl?.[0]);
-  const [content, setContent] = useState(articleData?.content);
-  const [title, setTitle] = useState(articleData?.title);
-  const [status, setStatus] = useState(articleData?.isActive);
-
+  const [thumbnail, setThumbnail] = useState(
+    data?.articleFindOne?.fileUrl?.[0]
+  );
+  const [content, setContent] = useState(data?.articleFindOne?.content);
+  const [title, setTitle] = useState(data?.articleFindOne?.title);
+  const [status, setStatus] = useState(data?.articleFindOne?.isActive);
   const [category, setCategory] = useState(
-    articleData?.category?.map((val: any) => ({
+    data?.articleFindOne?.category?.map((val: any) => ({
       value: val?.id,
       label: val?.name,
     }))

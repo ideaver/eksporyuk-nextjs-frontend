@@ -29,7 +29,7 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
         <div className="col-lg-8">
           <KTCard className="">
             <KTCardBody>
-              <h3 className="mb-5">Tulis Artikel</h3>
+              <h3 className="mb-5">Detail Artikel</h3>
               <h5 className="">Judul Artikel</h5>
               <h1 className="my-4">{title}</h1>
               <h5 className="mt-5">Konten Artikel</h5>

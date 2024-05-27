@@ -8,38 +8,27 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import Link from "next/link";
-import { QueryResult } from "@apollo/client";
-import { ArticleFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
-import { useState } from "react";
-import { useRouter } from "next/router";
 
 const ArticlePage = () => {
   const {
     articleFindMany,
-    articleFindTake,
     setArticleFindTake,
-    articleFindSkip,
-    setArticleFindSkip,
-    articleFindSearch,
     setArticleFindSearch,
     articleLength,
     currentPage,
-    setCurrentPage,
     handlePageChange,
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
     articleDeleteOne,
+    formatWIB,
   } = useArticleViewModel();
-  const router = useRouter();
-
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Artikel</PageTitle>
@@ -49,15 +38,12 @@ const ArticlePage = () => {
           <Head
             onSearch={(val) => {
               setArticleFindSearch(val);
-              // articleLength.refetch()
             }}
             setStatus={(val) => {
               setArticleFindStatus(val);
-              // articleLength.refetch()
             }}
             setCategory={(val) => {
               setArticleFindCategory(val?.value);
-              // articleLength.refetch()
             }}
           />
           {articleFindMany.error ? (
@@ -125,20 +111,15 @@ const ArticlePage = () => {
                         <div className="d-flex flex-column">
                           <span>{formatDate(article.updatedAt)}</span>
                           <span>
-                            {article.updatedAt
+                            {/* {article.updatedAt
                               .toString()
                               .split("T")[1]
-                              .split(".")[0] + " UTC"}
+                              .split(".")[0] + " UTC"} */}
+                            {formatWIB(article.updatedAt)}
                           </span>
                         </div>
                       </td>
                       <td className="min-w-175px text-end fw-bold text-muted">
-                        {/* <Badge
-                          key={article.id + article.type}
-                          label={article.type}
-                          badgeColor="dark"
-                          classNames="mx-1"
-                        /> */}
                         {article.category?.map((val) => (
                           <Badge
                             key={val.id}
@@ -249,13 +230,6 @@ const Head = ({
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
-          {/* <Dropdown
-            styleType="solid"
-            options={[{ label: "Semua Kategori", value: "all" }, ...option]}
-            onValueChange={(e) => {
-              setCategory(e as string);
-            }}
-          /> */}
           <AsyncPaginate
             className="min-w-200px"
             loadOptions={loadOptions}

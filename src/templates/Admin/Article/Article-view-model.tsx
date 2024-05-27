@@ -1,14 +1,13 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import {
-  ArticleFindManyQuery,
   QueryMode,
   useArticleCategoryFindManyQuery,
   useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
   useArticleFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { QueryResult } from "@apollo/client";
 import { GroupBase, OptionsOrGroups } from "react-select";
+import { format } from "date-fns";
 
 export const breadcrumbs = [
   {
@@ -105,10 +104,11 @@ const usePagination = (
     }
   };
 
-  const length: any = articleLength.data?.articleFindMany?.length;
+  const length: number | undefined =
+    articleLength.data?.articleFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil(length / 10);
+    return Math.ceil((length as number) / 10);
   };
   return {
     currentPage,
@@ -148,12 +148,15 @@ export const useCategoriesDropdown = () => {
         },
       },
     });
+
     result.unshift({ value: 0, label: "Semua Kategori" });
+
     return {
       options: result,
       hasMore: false,
     };
   }
+
   return { loadOptions };
 };
 
@@ -256,9 +259,25 @@ const useArticleViewModel = () => {
       setArticleFindSkip(0);
       articleFindMany.refetch();
     }
-  }, [articleFindSearch, articleFindCategory, articleFindStatus]);
+  }, [
+    articleFindSearch,
+    articleFindCategory,
+    articleFindStatus,
+    articleFindMany,
+    setCurrentPage,
+  ]);
+
+  const formatWIB = (createdAt: string): string => {
+    const date = new Date(createdAt);
+
+    const wibOffset = 7 * 60 * 60 * 1000;
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const wibDate = new Date(utcDate.getTime() + wibOffset);
+    return format(wibDate, "kk:mm") + " WIB";
+  };
 
   return {
+    formatWIB,
     articleDeleteOne,
     articleFindMany,
     articleFindTake,

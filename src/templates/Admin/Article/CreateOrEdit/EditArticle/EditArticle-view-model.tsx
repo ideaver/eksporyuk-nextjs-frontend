@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from "yup";
 import useArticleViewModel from "../../Article-view-model";
+import { postDataAPI } from "@/app/service/api/rest-service";
+import { useSession } from "next-auth/react";
 
 export interface IEditArticle {
   id: string | string[] | undefined;
@@ -60,13 +62,12 @@ const useArticleForm = ({
   fileUrl,
 }: IEditArticle & dataProps) => {
   const articleData = data?.articleFindOne;
-  const router = useRouter();
-  //refetch
+
   const { articleFindMany } = useArticleViewModel();
 
-  const editedFile = fileUrl?.map((e) => ({ path: e.path }));
+  const editedFile = fileUrl?.[0]?.path;
   const editedCategory = category?.map((e) => ({ id: e.value as number }));
-  //mutation
+
   const [articleUpdateOne, response] = useArticleUpdateOneMutation();
 
   const articleSchema = Yup.object().shape({
@@ -85,60 +86,35 @@ const useArticleForm = ({
       title: articleData?.title,
     },
     validationSchema: articleSchema,
-    onSubmit: async () => {
-      try {
-        await articleUpdateOne({
-          variables: {
-            where: {
-              id: Number(id),
-            },
-            data: {
-              category: {
-                connect: editedCategory,
-              },
-              content: {
-                set: content,
-              },
-              createdByAdmin: {
-                connect: {
-                  id: createdByAdminId,
-                },
-              },
-              isActive: {
-                set: status === "published" ? true : false,
-              },
-              title: {
-                set: title,
-              },
-              fileUrl: {
-                connect: editedFile as any[],
-              },
-            },
-          },
-          onCompleted: () => {
-            articleFindMany.refetch();
-          },
-        });
-        await articleFindMany.refetch();
-      } catch (error) {
-        console.log(error);
-      } finally {
-        router.push("/admin/articles");
-      }
-    },
+    onSubmit: () => {},
   });
-  return { articleForm, response };
+  return {
+    articleForm,
+    response,
+    articleUpdateOne,
+    articleFindMany,
+    editedFile,
+    editedCategory,
+    createdByAdminId,
+  };
 };
 
 const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   const articleData = data?.articleFindOne;
-  const [thumbnail, setThumbnail] = useState(articleData?.fileUrl?.[0]);
+  const [thumbnail, setThumbnail] = useState<any>(articleData?.fileUrl?.[0]);
+  const [editedThumbnail, setEditedThumbnail] = useState<
+    string | undefined | null
+  >();
+  const [file, setFile] = useState<any>(articleData?.fileUrl?.[0]);
   const [content, setContent] = useState(articleData?.content);
   const [title, setTitle] = useState(articleData?.title);
   const [status, setStatus] = useState(
     articleData?.isActive === true ? "published" : "private"
   );
-
   const [category, setCategory] = useState(
     articleData?.category?.map((val: any) => ({
       value: val?.id,
@@ -146,7 +122,14 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     }))
   );
 
-  const { articleForm: formik, response } = useArticleForm({
+  const {
+    articleForm: formik,
+    response,
+    articleUpdateOne,
+    editedFile,
+    editedCategory,
+    articleFindMany,
+  } = useArticleForm({
     data,
     id,
     content,
@@ -157,7 +140,88 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     createdByAdminId: articleData?.createdByAdminId,
   });
 
+  const handleUpdateFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileImage = event.target.files?.[0];
+    const blob = fileImage?.slice(0, fileImage?.size);
+    const newFile = new File([blob] as any, fileImage?.name as string);
+
+    setFile(newFile);
+
+    if (!fileImage) return;
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditedThumbnail(reader.result as string);
+      };
+      reader.readAsDataURL(fileImage);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleArticleUpdateOne = async () => {
+    if (formik.isValid.valueOf() === false) return;
+    setIsLoading(true);
+
+    try {
+      const body = {
+        file: file,
+        userId: session?.user?.id,
+      };
+
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body,
+        isMultipartRequest: true,
+      });
+
+      await articleUpdateOne({
+        variables: {
+          where: {
+            id: Number(id),
+          },
+          data: {
+            category: {
+              connect: editedCategory ?? null,
+            },
+            content: {
+              set: content,
+            },
+            createdByAdmin: {
+              connect: {
+                id: articleData?.createdByAdminId,
+              },
+            },
+            isActive: {
+              set: status === "published" ? true : false,
+            },
+            title: {
+              set: title,
+            },
+            fileUrl: {
+              set: [
+                {
+                  path: response?.data ? `${response.data}` : editedFile,
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      await articleFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      await router.push("/admin/articles");
+      router.reload();
+    }
+  };
+
   return {
+    editedThumbnail,
+    isLoading,
     content,
     setContent,
     title,
@@ -170,6 +234,8 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     response,
     thumbnail,
     setThumbnail,
+    handleUpdateFile,
+    handleArticleUpdateOne,
   };
 };
 
