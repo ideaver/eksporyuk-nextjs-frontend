@@ -1,0 +1,3 @@
+mutation CouponDeleteMany($where: CouponWhereInput) {
+  couponDeleteMany(where: $where)
+}

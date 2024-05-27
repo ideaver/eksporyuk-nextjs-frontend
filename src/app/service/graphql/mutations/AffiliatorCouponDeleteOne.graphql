@@ -1,0 +1,3 @@
+mutation AffiliatorCouponDeleteOne($where: AffiliatorCouponWhereUniqueInput!) {
+  affiliatorCouponDeleteOne(where: $where)
+}

@@ -1,0 +1,30 @@
+mutation AffiliatorCouponCreateOne($data: AffiliatorCouponCreateInput!) {
+  affiliatorCouponCreateOne(data: $data) {
+    code
+    id
+    coupon {
+      freeDelivery
+      startDate
+      value
+      type
+    }
+    createdBy {
+      id
+    }
+    coupon {
+      description
+      endDate
+      freeDelivery
+      isActive
+      value
+      type
+      startDate
+      claimerQuota
+      maxClaimPerUser
+      maxOrderQuantityValue
+      maxOrderTotalAmountValue
+      minOrderQuantityValue
+      minOrderTotalAmountValue
+    }
+  }
+}

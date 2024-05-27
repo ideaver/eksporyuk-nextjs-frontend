@@ -1,0 +1,19 @@
+query AffiliatorFindMany($take: Int, $skip: Int, $where: AffiliatorWhereInput) {
+  affiliatorFindMany(take: $take, skip: $skip, where: $where) {
+    id
+    user {
+      id
+      name
+      username
+      avatarImageId
+      email
+      personalId
+      createdAt
+      affiliator {
+        user {
+          name
+        }
+      }
+    }
+  }
+}

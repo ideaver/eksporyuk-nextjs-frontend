@@ -1,0 +1,55 @@
+query InvoiceFindMany($take: Int, $skip: Int, $where: InvoiceWhereInput) {
+  invoiceFindMany(take: $take, skip: $skip, where: $where) {
+    id
+    adminFee
+    amount
+    uniqueCode
+    createdAt
+    updatedAt
+    status
+    orderId
+    order {
+      id
+      enrollment {
+        course {
+          title
+          enrollments {
+            student {
+              user {
+                name
+                affiliator {
+                  user {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+        order {
+          statuses {
+            status
+          }
+        }
+      }
+    }
+    payment {
+      id
+      amount
+      createdAt
+      updatedAt
+      method
+      status
+      invoice {
+        id
+        adminFee
+        amount
+        uniqueCode
+        createdAt
+        updatedAt
+        status
+        orderId
+      }
+    }
+  }
+}
