@@ -290,7 +290,7 @@ const useKuponAffiliasiViewModel = () => {
 
   // Data Mutation
   const onSubmit = async () => {
-    if (!couponCode || !value || !endDate || !isActive || !limitUsage) {
+    if (!couponCode || !value || !endDate || !limitUsage) {
       setErrorMessage("All fields are required.");
       return;
     }

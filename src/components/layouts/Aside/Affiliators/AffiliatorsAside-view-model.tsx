@@ -68,7 +68,7 @@ const useClassViewModel = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: boolean) => {
     dispatch(changeIsActive(status));
   };
 
@@ -79,11 +79,11 @@ const useClassViewModel = () => {
     dispatch(changeCouponCode(""));
     dispatch(changeEndDate(""));
     dispatch(changeFreeDelivery(false));
-    dispatch(changeIsActive("false"));
+    dispatch(changeIsActive(false));
     dispatch(changeLimitUsage(0));
     dispatch(changeStartDate(""));
     dispatch(changeThumbnail(""));
-    dispatch(changeValue(0));
+    dispatch(changeValue("0"));
   };
 
   // Mutation Data

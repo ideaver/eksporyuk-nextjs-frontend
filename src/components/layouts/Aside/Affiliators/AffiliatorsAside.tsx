@@ -64,14 +64,14 @@ const AsideAffiliateLayout = ({ children }: AsideAffiliateLayoutProps) => {
         <KTCard className="mt-5">
           <KTCardBody className="d-flex flex-column">
             <h3 className="mb-5">Status</h3>
-            <Dropdown
+            {/* <Dropdown
               options={[
                 { value: "true", label: "Aktif" },
                 { value: "false", label: "Tidak Aktif" },
               ]}
               value={status}
-              onValueChange={(value) => handleStatusChange(value as string)}
-            ></Dropdown>
+              onValueChange={(value) => handleStatusChange(value as boolean)}
+            ></Dropdown> */}
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </KTCardBody>
         </KTCard>

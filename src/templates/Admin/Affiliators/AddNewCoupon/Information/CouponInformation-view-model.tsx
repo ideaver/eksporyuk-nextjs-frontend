@@ -98,15 +98,15 @@ const useCouponInformationViewModel = () => {
     dispatch(changeCouponCode(""));
     dispatch(changeEndDate(""));
     dispatch(changeFreeDelivery(false));
-    dispatch(changeIsActive("false"));
+    dispatch(changeIsActive(false));
     dispatch(changeLimitUsage(0));
     dispatch(changeStartDate(""));
-    dispatch(changeValue(0));
+    dispatch(changeValue(""));
     dispatch(changeAllowAffiliator(false));
   };
 
   const handleStatusChange = (status: string) => {
-    dispatch(changeIsActive(status));
+    dispatch(changeIsActive(status === "true"));
   };
 
   // Mutation Data
