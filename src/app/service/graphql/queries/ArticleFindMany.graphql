@@ -1,5 +1,10 @@
-query ArticleFindMany($where: ArticleWhereInput, $take: Int, $skip: Int) {
-  articleFindMany(where: $where, take: $take, skip: $skip) {
+query ArticleFindMany(
+  $orderBy: [ArticleOrderByWithRelationInput!]
+  $where: ArticleWhereInput
+  $take: Int
+  $skip: Int
+) {
+  articleFindMany(orderBy: $orderBy, where: $where, take: $take, skip: $skip) {
     id
     createdByAdmin {
       id

@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import {
   QueryMode,
+  SortOrder,
   useArticleCategoryFindManyQuery,
   useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
@@ -167,11 +168,19 @@ const useArticleViewModel = () => {
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
   const [articleFindCategory, setArticleFindCategory] = useState(0);
+  const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
+    SortOrder.Asc
+  );
 
   const articleFindMany = useArticleFindManyQuery({
     variables: {
       take: parseInt(articleFindTake.toString()),
       skip: articleFindSkip,
+      orderBy: [
+        {
+          createdAt: articleOrderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -293,6 +302,7 @@ const useArticleViewModel = () => {
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
+    setArticleOrderBy,
   };
 };
 export default useArticleViewModel;

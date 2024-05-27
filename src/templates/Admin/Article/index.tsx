@@ -14,6 +14,7 @@ import Link from "next/link";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { SortOrder } from "@/app/service/graphql/gen/graphql";
 
 const ArticlePage = () => {
   const {
@@ -26,6 +27,7 @@ const ArticlePage = () => {
     calculateTotalPage,
     setArticleFindStatus,
     setArticleFindCategory,
+    setArticleOrderBy,
     articleDeleteOne,
     formatWIB,
   } = useArticleViewModel();
@@ -44,6 +46,9 @@ const ArticlePage = () => {
             }}
             setCategory={(val) => {
               setArticleFindCategory(val?.value);
+            }}
+            setOrder={(val) => {
+              setArticleOrderBy(val);
             }}
           />
           {articleFindMany.error ? (
@@ -110,13 +115,7 @@ const ArticlePage = () => {
                       <td className="min-w-200px text-end fw-bold text-muted">
                         <div className="d-flex flex-column">
                           <span>{formatDate(article.updatedAt)}</span>
-                          <span>
-                            {/* {article.updatedAt
-                              .toString()
-                              .split("T")[1]
-                              .split(".")[0] + " UTC"} */}
-                            {formatWIB(article.updatedAt)}
-                          </span>
+                          <span>{formatWIB(article.updatedAt)}</span>
                         </div>
                       </td>
                       <td className="min-w-175px text-end fw-bold text-muted">
@@ -210,10 +209,12 @@ const Head = ({
   onSearch,
   setStatus,
   setCategory,
+  setOrder,
 }: {
   onSearch: (val: string) => void;
   setStatus: (val: string) => void;
   setCategory: (val: any) => void;
+  setOrder: (val: any) => void;
 }) => {
   const { loadOptions } = useCategoriesDropdown();
   return (
@@ -248,6 +249,18 @@ const Head = ({
             ]}
             onValueChange={(e) => {
               setStatus(e as string);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrder(e);
             }}
           />
         </div>
