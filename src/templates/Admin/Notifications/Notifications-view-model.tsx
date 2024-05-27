@@ -6,7 +6,7 @@ import {
   QueryMode,
   NotificationFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import { SortOrder, CompletionStatusEnum } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
   {
@@ -121,6 +121,7 @@ const useNotificationsViewModel = () => {
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchNotification, setSearchNotification] = useState<string>("");
   const [dateOrderBy, setDateOrderBy] = useState<string>("asc");
+  const [completionStatus, setCompletionStatus] = useState<any>(null);
 
   // Querying process
   const notificationFindMany = useNotificationFindManyQuery({
@@ -151,6 +152,9 @@ const useNotificationsViewModel = () => {
             },
           },
         ],
+        onCompletionStatus: {
+          equals: completionStatus
+        }
       },
     },
   });
@@ -179,6 +183,7 @@ const useNotificationsViewModel = () => {
     handleSingleCheck,
     handleSelectAllCheck,
     setDateOrderBy,
+    setCompletionStatus,
   };
 };
 

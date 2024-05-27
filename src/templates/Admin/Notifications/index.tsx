@@ -32,6 +32,7 @@ const NotificationPage = () => {
     setSkipPage,
     setTakePage,
     setDateOrderBy,
+    setCompletionStatus,
   } = useNotificationsViewModel();
 
   return (
@@ -39,7 +40,11 @@ const NotificationPage = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Notifikasi</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchNotification} orderBy={setDateOrderBy} />
+          <Head
+            onSearch={setSearchNotification}
+            orderBy={setDateOrderBy}
+            completionStatus={setCompletionStatus}
+          />
           <Body
             data={notificationFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -64,9 +69,11 @@ export default NotificationPage;
 const Head = ({
   onSearch,
   orderBy,
+  completionStatus,
 }: {
   onSearch: (val: string) => void;
   orderBy: any;
+  completionStatus: any;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -94,7 +101,7 @@ const Head = ({
             onValueChange={(e: any) => orderBy(e)}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -104,16 +111,23 @@ const Head = ({
             ]}
             onValueChange={() => {}}
           />
-        </div>
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
-              { label: "Semua Status", value: "all" },
-              { label: "Aktif", value: "active" },
-              { label: "Tidak Aktif", value: "inactive" },
+              { label: "Semua Status", value: "" },
+              { label: "Belum Diproses", value: "NOT_STARTED" },
+              { label: "Dalam Proses", value: "IN_PROGRESS" },
+              { label: "Selesai", value: "COMPLETED" },
+              { label: "Gagal", value: "FAILED" },
+              { label: "Selesai", value: "RESOLVED" },
+              { label: "Ditutup", value: "CLOSED" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={(e: any) => {
+              completionStatus(e);
+              if (e === "") completionStatus(null);
+            }}
           />
         </div>
       </div>
@@ -134,6 +148,8 @@ const Body = ({
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
 }) => {
+  console.log(data.data?.notificationFindMany);
+
   return (
     <>
       {data.error ? (
@@ -151,7 +167,7 @@ const Body = ({
             fontWeight="bold"
             className="text-uppercase align-middle"
           >
-            <th className="w-300px">
+            <th className="min-w-300px">
               <CheckBoxInput
                 className="w-150px"
                 checked={selectAll}
@@ -163,15 +179,24 @@ const Body = ({
                 <>Notifikasi</>
               </CheckBoxInput>
             </th>
-            <th className="">Pengguna</th>
-            <th className="">Tanggal</th>
-            <th className="">Status</th>
-            <th className="min-w-100px">Actions</th>
+            <th className="text-start min-w-200px">Pengguna</th>
+            <th className="text-end min-w-200px">Tanggal</th>
+            <th className="text-end min-w-200px">Status</th>
+            <th className="text-end min-w-200px">Actions</th>
           </KTTableHead>
           {data.data?.notificationFindMany?.map((notif, index) => {
+            const statusMap: { [key: string]: string } = {
+              NOT_STARTED: "Belum Diproses",
+              IN_PROGRESS: "Dalam Proses",
+              COMPLETED: "Selesai",
+              FAILED: "Gagal",
+              RESOLVED: "Selesai",
+              CLOSED: "Ditutup",
+            };
+
             return (
               <KTTableBody key={index}>
-                <td className="align-middle">
+                <td className="text-end min-w-200px">
                   <CheckBoxInput
                     className="d-flex"
                     checked={checkedItems[index]?.value ?? false}
@@ -193,13 +218,13 @@ const Body = ({
                           style={{ fontSize: "30px" }}
                         ></i>
                       </div>
-                      <Link href={`/admin/notifications/detail/${notif.id}`} className="text-muted fw-bold text-truncate">
+                      <p className="text-muted fw-bold text-truncate m-0">
                         {notif.title}
-                      </Link>
+                      </p>
                     </div>
                   </CheckBoxInput>
                 </td>
-                <td className="align-middle">
+                <td className="text-end min-w-200px">
                   <div className="d-flex align-items-center">
                     <div className="symbol symbol-50px me-5 symbol-circle">
                       <span className="symbol-label bg-gray-600">
@@ -220,7 +245,7 @@ const Body = ({
                     </span>
                   </div>
                 </td>
-                <td className="align-middle text-start text-muted fw-bold">
+                <td className="text-end min-w-200px text-muted fw-bold">
                   <p className="m-0">
                     {formatDate(notif.createdAt) ?? "27 Mei 2024"}
                   </p>
@@ -228,39 +253,29 @@ const Body = ({
                     {formatTime(notif.createdAt) ?? "8:12 WIB"}
                   </p>
                 </td>
-                <td className="align-middle text-start text-muted fw-bold">
+                <td className="text-end min-w-200px text-muted fw-bold">
                   <Badge
                     badgeColor={
                       notif.onCompletionStatus === "FAILED"
                         ? "danger"
                         : notif.onCompletionStatus === "NOT_STARTED"
                         ? "warning"
+                        : notif.onCompletionStatus === "IN_PROGRESS"
+                        ? "warning"
                         : "success"
                     }
-                    label={String(notif.onCompletionStatus)}
+                    label={statusMap[notif.onCompletionStatus || ""]}
                     onClick={function noRefCheck() {}}
                   />
                 </td>
-                <td className="align-middle text-start">
+                <td className="text-end min-w-200px">
                   <div className="dropdown z-3">
-                    <button
-                      className="btn btn-secondary dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
+                    <Link
+                      href={`/admin/notifications/detail/${notif.id}`}
+                      className="btn btn-secondary"
                     >
-                      Actions
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button className="dropdown-item" onClick={() => {}}>
-                          Edit
-                        </button>
-                        <button className="dropdown-item" onClick={() => {}}>
-                          Hapus
-                        </button>
-                      </li>
-                    </ul>
+                      Lihat Detail
+                    </Link>
                   </div>
                 </td>
               </KTTableBody>
