@@ -2,11 +2,23 @@ query FeedbackFindOne($where: FeedbackWhereUniqueInput!) {
   feedbackFindOne(where: $where) {
     id
     content
-    FeedbackCategoryTypeEnum
+    feedbackCategory
     isRead
     isCleared
     createdAt
     updatedAt
+    feedbackReplied
+    feedbackRepliedAt
+    resolvedBy {
+      user {
+        email
+        username
+        name
+        id
+        avatarImageId
+        phoneId
+      }
+    }
     resolvedById
     userId
     user {

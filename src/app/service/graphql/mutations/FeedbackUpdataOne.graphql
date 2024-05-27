@@ -5,7 +5,7 @@ mutation FeedbackUpdateOne(
   feedbackUpdateOne(data: $data, where: $where) {
     id
     content
-    FeedbackCategoryTypeEnum
+    feedbackCategory
     isRead
     isCleared
     createdAt

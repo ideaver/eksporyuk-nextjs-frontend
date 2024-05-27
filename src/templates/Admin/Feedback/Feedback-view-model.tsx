@@ -27,23 +27,19 @@ const useCategoryLength = () => {
   const categoryLength = useFeedbackFindLengthQuery();
   const categoryAll = categoryLength.data?.feedbackFindMany?.length;
   const categoryOrder = categoryLength.data?.feedbackFindMany?.filter(
-    (e) =>
-      e.FeedbackCategoryTypeEnum == FeedbackCategoryTypeEnum.UnableToPlaceOrder
+    (e) => e.feedbackCategory == FeedbackCategoryTypeEnum.UnableToPlaceOrder
   ).length;
   const categoryCourse = categoryLength.data?.feedbackFindMany?.filter(
-    (e) =>
-      e.FeedbackCategoryTypeEnum == FeedbackCategoryTypeEnum.CourseRelatedIssues
+    (e) => e.feedbackCategory == FeedbackCategoryTypeEnum.CourseRelatedIssues
   ).length;
   const categoryPayment = categoryLength.data?.feedbackFindMany?.filter(
-    (e) =>
-      e.FeedbackCategoryTypeEnum ==
-      FeedbackCategoryTypeEnum.PaymentRelatedIssues
+    (e) => e.feedbackCategory == FeedbackCategoryTypeEnum.PaymentRelatedIssues
   ).length;
   const categoryOther = categoryLength.data?.feedbackFindMany?.filter(
-    (e) => e.FeedbackCategoryTypeEnum == FeedbackCategoryTypeEnum.OtherProblems
+    (e) => e.feedbackCategory == FeedbackCategoryTypeEnum.OtherProblems
   ).length;
   const categorySuggestion = categoryLength.data?.feedbackFindMany?.filter(
-    (e) => e.FeedbackCategoryTypeEnum == FeedbackCategoryTypeEnum.Suggestions
+    (e) => e.feedbackCategory == FeedbackCategoryTypeEnum.Suggestions
   ).length;
   return {
     categoryAll,
@@ -127,7 +123,7 @@ const useFeedbackViewModel = () => {
               contains: feedbackFindSearch,
               mode: QueryMode.Insensitive,
             },
-            FeedbackCategoryTypeEnum: {
+            feedbackCategory: {
               equals:
                 feedbackCategoryState == "ALL"
                   ? null
@@ -151,7 +147,7 @@ const useFeedbackViewModel = () => {
                 },
               },
             },
-            FeedbackCategoryTypeEnum: {
+            feedbackCategory: {
               equals:
                 feedbackCategoryState == "ALL"
                   ? null

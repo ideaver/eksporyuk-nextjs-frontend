@@ -519,8 +519,12 @@ const Body = ({
                           href={`/admin/feedback/detail/${row.id}`}
                           className=""
                         >
-                          <div className="d-flex flex-column justify-items-center justify-content-center align-start-center text-dark text-hover-primary">
-                            <h5>{formatter(row.FeedbackCategoryTypeEnum)}</h5>
+                          <div
+                            className={`d-flex flex-column justify-items-center justify-content-center align-start-center text-hover-primary ${
+                              row.isRead ? "text-dark" : "text-primary"
+                            } `}
+                          >
+                            <h5>{formatter(row.feedbackCategory)}</h5>
                             <p
                               className="h-40px mw-450px"
                               style={{

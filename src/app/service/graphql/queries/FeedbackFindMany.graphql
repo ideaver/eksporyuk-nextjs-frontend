@@ -2,7 +2,7 @@ query FeedbackFindMany($skip: Int, $take: Int, $where: FeedbackWhereInput) {
   feedbackFindMany(skip: $skip, take: $take, where: $where) {
     id
     content
-    FeedbackCategoryTypeEnum
+    feedbackCategory
     createdAt
     updatedAt
     userId

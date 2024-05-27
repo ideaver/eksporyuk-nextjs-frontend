@@ -1,6 +1,6 @@
 query FeedbackFindLength($skip: Int, $take: Int, $where: FeedbackWhereInput) {
   feedbackFindMany(skip: $skip, take: $take, where: $where) {
     id
-    FeedbackCategoryTypeEnum
+    feedbackCategory
   }
 }

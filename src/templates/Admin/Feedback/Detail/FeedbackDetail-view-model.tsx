@@ -1,9 +1,11 @@
 import {
   FeedbackFindOneQuery,
   FeedbackUpdateOneMutation,
+  useFeedbackReplyViaEmailMutation,
   useFeedbackUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { MutationFunctionOptions } from "@apollo/client";
+import { useState } from "react";
 
 export const breadcrumbs = [
   {
@@ -41,8 +43,18 @@ export interface IFeedbackDetail {
 }
 
 const useFeedbackDetailViewModel = () => {
+  const [subject, setSubject] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+
+  const [replyViaEmail] = useFeedbackReplyViaEmailMutation();
+
   const [feedbackUpdateMutation, response] = useFeedbackUpdateOneMutation();
   return {
+    replyViaEmail,
+    subject,
+    setSubject,
+    message,
+    setMessage,
     feedbackUpdateMutation,
     response,
   };
