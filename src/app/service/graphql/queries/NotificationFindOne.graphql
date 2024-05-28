@@ -1,0 +1,15 @@
+query NotificationFindOne($where: NotificationWhereUniqueInput!) {
+  notificationFindOne(where: $where) {
+    id
+    title
+    subTitle
+    onTopic
+    onOperationType
+    onCompletionStatus
+    content
+    user {
+      avatarImageId
+      name
+    }
+  }
+}

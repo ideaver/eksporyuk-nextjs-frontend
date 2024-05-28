@@ -310,7 +310,7 @@ const Body = ({
                   </div>
                 </td>
                 <td className="fw-bold text-muted align-middle w-125px">
-                  {course.category?.name}
+                  {course?.category?.name}
                 </td>
                 <td className="align-middle text-end w-250px">
                   <div className="d-flex align-items-center justify-content-end">
