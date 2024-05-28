@@ -9,6 +9,7 @@ interface IllustrationCardProps {
   title: JSX.Element | string;
   description?: JSX.Element;
   color?: string;
+  classNames?: string;
 }
 
 const IllustrationCard = ({
@@ -16,12 +17,15 @@ const IllustrationCard = ({
   title,
   description,
   color = "bg-gray-900",
+  classNames,
 }: IllustrationCardProps) => {
   return (
     <>
       <KTCard className={clsx("p-0", color)}>
         <KTCardBody className="p-0">
-          <div className="d-flex flex-wrap flex-md-nowrap align-content-center align-items-center">
+          <div
+            className={`d-flex flex-wrap flex-md-nowrap align-content-center align-items-center ${classNames}`}
+          >
             <div className="p-10">
               {typeof title === "string" && !React.isValidElement(title) ? (
                 <h1 className="text-white w-75">{title}</h1>

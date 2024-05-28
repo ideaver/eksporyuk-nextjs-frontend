@@ -1,0 +1,67 @@
+query TransactionFindOne($where: TransactionWhereUniqueInput!) {
+  transactionFindOne(where: $where) {
+    id
+    transactionCategory
+    payment {
+      invoice {
+        paymentForGatewayId
+        paymentForGateway {
+          status
+          id
+          bill_link
+          bill_link_id
+          bill_title
+          sender_name
+          sender_bank
+          sender_email
+          sender_bank_type
+          virtual_account_number
+          amount
+          settlement_status
+          reference_id
+          payment_url
+          created_at
+          completed_at
+        }
+        paymentId
+        amount
+        id
+        adminFee
+        uniqueCode
+        createdAt
+        updatedAt
+        status
+        orderId
+      }
+      amount
+      createdAt
+      id
+      method
+      status
+      updatedAt
+    }
+    amount
+    createdAt
+    paymentId
+    status
+    updatedAt
+    uniqueCode
+    proofImageId
+    fromAccountId
+    toAccountId
+    toAccount {
+      id
+      name
+      balance
+      updatedAt
+      userId
+      user {
+        email
+        id
+        phoneId
+        name
+        avatarImageId
+      }
+    }
+  }
+}
