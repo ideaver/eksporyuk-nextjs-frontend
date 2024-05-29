@@ -3,6 +3,7 @@ import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
+import serviceReducer from "@/features/reducers/products/serviceReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
@@ -38,6 +39,11 @@ const feedbackPersistConfig = {
   storage,
 };
 
+const servicePersistConfig = {
+  key: "service",
+  storage,
+}
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -64,6 +70,11 @@ const persistedFeedbackReducer = persistReducer(
   feedbackReducer
 );
 
+const persistedServiceReducer = persistReducer(
+  servicePersistConfig,
+  serviceReducer
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -73,6 +84,7 @@ export const store = configureStore({
     article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
     feedback: persistedFeedbackReducer,
+    service: persistedServiceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
