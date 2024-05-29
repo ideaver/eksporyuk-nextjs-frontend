@@ -117,15 +117,16 @@ export const useBuyerInformationForm = () => {
       price: price,
     },
     validationSchema: buyerSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (status === "authenticated") {
         try {
-          buyerCreateOne();
+          await buyerCreateOne();
           resetBuyerState();
         } catch (error) {
           console.log(error);
         } finally {
-          router.push("/admin/buyers");
+          await router.push("/admin/buyers");
+          router.reload();
         }
       }
     },

@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { changeFileXLSX } from "@/features/reducers/buyers/buyersReducer";
 import { RootState } from "@/app/store/store";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BuyerFindManyQuery,
   QueryMode,
+  useBuyerDeleteManyMutation,
   useBuyerFindLengthQuery,
   useBuyerFindManyQuery,
   useCountryFindManyQuery,
@@ -58,45 +59,59 @@ const usePagination = () => {
 
 const useCheckbox = (buyerFindMany: QueryResult<BuyerFindManyQuery>) => {
   const [selectAll, setSelectAll] = useState(false);
-  const [checkedItems, setCheckedItems] = useState(
-    (buyerFindMany.data?.buyerFindMany ?? []).map((item) => ({
-      id: item.id,
-      value: false,
-    }))
-  );
+  const [checkedItems, setCheckedItems] = useState<
+    { id: number; value: boolean }[]
+  >([]);
+
+  const getCheckedItems = useMemo(() => {
+    return checkedItems.filter((item) => item.value).map((e) => e.id);
+  }, [checkedItems]);
+
+  const [checked, setChecked] = useState(getCheckedItems);
 
   useEffect(() => {
-    setCheckedItems(
-      (buyerFindMany.data?.buyerFindMany ?? []).map((item) => ({
-        id: item.id,
-        value: false,
-      }))
-    );
+    setChecked(getCheckedItems);
+  }, [getCheckedItems]);
+
+  useEffect(() => {
+    if (buyerFindMany.data?.buyerFindMany) {
+      setCheckedItems(
+        buyerFindMany.data.buyerFindMany.map((item) => ({
+          id: item.id,
+          value: false,
+        }))
+      );
+    }
   }, [buyerFindMany.data?.buyerFindMany]);
 
-  const handleSingleCheck = (index: number) => {
-    const newCheckedItems = [...checkedItems];
-    newCheckedItems[index].value = !newCheckedItems[index].value;
-    setCheckedItems(newCheckedItems);
-    setSelectAll(newCheckedItems.every((item) => item.value));
-  };
+  const handleSingleCheck = useCallback((index: number) => {
+    setCheckedItems((prevCheckedItems) => {
+      const newCheckedItems = [...prevCheckedItems];
+      newCheckedItems[index].value = !newCheckedItems[index].value;
+      const allChecked = newCheckedItems.every((item) => item.value);
+      setSelectAll(allChecked);
+      return newCheckedItems;
+    });
+  }, []);
 
-  const handleSelectAllCheck = () => {
-    setSelectAll(!selectAll);
-    setCheckedItems(
-      Array.isArray(buyerFindMany.data?.buyerFindMany)
-        ? buyerFindMany.data?.buyerFindMany?.map((item) => ({
-            id: item.id,
-            value: !selectAll,
-          }))
-        : []
-    );
-  };
+  const handleSelectAllCheck = useCallback(() => {
+    setCheckedItems((prevCheckedItems) => {
+      const newSelectAll = !selectAll;
+      const newCheckedItems = prevCheckedItems.map((item) => ({
+        ...item,
+        value: newSelectAll,
+      }));
+      setSelectAll(newSelectAll);
+      return newCheckedItems;
+    });
+  }, [selectAll]);
+
   return {
     selectAll,
     checkedItems,
     handleSingleCheck,
     handleSelectAllCheck,
+    checked,
   };
 };
 
@@ -142,6 +157,8 @@ export const useCountryDropdown = () => {
 };
 
 const useBuyerViewModel = () => {
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const {
     currentPage,
     setCurrentPage,
@@ -219,8 +236,15 @@ const useBuyerViewModel = () => {
     },
   });
 
-  const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
-    useCheckbox(buyerFindMany);
+  const [buyerDeleteMany] = useBuyerDeleteManyMutation();
+
+  const {
+    selectAll,
+    checkedItems,
+    handleSingleCheck,
+    handleSelectAllCheck,
+    checked,
+  } = useCheckbox(buyerFindMany);
 
   function formatDate(dateString: string) {
     const date = new Date(dateString);
@@ -246,6 +270,10 @@ const useBuyerViewModel = () => {
   }
 
   return {
+    deleteLoading,
+    setDeleteLoading,
+    buyerDeleteMany,
+    checked,
     setBuyerFindCountry,
     formatDate,
     fileXLSX,
