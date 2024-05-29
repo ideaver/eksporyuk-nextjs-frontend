@@ -145,6 +145,7 @@ export const adminMenus: MenuSection[] = [
         icon: "tablet-text-up",
       },
       { title: "Manajemen Buyer", to: "/admin/buyers", icon: "parcel" },
+      { title: "Manajemen Transaksi", to: "/admin/transaction", icon: "bill" },
       {
         title: "Support Center",
         to: "/admin/support",

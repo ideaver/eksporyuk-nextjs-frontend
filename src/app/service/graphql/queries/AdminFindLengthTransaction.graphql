@@ -1,0 +1,16 @@
+query AdminFindTransactionLength(
+  $where: TransactionWhereInput
+  $take: Int
+  $skip: Int
+) {
+  adminFindManyTransaction(where: $where, take: $take, skip: $skip) {
+    type
+    user {
+      email
+      id
+      name
+      phoneId
+      avatarImageId
+    }
+  }
+}

@@ -35,5 +35,6 @@ export const Display: Story = {
       </div>
     ),
     image: "/media/illustrations/sigma-1/17.png",
+    classNames: "",
   },
 };
