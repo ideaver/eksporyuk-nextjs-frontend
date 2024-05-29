@@ -1,0 +1,52 @@
+query BuyerFindOne($where: BuyerWhereUniqueInput!) {
+  buyerFindOne(where: $where) {
+    id
+    productName
+    quantity
+    abbreviation
+    deliveryType
+    price
+    description
+    buyerName
+    companyName
+    phone
+    email
+    address
+    countryId
+    counterContacted
+    createdAt
+    updatedAt
+    createdByAdminId
+    hsCodeSectionId
+    hsCodeSection {
+      section
+      name
+      description
+      updatedAt
+    }
+    country {
+      id
+      name
+      iso3
+      iso2
+      numericCode
+      phoneCode
+      capital
+      currency
+      currencyName
+      currencySymbol
+      tld
+      native
+      latitude
+      longitude
+      flagEmoji
+      emojiU
+      updatedAt
+      region
+      region_id
+      subregion
+      subregion_id
+      nationality
+    }
+  }
+}
