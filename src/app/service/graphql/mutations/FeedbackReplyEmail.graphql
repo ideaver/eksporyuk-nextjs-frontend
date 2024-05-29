@@ -1,0 +1,3 @@
+mutation FeedbackReplyViaEmail($feedbackReplyEmail: FeedbackReplyEmailArgs!) {
+  feedbackReplyEmail(feedbackReplyEmail: $feedbackReplyEmail)
+}
