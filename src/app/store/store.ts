@@ -5,10 +5,11 @@ import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
+import serviceReducer from "@/features/reducers/products/serviceReducer";
+import transactionReducer from "@/features/reducers/transaction/transactionReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import transactionReducer from "@/features/reducers/transaction/transactionReducer";
 
 const navigationPersistConfig = {
   key: "navigation",
@@ -49,6 +50,11 @@ const transactionPersistConfig = {
   storage,
 };
 
+const servicePersistConfig = {
+  key: "service",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -85,6 +91,11 @@ const persistedTransactionReducer = persistReducer(
   transactionReducer
 );
 
+const persistedServiceReducer = persistReducer(
+  servicePersistConfig,
+  serviceReducer
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -95,6 +106,7 @@ export const store = configureStore({
     dashboard: persistedDashboardReducer,
     feedback: persistedFeedbackReducer,
     transaction: persistedTransactionReducer,
+    service: persistedServiceReducer,
     course: persistedCourseReducer
   },
   middleware: (getDefaultMiddleware) =>

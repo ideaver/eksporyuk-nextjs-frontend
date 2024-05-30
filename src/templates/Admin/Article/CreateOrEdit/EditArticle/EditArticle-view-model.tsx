@@ -159,6 +159,8 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     }
   };
 
+  console.log(file);
+
   const handleArticleUpdateOne = async () => {
     if (formik.isValid.valueOf() === false) return;
     setIsLoading(true);
