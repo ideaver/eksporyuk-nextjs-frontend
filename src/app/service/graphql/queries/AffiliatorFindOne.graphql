@@ -1,0 +1,76 @@
+query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
+  affiliatorFindOne(where: $where) {
+    _count {
+      creditCards
+    }
+    user {
+      id
+      avatarImageId
+      role
+      name
+      username
+      email
+      addresses {
+        name
+      }
+      orders {
+        _count {
+          enrollment
+        }
+        invoices {
+          amount
+        }
+        cart {
+          cartItems {
+            quantity
+          }
+        }
+      }
+      Withdrawal {
+        amount
+        transaction {
+          amount
+        }
+      }
+      phone {
+        phoneNumber
+      }
+      createdAt
+    }
+    createdCoupons {
+      code
+      id
+      createdBy {
+        user {
+          email
+          name
+          username
+        }
+      }
+      extendedFrom {
+        extendedByCourses {
+          course {
+            id
+          }
+        }
+      }
+      coupon {
+        claimerQuota
+        createdAt
+        description
+        endDate
+        imageId
+        isActive
+        maxClaimPerUser
+        maxOrderQuantityValue
+        maxOrderTotalAmountValue
+        minOrderQuantityValue
+        minOrderTotalAmountValue
+        startDate
+        updatedAt
+        type
+        value
+      }
+    }
+  }
+}

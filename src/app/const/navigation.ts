@@ -98,8 +98,22 @@ export const adminMenus: MenuSection[] = [
       { title: "Dashboard Admin", to: "/admin/dashboard", icon: "category" },
       {
         title: "Manajemen Afiliasi",
-        to: "/admin/affiliators",
+        to: "/admin/affiliate",
         icon: "gift",
+        subItems: [
+          {
+            title: "Manajemen Komisi",
+            to: "/admin/affiliate/commission",
+            icon: "cube-2",
+          },
+          {
+            title: "Manajemen Afiliator",
+            to: "/admin/affiliate/affiliator",
+            icon: "cube-2",
+          },
+          // { title: "Manajemen Kupon", to: "/admin/affiliate/coupon/information", icon: "cube-2" },
+          { title: "Manajemen Rewards", to: "/admin/affiliate/reward", icon: "cube-2" },
+        ],
       },
       {
         title: "Manajemen Produk",

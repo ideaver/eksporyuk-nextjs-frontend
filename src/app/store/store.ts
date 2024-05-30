@@ -1,3 +1,5 @@
+import couponReducer from "@/features/reducers/affiliators/couponReducer";
+import rewardReducer from "@/features/reducers/affiliators/rewardReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import courseReducer from "@/features/reducers/course/courseReducer";
@@ -30,6 +32,10 @@ const buyerPersistConfig = {
   storage,
 };
 
+const couponPersistConfig = {
+  key: "coupon",
+  storage,
+};
 const articlePersistConfig = {
   key: "article",
   storage,
@@ -37,6 +43,11 @@ const articlePersistConfig = {
 
 const dashboardPersistConfig = {
   key: "dashboard",
+  storage,
+};
+
+const rewardPersistConfig = {
+  key: "reward",
   storage,
 };
 
@@ -67,6 +78,10 @@ const persistedProductReducer = persistReducer(
 
 const persistedBuyerReducer = persistReducer(buyerPersistConfig, buyersReducer);
 
+const persistedCouponReducer = persistReducer(
+  couponPersistConfig,
+  couponReducer
+);
 const persistedArticleReducer = persistReducer(
   articlePersistConfig,
   articlesReducer
@@ -75,6 +90,11 @@ const persistedArticleReducer = persistReducer(
 const persistedDashboardReducer = persistReducer(
   dashboardPersistConfig,
   dashboardReducer
+);
+
+const persistedRewardReducer = persistReducer(
+  rewardPersistConfig,
+  rewardReducer
 );
 
 const persistedFeedbackReducer = persistReducer(
@@ -102,12 +122,14 @@ export const store = configureStore({
     navigation: persistedNavigationReducer,
     product: persistedProductReducer,
     buyer: persistedBuyerReducer,
+    coupon: persistedCouponReducer,
     article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
+    reward: persistedRewardReducer,
     feedback: persistedFeedbackReducer,
     transaction: persistedTransactionReducer,
     service: persistedServiceReducer,
-    course: persistedCourseReducer
+    course: persistedCourseReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
