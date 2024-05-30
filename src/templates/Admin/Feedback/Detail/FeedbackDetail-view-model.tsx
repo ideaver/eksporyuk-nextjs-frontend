@@ -1,6 +1,7 @@
 import {
   FeedbackFindOneQuery,
   FeedbackUpdateOneMutation,
+  useChatRoomCreateOneMutation,
   useFeedbackReplyViaEmailMutation,
   useFeedbackUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
@@ -43,18 +44,24 @@ export interface IFeedbackDetail {
 }
 
 const useFeedbackDetailViewModel = () => {
-  const [subject, setSubject] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+  const [loadingLiveChat, setLoadingLiveChat] = useState<boolean>(false);
+  const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState("");
 
   const [replyViaEmail] = useFeedbackReplyViaEmailMutation();
+  const [replyViaLiveChat] = useChatRoomCreateOneMutation();
 
   const [feedbackUpdateMutation, response] = useFeedbackUpdateOneMutation();
+
   return {
-    replyViaEmail,
-    subject,
-    setSubject,
+    loadingLiveChat,
+    setLoadingLiveChat,
     message,
+    subject,
     setMessage,
+    setSubject,
+    replyViaLiveChat,
+    replyViaEmail,
     feedbackUpdateMutation,
     response,
   };
