@@ -2,18 +2,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ServiceState {
   serviceName: string;
-  serviceStatus: string;
+  serviceStatus: boolean;
   serviceDescription: string;
   serviceType: string;
   serviceCost: string;
-  serviceObjective?: string[];
-  servicePortfolio?: string[];
+  serviceObjective: string[];
+  servicePortfolio: string[];
   serviceImages: string;
 }
 
 const initialState: ServiceState = {
   serviceName: "",
-  serviceStatus: "private",
+  serviceStatus: false,
   serviceDescription: "",
   serviceType: "legality",
   serviceCost: "",
@@ -29,7 +29,7 @@ export const serviceSlice = createSlice({
     changeServiceName: (state, action: PayloadAction<string>) => {
       state.serviceName = action.payload;
     },
-    changeServiceStatus: (state, action: PayloadAction<string>) => {
+    changeServiceStatus: (state, action: PayloadAction<boolean>) => {
       state.serviceStatus = action.payload;
     },
     changeServiceDesc: (state, action: PayloadAction<string>) => {
@@ -61,6 +61,7 @@ export const {
   changeServiceCost,
   changeServiceObjective,
   changeServiceImages,
+  changeServicePortfolio,
 } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

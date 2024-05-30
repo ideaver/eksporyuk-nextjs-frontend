@@ -1,9 +1,10 @@
-"use client";
 import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CurrencyInput from "react-currency-input-field";
 
-import { breadcrumbs } from "./CreateService-view-model";
+import useCreateServiceViewModal, {
+  breadcrumbs,
+} from "./CreateService-view-model";
 import { RootState } from "@/app/store/store";
 import {
   changeServiceName,
@@ -30,86 +31,30 @@ import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 
 const CreateService = () => {
+  const {
+    serviceType,
+    setServiceType,
+    serviceName,
+    setServiceName,
+    serviceDesc,
+    setServiceDesc,
+    handleFileChange,
+    handleFileClick,
+    serviceImages,
+    serviceCost,
+    handleChangeServiceCost,
+    itemObjective,
+    addObjectiveItem,
+    removeObjectiveItem,
+    handleInputObjectiveChange,
+    itemPortfolio,
+    addPortfolioItem,
+    removePortfolioItem,
+    handleInputPortfolioChange,
+    handleStatusChange,
+    serviceStatus,
+  } = useCreateServiceViewModal();
   const dispatch = useDispatch();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Redux state
-  const serviceName = useSelector(
-    (state: RootState) => state.service.serviceName
-  );
-  const serviceImages = useSelector(
-    (state: RootState) => state.service.serviceImages
-  );
-  const serviceCost = useSelector(
-    (state: RootState) => state.service.serviceCost
-  );
-  const serviceObjective = useSelector(
-    (state: RootState) => state.service.serviceObjective
-  );
-  const servicePortfolio = useSelector(
-    (state: RootState) => state.service.servicePortfolio
-  );
-  const serviceType = useSelector(
-    (state: RootState) => state.service.serviceType
-  );
-
-  // Local state
-  const [itemObjective, setItemObjective] = useState<any>(serviceObjective);
-  const [itemPortfolio, setItemPortfolio] = useState<any>(servicePortfolio);
-  const [radio, setRadio] = useState("");
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      dispatch(changeServiceImages(reader.result as string));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFileClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleChangePrice = (price: string) => {
-    dispatch(changeServiceCost(price));
-  };
-
-  const removeItemObjective = (index: number) => {
-    setItemObjective((prevItems: any) =>
-      prevItems.filter((item: any, i: any) => i !== index)
-    );
-  };
-
-  const handleInputObjectiveChange = (index: number, newValue: string) => {
-    setItemObjective((prevItems: any) =>
-      prevItems.map((item: any, i: any) => (i === index ? newValue : item))
-    );
-  };
-
-  const addItemObjective = () => {
-    setItemObjective((prevItems: any) => [...prevItems, ""]);
-  };
-
-  const removeItemPortfolio = (index: number) => {
-    setItemPortfolio((prevItems: any) =>
-      prevItems.filter((item: any, i: any) => i !== index)
-    );
-  };
-
-  const handleInputPortfolioChange = (index: number, newValue: string) => {
-    setItemPortfolio((prevItems: any) =>
-      prevItems.map((item: any, i: any) => (i === index ? newValue : item))
-    );
-  };
-
-  const addItemPortfolio = () => {
-    setItemPortfolio((prevItems: any) => [...prevItems, ""]);
-  };
 
   return (
     <>
@@ -126,7 +71,7 @@ const CreateService = () => {
             >
               <RadioInput
                 name="service-type"
-                onChange={() => dispatch(changeServiceType("legalitas"))}
+                onChange={setServiceType}
                 checked={serviceType === "legalitas"}
                 value="legalitas"
               >
@@ -134,7 +79,7 @@ const CreateService = () => {
               </RadioInput>
               <RadioInput
                 name="service-type"
-                onChange={() => dispatch(changeServiceType("website"))}
+                onChange={setServiceType}
                 checked={serviceType === "website"}
                 value="website"
               >
@@ -151,8 +96,7 @@ const CreateService = () => {
               placeholder="Dokumen legalitas..."
               props={{
                 value: serviceName,
-                onChange: (e: any) =>
-                  dispatch(changeServiceName(e.target.value)),
+                onChange: setServiceName,
               }}
             />
             <p className="fw-bold fs-6 text-muted">Nama Service</p>
@@ -167,8 +111,8 @@ const CreateService = () => {
               onClickSuffixIcon={function noRefCheck() {}}
               placeholder="Masukan deskripsi dari service ini"
               props={{
-                value: "",
-                onChange: () => {},
+                value: serviceDesc,
+                onChange: setServiceDesc,
               }}
               rows={10}
             />
@@ -238,7 +182,7 @@ const CreateService = () => {
                 value={serviceCost}
                 decimalsLimit={2}
                 onValueChange={(value, name, values) =>
-                  dispatch(changeServiceCost(value ?? ""))
+                  handleChangeServiceCost(value ?? "")
                 }
               />
             </div>
@@ -265,7 +209,7 @@ const CreateService = () => {
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeItemObjective(index)}
+                      onClick={() => removeObjectiveItem(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -275,7 +219,7 @@ const CreateService = () => {
                 mode="light"
                 classNames="mt-5"
                 onClick={() => {
-                  addItemObjective();
+                  addObjectiveItem();
                 }}
               >
                 Tambahkan Objektif
@@ -304,7 +248,7 @@ const CreateService = () => {
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeItemPortfolio(index)}
+                      onClick={() => removePortfolioItem(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -314,7 +258,7 @@ const CreateService = () => {
                 mode="light"
                 classNames="mt-5"
                 onClick={() => {
-                  addItemPortfolio();
+                  addPortfolioItem();
                 }}
               >
                 Tambahkan Portfolio Website
@@ -329,8 +273,8 @@ const CreateService = () => {
                 { value: "true", label: "Aktif" },
                 { value: "", label: "Tidak Aktif" },
               ]}
-              value={""}
-              onValueChange={(value: any) => {}}
+              value={serviceStatus ? "true" : ""}
+              onValueChange={(value: any) => handleStatusChange(value)}
             ></Dropdown>
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
