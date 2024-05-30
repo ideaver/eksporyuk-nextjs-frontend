@@ -4,9 +4,12 @@ import {
   TransactionStatusEnum,
   useAdminFindTransactionLengthQuery,
   useAdminFindTransactionManyQuery,
+  useExportDataTransactionMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { changeTransactionLoading } from "@/features/reducers/transaction/transactionReducer";
 import { format } from "date-fns";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export const breadcrumbs = [
   {
@@ -155,6 +158,7 @@ const usePagination = ({
 const useTransactionViewModel = () => {
   const [transactionSkip, setTransactionSkip] = useState<number>(0);
   const [transactionTake, setTransactionTake] = useState<number>(10);
+  const dispatch = useDispatch();
 
   const [transactionFindSearch, setTransactionFindSearch] =
     useState<string>("");
@@ -256,6 +260,8 @@ const useTransactionViewModel = () => {
     new Date(),
   ]);
 
+  const [exportDataTransaction] = useExportDataTransactionMutation();
+
   const formatWIB = (createdAt: string): string => {
     const date = new Date(createdAt);
 
@@ -265,7 +271,17 @@ const useTransactionViewModel = () => {
     return format(wibDate, "kk:mm") + " WIB";
   };
 
+  useEffect(() => {
+    dispatch(changeTransactionLoading(false));
+  }, [dispatch]);
+
+  const handleLoadingExportChange = (value: boolean) => {
+    dispatch(changeTransactionLoading(value));
+  };
+
   return {
+    handleLoadingExportChange,
+    exportDataTransaction,
     downloadReportDate,
     transactionFindMany,
     transactionTake,
