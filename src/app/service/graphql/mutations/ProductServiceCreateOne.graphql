@@ -1,0 +1,5 @@
+mutation ProductServiceCreateOne($data: ProductServiceCreateInput!) {
+  productServiceCreateOne(data: $data) {
+    id
+  }
+}
