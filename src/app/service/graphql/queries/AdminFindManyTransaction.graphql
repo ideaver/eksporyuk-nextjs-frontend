@@ -22,18 +22,6 @@ query AdminFindTransactionMany(
       fromAccountId
       toAccountId
       paymentId
-      Withdrawal {
-        id
-        amount
-        receiptUrl
-        idempotencyKey
-        createdById
-        createdAt
-        updatedAt
-        status
-        method
-        transactionId
-      }
       payment {
         invoice {
           paymentId

@@ -4,6 +4,7 @@ import {
   TransactionStatusEnum,
   useAdminFindTransactionLengthQuery,
   useAdminFindTransactionManyQuery,
+  useExportDataTransactionMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -256,6 +257,8 @@ const useTransactionViewModel = () => {
     new Date(),
   ]);
 
+  const [exportDataTransaction] = useExportDataTransactionMutation();
+
   const formatWIB = (createdAt: string): string => {
     const date = new Date(createdAt);
 
@@ -266,6 +269,7 @@ const useTransactionViewModel = () => {
   };
 
   return {
+    exportDataTransaction,
     downloadReportDate,
     transactionFindMany,
     transactionTake,

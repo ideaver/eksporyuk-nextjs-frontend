@@ -20,8 +20,10 @@ import Flatpickr from "react-flatpickr";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { useSession } from "next-auth/react";
 
 const Transaction = () => {
+  const { data: session, status } = useSession();
   const {
     transactionFindMany,
     transactionTake,
@@ -42,6 +44,7 @@ const Transaction = () => {
     currentPage,
     downloadReportDate,
     setDownloadReportDate,
+    exportDataTransaction,
   } = useTransactionViewModel();
   return (
     <>
@@ -78,6 +81,24 @@ const Transaction = () => {
         date={downloadReportDate}
         onChange={([startDate, endDate]) => {
           setDownloadReportDate([startDate, endDate]);
+        }}
+        onClick={async () => {
+          try {
+            const response = await exportDataTransaction({
+              variables: {
+                exportTransaction: {
+                  adminId: session?.user.id as string,
+                  startDate: downloadReportDate[0],
+                  endDate: downloadReportDate[1],
+                },
+              },
+            });
+            const link = document.createElement("a");
+            link.href = response.data?.exportTransaction?.fileURL as string;
+            link.click();
+          } catch (error) {
+            console.log(error);
+          }
         }}
         onClose={() => {}}
       />
@@ -217,7 +238,6 @@ const Body = ({
   error: any;
   loading: any;
 }) => {
-  console.log(data);
   const { formatWIB } = useTransactionViewModel();
   return (
     <>
@@ -255,89 +275,84 @@ const Body = ({
           <tbody className="align-middle">
             {data?.adminFindManyTransaction?.map((value) => {
               return (
-                <>
-                  <tr>
-                    <td className="text-start min-w-200px">
-                      <Buttons
-                        mode="light"
-                        buttonColor="secondary"
-                        classNames="active pe-none"
-                      >
-                        {value.type}
-                      </Buttons>
-                    </td>
-                    <td className="text-start min-w-250px fs-5 fw-bold">
-                      {
-                        value.transaction?.payment?.invoice?.paymentForGateway
-                          ?.bill_title
-                      }
-                    </td>
-                    <td className="text-start min-w-250px">
-                      <div className="d-flex justify-content-start align-content-start">
-                        <div className="symbol symbol-50px symbol-circle me-5">
-                          <img
-                            className="symbol-label bg-gray-600"
-                            src={
-                              value.user?.avatarImageId ??
-                              "/media/avatars/blank.png"
-                            }
-                            width={50}
-                            height={50}
-                            alt=""
-                          />
-                        </div>
-                        <div className="d-flex flex-column my-2">
-                          <h6>{value.user?.name}</h6>
-                          <h6 className="text-muted">{value.user?.email}</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="text-start min-w-225px">
-                      <div className="d-flex flex-column justify-content-start align-content-start">
-                        <h6>
-                          {
-                            value.transaction?.payment?.invoice
-                              ?.paymentForGateway?.sender_bank
+                <tr key={value.transaction?.id}>
+                  <td className="text-start min-w-200px">
+                    <Buttons
+                      mode="light"
+                      buttonColor="secondary"
+                      classNames="active pe-none"
+                    >
+                      {value.type}
+                    </Buttons>
+                  </td>
+                  <td className="text-start min-w-250px fs-5 fw-bold">
+                    {value.type === TransactionCategoryEnum.Comission
+                      ? value.transaction?.toAccount?.name
+                      : value.transaction?.payment?.invoice?.paymentForGateway
+                          ?.bill_title}
+                  </td>
+                  <td className="text-start min-w-250px">
+                    <div className="d-flex justify-content-start align-content-start">
+                      <div className="symbol symbol-50px symbol-circle me-5">
+                        <img
+                          className="symbol-label bg-gray-600"
+                          src={
+                            value.user?.avatarImageId ??
+                            "/media/avatars/blank.png"
                           }
-                        </h6>
-                        <h6 className="text-muted">
-                          {
-                            value.transaction?.payment?.invoice
-                              ?.paymentForGateway?.virtual_account_number
-                          }
-                        </h6>
+                          width={50}
+                          height={50}
+                          alt=""
+                        />
                       </div>
-                    </td>
-                    <td className="text-end min-w-150px fs-5 fw-bold text-dark">
-                      {formatCurrency(
-                        value.transaction?.payment?.invoice?.paymentForGateway
-                          ?.amount as number
-                      )}
-                    </td>
-                    <td className="text-end min-w-200px">
-                      <div className="d-flex flex-column justify-content-start align-content-start">
-                        <h6>{formatDate(value.transaction?.createdAt)}</h6>
-                        <h6 className="text-muted">
-                          {formatWIB(value.transaction?.createdAt)}
-                        </h6>
+                      <div className="d-flex flex-column my-2">
+                        <h6>{value.user?.name}</h6>
+                        <h6 className="text-muted">{value.user?.email}</h6>
                       </div>
-                    </td>
-                    <td className="text-end min-w-125px">
-                      <Badge
-                        label={value?.transaction?.status as string}
-                        badgeColor="success"
-                      />{" "}
-                    </td>
-                    <td className="text-end min-w-150px">
-                      <Link
-                        href={`/admin/transaction/${value.transaction?.id}/detail-transaction`}
-                        className="btn btn-secondary"
-                      >
-                        Lihat Detail
-                      </Link>
-                    </td>
-                  </tr>
-                </>
+                    </div>
+                  </td>
+                  <td className="text-start min-w-225px">
+                    <div className="d-flex flex-column justify-content-start align-content-start">
+                      <h6>
+                        {
+                          value.transaction?.payment?.invoice?.paymentForGateway
+                            ?.sender_bank
+                        }
+                      </h6>
+                      <h6 className="text-muted">
+                        {
+                          value.transaction?.payment?.invoice?.paymentForGateway
+                            ?.virtual_account_number
+                        }
+                      </h6>
+                    </div>
+                  </td>
+                  <td className="text-end min-w-150px fs-5 fw-bold text-dark">
+                    {formatCurrency(value.transaction?.amount as number)}
+                  </td>
+                  <td className="text-end min-w-200px">
+                    <div className="d-flex flex-column justify-content-start align-content-start">
+                      <h6>{formatDate(value.transaction?.createdAt)}</h6>
+                      <h6 className="text-muted">
+                        {formatWIB(value.transaction?.createdAt)}
+                      </h6>
+                    </div>
+                  </td>
+                  <td className="text-end min-w-125px">
+                    <Badge
+                      label={value?.transaction?.status as string}
+                      badgeColor="success"
+                    />{" "}
+                  </td>
+                  <td className="text-end min-w-150px">
+                    <Link
+                      href={`/admin/transaction/${value.transaction?.id}/detail-transaction`}
+                      className="btn btn-secondary"
+                    >
+                      Lihat Detail
+                    </Link>
+                  </td>
+                </tr>
               );
             })}
           </tbody>
@@ -351,10 +366,12 @@ const DownloadReportModal = ({
   date,
   onChange,
   onClose,
+  onClick,
 }: {
   date: Date;
   onChange: (value: any) => void;
   onClose: () => void;
+  onClick: () => Promise<void>;
 }) => {
   return (
     <div>
@@ -377,9 +394,7 @@ const DownloadReportModal = ({
           <Buttons
             data-bs-dismiss="modal"
             classNames="fw-bold"
-            onClick={() => {
-              console.log(date);
-            }}
+            onClick={onClick}
           >
             Export Data
           </Buttons>

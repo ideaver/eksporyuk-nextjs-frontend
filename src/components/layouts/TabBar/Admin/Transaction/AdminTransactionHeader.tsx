@@ -12,8 +12,13 @@ import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioIn
 import { Dispatch, SetStateAction } from "react";
 
 const AdminTransactionLayout = ({ urlType, id }: IAdminTransaction) => {
-  const { urls, statuses, setSelectedStatus, selectedStatus } =
-    useAdminTransactionHeaderViewModel({ urlType, id });
+  const {
+    urls,
+    statuses,
+    setSelectedStatus,
+    selectedStatus,
+    handleStatusUpdate,
+  } = useAdminTransactionHeaderViewModel({ urlType, id });
   const router = useRouter();
   return (
     <div>
@@ -49,6 +54,7 @@ const AdminTransactionLayout = ({ urlType, id }: IAdminTransaction) => {
         selectedStatus={selectedStatus}
         statuses={statuses}
         setSelectedStatus={setSelectedStatus}
+        handleStatusUpdate={handleStatusUpdate}
         onClose={() => {}}
       />
     </div>
@@ -60,11 +66,13 @@ const ChangeStatusModal = ({
   setSelectedStatus,
   selectedStatus,
   onClose,
+  handleStatusUpdate,
 }: {
   selectedStatus: IStatus;
   statuses: IStatus[];
   setSelectedStatus: Dispatch<SetStateAction<IStatus>>;
   onClose: () => void;
+  handleStatusUpdate: () => Promise<void>;
 }) => {
   return (
     <div>
@@ -87,7 +95,7 @@ const ChangeStatusModal = ({
           <Buttons
             data-bs-dismiss="modal"
             classNames="fw-bold"
-            onClick={() => {}}
+            onClick={handleStatusUpdate}
           >
             Ubah Status
           </Buttons>

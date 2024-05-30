@@ -1,8 +1,11 @@
 import {
   AdminFindTransactionOneQuery,
+  TransactionCategoryEnum,
   TransactionFindOneQuery,
   TransactionStatusEnum,
+  useTransactionUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { format } from "date-fns";
@@ -54,6 +57,13 @@ const transactionDetail = (data: AdminFindTransactionOneQuery | undefined) => {
             />
           ),
         },
+        {
+          icon: "bill",
+          title: "Nominal",
+          value: formatCurrency(
+            transactionFindOne?.transaction?.amount as number
+          ),
+        },
       ],
     },
   ];
@@ -73,7 +83,7 @@ const userDetail = (data: AdminFindTransactionOneQuery | undefined) => {
               <img
                 className="symbol symbol-30px symbol-circle"
                 src={
-                  // transactionFindOne..avatarImageId ??
+                  transactionFindOne?.user?.avatarImageId ??
                   "/media/avatars/300-1.jpg"
                 }
                 width={30}
@@ -81,10 +91,7 @@ const userDetail = (data: AdminFindTransactionOneQuery | undefined) => {
                 alt=""
               />{" "}
               <span className="text-muted ms-5">
-                {
-                  transactionFindOne?.transaction?.payment?.invoice
-                    ?.paymentForGateway?.sender_name
-                }
+                {transactionFindOne?.user?.name}
               </span>
             </div>
           ),
@@ -92,9 +99,7 @@ const userDetail = (data: AdminFindTransactionOneQuery | undefined) => {
         {
           icon: "sms",
           title: "Email",
-          value:
-            transactionFindOne?.transaction?.payment?.invoice?.paymentForGateway
-              ?.sender_email ?? "",
+          value: transactionFindOne?.user?.email as string,
         },
         {
           icon: "phone",
