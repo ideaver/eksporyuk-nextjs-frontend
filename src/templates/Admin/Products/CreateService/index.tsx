@@ -53,6 +53,8 @@ const CreateService = () => {
     handleInputPortfolioChange,
     handleStatusChange,
     serviceStatus,
+    fileInputRef,
+    handleRemoveImage,
   } = useCreateServiceViewModal();
   const dispatch = useDispatch();
 
@@ -126,6 +128,7 @@ const CreateService = () => {
             <div
               className="border-dashed border-primary rounded p-3 mb-5"
               style={{ cursor: "pointer" }}
+              onClick={handleFileClick}
             >
               <input
                 type="file"
@@ -133,34 +136,51 @@ const CreateService = () => {
                 className="d-none"
                 accept=".jpg, .jpeg, .png"
                 id="foto-produk"
+                multiple
+                ref={fileInputRef}
               />
-              <label htmlFor="foto-produk" style={{ cursor: "pointer" }}>
-                {serviceImages ? (
-                  <>
-                    <img
-                      src={serviceImages}
-                      alt=""
-                      className="img-fluid rounded object-fit-cover"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <div className="d-flex flex-row align-items-center gap-3">
-                      <div>
+              <label style={{ cursor: "pointer" }}>
+                {serviceImages && serviceImages.length > 0 ? (
+                  <div className="d-flex flex-wrap">
+                    {serviceImages.map((image, index) => (
+                      <div key={index} className="position-relative">
+                        <label htmlFor="foto-produk">
+                          <img
+                            src={image.path}
+                            alt=""
+                            className="img-fluid rounded object-fit-cover m-2"
+                            style={{ maxWidth: "150px" }}
+                          />
+                        </label>
                         <i
-                          className="bi bi-upload"
-                          style={{ fontSize: "2rem" }}
+                          className="bi bi-x-circle position-absolute m-2"
+                          style={{
+                            fontSize: "20px",
+                            color: "red",
+                            top: "-10px",
+                            right: "-5px",
+                          }}
+                          onClick={() => handleRemoveImage(index)}
                         ></i>
                       </div>
-                      <div>
-                        <h5 className="m-0">Pilih file untuk diupload</h5>
-                        <small className="text-muted">
-                          File yang diupload dapat berformat .JPG, .PNG dan
-                          .JPEG. Maksimal 10 file
-                        </small>
-                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="d-flex flex-row align-items-center gap-3">
+                    <div>
+                      <i
+                        className="bi bi-upload"
+                        style={{ fontSize: "2rem" }}
+                      ></i>
                     </div>
-                  </>
+                    <div>
+                      <h5 className="m-0">Pilih file untuk diupload</h5>
+                      <small className="text-muted">
+                        File yang diupload dapat berformat .JPG, .PNG dan .JPEG.
+                        Maksimal 10 file
+                      </small>
+                    </div>
+                  </div>
                 )}
               </label>
             </div>

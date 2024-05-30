@@ -161,18 +161,37 @@ const useCreateServiceViewModel = () => {
 
   // Image handler stuff
   const serviceImages = useSelector(
-    (state: RootState) => state.service.serviceImages
+    (state: RootState) => state.service.serviceImages || []
   );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      dispatch(changeServiceImages(reader.result as string));
-    };
-    reader.readAsDataURL(file);
+    const newImageObjects: { path: string }[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        newImageObjects.push({ path: reader.result as string });
+
+        if (newImageObjects.length === files.length) {
+          const updatedImages = [...serviceImages, ...newImageObjects];
+          dispatch(changeServiceImages(updatedImages));
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    const updatedImages = serviceImages.filter(
+      (_, index) => index !== indexToRemove
+    );
+    dispatch(changeServiceImages(updatedImages)); // Dispatch action to update images
   };
 
   const handleFileClick = () => {
@@ -216,6 +235,8 @@ const useCreateServiceViewModel = () => {
     handleInputPortfolioChange,
     handleStatusChange,
     serviceStatus,
+    fileInputRef,
+    handleRemoveImage,
   };
 };
 
