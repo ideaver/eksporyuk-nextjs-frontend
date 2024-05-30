@@ -122,7 +122,7 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
         </div>
         <div className="col-lg-auto">
           <Buttons>
-            <Link href={"products/create/information"} className="text-white">
+            <Link href={"courses/create/information"} className="text-white">
               Tambah Kelas Baru
             </Link>
           </Buttons>

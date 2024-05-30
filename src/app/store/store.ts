@@ -1,12 +1,13 @@
-import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
+import buyersReducer from "@/features/reducers/buyers/buyersReducer";
+import courseReducer from "@/features/reducers/course/courseReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
+import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import transactionReducer from "@/features/reducers/transaction/transactionReducer";
 
 const navigationPersistConfig = {
@@ -16,6 +17,10 @@ const navigationPersistConfig = {
 
 const productPersistConfig = {
   key: "product",
+  storage,
+};
+const coursePersistConfig = {
+  key: "course",
   storage,
 };
 
@@ -70,6 +75,10 @@ const persistedFeedbackReducer = persistReducer(
   feedbackPersistConfig,
   feedbackReducer
 );
+const persistedCourseReducer = persistReducer(
+  coursePersistConfig,
+  courseReducer
+);
 
 const persistedTransactionReducer = persistReducer(
   transactionPersistConfig,
@@ -86,6 +95,7 @@ export const store = configureStore({
     dashboard: persistedDashboardReducer,
     feedback: persistedFeedbackReducer,
     transaction: persistedTransactionReducer,
+    course: persistedCourseReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

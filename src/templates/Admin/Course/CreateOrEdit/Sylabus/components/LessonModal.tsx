@@ -5,17 +5,18 @@ import { StepperComponent } from "@/_metronic/assets/ts/components";
 import { KTIcon } from "@/_metronic/helpers";
 import { RootState } from "@/app/store/store";
 import {
-  ICreateQuizData,
-  defaultCreateQuizData,
-} from "@/types/contents/products/IQuizData";
+  createDefaultLessonData,
+  ILessonBasic,
+  ILessonPDFContent,
+  ILessonVideoContent,
+} from "@/types/contents/products/ILessonData";
 import { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
-import { Step1 } from "./steps/Step1";
-import { Step2 } from "./steps/Step2";
-import { Step3 } from "./steps/Step3";
-import { createDefaultLessonData, ILessonBasic, ILessonPDFContent, ILessonVideoContent } from "@/types/contents/products/ILessonData";
+import { Step1 } from "./Steppers/lessonSteps/Step1";
+import { Step2 } from "./Steppers/lessonSteps/Step2";
+import { Step3 } from "./Steppers/lessonSteps/Step3";
 
 type Props = {
   show: boolean;
@@ -27,7 +28,13 @@ type Props = {
 
 let modalsRoot: any = "";
 
-const LessonModal = ({ show, handleClose, id, handleSubmit, isEdit }: Props) => {
+const LessonModal = ({
+  show,
+  handleClose,
+  id,
+  handleSubmit,
+  isEdit,
+}: Props) => {
   if (typeof window !== "undefined") {
     modalsRoot = document.getElementById("root-modals") || document.body;
   }
@@ -38,7 +45,9 @@ const LessonModal = ({ show, handleClose, id, handleSubmit, isEdit }: Props) => 
   const stepperRef = useRef<HTMLDivElement | null>(null);
   const stepper = useRef<StepperComponent | null>(null);
 
-  const [data, setData] = useState<ILessonBasic>(isEdit ?? createDefaultLessonData());
+  const [data, setData] = useState<ILessonBasic>(
+    isEdit ?? createDefaultLessonData()
+  );
   const [hasError, setHasError] = useState(false);
 
   const loadStepper = () => {
@@ -59,7 +68,7 @@ const LessonModal = ({ show, handleClose, id, handleSubmit, isEdit }: Props) => 
     return true;
   };
 
-const checkLessonData = (): boolean => {
+  const checkLessonData = (): boolean => {
     if (!data || !data.title || !data.id || !data.lessonType || !data.content) {
       return false;
     }
@@ -77,7 +86,7 @@ const checkLessonData = (): boolean => {
     }
 
     return true;
-};
+  };
 
   const prevStep = () => {
     if (!stepper.current) {
@@ -112,10 +121,10 @@ const checkLessonData = (): boolean => {
 
   useEffect(() => {
     if (isEdit != null && data != currentLessonSelector) {
-        console.log("edit use effect called at lesson modal")
+      console.log("edit use effect called at lesson modal");
       updateData(currentLessonSelector);
     } else {
-        console.log("default use effect called at lesson modal")
+      console.log("default use effect called at lesson modal");
       updateData(createDefaultLessonData());
     }
   }, [isEdit, currentLessonSelector]);
@@ -183,7 +192,7 @@ const checkLessonData = (): boolean => {
 
                   {/* begin::Label*/}
                   <div className="stepper-label">
-                    <h3 className="stepper-title">Informati Quiz</h3>
+                    <h3 className="stepper-title">Informasi Materi</h3>
 
                     <div className="stepper-desc">
                       Masukkan judul dan jenis materi
@@ -212,9 +221,9 @@ const checkLessonData = (): boolean => {
 
                   {/* begin::Label*/}
                   <div className="stepper-label">
-                    <h3 className="stepper-title">Susun Quiz</h3>
+                    <h3 className="stepper-title">Susun Materi</h3>
 
-                    <div className="stepper-desc">Masukkan Quiz</div>
+                    <div className="stepper-desc">Masukkan Materi</div>
                   </div>
                   {/* begin::Label*/}
                 </div>
@@ -241,7 +250,7 @@ const checkLessonData = (): boolean => {
                   <div className="stepper-label">
                     <h3 className="stepper-title">Selesai</h3>
 
-                    <div className="stepper-desc">Quiz selesai dibuat</div>
+                    <div className="stepper-desc">Materi selesai dibuat</div>
                   </div>
                   {/* end::Label*/}
                 </div>
@@ -283,8 +292,8 @@ const checkLessonData = (): boolean => {
                     className="btn btn-lg btn-primary"
                     data-kt-stepper-action="submit"
                     onClick={() => {
-                      handleSubmit(data, id)
-                      handleClose()
+                      handleSubmit(data, id);
+                      handleClose();
                     }}
                   >
                     Kirim{" "}

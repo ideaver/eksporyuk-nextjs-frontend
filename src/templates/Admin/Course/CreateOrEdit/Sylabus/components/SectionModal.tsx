@@ -1,20 +1,21 @@
 import { KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
+import { ICourseSectionData } from "@/types/contents/course/ICourseData";
 import { ILessonTopic } from "@/types/contents/products/ILessonData";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { createPortal } from "react-dom";
 type Props = {
   show: boolean;
-  isEdit?: ILessonTopic;
+  isEdit?: ICourseSectionData;
   handleClose: () => void;
-  handleSubmit: (value: ILessonTopic) => void;
+  handleSubmit: (value: ICourseSectionData) => void;
 };
 
 let modalsRoot: any = "";
 
-const TopicModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
+const SectionModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   useEffect(() => {
@@ -37,7 +38,7 @@ const TopicModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
       onHide={handleClose}
     >
       <div className="modal-header">
-        <h2>Tambah Topik</h2>
+        <h2>Tambah Section</h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -49,9 +50,9 @@ const TopicModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
       </div>
 
       <div className="modal-body">
-        <h5 className="required">Judul Topik</h5>
+        <h5 className="required">Judul Section</h5>
         <TextField
-          placeholder="Masukkan Judul Topik"
+          placeholder="Masukkan Judul Section"
           props={{
             value: title,
             onChange: (e: any) => setTitle(e.target.value),
@@ -79,9 +80,15 @@ const TopicModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
             className="btn btn-primary btn-active-primary px-6"
             onClick={() =>
               handleSubmit({
-                id: isEdit != null ? isEdit.id : Math.random().toString(36).substring(2),
+                id:
+                  isEdit != null
+                    ? isEdit.id
+                    : Math.random().toString(36).substring(2),
                 title: title,
                 description: description,
+                quizs: [],
+                lessons: [],
+                resources: [],
               })
             }
           >
@@ -94,4 +101,4 @@ const TopicModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
   );
 };
 
-export default TopicModal;
+export default SectionModal;

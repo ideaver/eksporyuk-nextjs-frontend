@@ -48,7 +48,7 @@ const Step1 = ({ data, updateData, hasError }: StepProps) => {
         <div className="fv-row">
           {/* begin::Label */}
           <label className="d-flex align-items-center fs-5 fw-semibold mb-4">
-            <span className="required">Tipe Quiz</span>
+            <span className="required">Tipe Materi</span>
 
             <i
               className="fas fa-exclamation-circle ms-2 fs-7"

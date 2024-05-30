@@ -1,19 +1,23 @@
 import {
+  CourseLevelEnum,
   QueryMode,
   useMentorFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
-  changeClassAuthor,
   changeClassDescription,
-  changeClassName,
+  changeCourseAuthor,
+  changeCourseLevel,
+  changeCourseMentor,
+  changeCourseName,
   changeIntroVideo,
-} from "@/features/reducers/products/productReducer";
+  changePrice,
+} from "@/features/reducers/course/courseReducer";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GroupBase, OptionsOrGroups } from "react-select";
-type OptionType = {
+export type OptionType = {
   value: string;
   label: string;
 };
@@ -25,7 +29,7 @@ type OptionType = {
 export const useMentorsDropdown = () => {
   const getMentors = useMentorFindManyQuery({
     variables: {
-      take: 3,
+      take: 10,
     },
   });
 
@@ -38,6 +42,14 @@ export const useMentorsDropdown = () => {
         value: mentor.id,
         label: mentor.user.name,
       })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) => (prevOption as OptionType).value === option.value
+        )
+    );
+
     await getMentors.refetch({
       skip: prevOptions.length,
       where: {
@@ -53,12 +65,56 @@ export const useMentorsDropdown = () => {
     });
 
     return {
-      options: result,
+      options: newOptions,
       hasMore: true,
     };
   }
 
   return { loadOptions };
+};
+
+/**
+ * custom hook for mentor handler
+ * @returns selectedMentor, setSelectedMentor, currentMentorSelector, addMentor, removeMentor
+ */
+export const AddMentorHandler = () => {
+  const dispatch = useDispatch();
+  const currentMentorSelector = useSelector(
+    (state: RootState) => state.course.courseMentor
+  );
+  const [selectedMentor, setSelectedMentor] = useState<
+    OptionType[] | undefined
+  >(currentMentorSelector);
+
+  const addMentor = (mentor: OptionType) => {
+    const updatedMentors = selectedMentor
+      ? [...selectedMentor, mentor]
+      : [mentor];
+
+    setSelectedMentor(updatedMentors);
+
+    dispatch(changeCourseMentor(updatedMentors));
+  };
+
+  const removeMentor = (index: number) => {
+    const updatedMentors = selectedMentor?.filter(
+      (_, mentorIndex) => mentorIndex !== index
+    );
+
+    dispatch(changeCourseMentor(updatedMentors));
+  };
+
+  useEffect(() => {
+    setSelectedMentor(currentMentorSelector);
+  }, [currentMentorSelector]);
+
+  return {
+    selectedMentor,
+    setSelectedMentor,
+    currentMentorSelector,
+    addMentor,
+    removeMentor,
+  };
 };
 
 /**
@@ -75,11 +131,20 @@ const useField = (
   const initialValue = useSelector(selector);
   const [value, setValue] = useState(initialValue);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    dispatch(action(event.target.value));
-  };
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement> | string
+  ) => {
+    let value: string;
 
+    if (typeof event === "string") {
+      value = event;
+    } else {
+      value = event.target.value;
+    }
+
+    setValue(value);
+    dispatch(action(value));
+  };
   return [value, handleChange];
 };
 
@@ -90,7 +155,7 @@ const useField = (
 const ClassDescriptionHandler = () => {
   const dispatch = useDispatch();
   const currentClassDescription = useSelector(
-    (state: RootState) => state.product.classDescription
+    (state: RootState) => state.course.classDescription
   );
 
   const [inputClassDescription, setInputClassDescription] = useState(
@@ -112,19 +177,26 @@ const useInformationViewModel = () => {
   const { inputClassDescription, setInputClassDescription } =
     ClassDescriptionHandler();
   const [inputClassName, setInputClassName] = useField(
-    (state: RootState) => state.product.className,
-    (value) => changeClassName(value)
+    (state: RootState) => state.course.courseName,
+    (value) => changeCourseName(value)
   );
 
   const [inputIntroVideo, setInputIntroVideo] = useField(
-    (state: RootState) => state.product.introVideo,
+    (state: RootState) => state.course.introVideo,
     (value) => changeIntroVideo(value)
   );
   const [inputClassAuthor, setInputClassAuthor] = useField(
-    (state: RootState) => state.product.classAuthor,
-    (value) => changeClassAuthor(value)
+    (state: RootState) => state.course.courseAuthor,
+    (value) => changeCourseAuthor(value)
   );
-
+  const [inputClassPrice, setInputClassPrice] = useField(
+    (state: RootState) => state.course.price,
+    (value) => changePrice(value)
+  );
+  const [inputClassLevel, setInputClassLevel] = useField(
+    (state: RootState) => state.course.courseLevel,
+    (value) => changeCourseLevel(value as CourseLevelEnum)
+  );
   return {
     inputClassName,
     setInputClassName,
@@ -134,6 +206,10 @@ const useInformationViewModel = () => {
     setInputIntroVideo,
     inputClassAuthor,
     setInputClassAuthor,
+    inputClassPrice,
+    setInputClassPrice,
+    inputClassLevel,
+    setInputClassLevel,
   };
 };
 

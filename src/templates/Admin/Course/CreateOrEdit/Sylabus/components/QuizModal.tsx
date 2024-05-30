@@ -12,9 +12,9 @@ import { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
-import { Step1 } from "./steps/Step1";
-import { Step2 } from "./steps/Step2";
-import { Step3 } from "./steps/Step3";
+import { Step1 } from "./Steppers/quizSteps/Step1";
+import { Step2 } from "./Steppers/quizSteps/Step2";
+import { Step3 } from "./Steppers/quizSteps/Step3";
 
 type Props = {
   show: boolean;
@@ -98,15 +98,15 @@ const QuizModal = ({ show, handleClose, handleSubmit, isEdit }: Props) => {
 
   useEffect(() => {
     if (isEdit && data != currentQuizSelector) {
-        console.log("edit use effect called")
+      console.log("edit use effect called");
       updateData(currentQuizSelector);
     } else {
-        console.log("default use effect called")
+      console.log("default use effect called");
       updateData(defaultCreateQuizData);
     }
   }, [isEdit, currentQuizSelector]);
 
-  // console.log("IS EDIT", isEdit)
+  // console.log("IS EDIT", isEdit);
   // console.log(
   //   "isData are selector",
   //   data.id === currentQuizSelector.id,
