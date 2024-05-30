@@ -79,20 +79,7 @@ const AsideToolbar = () => {
       </div>
       {/*end::User*/}
 
-      {/*begin::Aside search*/}
-      <div className="aside-search py-5">
-        {/* <?php Theme::getView('partials/search/_inline', array(
-        'class' => 'w-100',
-        'menu-placement' => 'bottom-start',
-        'responsive' => 'false'
-    ))?> */}
-        {/* <Search /> */}
-        <TextField
-          preffixIcon="magnifier"
-          classNames="header-search d-flex align-items-center w-100 search-input"
-        ></TextField>
-      </div>
-      {/*end::Aside search*/}
+      
     </>
   );
 };

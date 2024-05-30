@@ -1,5 +1,6 @@
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
+import courseReducer from "@/features/reducers/course/courseReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
@@ -17,6 +18,10 @@ const navigationPersistConfig = {
 
 const productPersistConfig = {
   key: "product",
+  storage,
+};
+const coursePersistConfig = {
+  key: "course",
   storage,
 };
 
@@ -76,6 +81,10 @@ const persistedFeedbackReducer = persistReducer(
   feedbackPersistConfig,
   feedbackReducer
 );
+const persistedCourseReducer = persistReducer(
+  coursePersistConfig,
+  courseReducer
+);
 
 const persistedTransactionReducer = persistReducer(
   transactionPersistConfig,
@@ -98,6 +107,7 @@ export const store = configureStore({
     feedback: persistedFeedbackReducer,
     transaction: persistedTransactionReducer,
     service: persistedServiceReducer,
+    course: persistedCourseReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

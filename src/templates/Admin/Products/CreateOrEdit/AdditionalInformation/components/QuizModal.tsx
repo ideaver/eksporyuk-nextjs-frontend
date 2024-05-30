@@ -106,19 +106,19 @@ const QuizModal = ({ show, handleClose, handleSubmit, isEdit }: Props) => {
     }
   }, [isEdit, currentQuizSelector]);
 
-  console.log("IS EDIT", isEdit)
-  console.log(
-    "isData are selector",
-    data.id === currentQuizSelector.id,
-    data,
-    currentQuizSelector
-  );
-  console.log(
-    "is data are default",
-    data.id === defaultCreateQuizData.id,
-    data,
-    defaultCreateQuizData
-  );
+  // console.log("IS EDIT", isEdit)
+  // console.log(
+  //   "isData are selector",
+  //   data.id === currentQuizSelector.id,
+  //   data,
+  //   currentQuizSelector
+  // );
+  // console.log(
+  //   "is data are default",
+  //   data.id === defaultCreateQuizData.id,
+  //   data,
+  //   defaultCreateQuizData
+  // );
 
   return createPortal(
     <Modal

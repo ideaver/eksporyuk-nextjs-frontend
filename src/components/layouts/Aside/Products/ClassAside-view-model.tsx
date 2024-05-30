@@ -2,7 +2,7 @@ import { RootState } from "@/app/store/store";
 import {
   changeStatus,
   changeThumbnail,
-} from "@/features/reducers/products/productReducer";
+} from "@/features/reducers/course/courseReducer";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -10,10 +10,7 @@ const useNavigation = () => {
   const router = useRouter();
 
   const pageMap: { [key: string]: string } = {
-    "/information": "/settings",
-    "/settings": "/additional-information",
-    "/additional-information": "/sylabus",
-    "/sylabus": "/certificate",
+    "/information": "/sylabus",
   };
 
   const previousPageMap: { [key: string]: string } = Object.entries(
@@ -25,7 +22,7 @@ const useNavigation = () => {
     const page = pageMap[`/${pathEnd}`];
     const action = router.query.id ? "edit" : "create";
     if (page) {
-      router.push(`/admin/products/${action}${page}`);
+      router.push(`/admin/courses/${action}${page}`);
     }
   };
 
@@ -37,8 +34,8 @@ const useNavigation = () => {
 
 const useClassViewModel = () => {
   const dispatch = useDispatch();
-  const thumbnail = useSelector((state: RootState) => state.product.thumbnail);
-  const status = useSelector((state: RootState) => state.product.status);
+  const thumbnail = useSelector((state: RootState) => state.course.thumbnail);
+  const status = useSelector((state: RootState) => state.course.status);
   const { handleNext, handlePrevious } = useNavigation();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

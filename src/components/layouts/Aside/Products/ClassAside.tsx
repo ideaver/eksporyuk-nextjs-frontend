@@ -80,7 +80,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
         <ClassTabBar urlType="create"></ClassTabBar>
         {children}
         <div className={"row flex-end mt-10"}>
-          {router.pathname !== "/admin/products/[action]/information" && (
+          {router.pathname !== "/admin/courses/[action]/information" && (
             <Buttons
               mode="light"
               classNames={"col-lg-2 me-lg-5"}
@@ -91,7 +91,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
           )}
 
           <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={handleNext}>
-            {router.pathname === "/admin/products/[action]/certificate"
+            {router.pathname === "/admin/courses/[action]/sylabus"
               ? "Kirim"
               : "Selanjutnya"}
           </Buttons>
