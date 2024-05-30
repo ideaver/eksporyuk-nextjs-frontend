@@ -16,6 +16,9 @@ import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { BuyerDeleteManyMutation } from "@/app/service/graphql/gen/graphql";
 import { MutationFunctionOptions } from "@apollo/client";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
 
 const BuyerPage = () => {
   const {
@@ -33,166 +36,186 @@ const BuyerPage = () => {
     selectAll,
     checked,
     buyerDeleteMany,
+    handleDownloadTamplateFile,
   } = useBuyerViewModel();
 
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Buyer</PageTitle>
-      <KTCard>
-        <KTCardBody>
-          <Head
-            setSearchCountry={(id) => {
-              setBuyerFindCountry(id);
-            }}
-            onSearch={(val) => {
-              setBuyerFindSearch(val);
-            }}
-            checkedItems={checked}
-          />
-          {buyerFindMany.error ? (
-            <div className="d-flex justify-content-center align-items-center h-500px flex-column">
-              <h3 className="text-center">{buyerFindMany.error.message}</h3>
-            </div>
-          ) : buyerFindMany.loading ? (
-            <div className="d-flex justify-content-center align-items-center h-500px">
-              <h3 className="text-center">Loading....</h3>
-            </div>
-          ) : (
-            <KTTable
-              utilityGY={5}
-              utilityGX={8}
-              responsive="table-responsive my-10"
-              className="fs-6"
-            >
-              <KTTableHead
-                textColor="muted"
-                fontWeight="bold"
-                className="text-uppercase align-middle"
+      <LoadingOverlayWrapper
+        styles={{
+          overlay: (base) => ({
+            ...base,
+            background: "rgba(255, 255, 255, 0.8)",
+          }),
+          spinner: (base) => ({
+            ...base,
+            width: "100px",
+            "& svg circle": {
+              stroke: "rgba(3, 0, 0, 1)",
+            },
+          }),
+        }}
+        active={useSelector((state: RootState) => state.buyer.loadingImport)}
+        spinner
+      >
+        <KTCard>
+          <KTCardBody>
+            <Head
+              setSearchCountry={(id) => {
+                setBuyerFindCountry(id);
+              }}
+              onSearch={(val) => {
+                setBuyerFindSearch(val);
+              }}
+              checkedItems={checked}
+              handleDownloadTamplateFile={handleDownloadTamplateFile}
+            />
+            {buyerFindMany.error ? (
+              <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+                <h3 className="text-center">{buyerFindMany.error.message}</h3>
+              </div>
+            ) : buyerFindMany.loading ? (
+              <div className="d-flex justify-content-center align-items-center h-500px">
+                <h3 className="text-center">Loading....</h3>
+              </div>
+            ) : (
+              <KTTable
+                utilityGY={5}
+                utilityGX={8}
+                responsive="table-responsive my-10"
+                className="fs-6"
               >
-                <th className="min-w-200px">
-                  <CheckBoxInput
-                    checked={selectAll}
-                    name="check-all"
-                    value="all"
-                    defaultChildren={false}
-                    onChange={() => {
-                      handleSelectAllCheck();
-                    }}
-                  >
-                    <p className="mb-0">NAMA BUYER</p>
-                  </CheckBoxInput>
-                </th>
-                <th className="text-end min-w-200px">NAMA PERUSAHAAN</th>
-                <th className="text-end min-w-250px">NEGARA</th>
-                <th className="text-end min-w-250px">ALAMAT</th>
-                <th className="text-end min-w-200px">E-MAIL</th>
-                <th className="text-end min-w-200px">NO. TELEPON</th>
-                <th className="text-end min-w-250px">TANGGAL TERDAFTAR</th>
-                <th className="text-end min-w-200px">DEMAND</th>
-                <th className="text-end min-w-250px">QUANTITY REQUIRED</th>
-                <th className="text-end min-w-200px">SHIPPING TERMS</th>
-                <th className="text-end min-w-125px">ACTION</th>
-              </KTTableHead>
+                <KTTableHead
+                  textColor="muted"
+                  fontWeight="bold"
+                  className="text-uppercase align-middle"
+                >
+                  <th className="min-w-200px">
+                    <CheckBoxInput
+                      checked={selectAll}
+                      name="check-all"
+                      value="all"
+                      defaultChildren={false}
+                      onChange={() => {
+                        handleSelectAllCheck();
+                      }}
+                    >
+                      <p className="mb-0">NAMA BUYER</p>
+                    </CheckBoxInput>
+                  </th>
+                  <th className="text-end min-w-200px">NAMA PERUSAHAAN</th>
+                  <th className="text-end min-w-250px">NEGARA</th>
+                  <th className="text-end min-w-250px">ALAMAT</th>
+                  <th className="text-end min-w-200px">E-MAIL</th>
+                  <th className="text-end min-w-200px">NO. TELEPON</th>
+                  <th className="text-end min-w-250px">TANGGAL TERDAFTAR</th>
+                  <th className="text-end min-w-200px">DEMAND</th>
+                  <th className="text-end min-w-250px">QUANTITY REQUIRED</th>
+                  <th className="text-end min-w-200px">SHIPPING TERMS</th>
+                  <th className="text-end min-w-125px">ACTION</th>
+                </KTTableHead>
 
-              <tbody className="align-middle">
-                {buyerFindMany.data?.buyerFindMany?.map((buyer, index) => {
-                  return (
-                    <tr key={buyer.id} className="">
-                      <td className="">
-                        <CheckBoxInput
-                          className="ps-0"
-                          checked={checkedItems[index]?.value ?? false}
-                          name="check-all"
-                          value="all"
-                          defaultChildren={false}
-                          onChange={() => {
-                            handleSingleCheck(index);
-                          }}
-                        >
-                          <p className="fw-bold text-black mb-0">
-                            {buyer.buyerName}
-                          </p>
-                        </CheckBoxInput>
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.companyName}
-                      </td>
-                      <td className="min-w-250px text-end fw-bold text-muted">
-                        {/* <img
+                <tbody className="align-middle">
+                  {buyerFindMany.data?.buyerFindMany?.map((buyer, index) => {
+                    return (
+                      <tr key={buyer.id} className="">
+                        <td className="">
+                          <CheckBoxInput
+                            className="ps-0"
+                            checked={checkedItems[index]?.value ?? false}
+                            name="check-all"
+                            value="all"
+                            defaultChildren={false}
+                            onChange={() => {
+                              handleSingleCheck(index);
+                            }}
+                          >
+                            <p className="fw-bold text-black mb-0">
+                              {buyer.buyerName}
+                            </p>
+                          </CheckBoxInput>
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.companyName}
+                        </td>
+                        <td className="min-w-250px text-end fw-bold text-muted">
+                          {/* <img
                         className="symbol-label bg-gray-600 rounded-circle mx-3"
                         src={buyer.country?.flagEmoji}
                         width={40}
                         height={40}
                         alt="flag"
                       /> */}
-                        <span className=" mx-3">
-                          {buyer.country?.flagEmoji}
-                        </span>
-                        <span className="text-muted fw-bold">
-                          {buyer.country?.name}
-                        </span>
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.address}
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.email}
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.phone}
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {formatDate(buyer.createdAt)}
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.productName}
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.quantity} <span>{buyer.abbreviation}</span>
-                      </td>
-                      <td className="min-w-200px text-end fw-bold text-muted">
-                        {buyer.deliveryType}
-                      </td>
-                      <td className="text-end ">
-                        <div className="dropdown  ps-15 pe-0">
-                          <button
-                            className="btn btn-secondary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            Actions
-                          </button>
-                          <ul className="dropdown-menu">
-                            <li>
-                              <Link
-                                href={`/admin/buyers/edit/${buyer.id}`}
-                                className="dropdown-item"
-                              >
-                                Edit
-                              </Link>
-                            </li>
-                            <li></li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </KTTable>
-          )}
-          <Footer
-            pageLength={calculateTotalPage()}
-            currentPage={currentPage}
-            setCurrentPage={(val) => handlePageChange(val)}
-            setBuyerFindSkip={(val) => {}}
-            setBuyerFindTake={(val) => {
-              setBuyerFindTake(val);
-            }}
-          />
-        </KTCardBody>
-      </KTCard>
+                          <span className=" mx-3">
+                            {buyer.country?.flagEmoji}
+                          </span>
+                          <span className="text-muted fw-bold">
+                            {buyer.country?.name}
+                          </span>
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.address}
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.email}
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.phone}
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {formatDate(buyer.createdAt)}
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.productName}
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.quantity} <span>{buyer.abbreviation}</span>
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.deliveryType}
+                        </td>
+                        <td className="text-end ">
+                          <div className="dropdown  ps-15 pe-0">
+                            <button
+                              className="btn btn-secondary dropdown-toggle"
+                              type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              Actions
+                            </button>
+                            <ul className="dropdown-menu">
+                              <li>
+                                <Link
+                                  href={`/admin/buyers/edit/${buyer.id}`}
+                                  className="dropdown-item"
+                                >
+                                  Edit
+                                </Link>
+                              </li>
+                              <li></li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </KTTable>
+            )}
+            <Footer
+              pageLength={calculateTotalPage()}
+              currentPage={currentPage}
+              setCurrentPage={(val) => handlePageChange(val)}
+              setBuyerFindSkip={(val) => {}}
+              setBuyerFindTake={(val) => {
+                setBuyerFindTake(val);
+              }}
+            />
+          </KTCardBody>
+        </KTCard>
+      </LoadingOverlayWrapper>
       <ImportModal />
     </>
   );
@@ -202,10 +225,12 @@ const Head = ({
   onSearch,
   setSearchCountry,
   checkedItems,
+  handleDownloadTamplateFile,
 }: {
   onSearch: (val: string) => void;
   setSearchCountry: (id: number) => void;
   checkedItems: number[];
+  handleDownloadTamplateFile: () => void;
 }) => {
   const { loadOptions } = useCountryDropdown();
   const { buyerDeleteMany, buyerFindMany, deleteLoading, setDeleteLoading } =
@@ -229,6 +254,12 @@ const Head = ({
             loadOptions={loadOptions}
             onChange={(id) => setSearchCountry(id?.value as number)}
           />
+        </div>
+
+        <div className="col-lg-auto">
+          <Buttons mode="light" onClick={handleDownloadTamplateFile}>
+            Tamplate Data Buyer
+          </Buttons>
         </div>
         <div className="col-lg-auto">
           <Buttons
@@ -322,7 +353,8 @@ const Footer = ({
 };
 
 const ImportModal = () => {
-  const { handleFileChange, fileXLSX } = useBuyerViewModel();
+  const { handleFileChange, fileXLSXPreview, handleImportDataBuyer } =
+    useBuyerViewModel();
   return (
     <div>
       <KTModal
@@ -340,7 +372,11 @@ const ImportModal = () => {
           </Buttons>
         }
         buttonSubmit={
-          <Buttons data-bs-dismiss="modal" classNames="fw-bold">
+          <Buttons
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+            onClick={handleImportDataBuyer}
+          >
             Import
           </Buttons>
         }
@@ -358,7 +394,7 @@ const ImportModal = () => {
             accept=".xlsx"
             id="input-file"
           />
-          {fileXLSX ? (
+          {fileXLSXPreview ? (
             <div className="m-4 mx-10">
               <div className="d-flex">
                 <img
@@ -368,7 +404,7 @@ const ImportModal = () => {
                   alt="xlsx icon"
                 />
                 <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
-                  <h4>{fileXLSX}</h4>
+                  <h4>{fileXLSXPreview}</h4>
                 </div>
               </div>
             </div>

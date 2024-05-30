@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import { changeFileXLSX } from "@/features/reducers/buyers/buyersReducer";
 import { RootState } from "@/app/store/store";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -9,9 +8,14 @@ import {
   useBuyerFindLengthQuery,
   useBuyerFindManyQuery,
   useCountryFindManyQuery,
+  useImportDataBuyersMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { GroupBase, OptionsOrGroups } from "react-select";
+import { postDataAPI } from "@/app/service/api/rest-service";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { changeLoadingImport } from "@/features/reducers/buyers/buyersReducer";
 
 export const breadcrumbs = [
   {
@@ -157,6 +161,10 @@ export const useCountryDropdown = () => {
 };
 
 const useBuyerViewModel = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const {
@@ -171,19 +179,18 @@ const useBuyerViewModel = () => {
     buyerLength,
   } = usePagination();
 
-  const dispatch = useDispatch();
-  const fileXLSX = useSelector((state: RootState) => state.buyer.fileXLSX);
+  const [fileXLSXPreview, setFileXLSXPreview] = useState<string | undefined>();
+  const [fileXLSX, setFileXLSX] = useState<File | undefined>();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    dispatch(changeFileXLSX(file.name));
+    setFileXLSXPreview(file.name);
 
-    // const reader = new FileReader();
-    // reader.onloadend = () => {
-    //   dispatch(changeFileXLSX(reader.result as string));
-    // };
-    // reader.readAsDataURL(file);
+    const blob = file.slice(0, file.size);
+    const newFile = new File([blob as Blob], file.name);
+
+    setFileXLSX(newFile);
   };
 
   const [buyerFindSearch, setBuyerFindSearch] = useState("");
@@ -237,6 +244,57 @@ const useBuyerViewModel = () => {
   });
 
   const [buyerDeleteMany] = useBuyerDeleteManyMutation();
+  const [importDataBuyers] = useImportDataBuyersMutation();
+
+  const handleDownloadTamplateFile = async () => {
+    try {
+      const response = await fetch("/files/tamplate-import-buyers.xlsx");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = "tamplate-import-buyers.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    dispatch(changeLoadingImport(false));
+  }, [dispatch]);
+
+  const handleImportDataBuyer = async () => {
+    dispatch(changeLoadingImport(true));
+    try {
+      const body = {
+        file: fileXLSX,
+        userId: session?.user.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body,
+        isMultipartRequest: true,
+      });
+      await importDataBuyers({
+        variables: {
+          importBuyers: {
+            adminId: session?.user.id as string,
+            fileURL: response?.data,
+          },
+        },
+      });
+      await buyerFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(changeLoadingImport(false));
+      router.reload();
+    }
+  };
 
   const {
     selectAll,
@@ -270,13 +328,15 @@ const useBuyerViewModel = () => {
   }
 
   return {
+    handleImportDataBuyer,
+    handleDownloadTamplateFile,
     deleteLoading,
     setDeleteLoading,
     buyerDeleteMany,
     checked,
     setBuyerFindCountry,
     formatDate,
-    fileXLSX,
+    fileXLSXPreview,
     handleFileChange,
     selectAll,
     checkedItems,
