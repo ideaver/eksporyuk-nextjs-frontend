@@ -55,6 +55,8 @@ const CreateService = () => {
     serviceStatus,
     fileInputRef,
     handleRemoveImage,
+    errorMessage,
+    onSubmit,
   } = useCreateServiceViewModal();
   const dispatch = useDispatch();
 
@@ -63,6 +65,9 @@ const CreateService = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Service Baru</PageTitle>
       <KTCard>
         <KTCardBody>
+          {errorMessage && (
+            <div className="alert alert-danger">{errorMessage}</div>
+          )}
           <h3 className="mb-10">Informasi Service</h3>
 
           <div className="mb-3">
@@ -74,16 +79,16 @@ const CreateService = () => {
               <RadioInput
                 name="service-type"
                 onChange={setServiceType}
-                checked={serviceType === "legalitas"}
-                value="legalitas"
+                checked={serviceType === "LEGALITY"}
+                value="LEGALITY"
               >
                 Legalitas
               </RadioInput>
               <RadioInput
                 name="service-type"
                 onChange={setServiceType}
-                checked={serviceType === "website"}
-                value="website"
+                checked={serviceType === "WEBSITE"}
+                value="WEBSITE"
               >
                 Website
               </RadioInput>
@@ -208,7 +213,7 @@ const CreateService = () => {
             </div>
           </div>
 
-          {serviceType === "legalitas" && (
+          {serviceType === "LEGALITY" && (
             <div className="mb-3">
               <h4 className="required fw-bold text-gray-700">
                 Objektif Service
@@ -247,7 +252,7 @@ const CreateService = () => {
             </div>
           )}
 
-          {serviceType === "website" && (
+          {serviceType === "WEBSITE" && (
             <div className="mb-3">
               <h4 className="required fw-bold text-gray-700">
                 Portfolio Website
@@ -299,7 +304,7 @@ const CreateService = () => {
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
 
-          <button className="btn btn-primary w-100 mt-3" onClick={() => {}}>
+          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit}>
             Buat Service
           </button>
         </KTCardBody>

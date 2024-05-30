@@ -13,6 +13,7 @@ import {
   changeServiceStatus,
   changeServicePortfolio,
 } from "@/features/reducers/products/serviceReducer";
+import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
   {
@@ -125,6 +126,8 @@ const useCreateServiceViewModel = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Redux state & action
   const [serviceType, setServiceType] = useField(
     (state: RootState) => state.service.serviceType,
@@ -168,14 +171,17 @@ const useCreateServiceViewModel = () => {
     const files = event.target.files;
     if (!files) return;
 
-    const newImageObjects: { path: string }[] = [];
+    const newImageObjects: { path: string; fileType: string }[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        newImageObjects.push({ path: reader.result as string });
+        newImageObjects.push({
+          path: reader.result as string,
+          fileType: "PNG",
+        });
 
         if (newImageObjects.length === files.length) {
           const updatedImages = [...serviceImages, ...newImageObjects];
@@ -199,6 +205,79 @@ const useCreateServiceViewModel = () => {
       fileInputRef.current.click();
     }
   };
+
+  const serviceObjective = useSelector(
+    (state: RootState) => state.service.serviceObjective
+  );
+
+  const servicePortfolio = useSelector(
+    (state: RootState) => state.service.servicePortfolio
+  );
+
+  // Graphql, mutation operation
+  const [productServiceCreateMutation] = useProductServiceCreateOneMutation();
+
+  const handleProductServiceCreateMutation = async ({
+    serviceType,
+    serviceName,
+    serviceDesc,
+    serviceCost,
+    serviceImages,
+    serviceStatus,
+    serviceObjective,
+    servicePortfolio,
+  }: any) => {
+    const data = await productServiceCreateMutation({
+      variables: {
+        data: {
+          name: serviceName,
+          description: serviceDesc,
+          productServiceCategory: serviceType,
+          images: {
+            createMany: {
+              data: serviceImages,
+            },
+          },
+          basePrice: Number(serviceCost),
+          isActive: serviceStatus,
+          benefits: {
+            set: serviceObjective,
+          },
+          portofolio: {
+            set: servicePortfolio,
+          },
+        },
+      },
+    });
+
+    return data;
+  };
+
+  const onSubmit = async () => {
+    if (!serviceType || !serviceName || !serviceDesc || !serviceCost || !serviceImages || !serviceStatus || !serviceObjective || !servicePortfolio) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    try {
+      const data = await handleProductServiceCreateMutation({
+        serviceType,
+        serviceName,
+        serviceDesc,
+        serviceCost,
+        serviceImages,
+        serviceStatus,
+        serviceObjective,
+        servicePortfolio,
+      });
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(serviceImages);
 
   const {
     itemObjective,
@@ -237,6 +316,8 @@ const useCreateServiceViewModel = () => {
     serviceStatus,
     fileInputRef,
     handleRemoveImage,
+    onSubmit,
+    errorMessage,
   };
 };
 
