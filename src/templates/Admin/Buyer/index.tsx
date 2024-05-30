@@ -14,6 +14,8 @@ import Link from "next/link";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { BuyerDeleteManyMutation } from "@/app/service/graphql/gen/graphql";
+import { MutationFunctionOptions } from "@apollo/client";
 
 const BuyerPage = () => {
   const {
@@ -29,6 +31,8 @@ const BuyerPage = () => {
     handleSingleCheck,
     checkedItems,
     selectAll,
+    checked,
+    buyerDeleteMany,
   } = useBuyerViewModel();
 
   return (
@@ -43,6 +47,7 @@ const BuyerPage = () => {
             onSearch={(val) => {
               setBuyerFindSearch(val);
             }}
+            checkedItems={checked}
           />
           {buyerFindMany.error ? (
             <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -70,7 +75,9 @@ const BuyerPage = () => {
                     name="check-all"
                     value="all"
                     defaultChildren={false}
-                    onChange={handleSelectAllCheck}
+                    onChange={() => {
+                      handleSelectAllCheck();
+                    }}
                   >
                     <p className="mb-0">NAMA BUYER</p>
                   </CheckBoxInput>
@@ -147,15 +154,27 @@ const BuyerPage = () => {
                         {buyer.deliveryType}
                       </td>
                       <td className="text-end ">
-                        <Dropdown
-                          styleType="solid"
-                          options={[
-                            { label: "Action", value: "all" },
-                            { label: "Aktif", value: "active" },
-                            { label: "Tidak Aktif", value: "inactive" },
-                          ]}
-                          onValueChange={() => {}}
-                        />
+                        <div className="dropdown  ps-15 pe-0">
+                          <button
+                            className="btn btn-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            Actions
+                          </button>
+                          <ul className="dropdown-menu">
+                            <li>
+                              <Link
+                                href={`/admin/buyers/edit/${buyer.id}`}
+                                className="dropdown-item"
+                              >
+                                Edit
+                              </Link>
+                            </li>
+                            <li></li>
+                          </ul>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -182,11 +201,15 @@ const BuyerPage = () => {
 const Head = ({
   onSearch,
   setSearchCountry,
+  checkedItems,
 }: {
   onSearch: (val: string) => void;
   setSearchCountry: (id: number) => void;
+  checkedItems: number[];
 }) => {
   const { loadOptions } = useCountryDropdown();
+  const { buyerDeleteMany, buyerFindMany, deleteLoading, setDeleteLoading } =
+    useBuyerViewModel();
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -218,14 +241,42 @@ const Head = ({
         </div>
 
         <div className="col-lg-auto">
-          <Buttons>
-            <Link
-              href={"/admin/buyers/buyer-information"}
-              className="text-white"
+          {checkedItems.length > 0 ? (
+            <Buttons
+              buttonColor="danger"
+              disabled={deleteLoading}
+              onClick={async () => {
+                setDeleteLoading(true);
+                try {
+                  await buyerDeleteMany({
+                    variables: {
+                      where: {
+                        id: {
+                          in: checkedItems,
+                        },
+                      },
+                    },
+                  });
+                  await buyerFindMany.refetch();
+                } catch (error) {
+                  console.log(error);
+                } finally {
+                  setDeleteLoading(false);
+                }
+              }}
             >
-              Add New Buyyer
-            </Link>
-          </Buttons>
+              Delete Selected Items
+            </Buttons>
+          ) : (
+            <Buttons>
+              <Link
+                href={"/admin/buyers/buyer-information"}
+                className="text-white"
+              >
+                Add New Buyyer
+              </Link>
+            </Buttons>
+          )}
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@ export const useBuyerInformationForm = () => {
       .required("Nama diperlukan"),
     companyAddress: Yup.string()
       .min(5, "Minimal 5 simbol")
-      .max(50, "Maksimal 100 simbol")
+      .max(300, "Maksimal 300 simbol")
       .required("Alamat diperlukan"),
     companyName: Yup.string()
       .min(3, "Minimal 3 simbol")
