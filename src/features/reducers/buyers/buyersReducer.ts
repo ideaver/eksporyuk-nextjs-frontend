@@ -3,7 +3,7 @@ import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/gr
 import { PropsValue } from "react-select";
 
 interface BuyerState {
-  fileXLSX: string;
+  loadingImport: boolean;
   buyerName: string;
   companyName: string;
   country: number;
@@ -20,7 +20,7 @@ interface BuyerState {
 }
 
 const initialState: BuyerState = {
-  fileXLSX: "",
+  loadingImport: false,
   buyerName: "",
   companyName: "",
   country: 1,
@@ -40,8 +40,8 @@ export const buyerSlice = createSlice({
   name: "buyer",
   initialState,
   reducers: {
-    changeFileXLSX: (state, action: PayloadAction<string>) => {
-      state.fileXLSX = action.payload;
+    changeLoadingImport: (state, action: PayloadAction<boolean>) => {
+      state.loadingImport = action.payload;
     },
     changeBuyerName: (state, action: PayloadAction<string>) => {
       state.buyerName = action.payload;
@@ -99,7 +99,7 @@ export const {
   changeEmail,
   changeShippingTerms,
   changeTelephoneNumber,
-  changeFileXLSX,
+  changeLoadingImport,
 } = buyerSlice.actions;
 
 export default buyerSlice.reducer;

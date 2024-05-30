@@ -1,0 +1,11 @@
+mutation ChatRoomCreateOne($data: ChatRoomCreateInput!) {
+  chatRoomCreateOne(data: $data) {
+    id
+    name
+    createdAt
+    updatedAt
+    endedAt
+    type
+    supportStatus
+  }
+}

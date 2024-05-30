@@ -1,7 +1,9 @@
 import {
   TransactionFindOneQuery,
   TransactionStatusEnum,
+  useTransactionUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export interface IStatus {
@@ -45,6 +47,8 @@ const useAdminTransactionHeaderViewModel = ({
   id,
   urlType,
 }: IAdminTransaction) => {
+  const router = useRouter();
+
   const urls = [
     {
       label: "Detail Transaksi",
@@ -74,12 +78,39 @@ const useAdminTransactionHeaderViewModel = ({
       value: TransactionStatusEnum.Failed,
     },
   ];
+
   const [selectedStatus, setSelectedStatus] = useState<IStatus>(statuses[0]);
+
+  const [transactionUpdateOne, response] = useTransactionUpdateOneMutation();
+
+  const handleStatusUpdate = async () => {
+    try {
+      await transactionUpdateOne({
+        variables: {
+          where: {
+            id: parseInt(id as string),
+          },
+          data: {
+            status: {
+              set: selectedStatus.value,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      router.reload();
+    }
+  };
+
   return {
+    handleStatusUpdate,
     selectedStatus,
     setSelectedStatus,
     urls,
     statuses,
+    transactionUpdateOne,
   };
 };
 

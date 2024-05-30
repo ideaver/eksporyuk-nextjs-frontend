@@ -61,14 +61,22 @@ const TransactionDetail = ({ id, data }: IDetailTransactionProps) => {
                         style={{ width: "fit-content" }}
                       >
                         <Badge
-                          label="Tekan"
+                          label={
+                            data?.adminFindOneTransaction?.transaction?.payment
+                              ?.invoice?.paymentForGateway?.status as string
+                          }
                           size="large"
                           badgeColor="success"
                         />
                       </div>
                     </td>
                     <td className=" text-start">
-                      <h4>Pembelian Kelas Eksporyuk</h4>
+                      <h4>
+                        {
+                          data?.adminFindOneTransaction?.transaction?.payment
+                            ?.invoice?.paymentForGateway?.bill_title
+                        }
+                      </h4>
                     </td>
                   </tr>
                 </tbody>

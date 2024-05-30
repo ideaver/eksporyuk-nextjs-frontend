@@ -1,0 +1,6 @@
+mutation ExportDataTransaction($exportTransaction: ExportDataArgs!) {
+  exportTransaction(exportTransaction: $exportTransaction) {
+    fileURL
+    totalDataExported
+  }
+}

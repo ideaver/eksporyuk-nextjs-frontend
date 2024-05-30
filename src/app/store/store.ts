@@ -1,13 +1,14 @@
-import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
+import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
+import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import serviceReducer from "@/features/reducers/products/serviceReducer";
+import transactionReducer from "@/features/reducers/transaction/transactionReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 
 const navigationPersistConfig = {
   key: "navigation",
@@ -39,10 +40,15 @@ const feedbackPersistConfig = {
   storage,
 };
 
+const transactionPersistConfig = {
+  key: "transaction",
+  storage,
+};
+
 const servicePersistConfig = {
   key: "service",
   storage,
-}
+};
 
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
@@ -65,9 +71,15 @@ const persistedDashboardReducer = persistReducer(
   dashboardPersistConfig,
   dashboardReducer
 );
+
 const persistedFeedbackReducer = persistReducer(
   feedbackPersistConfig,
   feedbackReducer
+);
+
+const persistedTransactionReducer = persistReducer(
+  transactionPersistConfig,
+  transactionReducer
 );
 
 const persistedServiceReducer = persistReducer(
@@ -84,6 +96,7 @@ export const store = configureStore({
     article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
     feedback: persistedFeedbackReducer,
+    transaction: persistedTransactionReducer,
     service: persistedServiceReducer,
   },
   middleware: (getDefaultMiddleware) =>
