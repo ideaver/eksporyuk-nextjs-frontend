@@ -16,10 +16,11 @@ import dynamic from "next/dynamic";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { preventOverflow } from "@popperjs/core";
+import { useSession } from "next-auth/react";
+import { ChatRoomTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const FeedbackDetail = ({ id, data, refetch }: IFeedbackDetail) => {
-  const { feedbackUpdateMutation, message, setMessage, setSubject, subject } =
-    useFeedbackDetailViewModel();
+  const { feedbackUpdateMutation } = useFeedbackDetailViewModel();
   useEffect(() => {
     try {
       feedbackUpdateMutation({
@@ -53,8 +54,15 @@ const FeedbackDetail = ({ id, data, refetch }: IFeedbackDetail) => {
 };
 
 const Body = ({ id, data, refetch }: IFeedbackDetail) => {
-  const { feedbackUpdateMutation, response } = useFeedbackDetailViewModel();
-
+  const {
+    feedbackUpdateMutation,
+    response,
+    replyViaLiveChat,
+    setLoadingLiveChat,
+    loadingLiveChat,
+  } = useFeedbackDetailViewModel();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   return (
     <div className=" d-flex flex-column gap-10">
       <div className="p-5 m-5 d-flex flex-column gap-10 border-bottom ">
@@ -130,7 +138,48 @@ const Body = ({ id, data, refetch }: IFeedbackDetail) => {
           {/* <Buttons mode="light" showIcon icon="whatsapp">
           Balas via WhatsApp
         </Buttons> */}
-          <Buttons showIcon icon="messages">
+          <Buttons
+            showIcon
+            disabled={loadingLiveChat}
+            icon="messages"
+            onClick={async () => {
+              setLoadingLiveChat(true);
+              console.log(
+                session?.user.id,
+                "nnnnn",
+                data.feedbackFindOne?.userId
+              );
+              try {
+                const response = await replyViaLiveChat({
+                  variables: {
+                    data: {
+                      participants: {
+                        connect: [
+                          {
+                            id: session?.user.id,
+                          },
+                          {
+                            id: data.feedbackFindOne?.userId,
+                          },
+                        ],
+                      },
+                      type: ChatRoomTypeEnum.Support,
+                      name: "support",
+                    },
+                  },
+                });
+                await router.push(
+                  "/admin/support?activeChatRoom=" +
+                    response.data?.chatRoomCreateOne?.id
+                );
+              } catch (error) {
+                console.log(error);
+              } finally {
+                setLoadingLiveChat(false);
+                router.reload();
+              }
+            }}
+          >
             Balas via Live Chat
           </Buttons>
         </div>
@@ -193,10 +242,10 @@ const Head = () => {
 };
 
 const ReplyEmailModal = ({ id }: { id: string | string[] | undefined }) => {
-  const ReactQuill = useMemo(
-    () => dynamic(() => import("react-quill"), { ssr: false }),
-    []
-  );
+  // const ReactQuill = useMemo(
+  //   () => dynamic(() => import("react-quill"), { ssr: false }),
+  //   []
+  // );
   const { message, setMessage, setSubject, subject, replyViaEmail } =
     useFeedbackDetailViewModel();
 
