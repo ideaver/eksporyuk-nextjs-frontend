@@ -151,22 +151,23 @@ const useCreateServiceViewModel = () => {
     (value) => changeServiceDesc(value)
   );
 
-  const handleStatusChange = (status: string) => {
-    dispatch(changeServiceStatus(status === "true"));
-  };
-
+  
   // Currency stuff
   const serviceCost = useSelector(
     (state: RootState) => state.service.serviceCost
   );
+  
+  const handleChangeServiceCost = (price: string) => {
+    dispatch(changeServiceCost(price));
+  };
 
   // Status handler
   const serviceStatus = useSelector(
     (state: RootState) => state.service.serviceStatus
   );
 
-  const handleChangeServiceCost = (price: string) => {
-    dispatch(changeServiceCost(price));
+  const handleStatusChange = (status: string) => {
+    dispatch(changeServiceStatus(status === "true"));
   };
 
   // Image handler stuff
@@ -178,6 +179,7 @@ const useCreateServiceViewModel = () => {
     (state: RootState) => state.service.uploadImages || []
   );
 
+  // Upload image first
   const convertImg = async (image: any) => {
     const blob = image?.slice(0, image?.size);
     const newFile = new File([blob] as any, image?.name as string);
@@ -209,11 +211,13 @@ const useCreateServiceViewModel = () => {
       const reader = new FileReader();
 
       reader.onloadend = async () => {
+        // for preview images only
         newImageObjects.push({
           path: reader.result as string,
           fileType: "PNG",
         });
 
+        // upload to the backend
         newImgObj.push({
           path: await convertImg(files[i]) as string,
         })
@@ -264,7 +268,6 @@ const useCreateServiceViewModel = () => {
     serviceName,
     serviceDesc,
     serviceCost,
-    serviceImages,
     serviceStatus,
     serviceObjective,
     servicePortfolio,
@@ -278,7 +281,7 @@ const useCreateServiceViewModel = () => {
           description: serviceDesc,
           productServiceCategory: serviceType,
           images: {
-            connect: serviceImages,
+            connect: uploadImages,
           },
           basePrice: Number(serviceCost),
           isActive: serviceStatus,
@@ -307,6 +310,7 @@ const useCreateServiceViewModel = () => {
     dispatch(changeServiceImages([]));
   }
 
+  // Submit all data
   const onSubmit = async () => {
     if (
       !serviceType ||
@@ -314,7 +318,6 @@ const useCreateServiceViewModel = () => {
       !serviceDesc ||
       !serviceCost ||
       !uploadImages ||
-      !serviceStatus ||
       !serviceObjective ||
       !servicePortfolio
     ) {
@@ -328,14 +331,15 @@ const useCreateServiceViewModel = () => {
         serviceName,
         serviceDesc,
         serviceCost,
-        uploadImages,
         serviceStatus,
         serviceObjective,
         servicePortfolio,
       });
-      resetFormData();
       const result = data.data;
       console.log(result);
+      dispatch(changeServiceObjective([]));
+      dispatch(changeServicePortfolio([]));
+      resetFormData();
     } catch (error) {
       console.log(error);
     } finally {
