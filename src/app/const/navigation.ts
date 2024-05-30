@@ -111,16 +111,16 @@ export const adminMenus: MenuSection[] = [
             to: "/admin/products/product",
             icon: "parcel",
           },
-          {
-            title: "Semua Bundle",
-            to: "/admin/products/bundle",
-            icon: "cube-2",
-          },
-          {
-            title: "Semua Layanan",
-            to: "/admin/products/service",
-            icon: "cube-3",
-          },
+          // {
+          //   title: "Semua Bundle",
+          //   to: "/admin/products/bundle",
+          //   icon: "cube-2",
+          // },
+          // {
+          //   title: "Semua Layanan",
+          //   to: "/admin/products/service",
+          //   icon: "cube-3",
+          // },
         ],
       },
       {

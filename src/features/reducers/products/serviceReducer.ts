@@ -9,17 +9,19 @@ interface ServiceState {
   serviceObjective: string[];
   servicePortfolio: string[];
   serviceImages: { path: string, fileType: string }[];
+  uploadImages: { path: string }[];
 }
 
 const initialState: ServiceState = {
   serviceName: "",
   serviceStatus: false,
   serviceDescription: "",
-  serviceType: "legality",
+  serviceType: "",
   serviceCost: "",
   serviceObjective: [],
   servicePortfolio: [],
   serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG"}],
+  uploadImages: [{ path: "" }],
 };
 
 export const serviceSlice = createSlice({
@@ -50,6 +52,9 @@ export const serviceSlice = createSlice({
     changeServiceImages: (state, action: PayloadAction<{ path: string, fileType: string }[]>) => {
       state.serviceImages = action.payload;
     },
+    changeUploadImages: (state, action: PayloadAction<{ path: string }[]>) => {
+      state.uploadImages = action.payload;
+    },
   }
 });
 
@@ -62,6 +67,7 @@ export const {
   changeServiceObjective,
   changeServiceImages,
   changeServicePortfolio,
+  changeUploadImages,
 } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

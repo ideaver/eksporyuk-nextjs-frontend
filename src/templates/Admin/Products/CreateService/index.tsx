@@ -1,31 +1,13 @@
-import { useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import CurrencyInput from "react-currency-input-field";
 
 import useCreateServiceViewModal, {
   breadcrumbs,
 } from "./CreateService-view-model";
-import { RootState } from "@/app/store/store";
-import {
-  changeServiceName,
-  changeServiceImages,
-  changeServiceDesc,
-  changeServiceCost,
-  changeServiceType,
-  changeServiceObjective,
-  changeServiceStatus,
-} from "@/features/reducers/products/serviceReducer";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { KTTable } from "@/_metronic/helpers/components/KTTable";
-import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
@@ -58,7 +40,6 @@ const CreateService = () => {
     errorMessage,
     onSubmit,
   } = useCreateServiceViewModal();
-  const dispatch = useDispatch();
 
   return (
     <>
@@ -150,12 +131,19 @@ const CreateService = () => {
                     {serviceImages.map((image, index) => (
                       <div key={index} className="position-relative">
                         <label htmlFor="foto-produk">
-                          <img
-                            src={image.path}
-                            alt=""
-                            className="img-fluid rounded object-fit-cover m-2"
-                            style={{ maxWidth: "150px" }}
-                          />
+                          {image.path ? (
+                            <img
+                              src={image.path}
+                              alt=""
+                              className="img-fluid rounded object-fit-cover m-2"
+                              style={{ maxWidth: "150px" }}
+                            />
+
+                          ) : (
+                            <div>
+                              <h4>Loading</h4>
+                            </div>
+                          )}
                         </label>
                         <i
                           className="bi bi-x-circle position-absolute m-2"

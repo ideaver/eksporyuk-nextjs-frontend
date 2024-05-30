@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -12,8 +14,10 @@ import {
   changeServiceObjective,
   changeServiceStatus,
   changeServicePortfolio,
+  changeUploadImages,
 } from "@/features/reducers/products/serviceReducer";
 import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { postDataAPI } from "@/app/service/api/rest-service";
 
 export const breadcrumbs = [
   {
@@ -125,7 +129,10 @@ const PortfolioHandler = () => {
 const useCreateServiceViewModel = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
+  const router = useRouter();
 
+  // Local state
   const [errorMessage, setErrorMessage] = useState("");
 
   // Redux state & action
@@ -167,24 +174,54 @@ const useCreateServiceViewModel = () => {
     (state: RootState) => state.service.serviceImages || []
   );
 
+  const uploadImages = useSelector(
+    (state: RootState) => state.service.uploadImages || []
+  );
+
+  const convertImg = async (image: any) => {
+    const blob = image?.slice(0, image?.size);
+    const newFile = new File([blob] as any, image?.name as string);
+    const body = {
+      file: newFile,
+      userId: session?.user.id,
+    };
+
+    const response = await postDataAPI({
+      endpoint: "upload/file",
+      body,
+      isMultipartRequest: true,
+    });
+
+    const url = await response?.data;
+    console.log(response?.data);
+    return response?.data;
+  }
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
 
     const newImageObjects: { path: string; fileType: string }[] = [];
+    const newImgObj: { path: string }[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
 
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         newImageObjects.push({
           path: reader.result as string,
           fileType: "PNG",
         });
 
+        newImgObj.push({
+          path: await convertImg(files[i]) as string,
+        })
+
         if (newImageObjects.length === files.length) {
           const updatedImages = [...serviceImages, ...newImageObjects];
+          const updatedImg = [...uploadImages, ...newImgObj];
+          dispatch(changeUploadImages(updatedImg));
           dispatch(changeServiceImages(updatedImages));
         }
       };
@@ -197,7 +234,11 @@ const useCreateServiceViewModel = () => {
     const updatedImages = serviceImages.filter(
       (_, index) => index !== indexToRemove
     );
+    const updatedImg = updatedImages.filter(
+      (_, index) => index !== indexToRemove
+    );
     dispatch(changeServiceImages(updatedImages)); // Dispatch action to update images
+    dispatch(changeUploadImages(updatedImg));
   };
 
   const handleFileClick = () => {
@@ -205,6 +246,7 @@ const useCreateServiceViewModel = () => {
       fileInputRef.current.click();
     }
   };
+  // Image handler end
 
   const serviceObjective = useSelector(
     (state: RootState) => state.service.serviceObjective
@@ -227,6 +269,8 @@ const useCreateServiceViewModel = () => {
     serviceObjective,
     servicePortfolio,
   }: any) => {
+    console.log("handleProduct", serviceImages);
+
     const data = await productServiceCreateMutation({
       variables: {
         data: {
@@ -234,9 +278,7 @@ const useCreateServiceViewModel = () => {
           description: serviceDesc,
           productServiceCategory: serviceType,
           images: {
-            createMany: {
-              data: serviceImages,
-            },
+            connect: serviceImages,
           },
           basePrice: Number(serviceCost),
           isActive: serviceStatus,
@@ -253,8 +295,29 @@ const useCreateServiceViewModel = () => {
     return data;
   };
 
+  const resetFormData = () => {
+    dispatch(changeServiceName(""));
+    dispatch(changeServiceType(""));
+    dispatch(changeServiceDesc(""));
+    dispatch(changeServiceCost(""));
+    dispatch(changeUploadImages([]));
+    dispatch(changeServiceStatus(false));
+    dispatch(changeServiceObjective([]));
+    dispatch(changeServicePortfolio([]));
+    dispatch(changeServiceImages([]));
+  }
+
   const onSubmit = async () => {
-    if (!serviceType || !serviceName || !serviceDesc || !serviceCost || !serviceImages || !serviceStatus || !serviceObjective || !servicePortfolio) {
+    if (
+      !serviceType ||
+      !serviceName ||
+      !serviceDesc ||
+      !serviceCost ||
+      !uploadImages ||
+      !serviceStatus ||
+      !serviceObjective ||
+      !servicePortfolio
+    ) {
       setErrorMessage("All fields are required.");
       return;
     }
@@ -265,19 +328,20 @@ const useCreateServiceViewModel = () => {
         serviceName,
         serviceDesc,
         serviceCost,
-        serviceImages,
+        uploadImages,
         serviceStatus,
         serviceObjective,
         servicePortfolio,
       });
+      resetFormData();
       const result = data.data;
       console.log(result);
     } catch (error) {
       console.log(error);
+    } finally {
+      router.push("/admin/products");
     }
   };
-
-  console.log(serviceImages);
 
   const {
     itemObjective,
