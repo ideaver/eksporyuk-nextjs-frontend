@@ -7,6 +7,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
+import transactionReducer from "@/features/reducers/transaction/transactionReducer";
 
 const navigationPersistConfig = {
   key: "navigation",
@@ -38,6 +39,11 @@ const feedbackPersistConfig = {
   storage,
 };
 
+const transactionPersistConfig = {
+  key: "transaction",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -59,9 +65,15 @@ const persistedDashboardReducer = persistReducer(
   dashboardPersistConfig,
   dashboardReducer
 );
+
 const persistedFeedbackReducer = persistReducer(
   feedbackPersistConfig,
   feedbackReducer
+);
+
+const persistedTransactionReducer = persistReducer(
+  transactionPersistConfig,
+  transactionReducer
 );
 
 // rest of the code...
@@ -73,6 +85,7 @@ export const store = configureStore({
     article: persistedArticleReducer,
     dashboard: persistedDashboardReducer,
     feedback: persistedFeedbackReducer,
+    transaction: persistedTransactionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

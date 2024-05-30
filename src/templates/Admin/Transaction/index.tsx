@@ -21,6 +21,9 @@ import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 import { useSession } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
 const Transaction = () => {
   const { data: session, status } = useSession();
@@ -45,44 +48,64 @@ const Transaction = () => {
     downloadReportDate,
     setDownloadReportDate,
     exportDataTransaction,
+    handleLoadingExportChange,
   } = useTransactionViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Riwayat Transaksi</PageTitle>
-      <KTCard>
-        <KTCardBody>
-          <Head
-            statusDropdownOption={statusDropdownOption}
-            categoryDropdownOption={categoryDropdownOption}
-            transactionFindCategory={transactionFindCategory}
-            transactionFindSearch={transactionFindSearch}
-            transactionFindStatus={transactionFindStatus}
-            setTransactionFindCategory={setTransactionFindCategory}
-            setTransactionFindSearch={setTransactionFindSearch}
-            setTransactionFindStatus={setTransactionFindStatus}
-          />
-          <Body
-            data={transactionFindMany.data}
-            error={transactionFindMany.error}
-            loading={transactionFindMany.loading}
-          />
-          <Footer
-            currentPage={currentPage}
-            pageLength={calculateTotalPage()}
-            setTransactionSkip={setTransactionSkip}
-            setTransactionTake={setTransactionTake}
-            setCurrentPage={(val: number) => {
-              handlePageChange(val);
-            }}
-          />
-        </KTCardBody>
-      </KTCard>
+      <LoadingOverlayWrapper
+        styles={{
+          overlay: (base) => ({
+            ...base,
+            background: "rgba(255, 255, 255, 0.8)",
+          }),
+          spinner: (base) => ({
+            ...base,
+            width: "100px",
+            "& svg circle": {
+              stroke: "rgba(3, 0, 0, 1)",
+            },
+          }),
+        }}
+        active={useSelector((state: RootState) => state.transaction.loading)}
+        spinner
+      >
+        <KTCard>
+          <KTCardBody>
+            <Head
+              statusDropdownOption={statusDropdownOption}
+              categoryDropdownOption={categoryDropdownOption}
+              transactionFindCategory={transactionFindCategory}
+              transactionFindSearch={transactionFindSearch}
+              transactionFindStatus={transactionFindStatus}
+              setTransactionFindCategory={setTransactionFindCategory}
+              setTransactionFindSearch={setTransactionFindSearch}
+              setTransactionFindStatus={setTransactionFindStatus}
+            />
+            <Body
+              data={transactionFindMany.data}
+              error={transactionFindMany.error}
+              loading={transactionFindMany.loading}
+            />
+            <Footer
+              currentPage={currentPage}
+              pageLength={calculateTotalPage()}
+              setTransactionSkip={setTransactionSkip}
+              setTransactionTake={setTransactionTake}
+              setCurrentPage={(val: number) => {
+                handlePageChange(val);
+              }}
+            />
+          </KTCardBody>
+        </KTCard>
+      </LoadingOverlayWrapper>
       <DownloadReportModal
         date={downloadReportDate}
         onChange={([startDate, endDate]) => {
           setDownloadReportDate([startDate, endDate]);
         }}
         onClick={async () => {
+          handleLoadingExportChange(true);
           try {
             const response = await exportDataTransaction({
               variables: {
@@ -98,6 +121,8 @@ const Transaction = () => {
             link.click();
           } catch (error) {
             console.log(error);
+          } finally {
+            handleLoadingExportChange(false);
           }
         }}
         onClose={() => {}}
