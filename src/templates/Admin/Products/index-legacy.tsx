@@ -11,7 +11,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import Link from "next/link";
-import { breadcrumbs } from "./Course-view-model";
+import { breadcrumbs } from "./Products-view-model";
 
 const CoursePage = ({}) => {
   return (
