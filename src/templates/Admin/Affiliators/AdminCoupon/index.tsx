@@ -29,6 +29,7 @@ import clsx from "clsx";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
+import Flatpickr from "react-flatpickr";
 
 const AdminCoupon = () => {
   const {
@@ -570,19 +571,31 @@ const AddCouponModal = ({
             {`Berikan batas waktu untuk kupon ini`}
           </CheckBoxInput>
           {addDate ? (
-            <TextField
-              styleType="outline"
-              size="medium"
-              placeholder="Pilih tanggal"
-              type="date"
-              props={{
-                // value: date,
-                onChange: (e: any) => {
-                  console.log(e.target.value);
-                },
+            <Flatpickr
+              value={date}
+              onChange={([date]) => {
+                setDate(date);
               }}
+              options={{
+                enableTime: false,
+                dateFormat: "Y-m-d",
+              }}
+              className="form-control form-control-solid"
+              placeholder="Pick date"
             />
-          ) : null}
+          ) : // <TextField
+          //   styleType="outline"
+          //   size="medium"
+          //   placeholder="Pilih tanggal"
+          //   type="date"
+          //   props={{
+          //     // value: date,
+          //     onChange: (e: any) => {
+          //       console.log(e.target.value);
+          //     },
+          //   }}
+          // />
+          null}
         </div>
       </KTModal>
     </div>

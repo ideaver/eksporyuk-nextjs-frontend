@@ -10,8 +10,11 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
 import dynamic from "next/dynamic";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import Flatpickr from "react-flatpickr";
+import { useRouter } from "next/router";
 
 const EditCoupon = ({ id, data }: IEditCoupon) => {
+  const router = useRouter();
   const CheckBoxInput = dynamic(
     () =>
       import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
@@ -76,7 +79,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               value={status}
               options={[
                 { value: "true", label: "Active" },
-                { value: "false", label: "Non Activw" },
+                { value: "false", label: "Non Active" },
               ]}
               onValueChange={(value) => setStatus(value as string)}
             ></Dropdown>
@@ -121,19 +124,31 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               {`Berikan batas waktu untuk kupon ini`}
             </CheckBoxInput>
             {addDate ? (
-              <TextField
-                styleType="outline"
-                size="medium"
-                placeholder="Pilih tanggal"
-                type="date"
-                props={{
-                  value: date,
-                  onChange: (e: any) => {
-                    setDate(e.target.value);
-                  },
+              <Flatpickr
+                value={date}
+                onChange={([date]) => {
+                  setDate(date);
                 }}
+                options={{
+                  enableTime: false,
+                  dateFormat: "Y-m-d",
+                }}
+                className="form-control form-control-solid"
+                placeholder="Pick date"
               />
-            ) : null}
+            ) : // <TextField
+            //   styleType="outline"
+            //   size="medium"
+            //   placeholder="Pilih tanggal"
+            //   type="date"
+            //   props={{
+            //     value: date,
+            //     onChange: (e: any) => {
+            //       setDate(e.target.value);
+            //     },
+            //   }}
+            // />
+            null}
           </KTCardBody>
           <div className={"row flex-end mt-10"}>
             <Buttons
@@ -142,6 +157,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               classNames={"col-lg-2 me-lg-5"}
               onClick={() => {
                 //   resetBuyerState();
+                router.back();
               }}
             >
               Batal

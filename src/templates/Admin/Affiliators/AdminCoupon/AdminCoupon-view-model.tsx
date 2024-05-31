@@ -55,7 +55,7 @@ export const useCouponForm = () => {
   const [discountType, setDiscountType] = useState(DiscountTypeEnum.Amount);
   const [discount, setDiscount] = useState<string>("0");
   const [addDate, setAddDate] = useState(false);
-  const [date, setDate] = useState("2024-12-22");
+  const [date, setDate] = useState<Date>(new Date("2025-05-01"));
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()

@@ -14,7 +14,6 @@ const EditCouponPage: NextPage = () => {
       },
     },
   });
-  console.log(data);
   return (
     <>
       {data == null && <LoadingUI error={error?.message} loading={loading} />}

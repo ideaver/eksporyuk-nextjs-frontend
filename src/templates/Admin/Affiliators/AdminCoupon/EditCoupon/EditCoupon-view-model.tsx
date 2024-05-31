@@ -5,6 +5,7 @@ import {
 } from "@/app/service/graphql/gen/graphql";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import useAdminCouponViewModel from "../AdminCoupon-view-model";
 
 export const breadcrumbs = [
   {
@@ -51,9 +52,11 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
   const [addDate, setAddDate] = useState(
     data.couponFindOne?.endDate ? true : false
   );
-  const [date, setDate] = useState(data.couponFindOne?.endDate);
+  const [date, setDate] = useState(new Date(data.couponFindOne?.endDate));
+  console.log(date);
 
   const [couponUpdateOne] = usePlatformCouponUpdateOneMutation();
+  const { couponFindMany } = useAdminCouponViewModel();
 
   const handleCouponUpdateOne = async () => {
     setLoading(true);
@@ -70,12 +73,17 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
             coupon: {
               update: {
                 data: {
-                  endDate: addDate ? date : null,
+                  endDate: {
+                    set: addDate ? date : null,
+                  },
                   type: {
                     set: discountType,
                   },
                   value: {
                     set: discount,
+                  },
+                  isActive: {
+                    set: status === "true" ? true : false,
                   },
                 },
               },
@@ -83,11 +91,13 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
           },
         },
       });
+      // await couponFindMany.refetch();
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
-      router.push("/admin/affiliate/admin-coupon");
+      await router.push("/admin/affiliate/admin-coupon");
+      router.reload();
     }
   };
 
