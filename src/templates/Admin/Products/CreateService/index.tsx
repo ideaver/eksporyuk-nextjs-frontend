@@ -39,6 +39,7 @@ const CreateService = () => {
     handleRemoveImage,
     errorMessage,
     onSubmit,
+    isLoading,
   } = useCreateServiceViewModal();
 
   return (
@@ -378,7 +379,7 @@ const CreateService = () => {
           </div>
 
           <button className="btn btn-primary w-100 mt-3" onClick={onSubmit}>
-            Buat Service
+            {isLoading ? "Submit Data..." : "Buat Service"}
           </button>
         </KTCardBody>
       </KTCard>

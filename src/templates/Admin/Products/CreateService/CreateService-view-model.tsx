@@ -134,6 +134,8 @@ const useCreateServiceViewModel = () => {
 
   // Local state
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redux state & action
   const [serviceType, setServiceType] = useField(
@@ -195,7 +197,6 @@ const useCreateServiceViewModel = () => {
     });
 
     const url = await response?.data;
-    console.log(response?.data);
     return response?.data;
   }
 
@@ -204,7 +205,8 @@ const useCreateServiceViewModel = () => {
     if (!files) return;
 
     const newImageObjects: { path: string; fileType: string }[] = [];
-    const newImgObj: { path: string }[] = [];
+    // const newImgObj: { path: string }[] = [];
+    const newSelectedFiles: File[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -218,19 +220,21 @@ const useCreateServiceViewModel = () => {
         });
 
         // upload to the backend
-        newImgObj.push({
-          path: await convertImg(files[i]) as string,
-        })
+        // newImgObj.push({
+        //   path: await convertImg(files[i]) as string,
+        // })
 
         if (newImageObjects.length === files.length) {
           const updatedImages = [...serviceImages, ...newImageObjects];
-          const updatedImg = [...uploadImages, ...newImgObj];
-          dispatch(changeUploadImages(updatedImg));
+          // const updatedImg = [...uploadImages, ...newImgObj];
+          // dispatch(changeUploadImages(updatedImg));
           dispatch(changeServiceImages(updatedImages));
+          setSelectedFiles(prevFiles => [...prevFiles, ...newSelectedFiles]);
         }
       };
 
       reader.readAsDataURL(file);
+      newSelectedFiles.push(file);
     }
   };
 
@@ -271,9 +275,8 @@ const useCreateServiceViewModel = () => {
     serviceStatus,
     serviceObjective,
     servicePortfolio,
+    uploadImages
   }: any) => {
-    console.log("handleProduct", serviceImages);
-
     const data = await productServiceCreateMutation({
       variables: {
         data: {
@@ -325,7 +328,14 @@ const useCreateServiceViewModel = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
+      // Upload images
+      const uploadPromises = selectedFiles.map(file => convertImg(file));
+      const uploadedImages = await Promise.all(uploadPromises);
+      const uploadImgArray = uploadedImages.map(path => ({ path }));
+
       const data = await handleProductServiceCreateMutation({
         serviceType,
         serviceName,
@@ -334,6 +344,7 @@ const useCreateServiceViewModel = () => {
         serviceStatus,
         serviceObjective,
         servicePortfolio,
+        uploadImages: uploadImgArray,
       });
       const result = data.data;
       console.log(result);
@@ -343,6 +354,7 @@ const useCreateServiceViewModel = () => {
     } catch (error) {
       console.log(error);
     } finally {
+      setIsLoading(false);
       router.push("/admin/products");
     }
   };
@@ -386,6 +398,7 @@ const useCreateServiceViewModel = () => {
     handleRemoveImage,
     onSubmit,
     errorMessage,
+    isLoading,
   };
 };
 
