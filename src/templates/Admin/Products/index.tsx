@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QueryResult } from "@apollo/client";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
@@ -14,24 +15,53 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 
-import { breadcrumbs } from "./Course-view-model";
+import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
+import { ProductServiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
 
 const CoursePage = ({}) => {
+  const {
+    productServiceFindMany,
+    handleSelectAllCheck,
+    handleSingleCheck,
+    checkedItems,
+    selectAll,
+    skipPage,
+    setSkipPage,
+    setTakePage,
+    searchProduct,
+    setSearchProduct,
+    calculateTotalPage,
+  } = useProductsViewModel();
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Produk</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head />
-          <Body />
-          <Footer />
+          <Head
+            onSearch={setSearchProduct}
+          />
+          <Body
+            data={productServiceFindMany}
+            handleSelectAllCheck={handleSelectAllCheck}
+            handleSingleCheck={handleSingleCheck}
+            checkedItems={checkedItems}
+            selectAll={selectAll}
+          />
+          <Footer
+            skipPage={skipPage}
+            setSkipPage={setSkipPage}
+            setTakePage={setTakePage}
+            totalPage={calculateTotalPage}
+          />
         </KTCardBody>
       </KTCard>
     </>
   );
 };
 
-const Head = () => {
+const Head = ({ onSearch }: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -39,6 +69,9 @@ const Head = () => {
           styleType="solid"
           preffixIcon="magnifier"
           placeholder="Search"
+          props={{
+            onChange: (e: any) => onSearch(e.target.value),
+          }}
         ></TextField>
       </div>
       <div className="row col-lg-auto gy-3">
@@ -138,7 +171,21 @@ const Head = () => {
   );
 };
 
-const Body = () => {
+const Body = ({
+  data,
+  handleSelectAllCheck,
+  handleSingleCheck,
+  checkedItems,
+  selectAll,
+}: {
+  data: QueryResult<ProductServiceFindManyQuery>;
+  handleSelectAllCheck: () => void;
+  handleSingleCheck: (index: number) => void;
+  checkedItems: { id: number; value: boolean }[];
+  selectAll: boolean;
+}) => {
+  console.log(data);
+
   return (
     <KTTable utilityGY={5} responsive="table-responsive my-10">
       <KTTableHead
@@ -166,7 +213,93 @@ const Body = () => {
         <th className="text-end min-w-150px">Status</th>
         <th className="text-end min-w-100px">Actions</th>
       </KTTableHead>
-      <KTTableBody>
+      {data.data?.productServiceFindMany?.map((product, index) => {
+        return (
+          <KTTableBody key={index}>
+            <td className="align-middle">
+              <CheckBoxInput
+                className="d-flex"
+                checked={checkedItems[index]?.value ?? false}
+                name={"check-" + product.id}
+                value={String(product.id)}
+                defaultChildren={false}
+                onChange={() => handleSingleCheck(index)}
+              >
+                <div className="d-flex align-items-center">
+                  <div className="symbol symbol-50px me-5">
+                    <span className="symbol-label bg-gray-600">
+                      <img
+                        src={
+                          product?.images?.[0]?.path ?? "/media/products/1.png"
+                        }
+                        width={50}
+                        height={50}
+                        alt=""
+                      />
+                    </span>
+                  </div>
+                  <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                    {product?.name}
+                  </span>
+                </div>
+              </CheckBoxInput>
+            </td>
+            <td className="fw-bold text-muted text-end align-middle w-125px">
+              {product?.productServiceCategory}
+            </td>
+            <td className="align-middle text-end w-250px">
+              <span className="text-muted fs-6 fw-bold">Sekali Beli</span>
+            </td>
+            <td className="align-middle text-end text-muted fw-bold w-125px">
+              <span className="text-muted fs-6 fw-bold">
+                {currencyFormatter(product?.basePrice)}
+              </span>
+            </td>
+            <td className="align-middle text-end text-muted fw-bold w-150px">
+              <span className="text-muted fs-6 fw-bold">Rp 399.000</span>
+            </td>
+            <td className="align-middle text-end text-muted fw-bold w-150px">
+              <span className="text-muted fs-6 fw-bold">
+                {product?.purchaseCount}
+              </span>
+            </td>
+            <td className="align-middle text-end">
+              <span className="text-muted fs-6 fw-bold">
+                {product?.purchaseCount}
+              </span>
+            </td>
+            <td className="align-middle text-end">
+              <Badge label="Buka" badgeColor="success" />{" "}
+            </td>
+            <td className="align-middle text-end ">
+              <div className="dropdown  ps-15 pe-0">
+                <button
+                  className="btn btn-secondary dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Actions
+                </button>
+                {/* <ul className="dropdown-menu">
+              <li>
+                <button className="dropdown-item" onClick={() => {}}>
+                  Kirim Pengaturan ulang kata sandi
+                </button>
+              </li>
+              <li>
+                <button className="dropdown-item">Edit</button>
+              </li>
+              <li>
+                <button className="dropdown-item">Hapus</button>
+              </li>
+            </ul> */}
+              </div>
+            </td>
+          </KTTableBody>
+        );
+      })}
+      {/* <KTTableBody>
         <td className="align-middle">
           <CheckBoxInput
             className="ps-0"
@@ -224,7 +357,7 @@ const Body = () => {
             >
               Actions
             </button>
-            {/* <ul className="dropdown-menu">
+            <ul className="dropdown-menu">
               <li>
                 <button className="dropdown-item" onClick={() => {}}>
                   Kirim Pengaturan ulang kata sandi
@@ -236,15 +369,17 @@ const Body = () => {
               <li>
                 <button className="dropdown-item">Hapus</button>
               </li>
-            </ul> */}
+            </ul>
           </div>
         </td>
-      </KTTableBody>
+      </KTTableBody> */}
     </KTTable>
   );
 };
 
-const Footer = () => {
+const Footer = ({ skipPage, setSkipPage, setTakePage, totalPage }: any) => {
+  if (skipPage === 0) skipPage = 1;
+
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -255,15 +390,18 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => {}}
+          onValueChange={(e) => setTakePage(e)}
         />
       </div>
       <div className="col-auto">
         <Pagination
-          total={10}
-          current={1}
+          total={totalPage()}
+          current={skipPage}
           maxLength={5}
-          onPageChange={() => {}}
+          onPageChange={(e) => {
+            if (e === 1) e = 0;
+            setSkipPage(e);
+          }}
         ></Pagination>
       </div>
     </div>
