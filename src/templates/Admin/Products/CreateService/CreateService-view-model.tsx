@@ -68,15 +68,22 @@ const ObjectiveHandler = () => {
   const serviceObjective = useSelector(
     (state: RootState) => state.service.serviceObjective
   );
-  const [itemObjective, setItemObjective] =
-    useState<string[]>(serviceObjective);
+  const [itemObjective, setItemObjective] = useState<string[]>(serviceObjective);
+
+  useEffect(() => {
+    setItemObjective(serviceObjective);
+  }, [serviceObjective]);
+
+  useEffect(() => {
+    dispatch(changeServiceObjective(itemObjective));
+  }, [itemObjective, dispatch]);
 
   const addObjectiveItem = () => {
     setItemObjective((prevItems) => [...prevItems, ""]);
   };
 
   const removeObjectiveItem = (index: number) => {
-    setItemObjective((prevItems) => prevItems.filter((item, i) => i !== index));
+    setItemObjective((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const handleInputObjectiveChange = (index: number, newValue: string) => {
@@ -84,8 +91,6 @@ const ObjectiveHandler = () => {
       prevItems.map((item, i) => (i === index ? newValue : item))
     );
   };
-
-  dispatch(changeServiceObjective(itemObjective));
 
   return {
     itemObjective,
@@ -100,15 +105,22 @@ const PortfolioHandler = () => {
   const servicePortfolio = useSelector(
     (state: RootState) => state.service.servicePortfolio
   );
-  const [itemPortfolio, setItemPortfolio] =
-    useState<string[]>(servicePortfolio);
+  const [itemPortfolio, setItemPortfolio] = useState<string[]>(servicePortfolio);
+
+  useEffect(() => {
+    setItemPortfolio(servicePortfolio);
+  }, [servicePortfolio]);
+
+  useEffect(() => {
+    dispatch(changeServicePortfolio(itemPortfolio));
+  }, [itemPortfolio, dispatch]);
 
   const addPortfolioItem = () => {
     setItemPortfolio((prevItems) => [...prevItems, ""]);
   };
 
   const removePortfolioItem = (index: number) => {
-    setItemPortfolio((prevItems) => prevItems.filter((item, i) => i !== index));
+    setItemPortfolio((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const handleInputPortfolioChange = (index: number, newValue: string) => {
@@ -116,8 +128,6 @@ const PortfolioHandler = () => {
       prevItems.map((item, i) => (i === index ? newValue : item))
     );
   };
-
-  dispatch(changeServicePortfolio(itemPortfolio));
 
   return {
     itemPortfolio,
