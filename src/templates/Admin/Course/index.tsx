@@ -272,98 +272,114 @@ const Body = ({
               <th className="text-end min-w-150px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
-            {courseFindMany.data?.courseFindMany?.map((course, index) => (
-              <tr key={index}>
-                <td className="align-middle">
-                  <CheckBoxInput
-                    className="ps-0"
-                    checked={checkedItems[index]?.value ?? false}
-                    name={"check-" + course.id}
-                    value={course.id.toString()}
-                    defaultChildren={false}
-                    onChange={() => handleSingleCheck(index)}
-                  >
-                    <></>
-                  </CheckBoxInput>
-                </td>
-                <td className="align-middle ">
-                  <div className="d-flex align-items-center">
-                    <div className="symbol symbol-50px me-5">
-                      <img
-                        className="symbol-label bg-gray-600"
-                        src={course.images?.[0].path ?? "/media/products/1.png"}
-                        width={50}
-                        height={50}
-                        alt=""
-                      />
+            {courseFindMany.data?.courseFindMany?.map((course, index) => {
+              const totalLessons = course.sections?.reduce((total, section) => {
+                return total + (section._count?.lessons || 0);
+              }, 0);
+              const totalQuizzes = course.sections?.reduce((total, section) => {
+                return total + (section._count?.quizzes || 0);
+              }, 0);
+              const totalAssignment = course.sections?.reduce(
+                (total, section) => {
+                  return total + (section._count?.assignments || 0);
+                },
+                0
+              );
+              return (
+                <tr key={index}>
+                  <td className="align-middle">
+                    <CheckBoxInput
+                      className="ps-0"
+                      checked={checkedItems[index]?.value ?? false}
+                      name={"check-" + course.id}
+                      value={course.id.toString()}
+                      defaultChildren={false}
+                      onChange={() => handleSingleCheck(index)}
+                    >
+                      <></>
+                    </CheckBoxInput>
+                  </td>
+                  <td className="align-middle ">
+                    <div className="d-flex align-items-center">
+                      <div className="symbol symbol-50px me-5">
+                        <img
+                          className="symbol-label bg-gray-600"
+                          src={
+                            course.images?.[0].path ?? "/media/products/1.png"
+                          }
+                          width={50}
+                          height={50}
+                          alt=""
+                        />
+                      </div>
+                      <div className="d-flex flex-column">
+                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {course.title}
+                        </span>
+                        <span className="fw-bold text-muted">
+                          {course._count.sections} Sections, {totalLessons}{" "}
+                          Lesson, {totalQuizzes} Quiz, {totalAssignment}{" "}
+                          Assignment
+                        </span>
+                      </div>
                     </div>
-                    <div className="d-flex flex-column">
-                      <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                        {course.title}
-                      </span>
-                      <span className="fw-bold text-muted">
-                        {course._count.sections} Topic,{" "}
-                        {course._count.enrollments} Lesson, {} Quiz, 0
-                        Assignment
-                      </span>
+                  </td>
+                  <td className="fw-bold text-muted align-middle w-125px">
+                    {course?.category?.name}
+                  </td>
+                  <td className="align-middle text-end w-250px">
+                    <div className="d-flex align-items-center justify-content-end">
+                      <div className="symbol symbol-50px symbol-circle me-5">
+                        <img
+                          className="symbol-label bg-gray-600"
+                          src={
+                            course.createdBy.user.avatarImageId ??
+                            "/media/avatars/blank.png"
+                          }
+                          width={50}
+                          height={50}
+                          alt=""
+                        />
+                      </div>
+                      <div className="d-flex flex-column">
+                        <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {course.createdBy.user.name}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="fw-bold text-muted align-middle w-125px">
-                  {course?.category?.name}
-                </td>
-                <td className="align-middle text-end w-250px">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <div className="symbol symbol-50px symbol-circle me-5">
-                      <img
-                        className="symbol-label bg-gray-600"
-                        src={
-                          course.createdBy.user.avatarImageId ??
-                          "/media/avatars/blank.png"
-                        }
-                        width={50}
-                        height={50}
-                        alt=""
-                      />
-                    </div>
-                    <div className="d-flex flex-column">
-                      <span className="text-muted text-hover-primary cursor-pointer fs-6 fw-bold">
-                        {course.createdBy.user.name}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-                <td className="align-middle text-end text-muted fw-bold w-125px">
-                  {currencyFormatter(course.sellingPrice ?? 0)}
-                </td>
-                <td className="align-middle text-end text-muted fw-bold w-150px">
-                  {formatDate(course.createdAt)}
-                </td>
-                <td className="align-middle text-end text-muted fw-bold w-150px">
-                  {course._count.enrollments}
-                </td>
-                <td className="align-middle text-end">
-                  <p>
-                    {" "}
-                    <Badge
-                      label={course.status}
-                      badgeColor={getStatusBadgeColor(course.status)}
-                    />{" "}
-                  </p>
-                </td>
-                <td className="align-middle text-end ">
-                  <Dropdown
-                    styleType="solid"
-                    options={[
-                      { label: "Action", value: "all" },
-                      { label: "Aktif", value: "active" },
-                      { label: "Tidak Aktif", value: "inactive" },
-                    ]}
-                    onValueChange={() => {}}
-                  />
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-125px">
+                    {currencyFormatter(course.basePrice ?? 0)}
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                    {formatDate(course.createdAt)}
+                  </td>
+                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                    {course._count.enrollments}
+                  </td>
+                  <td className="align-middle text-end">
+                    <p>
+                      {" "}
+                      <Badge
+                        label={course.status}
+                        badgeColor={getStatusBadgeColor(course.status)}
+                      />{" "}
+                    </p>
+                  </td>
+                  <td className="align-middle text-end ">
+                    <Dropdown
+                      styleType="solid"
+                      options={[
+                        { label: "Action", value: "all" },
+                        { label: "Aktif", value: "active" },
+                        { label: "Tidak Aktif", value: "inactive" },
+                      ]}
+                      onValueChange={() => {}}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </KTTable>
         </>
       )}

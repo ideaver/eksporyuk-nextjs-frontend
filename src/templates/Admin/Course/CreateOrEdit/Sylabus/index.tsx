@@ -76,8 +76,8 @@ const CourseSylabusPage = () => {
     }
   };
   const handleRemoveSection = (index: number) => {
-    const newLesson = currentLessonsSelector.filter((_, i) => i !== index);
-    dispatch(changeLessons(newLesson));
+    const newSection =  currentCourseSectionSelector.filter((_, i) => i !== index);
+    dispatch(changeSections(newSection));
   };
 
   const handleEditSection = (newSection: ICourseSectionData) => {

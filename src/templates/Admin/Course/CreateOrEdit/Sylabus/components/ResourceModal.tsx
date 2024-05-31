@@ -117,8 +117,8 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
   useEffect(() => {
     if (isEdit) {
       const files: File[] = [];
-      isEdit.files.forEach((file) => {
-        const fileData = stringToFile(file, "file");
+      isEdit.files?.forEach((file) => {
+        const fileData = stringToFile(file.fileUrl,file.fileName);
         files.push(fileData);
       });
       setTitle(isEdit.title);
@@ -253,7 +253,12 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
                   : Math.random().toString(36).substr(2, 9),
               title: title,
               description: description,
-              files: filesString,
+              files: filesString.map((convertedFile, index) => {
+                return {
+                  fileUrl: convertedFile,
+                  fileName: files[index].name,
+                };
+              }),
             });
             handleReset();
           }}

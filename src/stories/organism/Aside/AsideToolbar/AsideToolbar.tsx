@@ -42,7 +42,7 @@ const AsideToolbar = () => {
               <span className="text-gray-600 fw-bold d-block fs-8 mb-1">
                 {session?.user.role === "ADMIN"
                   ? "ADMIN"
-                  : `${session?.user.role} | ADMIN`}
+                  : `ADMIN`}
               </span>
               {/*end::Description*/}
 
