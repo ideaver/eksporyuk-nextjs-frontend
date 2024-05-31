@@ -32,6 +32,14 @@ const CoursePage = ({}) => {
     searchProduct,
     setSearchProduct,
     calculateTotalPage,
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    productsLength
   } = useProductsViewModel();
 
   return (
@@ -50,10 +58,13 @@ const CoursePage = ({}) => {
             selectAll={selectAll}
           />
           <Footer
-            skipPage={skipPage}
-            setSkipPage={setSkipPage}
-            setTakePage={setTakePage}
-            totalPage={calculateTotalPage}
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            findSkip={(val) => {}}
+            findTake={(val) => {
+              setFindTake(val);
+            }}
           />
         </KTCardBody>
       </KTCard>
@@ -377,9 +388,18 @@ const Body = ({
   );
 };
 
-const Footer = ({ skipPage, setSkipPage, setTakePage, totalPage }: any) => {
-  if (skipPage === 0) skipPage = 1;
-
+const Footer = ({
+  currentPage,
+  setCurrentPage,
+  findTake,
+  pageLength,
+}: {
+  findTake: (val: number) => void;
+  findSkip: (val: number) => void;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+}) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -390,18 +410,15 @@ const Footer = ({ skipPage, setSkipPage, setTakePage, totalPage }: any) => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={(e) => setTakePage(e)}
+          onValueChange={(val) => findTake(val as number)}
         />
       </div>
       <div className="col-auto">
         <Pagination
-          total={totalPage()}
-          current={skipPage}
+          total={pageLength}
+          current={currentPage}
           maxLength={5}
-          onPageChange={(e) => {
-            if (e === 1) e = 0;
-            setSkipPage(e);
-          }}
+          onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
     </div>

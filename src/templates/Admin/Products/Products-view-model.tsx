@@ -73,7 +73,49 @@ const useCheckbox = (
   };
 };
 
+// Pagination related functions
+const usePagination = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [findSkip, setFindSkip] = useState(0);
+  const [findTake, setFindTake] = useState(10);
+  const productsLength = useProductServiceFindManyQuery();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setFindSkip((page - 1) * findTake);
+  }; 
+  
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (productsLength.data?.productServiceFindMany?.length ?? 0) / findTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    productsLength
+  };
+};
+
 const useProductsViewModel = () => {
+  const {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    productsLength
+  } = usePagination();
+
   // Local states
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
@@ -82,8 +124,8 @@ const useProductsViewModel = () => {
   // Query process
   const productServiceFindMany = useProductServiceFindManyQuery({
     variables: {
-      take: Number(takePage),
-      skip: skipPage,
+      take: parseInt(findTake.toString()),
+      skip: findSkip,
       where: {
         name: {
           contains: searchProduct,
@@ -92,13 +134,6 @@ const useProductsViewModel = () => {
       }
     }
   });
-
-  // Calculating total page
-  const calculateTotalPage = () => {
-    return Math.ceil(
-      (productServiceFindMany.data?.productServiceFindMany?.length ?? 0) / takePage
-    );
-  };
 
   // Checkbox stuff
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
@@ -116,6 +151,14 @@ const useProductsViewModel = () => {
     setSkipPage,
     searchProduct,
     setSearchProduct,
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    productsLength
   };
 };
 
