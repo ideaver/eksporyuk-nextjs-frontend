@@ -1,0 +1,15 @@
+query AffiliatorCouponFindLength(
+  $where: AffiliatorCouponWhereInput
+  $orderBy: [AffiliatorCouponOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  affiliatorCouponFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+  }
+}

@@ -9,6 +9,12 @@ import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckB
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import useKuponAffiliasiViewModel from "./KuponAffiliasi-view-model";
+import {
+  AffiliatorFindOneQuery,
+  DiscountTypeEnum,
+} from "@/app/service/graphql/gen/graphql";
+import { QueryResult } from "@apollo/client";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 let couponIds: number[] = [];
 const CouponAffiliatePage = ({ data }: any) => {
@@ -19,17 +25,23 @@ const CouponAffiliatePage = ({ data }: any) => {
 
   const { useCheckbox } = useKuponAffiliasiViewModel();
 
-  const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } = useCheckbox(data);
+  const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
+    useCheckbox(data);
 
   // An array of checked coupon ids
   couponIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
   return (
     <>
-      <CreateCouponModal show={showModal} onClose={() => {
-        setShowModal(false);
-        setIsEdit(false);
-      }} isEdit={isEdit} couponId={couponId} />
+      <CreateCouponModal
+        show={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setIsEdit(false);
+        }}
+        isEdit={isEdit}
+        couponId={couponId}
+      />
       <DeleteCouponModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
@@ -50,7 +62,9 @@ const CouponAffiliatePage = ({ data }: any) => {
               Tambah Kupon
             </button>
             <button
-              className={`ms-auto d-inline btn btn-danger ${couponIds.length !== 0 ? "d-inline-block" : "d-none"}`}
+              className={`ms-auto d-inline btn btn-danger ${
+                couponIds.length !== 0 ? "d-inline-block" : "d-none"
+              }`}
               onClick={() => setShowDeleteModal(true)}
             >
               Hapus Kupon
@@ -87,7 +101,7 @@ const CouponAffiliatePage = ({ data }: any) => {
               <th className="min-w-200px">Kupon Utama</th>
               <th className="text-end min-w-200px">Pemilik</th>
               <th className="text-end min-w-200px">Diskon</th>
-              <th className="text-end min-w-200px">Penggunaan</th>
+              {/* <th className="text-end min-w-200px">Penggunaan</th> */}
               <th className="text-end min-w-100px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
@@ -107,19 +121,25 @@ const CouponAffiliatePage = ({ data }: any) => {
                         <>{coupon.code}</>
                       </CheckBoxInput>
                     </td>
-                    <td className="align-middle ">{coupon.code}</td>
+                    <td className="align-middle ">
+                      {coupon?.extendedFrom?.code}
+                    </td>
                     <td className="align-middle text-end text-muted fw-bold w-150px">
                       {coupon.createdBy.user.name}
                     </td>
                     <td className="align-middle text-end text-muted fw-bold w-150px">
-                      %50
+                      {coupon?.coupon?.type === DiscountTypeEnum.Amount
+                        ? formatCurrency(coupon?.coupon?.value)
+                        : coupon?.coupon?.value + "%"}
                     </td>
-                    <td className="align-middle text-end text-muted fw-bold w-150px">
-                      41
-                    </td>
+                    {/* <td className="align-middle text-end text-muted fw-bold w-150px">
+                      {coupon?.extendedFrom?._count?.extendedByCourses}
+                    </td> */}
                     <td className="align-middle text-end text-muted fw-bold w-150px">
                       <Badge
-                        badgeColor={coupon.coupon.isActive ? "success" : "danger"}
+                        badgeColor={
+                          coupon.coupon.isActive ? "success" : "danger"
+                        }
                         label={coupon.coupon.isActive ? "Aktif" : "Tidak Aktif"}
                         onClick={function noRefCheck() {}}
                       />

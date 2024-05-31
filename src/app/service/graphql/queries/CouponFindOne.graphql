@@ -1,0 +1,13 @@
+query CouponFindOne($where: CouponWhereUniqueInput!) {
+  couponFindOne(where: $where) {
+    id
+    isActive
+    value
+    type
+    endDate
+    platformCoupon {
+      code
+      createdById
+    }
+  }
+}

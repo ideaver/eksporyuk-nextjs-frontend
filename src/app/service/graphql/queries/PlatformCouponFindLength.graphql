@@ -1,0 +1,15 @@
+query PlatformCouponFindLength(
+  $where: PlatformCouponWhereInput
+  $orderBy: [PlatformCouponOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  platformCouponFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+  }
+}

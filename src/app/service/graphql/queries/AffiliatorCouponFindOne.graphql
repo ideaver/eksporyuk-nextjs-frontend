@@ -1,0 +1,48 @@
+query AffiliatorCouponFindOne($where: AffiliatorCouponWhereUniqueInput!) {
+  affiliatorCouponFindOne(where: $where) {
+    id
+    code
+    extendedFromId
+    createdById
+    extendedFrom {
+      id
+      code
+      createdById
+      extendableToUserRoles
+      _count {
+        extendedByCourses
+      }
+    }
+    createdBy {
+      id
+      user {
+        avatarImageId
+        email
+        id
+        name
+      }
+    }
+    coupon {
+      id
+      description
+      startDate
+      endDate
+      isHighlight
+      isActive
+      value
+      minOrderTotalAmountValue
+      maxOrderTotalAmountValue
+      minOrderQuantityValue
+      maxOrderQuantityValue
+      maxClaimPerUser
+      claimerQuota
+      freeDelivery
+      lastClaimAt
+      createdAt
+      updatedAt
+      imageId
+      type
+      source
+    }
+  }
+}

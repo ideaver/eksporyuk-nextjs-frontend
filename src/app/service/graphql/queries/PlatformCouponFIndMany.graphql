@@ -1,0 +1,49 @@
+query PlatformCouponFindMany(
+  $where: PlatformCouponWhereInput
+  $orderBy: [PlatformCouponOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  platformCouponFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    code
+    createdById
+    createdBy {
+      id
+      user {
+        email
+        id
+        phoneId
+        avatarImageId
+        name
+      }
+    }
+    coupon {
+      id
+      description
+      startDate
+      endDate
+      isHighlight
+      isActive
+      value
+      minOrderTotalAmountValue
+      maxOrderTotalAmountValue
+      minOrderQuantityValue
+      maxOrderQuantityValue
+      maxClaimPerUser
+      claimerQuota
+      freeDelivery
+      lastClaimAt
+      createdAt
+      updatedAt
+      imageId
+      type
+      source
+    }
+  }
+}

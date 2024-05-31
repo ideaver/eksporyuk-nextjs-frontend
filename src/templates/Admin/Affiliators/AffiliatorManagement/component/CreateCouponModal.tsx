@@ -4,10 +4,10 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import CurrencyInput from "react-currency-input-field";
 
-import {
-  useAffiliatorCouponFindManyQuery,
-} from "@/app/service/graphql/gen/graphql";
-import useKuponAffiliasiViewModel from "../Detail/KuponAffiliasi/KuponAffiliasi-view-model";
+import { useAffiliatorCouponFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import useKuponAffiliasiViewModel, {
+  usePlatformCouponDropdown,
+} from "../Detail/KuponAffiliasi/KuponAffiliasi-view-model";
 
 import { KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -24,9 +24,11 @@ import {
   changeValue,
   changeAllowAffiliator,
 } from "@/features/reducers/affiliators/couponReducer";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
   const dispatch = useDispatch();
+  const { loadOptions }: any = usePlatformCouponDropdown();
 
   const {
     couponCode,
@@ -46,6 +48,8 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
     onEdit,
     dateFormatter,
     handleChangeValue,
+    setPlatformCoupon,
+    platformCoupon,
   } = useKuponAffiliasiViewModel();
 
   const affiliatorCoupon = useAffiliatorCouponFindManyQuery({
@@ -74,7 +78,6 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
       dispatch(changeAllowAffiliator(false));
     };
 
-
     if (isEdit) {
       affiliatorCoupon.data?.affiliatorCouponFindMany?.map((coupon: any) => {
         dispatch(changeCouponCode(coupon.code));
@@ -85,7 +88,12 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
     } else {
       resetFormData();
     }
-  }, [affiliatorCoupon.data?.affiliatorCouponFindMany, dateFormatter, dispatch, isEdit]);
+  }, [
+    affiliatorCoupon.data?.affiliatorCouponFindMany,
+    dateFormatter,
+    dispatch,
+    isEdit,
+  ]);
 
   return (
     <Modal
@@ -125,8 +133,19 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
             }}
           />
           <p className="fw-bold fs-6 text-muted">Nama/Kode Kupon</p>
+          <h4>Parent Kupon</h4>
         </div>
-        <div>
+        <div className="min-h-100px">
+          <AsyncPaginate
+            className="min-w-200px "
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              setPlatformCoupon(value);
+            }}
+          ></AsyncPaginate>{" "}
+          <p className="fw-bold fs-6 text-muted">Pilih Parent Kupon</p>
+        </div>
+        {/* <div>
           <h4 className="required fw-bold text-gray-700">Status</h4>
           <Dropdown
             options={[
@@ -137,11 +156,11 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
             onValueChange={(value: any) => handleStatusChange(value)}
           ></Dropdown>
           <p className="text-muted fw-bold mt-5">Atur Status</p>
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <h4 className="required fw-bold text-gray-700">Besar Potongan</h4>
           <div className="w-100">
-            {/* <TextField
+            <TextField
               classNames=""
               styleType="outline"
               size="medium"
@@ -152,7 +171,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
                 onChange: setValue,
               }}
             /> */}
-            <CurrencyInput
+        {/* <CurrencyInput
               className="form-control"
               id="price-field"
               name="price"
@@ -169,8 +188,8 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
           <p className="fw-bold fs-6 text-muted">
             Besar dan jenis potongan yang didapatkan
           </p>
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <h4 className="required fw-bold text-gray-700">
             Batas Waktu Penggunaan
           </h4>
@@ -223,7 +242,7 @@ const CreateCouponModal = ({ show, onClose, isEdit, couponId }: any) => {
               affiliasi
             </p>
           </div>
-        </div>
+        </div> */}
         <button
           className="btn btn-primary w-100 mt-3"
           onClick={
