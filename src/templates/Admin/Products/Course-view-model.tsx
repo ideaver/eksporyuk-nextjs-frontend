@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Kelas",
-    path: "/admin/courses",
+    title: "Manajemen Produk",
+    path: "/admin/products",
     isSeparator: false,
     isActive: false,
   },
