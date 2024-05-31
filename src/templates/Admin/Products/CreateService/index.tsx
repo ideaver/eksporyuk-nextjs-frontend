@@ -378,7 +378,7 @@ const CreateService = () => {
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
 
-          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit}>
+          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit} disabled={isLoading}>
             {isLoading ? "Submit Data..." : "Buat Service"}
           </button>
         </KTCardBody>

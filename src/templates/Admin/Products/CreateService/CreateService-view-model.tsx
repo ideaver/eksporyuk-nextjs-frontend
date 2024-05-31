@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -18,6 +18,7 @@ import {
 } from "@/features/reducers/products/serviceReducer";
 import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { postDataAPI } from "@/app/service/api/rest-service";
+import useProductsViewModel from "../Products-view-model";
 
 export const breadcrumbs = [
   {
@@ -265,7 +266,13 @@ const useCreateServiceViewModel = () => {
   );
 
   // Graphql, mutation operation
-  const [productServiceCreateMutation] = useProductServiceCreateOneMutation();
+  const { productServiceFindMany } = useProductsViewModel();
+
+  const [productServiceCreateMutation] = useProductServiceCreateOneMutation({
+    onCompleted: () => {
+      productServiceFindMany.refetch();
+    }
+  });
 
   const handleProductServiceCreateMutation = async ({
     serviceType,
@@ -355,7 +362,8 @@ const useCreateServiceViewModel = () => {
       console.log(error);
     } finally {
       setIsLoading(false);
-      router.push("/admin/products");
+      await router.push("/admin/products");
+      router.reload();
     }
   };
 

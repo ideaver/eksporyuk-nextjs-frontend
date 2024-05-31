@@ -122,7 +122,7 @@ export const adminMenus: MenuSection[] = [
         subItems: [
           {
             title: "Semua Produk",
-            to: "/admin/products/product",
+            to: "/admin/products",
             icon: "parcel",
           },
           // {
