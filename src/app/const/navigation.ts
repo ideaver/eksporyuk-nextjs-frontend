@@ -175,6 +175,11 @@ export const adminMenus: MenuSection[] = [
         to: "/admin/feedback",
         icon: "message-notif",
       },
+      {
+        title: "Manajemen Aktifitas",
+        to: "/admin/activity",
+        icon: "people",
+      },
     ],
     section: "Menu Admin",
   },
