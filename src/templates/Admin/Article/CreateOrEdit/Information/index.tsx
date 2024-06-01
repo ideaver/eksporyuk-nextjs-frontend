@@ -66,7 +66,11 @@ const InformationPage = () => {
         active={isLoading}
         spinner
       >
-        <form onSubmit={formik.handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <div className="row gx-8">
             <Aside
               handleCategoryChange={handleCategoryChange}

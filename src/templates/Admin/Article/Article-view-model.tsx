@@ -36,73 +36,11 @@ const usePagination = (
 ) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const articleLength = useArticleFindLengthQuery({
-    variables: {
-      where: {
-        OR: [
-          {
-            title: {
-              contains: articleFindSearch,
-              mode: QueryMode.Insensitive,
-            },
-            isActive: {
-              equals:
-                articleFindStatus === "true"
-                  ? true
-                  : articleFindStatus === "false"
-                  ? false
-                  : null,
-            },
-            category: {
-              some: {
-                id: {
-                  equals:
-                    articleFindCategory === 0 ? null : articleFindCategory,
-                },
-              },
-            },
-          },
-          {
-            createdByAdmin: {
-              is: {
-                user: {
-                  is: {
-                    name: {
-                      contains: articleFindSearch,
-                      mode: QueryMode.Insensitive,
-                    },
-                  },
-                },
-              },
-            },
-            isActive: {
-              equals:
-                articleFindStatus === "true"
-                  ? true
-                  : articleFindStatus === "false"
-                  ? false
-                  : null,
-            },
-            category: {
-              some: {
-                id: {
-                  equals:
-                    articleFindCategory === 0 ? null : articleFindCategory,
-                },
-              },
-            },
-          },
-        ],
-      },
-    },
-  });
+  const articleLength = useArticleFindLengthQuery({});
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setArticleFindSkip((page - 1) * articleFindTake);
-    if (currentPage >= 2) {
-      setArticleFindSkip(0);
-    }
   };
 
   const length: number | undefined =
@@ -111,6 +49,22 @@ const usePagination = (
   const calculateTotalPage = () => {
     return Math.ceil((length as number) / 10);
   };
+
+  useEffect(() => {
+    if (
+      articleFindCategory != 0 ||
+      articleFindSearch.length > 0 ||
+      articleFindStatus != "all"
+    ) {
+      setCurrentPage(1);
+      setArticleFindSkip(0);
+    }
+  }, [
+    articleFindCategory,
+    articleFindSearch,
+    articleFindStatus,
+    setArticleFindSkip,
+  ]);
   return {
     currentPage,
     setCurrentPage,

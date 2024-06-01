@@ -1,0 +1,11 @@
+mutation PlatformCouponUpdateOne(
+  $data: PlatformCouponUpdateInput!
+  $where: PlatformCouponWhereUniqueInput!
+) {
+  platformCouponUpdateOne(data: $data, where: $where) {
+    id
+    code
+    createdById
+    extendableToUserRoles
+  }
+}
