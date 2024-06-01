@@ -1,0 +1,12 @@
+query ActivityFindMany($skip: Int, $take: Int, $where: ActivityWhereInput) {
+  activityFindMany(skip: $skip, take: $take, where: $where) {
+    title
+    type
+    updatedAt
+    userId
+    user {
+      name
+      role
+    }
+  }
+}
