@@ -1,9 +1,13 @@
-import { CourseDurationTypeEnum, CourseLevelEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  CourseDurationTypeEnum,
+  CourseLevelEnum,
+} from "@/app/service/graphql/gen/graphql";
 import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CourseState {
+  id?: string;
   thumbnail: string;
   status: string;
   courseName: string;
@@ -21,6 +25,7 @@ interface CourseState {
 }
 
 const initialState: CourseState = {
+  id: "",
   thumbnail: "/media/avatars/blank.png",
   status: "draft",
   courseName: "",
@@ -42,6 +47,9 @@ export const courseSlice = createSlice({
   initialState,
   reducers: {
     resetCourse: () => initialState,
+    editCourse: (state, action: PayloadAction<CourseState>) => {
+      return action.payload;
+    },
     changeThumbnail: (state, action: PayloadAction<string>) => {
       state.thumbnail = action.payload;
     },
@@ -69,13 +77,19 @@ export const courseSlice = createSlice({
     changeCourseLevel: (state, action: PayloadAction<CourseLevelEnum>) => {
       state.courseLevel = action.payload;
     },
-    changeCourseDuration: (state, action: PayloadAction<CourseDurationTypeEnum>) => {
+    changeCourseDuration: (
+      state,
+      action: PayloadAction<CourseDurationTypeEnum>
+    ) => {
       state.courseDuration = action.payload;
     },
     changeObjective: (state, action: PayloadAction<string[]>) => {
       state.objective = action.payload;
     },
-    changeCourseMentor: (state, action: PayloadAction<OptionType[] | undefined>) => {
+    changeCourseMentor: (
+      state,
+      action: PayloadAction<OptionType[] | undefined>
+    ) => {
       state.courseMentor = action.payload;
     },
     changeSections: (state, action: PayloadAction<ICourseSectionData[]>) => {
@@ -102,7 +116,8 @@ export const {
   changeSections,
   changeEditSection,
   changeCourseMentor,
-  changeCourseDuration
+  changeCourseDuration,
+  editCourse,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

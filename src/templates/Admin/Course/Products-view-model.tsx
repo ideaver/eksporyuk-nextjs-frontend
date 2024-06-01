@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Produk",
-    path: "/admin/products",
+    title: "Manajemen Kelas",
+    path: "/admin/courses",
     isSeparator: false,
     isActive: false,
   },

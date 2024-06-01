@@ -1,13 +1,19 @@
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import {
   CourseDurationTypeEnum,
+  CourseLevelEnum,
   CourseStatusEnum,
+  useCourseFindOneQuery,
 } from "@/app/service/graphql/gen/graphql";
+import { RootState } from "@/app/store/store";
+import { editCourse } from "@/features/reducers/course/courseReducer";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { useDispatch, useSelector } from "react-redux";
 import ClassTabBar from "../../TabBar/Products/ClassTabBar";
 import useClassViewModel from "./ClassAside-view-model";
 interface AsideProductLayoutProps {
@@ -28,6 +34,107 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
     createCourseError,
   } = useClassViewModel();
   const router = useRouter();
+
+  const isEdit = router.query.action === "edit";
+  const courseId = router.query.id as string;
+
+  const {
+    data: courseFindData,
+    loading,
+    error,
+  } = useCourseFindOneQuery({
+    variables: {
+      where: {
+        id: parseInt(courseId),
+      },
+    },
+  });
+  const dispatch = useDispatch();
+  const currentCourseData = useSelector((state: RootState) => state.course);
+  const courseData = courseFindData?.courseFindOne;
+  useEffect(() => {
+    if (isEdit && (!currentCourseData || currentCourseData.id !== courseId)) {
+      dispatch(
+        editCourse({
+          id: courseData?.id.toString() || "",
+          courseName: courseData?.title || "",
+          classDescription: courseData?.description || "",
+          price: courseData?.basePrice.toString() || "",
+          courseAuthor: courseData?.createdBy.user.name || "",
+          courseDuration:
+            courseData?.duration || CourseDurationTypeEnum.ThreeMonths,
+          courseLevel: courseData?.level || CourseLevelEnum.Beginner,
+          courseMentor:
+            courseData?.mentors?.map((mentor) => ({
+              value: mentor.id,
+              label: mentor.user.name,
+            })) || [],
+          introVideo: courseData?.videoUrlId || "",
+          objective: courseData?.objective || [],
+          thumbnail: courseData?.images?.[0].path ?? "",
+          status: courseData?.status ?? CourseStatusEnum.Published,
+          sections:
+            courseData?.sections?.map((section) => ({
+              id: section.id?.toString() ?? "",
+              description: section.description ?? "",
+              title: section.name ?? "",
+              lessons:
+                section.lessons?.map((lesson) => ({
+                  id: lesson.id?.toString() ?? "",
+                  title: lesson.title ?? "",
+                  lessonType: "Video",
+                  content: {
+                    content: lesson.description ?? "",
+                    videoUrl: lesson.material?.path ?? "",
+                  },
+                })) ?? [],
+              quizs: section.quizzes
+                ? section.quizzes.map((quiz) => {
+                    const quizTypeSelection = quiz?.questions?.some(
+                      (item) => item.type === "TRUE_FALSE"
+                    )
+                      ? "Pilihan Ganda"
+                      : "Jawaban Ganda";
+                    return {
+                      id: quiz.id?.toString() ?? "",
+                      quizBasic: {
+                        quizName: quiz.title ?? "",
+                        quizType: quizTypeSelection,
+                      },
+                      quizSylabus: {
+                        quizDescription: quiz.description ?? "",
+                        quizs:
+                          quiz.questions?.map((question) => ({
+                            id: question.id?.toString() ?? "",
+                            quizDescription: question.text ?? "",
+                            quizQuestion:
+                              question.options?.map((option) => ({
+                                id: option.id?.toString() ?? "",
+                                option: option.optionText ?? "",
+                                isCorrect: option.isCorrect ?? false,
+                              })) ?? [],
+                          })) ?? [],
+                      },
+                    };
+                  })
+                : [],
+              resources:
+                section.resources?.map((resource) => ({
+                  id: resource.id?.toString() ?? "",
+                  title: resource.name ?? "",
+                  description: resource.description ?? "",
+                  files:
+                    resource.files?.map((material) => ({
+                      fileUrl: material.path ?? "",
+                      fileName: material.path ?? "",
+                    })) ?? [],
+                })) ?? [],
+            })) ?? [],
+        })
+      );
+    }
+  }, []);
+
   return (
     <LoadingOverlayWrapper
       styles={{
@@ -43,7 +150,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
           },
         }),
       }}
-      active={isLoading}
+      active={loading || isLoading}
       spinner
     >
       <div className="row gx-10">
@@ -124,8 +231,18 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
         </div>
 
         <div className="col-lg-9">
-          <ClassTabBar urlType="create"></ClassTabBar>
-          {createCourseError && <Alert title="Terjadi Masalah" label={createCourseError} alertColor="danger" dismissable/>}
+          <ClassTabBar
+            urlType={isEdit ? "edit" : "create"}
+            id={courseId}
+          ></ClassTabBar>
+          {createCourseError && (
+            <Alert
+              title="Terjadi Masalah"
+              label={createCourseError}
+              alertColor="danger"
+              dismissable
+            />
+          )}
           {children}
 
           <div className={"row flex-end mt-10"}>

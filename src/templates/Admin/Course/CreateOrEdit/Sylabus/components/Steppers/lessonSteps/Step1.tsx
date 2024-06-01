@@ -94,7 +94,8 @@ const Step1 = ({ data, updateData, hasError }: StepProps) => {
             {/*end::Option */}
 
             {/*begin:Option */}
-            <label className="d-flex align-items-center justify-content-between mb-6 cursor-pointer">
+            {/* MIGHT BE FUTURE USE */}
+            {/* <label className="d-flex align-items-center justify-content-between mb-6 cursor-pointer">
               <span className="d-flex align-items-center me-2">
                 <span className="symbol symbol-50px me-6">
                   <span className="symbol-label bg-light-primary">
@@ -127,7 +128,7 @@ const Step1 = ({ data, updateData, hasError }: StepProps) => {
                   }
                 />
               </span>
-            </label>
+            </label> */}
             {/*end::Option */}
           </div>
         </div>

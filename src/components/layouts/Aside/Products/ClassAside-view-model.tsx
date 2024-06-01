@@ -255,7 +255,7 @@ const useNavigation = () => {
       try {
         await createCourse.createCourse();
         setIsLoading(false);
-        dispatch(resetCourse);
+        dispatch(resetCourse());
         router.push(`/admin/courses`);
       } catch (error: any) {
         console.log("TERJADI ERROR DI:", (error as ApolloError).message);

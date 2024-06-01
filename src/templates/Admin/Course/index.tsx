@@ -367,15 +367,24 @@ const Body = ({
                     </p>
                   </td>
                   <td className="align-middle text-end ">
-                    <Dropdown
-                      styleType="solid"
-                      options={[
-                        { label: "Action", value: "all" },
-                        { label: "Aktif", value: "active" },
-                        { label: "Tidak Aktif", value: "inactive" },
-                      ]}
-                      onValueChange={() => {}}
-                    />
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link href={"/admin/courses/edit/information?id=" + course.id} className="dropdown-item">Edit</Link>
+                        </li>
+                        <li>
+                          <button className="dropdown-item">Hapus</button>
+                        </li>
+                      </ul>
+                    </div>
                   </td>
                 </tr>
               );
