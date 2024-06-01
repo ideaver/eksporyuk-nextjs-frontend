@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -18,6 +18,7 @@ import {
 } from "@/features/reducers/products/serviceReducer";
 import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { postDataAPI } from "@/app/service/api/rest-service";
+import useProductsViewModel from "../Products-view-model";
 
 export const breadcrumbs = [
   {
@@ -67,15 +68,22 @@ const ObjectiveHandler = () => {
   const serviceObjective = useSelector(
     (state: RootState) => state.service.serviceObjective
   );
-  const [itemObjective, setItemObjective] =
-    useState<string[]>(serviceObjective);
+  const [itemObjective, setItemObjective] = useState<string[]>(serviceObjective);
+
+  useEffect(() => {
+    setItemObjective(serviceObjective);
+  }, [serviceObjective]);
+
+  useEffect(() => {
+    dispatch(changeServiceObjective(itemObjective));
+  }, [itemObjective, dispatch]);
 
   const addObjectiveItem = () => {
     setItemObjective((prevItems) => [...prevItems, ""]);
   };
 
   const removeObjectiveItem = (index: number) => {
-    setItemObjective((prevItems) => prevItems.filter((item, i) => i !== index));
+    setItemObjective((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const handleInputObjectiveChange = (index: number, newValue: string) => {
@@ -83,8 +91,6 @@ const ObjectiveHandler = () => {
       prevItems.map((item, i) => (i === index ? newValue : item))
     );
   };
-
-  dispatch(changeServiceObjective(itemObjective));
 
   return {
     itemObjective,
@@ -99,15 +105,22 @@ const PortfolioHandler = () => {
   const servicePortfolio = useSelector(
     (state: RootState) => state.service.servicePortfolio
   );
-  const [itemPortfolio, setItemPortfolio] =
-    useState<string[]>(servicePortfolio);
+  const [itemPortfolio, setItemPortfolio] = useState<string[]>(servicePortfolio);
+
+  useEffect(() => {
+    setItemPortfolio(servicePortfolio);
+  }, [servicePortfolio]);
+
+  useEffect(() => {
+    dispatch(changeServicePortfolio(itemPortfolio));
+  }, [itemPortfolio, dispatch]);
 
   const addPortfolioItem = () => {
     setItemPortfolio((prevItems) => [...prevItems, ""]);
   };
 
   const removePortfolioItem = (index: number) => {
-    setItemPortfolio((prevItems) => prevItems.filter((item, i) => i !== index));
+    setItemPortfolio((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const handleInputPortfolioChange = (index: number, newValue: string) => {
@@ -115,8 +128,6 @@ const PortfolioHandler = () => {
       prevItems.map((item, i) => (i === index ? newValue : item))
     );
   };
-
-  dispatch(changeServicePortfolio(itemPortfolio));
 
   return {
     itemPortfolio,
@@ -134,6 +145,8 @@ const useCreateServiceViewModel = () => {
 
   // Local state
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redux state & action
   const [serviceType, setServiceType] = useField(
@@ -195,7 +208,6 @@ const useCreateServiceViewModel = () => {
     });
 
     const url = await response?.data;
-    console.log(response?.data);
     return response?.data;
   }
 
@@ -204,7 +216,8 @@ const useCreateServiceViewModel = () => {
     if (!files) return;
 
     const newImageObjects: { path: string; fileType: string }[] = [];
-    const newImgObj: { path: string }[] = [];
+    // const newImgObj: { path: string }[] = [];
+    const newSelectedFiles: File[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -218,19 +231,21 @@ const useCreateServiceViewModel = () => {
         });
 
         // upload to the backend
-        newImgObj.push({
-          path: await convertImg(files[i]) as string,
-        })
+        // newImgObj.push({
+        //   path: await convertImg(files[i]) as string,
+        // })
 
         if (newImageObjects.length === files.length) {
           const updatedImages = [...serviceImages, ...newImageObjects];
-          const updatedImg = [...uploadImages, ...newImgObj];
-          dispatch(changeUploadImages(updatedImg));
+          // const updatedImg = [...uploadImages, ...newImgObj];
+          // dispatch(changeUploadImages(updatedImg));
           dispatch(changeServiceImages(updatedImages));
+          setSelectedFiles(prevFiles => [...prevFiles, ...newSelectedFiles]);
         }
       };
 
       reader.readAsDataURL(file);
+      newSelectedFiles.push(file);
     }
   };
 
@@ -261,7 +276,13 @@ const useCreateServiceViewModel = () => {
   );
 
   // Graphql, mutation operation
-  const [productServiceCreateMutation] = useProductServiceCreateOneMutation();
+  const { productServiceFindMany } = useProductsViewModel();
+
+  const [productServiceCreateMutation] = useProductServiceCreateOneMutation({
+    onCompleted: () => {
+      productServiceFindMany.refetch();
+    }
+  });
 
   const handleProductServiceCreateMutation = async ({
     serviceType,
@@ -271,9 +292,8 @@ const useCreateServiceViewModel = () => {
     serviceStatus,
     serviceObjective,
     servicePortfolio,
+    uploadImages
   }: any) => {
-    console.log("handleProduct", serviceImages);
-
     const data = await productServiceCreateMutation({
       variables: {
         data: {
@@ -325,7 +345,14 @@ const useCreateServiceViewModel = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
+      // Upload images
+      const uploadPromises = selectedFiles.map(file => convertImg(file));
+      const uploadedImages = await Promise.all(uploadPromises);
+      const uploadImgArray = uploadedImages.map(path => ({ path }));
+
       const data = await handleProductServiceCreateMutation({
         serviceType,
         serviceName,
@@ -334,6 +361,7 @@ const useCreateServiceViewModel = () => {
         serviceStatus,
         serviceObjective,
         servicePortfolio,
+        uploadImages: uploadImgArray,
       });
       const result = data.data;
       console.log(result);
@@ -343,7 +371,9 @@ const useCreateServiceViewModel = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      router.push("/admin/products");
+      setIsLoading(false);
+      await router.push("/admin/products");
+      router.reload();
     }
   };
 
@@ -386,6 +416,7 @@ const useCreateServiceViewModel = () => {
     handleRemoveImage,
     onSubmit,
     errorMessage,
+    isLoading,
   };
 };
 
