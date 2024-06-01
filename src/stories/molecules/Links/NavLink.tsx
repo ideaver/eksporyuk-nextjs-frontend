@@ -12,7 +12,9 @@ interface NavLinkProps {
 export const NavLink = ({ children, className, to }: NavLinkProps) => {
   const { asPath } = useRouter();
   const isActive = checkIsActive(asPath, to);
-
+  console.log("AsPath", asPath)
+  console.log("TO",to)
+console.log("ISACTIVE", isActive)
   return (
     <Link
       className={clsx(`nav-link text-active-primary me-6 ${className}`, {

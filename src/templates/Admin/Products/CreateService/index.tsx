@@ -39,6 +39,7 @@ const CreateService = () => {
     handleRemoveImage,
     errorMessage,
     onSubmit,
+    isLoading,
   } = useCreateServiceViewModal();
 
   return (
@@ -72,6 +73,14 @@ const CreateService = () => {
                 value="WEBSITE"
               >
                 Website
+              </RadioInput>
+              <RadioInput
+                name="service-type"
+                onChange={setServiceType}
+                checked={serviceType === "OTHER"}
+                value="OTHER"
+              >
+                Lainnya
               </RadioInput>
             </div>
           </div>
@@ -138,7 +147,6 @@ const CreateService = () => {
                               className="img-fluid rounded object-fit-cover m-2"
                               style={{ maxWidth: "150px" }}
                             />
-
                           ) : (
                             <div>
                               <h4>Loading</h4>
@@ -279,6 +287,84 @@ const CreateService = () => {
             </div>
           )}
 
+          {serviceType === "OTHER" && (
+            <>
+              <div className="mb-3">
+                <h4 className="required fw-bold text-gray-700">
+                  Objektif Service
+                </h4>
+                {itemObjective.map((item: any, index: any) => (
+                  <div className="d-flex mt-5" key={index}>
+                    <div className="w-100">
+                      <TextField
+                        props={{
+                          value: item,
+                          onChange: (e: any) =>
+                            handleInputObjectiveChange(index, e.target.value),
+                        }}
+                      ></TextField>
+                    </div>
+                    <div className="ms-5">
+                      <Buttons
+                        icon="cross"
+                        buttonColor="danger"
+                        showIcon={true}
+                        onClick={() => removeObjectiveItem(index)}
+                      ></Buttons>
+                    </div>
+                  </div>
+                ))}
+                <Buttons
+                  showIcon={true}
+                  mode="light"
+                  classNames="mt-5"
+                  onClick={() => {
+                    addObjectiveItem();
+                  }}
+                >
+                  Tambahkan Objektif
+                </Buttons>
+              </div>
+              
+              <div className="mb-3">
+                <h4 className="required fw-bold text-gray-700">
+                  Portfolio Website
+                </h4>
+                {itemPortfolio.map((item: any, index: any) => (
+                  <div className="d-flex mt-5" key={index}>
+                    <div className="w-100">
+                      <TextField
+                        props={{
+                          value: item,
+                          onChange: (e: any) =>
+                            handleInputPortfolioChange(index, e.target.value),
+                        }}
+                      ></TextField>
+                    </div>
+                    <div className="ms-5">
+                      <Buttons
+                        icon="cross"
+                        buttonColor="danger"
+                        showIcon={true}
+                        onClick={() => removePortfolioItem(index)}
+                      ></Buttons>
+                    </div>
+                  </div>
+                ))}
+                <Buttons
+                  showIcon={true}
+                  mode="light"
+                  classNames="mt-5"
+                  onClick={() => {
+                    addPortfolioItem();
+                  }}
+                >
+                  Tambahkan Portfolio Website
+                </Buttons>
+              </div>
+            </>
+          )}
+
           <div className="mb-5">
             <h4 className="required fw-bold text-gray-700">Status</h4>
             <Dropdown
@@ -292,8 +378,8 @@ const CreateService = () => {
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
 
-          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit}>
-            Buat Service
+          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit} disabled={isLoading}>
+            {isLoading ? "Submit Data..." : "Buat Service"}
           </button>
         </KTCardBody>
       </KTCard>

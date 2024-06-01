@@ -1,0 +1,23 @@
+query ProductServiceFindMany(
+  $where: ProductServiceWhereInput
+  $take: Int
+  $skip: Int
+) {
+  productServiceFindMany(where: $where, take: $take, skip: $skip) {
+    isActive
+    images {
+      path
+    }
+    name
+    portofolio
+    benefits
+    basePrice
+    salePrice
+    id
+    purchaseCount
+    productServiceCategory
+    _count {
+      onCartItems
+    }
+  }
+}

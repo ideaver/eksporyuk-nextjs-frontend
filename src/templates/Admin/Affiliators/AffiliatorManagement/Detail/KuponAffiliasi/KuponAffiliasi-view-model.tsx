@@ -21,8 +21,46 @@ import {
   useCouponUpdateOneMutation,
   AffiliatorFindOneQuery,
   useCouponDeleteManyMutation,
+  usePlatformCouponFindManyQuery,
+  QueryMode,
 } from "@/app/service/graphql/gen/graphql";
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { GroupBase, OptionsOrGroups } from "react-select";
+
+export const usePlatformCouponDropdown = () => {
+  const getCategory = usePlatformCouponFindManyQuery({
+    variables: {
+      where: {},
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<unknown, GroupBase<unknown>>
+  ) {
+    const result =
+      getCategory.data?.platformCouponFindMany?.map((category) => ({
+        value: category.id,
+        label: category.code.toLocaleLowerCase(),
+      })) ?? [];
+    await getCategory.refetch({
+      skip: prevOptions.length,
+      where: {
+        code: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    return {
+      options: result,
+      hasMore: true,
+    };
+  }
+
+  return { loadOptions };
+};
 
 const useField = <T extends string | boolean | number>(
   selector: (state: RootState) => T,
@@ -74,22 +112,24 @@ const useCheckbox = (
 ) => {
   const [selectAll, setSelectAll] = useState(false);
   const [checkedItems, setCheckedItems] = useState(
-    (affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons ?? []).map((item) => ({
-      id: item.id,
-      value: false,
-    }))
+    (affiliatorFindOne?.data?.affiliatorFindOne?.createdCoupons ?? []).map(
+      (item) => ({
+        id: item.id,
+        value: false,
+      })
+    )
   );
 
   useEffect(() => {
     setCheckedItems(
-      (affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons ?? []).map(
+      (affiliatorFindOne?.data?.affiliatorFindOne?.createdCoupons ?? []).map(
         (item) => ({
           id: item.id,
           value: false,
         })
       )
     );
-  }, [affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons]);
+  }, [affiliatorFindOne?.data?.affiliatorFindOne?.createdCoupons]);
 
   const handleSingleCheck = (index: number) => {
     const newCheckedItems = [...checkedItems];
@@ -102,11 +142,13 @@ const useCheckbox = (
   const handleSelectAllCheck = () => {
     setSelectAll(!selectAll);
     setCheckedItems(
-      Array.isArray(affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons)
-        ? affiliatorFindOne.data?.affiliatorFindOne?.createdCoupons?.map((item) => ({
-            id: item.id,
-            value: !selectAll,
-          }))
+      Array.isArray(affiliatorFindOne?.data?.affiliatorFindOne?.createdCoupons)
+        ? affiliatorFindOne?.data?.affiliatorFindOne?.createdCoupons?.map(
+            (item) => ({
+              id: item.id,
+              value: !selectAll,
+            })
+          )
         : []
     );
   };
@@ -123,6 +165,7 @@ const useKuponAffiliasiViewModel = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
+  const [platformCoupon, setPlatformCoupon] = useState<any>();
 
   const { id } = router.query;
 
@@ -164,9 +207,8 @@ const useKuponAffiliasiViewModel = () => {
   const [allowAffiliator, setAllowAffiliator] = useField(
     (state: RootState) => state.coupon.allowAffiliator,
     (value) => changeAllowAffiliator(value)
-  )
+  );
 
-  
   const resetFormData = () => {
     dispatch(changeCouponCode(""));
     dispatch(changeEndDate(""));
@@ -181,43 +223,49 @@ const useKuponAffiliasiViewModel = () => {
   const handleChangeValue = (price: string) => {
     dispatch(changeValue(price));
   };
-  
+
   const handleStatusChange = (status: string) => {
     dispatch(changeIsActive(status === "true"));
   };
-  
+
   // Graphql
   const [couponCreateMutation] = useCouponCreateOneMutation();
-  const [affiliatorCouponDeleteMutation] = useAffiliatorCouponDeleteOneMutation();
+  const [affiliatorCouponDeleteMutation] =
+    useAffiliatorCouponDeleteOneMutation();
   const [couponUpdateMutation] = useCouponUpdateOneMutation();
   const [couponDeleteManyMutation] = useCouponDeleteManyMutation();
 
   // Mutation Data
-  const handleCouponCreateMutation = async ({ couponCode, value, endDate, isActive }: any) => {
+  const handleCouponCreateMutation = async ({
+    couponCode,
+    value,
+    endDate,
+    isActive,
+  }: any) => {
     const data = await couponCreateMutation({
       variables: {
         data: {
           startDate: new Date(),
-          value: Number(value),
-          isActive: Boolean(isActive),
-          endDate,
+          value: 0,
+          // isActive: Boolean(isActive),
+          // endDate,
           type: DiscountTypeEnum.Amount,
           affiliatorCoupon: {
             create: {
               code: couponCode,
               extendedFrom: {
                 connect: {
-                  id: 2,
-                }
+                  id: platformCoupon?.value,
+                },
               },
               createdBy: {
                 connect: {
-                  id: String(id)
-                }
-              }
-            }
-          }
-        }
+                  id: String(id),
+                },
+              },
+            },
+          },
+        },
       },
     });
     return data;
@@ -228,17 +276,23 @@ const useKuponAffiliasiViewModel = () => {
       variables: {
         where: {
           createdById: {
-            equals: String(id)
+            equals: String(id),
           },
           id: Number(couponId),
-        }
-      }
+        },
+      },
     });
 
     return data;
   };
 
-  const handleCouponUpdateMutation = async ({ couponCode, isActive, value, endDate, couponId }: any) => {
+  const handleCouponUpdateMutation = async ({
+    couponCode,
+    isActive,
+    value,
+    endDate,
+    couponId,
+  }: any) => {
     const data = await couponUpdateMutation({
       variables: {
         where: {
@@ -246,7 +300,7 @@ const useKuponAffiliasiViewModel = () => {
         },
         data: {
           isActive: {
-            set: Boolean(isActive)
+            set: Boolean(isActive),
           },
           value: {
             set: Number(value),
@@ -260,11 +314,11 @@ const useKuponAffiliasiViewModel = () => {
                 code: {
                   set: couponCode,
                 },
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     return data;
@@ -277,26 +331,31 @@ const useKuponAffiliasiViewModel = () => {
           affiliatorCoupon: {
             is: {
               id: {
-                in: couponIds
-              }
-            }
-          }
-        }
-      }
+                in: couponIds,
+              },
+            },
+          },
+        },
+      },
     });
 
     return data;
-  }
+  };
 
   // Data Mutation
   const onSubmit = async () => {
-    if (!couponCode || !value || !endDate || !limitUsage) {
+    if (!couponCode) {
       setErrorMessage("All fields are required.");
       return;
     }
 
     try {
-      const data = await handleCouponCreateMutation({couponCode, value, endDate, isActive})
+      const data = await handleCouponCreateMutation({
+        couponCode,
+        value,
+        endDate,
+        isActive,
+      });
       resetFormData();
       const result = data.data;
       router.reload();
@@ -304,7 +363,7 @@ const useKuponAffiliasiViewModel = () => {
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
 
   const onDelete = async (couponId: any) => {
     try {
@@ -317,7 +376,7 @@ const useKuponAffiliasiViewModel = () => {
     } finally {
       router.reload();
     }
-  }
+  };
 
   const onEdit = async (couponId: any) => {
     if (!couponCode) {
@@ -326,7 +385,13 @@ const useKuponAffiliasiViewModel = () => {
     }
 
     try {
-      const data = await handleCouponUpdateMutation({ couponCode, isActive, value, endDate, couponId });
+      const data = await handleCouponUpdateMutation({
+        couponCode,
+        isActive,
+        value,
+        endDate,
+        couponId,
+      });
       const result = data.data;
       resetFormData();
       console.log(result);
@@ -335,7 +400,7 @@ const useKuponAffiliasiViewModel = () => {
     } finally {
       router.reload();
     }
-  }
+  };
 
   const onDeleteMany = async (couponIds: number[]) => {
     try {
@@ -345,9 +410,11 @@ const useKuponAffiliasiViewModel = () => {
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
 
   return {
+    platformCoupon,
+    setPlatformCoupon,
     isFreeDelivery,
     setIsFreeDelivery,
     couponCode,

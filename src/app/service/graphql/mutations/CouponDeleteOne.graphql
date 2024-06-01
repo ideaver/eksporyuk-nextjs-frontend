@@ -1,0 +1,3 @@
+mutation CouponDeleteOne($where: CouponWhereUniqueInput!) {
+  couponDeleteOne(where: $where)
+}

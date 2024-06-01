@@ -61,6 +61,12 @@ query CourseFindMany(
       updatedAt
       accessibility
       courseId
+      _count {
+        lessons
+        quizzes
+        assignments
+        resources
+      }
     }
     createdBy {
       id

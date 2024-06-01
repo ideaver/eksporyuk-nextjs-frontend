@@ -12,6 +12,7 @@ interface CouponState {
   endDate: string;
   limitUsage: number;
   allowAffiliator: boolean;
+  couponLoading: boolean;
 }
 
 const initialState: CouponState = {
@@ -24,7 +25,8 @@ const initialState: CouponState = {
   endDate: "2024-06-01",
   limitUsage: 0,
   allowAffiliator: false,
-}
+  couponLoading: false,
+};
 
 export const couponSlice = createSlice({
   name: "coupon",
@@ -56,8 +58,11 @@ export const couponSlice = createSlice({
     },
     changeAllowAffiliator: (state, action: PayloadAction<boolean>) => {
       state.allowAffiliator = action.payload;
-    }
-  }
+    },
+    changeCouponLoading: (state, action: PayloadAction<boolean>) => {
+      state.couponLoading = action.payload;
+    },
+  },
 });
 
 export const {
@@ -70,6 +75,7 @@ export const {
   changeEndDate,
   changeLimitUsage,
   changeAllowAffiliator,
+  changeCouponLoading,
 } = couponSlice.actions;
 
 export default couponSlice.reducer;

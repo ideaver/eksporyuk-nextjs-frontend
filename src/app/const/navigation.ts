@@ -111,8 +111,16 @@ export const adminMenus: MenuSection[] = [
             to: "/admin/affiliate/affiliator",
             icon: "cube-2",
           },
-          // { title: "Manajemen Kupon", to: "/admin/affiliate/coupon/information", icon: "cube-2" },
-          { title: "Manajemen Rewards", to: "/admin/affiliate/reward", icon: "cube-2" },
+          {
+            title: "Manajemen Kupon",
+            to: "/admin/affiliate/admin-coupon",
+            icon: "cube-2",
+          },
+          {
+            title: "Manajemen Rewards",
+            to: "/admin/affiliate/reward",
+            icon: "cube-2",
+          },
         ],
       },
       {
@@ -122,7 +130,7 @@ export const adminMenus: MenuSection[] = [
         subItems: [
           {
             title: "Semua Produk",
-            to: "/admin/products/product",
+            to: "/admin/products",
             icon: "parcel",
           },
           // {
@@ -174,6 +182,11 @@ export const adminMenus: MenuSection[] = [
         title: "Manajemen Feedback & Reports",
         to: "/admin/feedback",
         icon: "message-notif",
+      },
+      {
+        title: "Manajemen Aktifitas",
+        to: "/admin/activity",
+        icon: "people",
       },
     ],
     section: "Menu Admin",

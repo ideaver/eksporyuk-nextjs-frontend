@@ -48,6 +48,10 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
         }
       }
       extendedFrom {
+        code
+        _count {
+          extendedByCourses
+        }
         extendedByCourses {
           course {
             id

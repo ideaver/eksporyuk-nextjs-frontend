@@ -236,18 +236,18 @@ const Body = ({
                             className="dropdown-item"
                             onClick={() => {
                               setShowForgotPasswordModal(true);
-                              setUserEmail(affiliator.user.email)
+                              setUserEmail(affiliator.user.email);
                             }}
                           >
                             Kirim Pengaturan ulang kata sandi
                           </button>
                         </li>
-                        <li>
+                        {/* <li>
                           <button className="dropdown-item">Edit</button>
                         </li>
                         <li>
                           <button className="dropdown-item">Hapus</button>
-                        </li>
+                        </li> */}
                       </ul>
                     </div>
                   </td>

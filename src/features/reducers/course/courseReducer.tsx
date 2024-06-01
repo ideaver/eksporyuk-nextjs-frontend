@@ -1,9 +1,13 @@
-import { CourseLevelEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  CourseDurationTypeEnum,
+  CourseLevelEnum,
+} from "@/app/service/graphql/gen/graphql";
 import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CourseState {
+  id?: string;
   thumbnail: string;
   status: string;
   courseName: string;
@@ -13,6 +17,7 @@ interface CourseState {
   price: string;
   discountPrice?: string;
   courseLevel: CourseLevelEnum;
+  courseDuration: CourseDurationTypeEnum;
   objective: string[];
   courseMentor: OptionType[] | undefined;
   sections: ICourseSectionData[];
@@ -20,6 +25,7 @@ interface CourseState {
 }
 
 const initialState: CourseState = {
+  id: "",
   thumbnail: "/media/avatars/blank.png",
   status: "draft",
   courseName: "",
@@ -29,6 +35,7 @@ const initialState: CourseState = {
   price: "",
   discountPrice: "",
   courseLevel: CourseLevelEnum.Beginner,
+  courseDuration: CourseDurationTypeEnum.ThreeMonths,
   objective: [],
   courseMentor: [],
   sections: [],
@@ -39,6 +46,10 @@ export const courseSlice = createSlice({
   name: "course",
   initialState,
   reducers: {
+    resetCourse: () => initialState,
+    editCourse: (state, action: PayloadAction<CourseState>) => {
+      return action.payload;
+    },
     changeThumbnail: (state, action: PayloadAction<string>) => {
       state.thumbnail = action.payload;
     },
@@ -66,10 +77,19 @@ export const courseSlice = createSlice({
     changeCourseLevel: (state, action: PayloadAction<CourseLevelEnum>) => {
       state.courseLevel = action.payload;
     },
+    changeCourseDuration: (
+      state,
+      action: PayloadAction<CourseDurationTypeEnum>
+    ) => {
+      state.courseDuration = action.payload;
+    },
     changeObjective: (state, action: PayloadAction<string[]>) => {
       state.objective = action.payload;
     },
-    changeCourseMentor: (state, action: PayloadAction<OptionType[] | undefined>) => {
+    changeCourseMentor: (
+      state,
+      action: PayloadAction<OptionType[] | undefined>
+    ) => {
       state.courseMentor = action.payload;
     },
     changeSections: (state, action: PayloadAction<ICourseSectionData[]>) => {
@@ -82,6 +102,7 @@ export const courseSlice = createSlice({
 });
 
 export const {
+  resetCourse,
   changeThumbnail,
   changeStatus,
   changeCourseName,
@@ -95,6 +116,8 @@ export const {
   changeSections,
   changeEditSection,
   changeCourseMentor,
+  changeCourseDuration,
+  editCourse,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;
