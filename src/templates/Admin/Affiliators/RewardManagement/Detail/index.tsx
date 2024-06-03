@@ -50,6 +50,12 @@ const DetailReward = ({
               {data?.rewardsCatalogFindOne?.createdBy.user.name ?? "Unknown User"}
             </p>
           </div>
+          <div className="mb-5">
+            <h4 className="">Course yang terhubung</h4>
+            <p className="fw-bold fs-5 pt-2">
+              {data?.rewardsCatalogFindOne?.course?.title ?? "Tidak ada course"}
+            </p>
+          </div>
         </KTCardBody>
       </KTCard>
     </>
