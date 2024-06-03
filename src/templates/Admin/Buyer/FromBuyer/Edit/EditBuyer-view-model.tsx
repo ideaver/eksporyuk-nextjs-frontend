@@ -197,7 +197,7 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   const { formik } = useEditBuyerForm({
     buyerName,
     companyName,
-    address,
+    address: address,
     email,
     phone,
     country,
