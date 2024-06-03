@@ -1,4 +1,7 @@
-mutation CourseUpdateOne($data: CourseUpdateInput!, $where: CourseWhereUniqueInput!) {
+mutation CourseUpdateOne(
+  $data: CourseUpdateInput!
+  $where: CourseWhereUniqueInput!
+) {
   courseUpdateOne(data: $data, where: $where) {
     id
     title
@@ -12,7 +15,7 @@ mutation CourseUpdateOne($data: CourseUpdateInput!, $where: CourseWhereUniqueInp
     deepLink
     isCertificationProvided
     basePrice
-    sellingPrice
+    salePrice
     createdAt
     updatedAt
     status

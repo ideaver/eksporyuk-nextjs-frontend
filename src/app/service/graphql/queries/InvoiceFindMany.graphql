@@ -1,5 +1,10 @@
-query InvoiceFindMany($take: Int, $skip: Int, $where: InvoiceWhereInput) {
-  invoiceFindMany(take: $take, skip: $skip, where: $where) {
+query InvoiceFindMany(
+  $take: Int
+  $skip: Int
+  $where: InvoiceWhereInput
+  $orderBy: [InvoiceOrderByWithRelationInput!]
+) {
+  invoiceFindMany(take: $take, skip: $skip, where: $where, orderBy: $orderBy) {
     id
     adminFee
     amount

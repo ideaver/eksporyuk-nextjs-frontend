@@ -1,5 +1,10 @@
-query BuyerFindMany($skip: Int, $take: Int, $where: BuyerWhereInput) {
-  buyerFindMany(skip: $skip, take: $take, where: $where) {
+query BuyerFindMany(
+  $skip: Int
+  $take: Int
+  $where: BuyerWhereInput
+  $orderBy: [BuyerOrderByWithRelationInput!]
+) {
+  buyerFindMany(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
     abbreviation
     address
     buyerName

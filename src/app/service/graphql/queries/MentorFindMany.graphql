@@ -1,5 +1,10 @@
-query MentorFindMany($take: Int, $skip: Int, $where: MentorWhereInput) {
-  mentorFindMany(take: $take, skip: $skip, where: $where) {
+query MentorFindMany(
+  $take: Int
+  $skip: Int
+  $where: MentorWhereInput
+  $orderBy: [MentorOrderByWithRelationInput!]
+) {
+  mentorFindMany(take: $take, skip: $skip, where: $where, orderBy: $orderBy) {
     id
     updatedAt
     description

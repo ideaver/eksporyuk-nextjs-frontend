@@ -1,10 +1,12 @@
 import {
   MentorFindManyQuery,
   QueryMode,
+  SortOrder,
   useMentorFindLengthQuery,
   useMentorFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
+import { setDefaultResultOrder } from "dns";
 import { useEffect, useState } from "react";
 
 export const breadcrumbs = [
@@ -26,14 +28,14 @@ export const breadcrumbs = [
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [mentorFindSkip, setMentorFindSkip] = useState(0);
-  const [mentorFindTake, setMentorFindTake] = useState(10);
+  const [mentorFindTake, setMentorFindTake] = useState(100);
   const mentorLength = useMentorFindLengthQuery();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setMentorFindSkip((page - 1) * mentorFindTake);
-  }; 
-  
+  };
+
   const calculateTotalPage = () => {
     return Math.ceil(
       (mentorLength.data?.mentorFindMany?.length ?? 0) / mentorFindTake
@@ -48,7 +50,7 @@ const usePagination = () => {
     setMentorFindTake,
     handlePageChange,
     calculateTotalPage,
-    mentorLength
+    mentorLength,
   };
 };
 
@@ -109,15 +111,21 @@ const useMentorViewModel = () => {
     setMentorFindTake,
     handlePageChange,
     calculateTotalPage,
-    mentorLength
+    mentorLength,
   } = usePagination();
   const [showMentorSelectModal, setShowMentorSelectModal] = useState(false);
   const [mentorFindSearch, setMentorFindSearch] = useState("");
- 
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
   const mentorFindMany = useMentorFindManyQuery({
     variables: {
       take: parseInt(mentorFindTake.toString()),
       skip: mentorFindSkip,
+      orderBy: [
+        {
+          updatedAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -153,7 +161,10 @@ const useMentorViewModel = () => {
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(mentorFindMany);
+
   return {
+    orderBy,
+    setOrderBy,
     showMentorSelectModal,
     setShowMentorSelectModal,
     mentorFindMany,

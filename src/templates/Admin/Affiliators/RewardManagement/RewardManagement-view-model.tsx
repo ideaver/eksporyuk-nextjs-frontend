@@ -5,109 +5,8 @@ import {
   useRewardsCatalogFindManyQuery,
   RewardsCatalogFindManyQuery,
   QueryMode,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
-
-export const rewardsData = [
-  {
-    id: 1,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 2,
-    imageUrl: "path/to/image2.jpg",
-    name: "Kelas Bimbingan EksporYuk",
-    price: "2.000 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 3,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 4,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 5,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 6,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 7,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 8,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 9,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 10,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 11,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-];
 
 export const dateFormatter = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -189,15 +88,21 @@ const useCheckbox = (
 };
 
 const useRewardManagementViewModel = () => {
-  const [takePage, setTakePage] = useState<any>(10);
+  const [takePage, setTakePage] = useState<any>(100);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchRewards, setSearchRewards] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   // Query data
   const rewardsCatalogFindMany = useRewardsCatalogFindManyQuery({
     variables: {
       take: Number(takePage),
       skip: skipPage,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         title: {
           contains: searchRewards,
@@ -246,7 +151,8 @@ const useRewardManagementViewModel = () => {
     selectAll,
     checkedItems,
     handleSingleCheck,
-    handleSelectAllCheck
+    handleSelectAllCheck,
+    setOrderBy,
   };
 };
 

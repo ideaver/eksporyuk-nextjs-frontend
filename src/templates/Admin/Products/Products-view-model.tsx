@@ -7,6 +7,7 @@ import {
   useProductServiceFindManyQuery,
   ProductServiceFindManyQuery,
   QueryMode,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -77,14 +78,15 @@ const useCheckbox = (
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
-  const [findTake, setFindTake] = useState(10);
+  const [findTake, setFindTake] = useState(100);
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const productsLength = useProductServiceFindManyQuery();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setFindSkip((page - 1) * findTake);
-  }; 
-  
+  };
+
   const calculateTotalPage = () => {
     return Math.ceil(
       (productsLength.data?.productServiceFindMany?.length ?? 0) / findTake
@@ -99,7 +101,7 @@ const usePagination = () => {
     setFindTake,
     handlePageChange,
     calculateTotalPage,
-    productsLength
+    productsLength,
   };
 };
 
@@ -113,26 +115,28 @@ const useProductsViewModel = () => {
     setFindTake,
     handlePageChange,
     calculateTotalPage,
-    productsLength
+    productsLength,
   } = usePagination();
 
   // Local states
-  const [takePage, setTakePage] = useState<any>(10);
+  const [takePage, setTakePage] = useState<any>(100);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchProduct, setSearchProduct] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   // Query process
   const productServiceFindMany = useProductServiceFindManyQuery({
     variables: {
       take: parseInt(findTake.toString()),
       skip: findSkip,
+
       where: {
         name: {
           contains: searchProduct,
           mode: QueryMode.Insensitive,
         },
-      }
-    }
+      },
+    },
   });
 
   // Checkbox stuff
@@ -140,6 +144,8 @@ const useProductsViewModel = () => {
     useCheckbox(productServiceFindMany);
 
   return {
+    orderBy,
+    setOrderBy,
     productServiceFindMany,
     selectAll,
     checkedItems,
@@ -158,7 +164,7 @@ const useProductsViewModel = () => {
     findTake,
     setFindTake,
     handlePageChange,
-    productsLength
+    productsLength,
   };
 };
 

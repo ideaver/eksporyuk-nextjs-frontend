@@ -1,6 +1,7 @@
 import {
   FeedbackCategoryTypeEnum,
   QueryMode,
+  SortOrder,
   useFeedbackFindLengthQuery,
   useFeedbackFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -89,7 +90,7 @@ const usePagination = ({
   const length: any = feedbackLength.data?.feedbackFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil(length / 10);
+    return Math.ceil(length / feedbackTake);
   };
   return {
     currentPage,
@@ -102,20 +103,24 @@ const usePagination = ({
 export type TFilter = "ALL" | "UNSOLVED" | "SOLVED" | "UNREADED" | "READED";
 
 const useFeedbackViewModel = () => {
-  const [feedbackTake, setFeedbackTake] = useState<number>(10);
+  const [feedbackTake, setFeedbackTake] = useState<number>(100);
   const [feedbackSkip, setFeedbackSkip] = useState<number>(0);
   const [filter, setFilter] = useState<TFilter>("ALL");
-
   const feedbackCategoryState = useSelector(
     (state: RootState) => state.feedback.feedbackCategoryType
   );
-
   const [feedbackFindSearch, setFeedbackFindSearch] = useState<string>();
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   const feedbackFindMany = useFeedbackFindManyQuery({
     variables: {
       take: parseInt(feedbackTake.toString()),
       skip: feedbackSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -194,6 +199,8 @@ const useFeedbackViewModel = () => {
   } = useCategoryLength();
 
   return {
+    orderBy,
+    setOrderBy,
     feedbackFindMany,
     currentPage,
     setCurrentPage,

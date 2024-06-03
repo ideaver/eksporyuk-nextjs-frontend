@@ -4,7 +4,10 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
 import { PageTitle } from "@/_metronic/layout/core";
-import { CourseFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  CourseFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Alert } from "@/stories/molecules/Alert/Alert";
@@ -33,6 +36,8 @@ const CoursePage = ({}) => {
     handleSingleCheck,
     checkedItems,
     selectAll,
+    orderBy,
+    setOrderBy,
   } = useCoursesViewModel();
   return (
     <>
@@ -42,6 +47,10 @@ const CoursePage = ({}) => {
           <Head
             onSearch={(val) => {
               setCourseFindSearch(val);
+            }}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
             }}
           />
           <Body
@@ -66,7 +75,15 @@ const CoursePage = ({}) => {
   );
 };
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
+const Head = ({
+  onSearch,
+  setOrderBy,
+  orderBy,
+}: {
+  onSearch: (val: string) => void;
+  setOrderBy: (e: SortOrder) => void;
+  orderBy: SortOrder;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -118,6 +135,19 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
               { label: "Tidak Aktif", value: "inactive" },
             ]}
             onValueChange={() => {}}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
           />
         </div>
         <div className="col-lg-auto">
@@ -201,9 +231,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => setMentorFindTake(val as number)}
         />
@@ -378,7 +407,14 @@ const Body = ({
                       </button>
                       <ul className="dropdown-menu">
                         <li>
-                          <Link href={"/admin/courses/edit/information?id=" + course.id} className="dropdown-item">Edit</Link>
+                          <Link
+                            href={
+                              "/admin/courses/edit/information?id=" + course.id
+                            }
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
                         </li>
                         <li>
                           <button className="dropdown-item">Hapus</button>

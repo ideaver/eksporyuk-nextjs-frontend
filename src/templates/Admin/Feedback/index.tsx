@@ -13,6 +13,7 @@ import { QueryResult } from "@apollo/client";
 import {
   FeedbackCategoryTypeEnum,
   FeedbackFindManyQuery,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -40,6 +41,8 @@ const Feedback = () => {
     categoryOther,
     categoryPayment,
     categorySuggestion,
+    orderBy,
+    setOrderBy,
   } = useFeedbackViewModel();
   const data: FeedbackFindManyQuery | undefined = feedbackFindMany?.data;
   return (
@@ -65,6 +68,10 @@ const Feedback = () => {
                   setFilter(value as TFilter);
                 }}
                 filter={filter}
+                orderBy={orderBy}
+                setOrderBy={(e) => {
+                  setOrderBy(e);
+                }}
               />
               <Body
                 data={data}
@@ -299,10 +306,14 @@ const Head = ({
   setFindSearch,
   setFilter,
   filter,
+  orderBy,
+  setOrderBy,
 }: {
   setFindSearch: (val: string) => void;
   setFilter: (val: string) => void;
   filter: string | undefined;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <>
@@ -387,17 +398,16 @@ const Head = ({
             /> */}
           </div>
           <div className="col-lg-auto">
-            {/* <Dropdown
-            styleType="solid"
-            options={[
-              { label: "Semua Status", value: "all" },
-              { label: "Published", value: "true" },
-              { label: "Private", value: "false" },
-            ]}
-            onValueChange={(e) => {
-              setStatus(e as string);
-            }}
-          /> */}
+            <Dropdown
+              styleType="solid"
+              options={[
+                { label: "Terbaru", value: SortOrder.Desc },
+                { label: "Terlama", value: SortOrder.Asc },
+              ]}
+              onValueChange={(e) => {
+                setOrderBy(e as SortOrder);
+              }}
+            />
           </div>
           <div className="col-lg-auto">
             {/* <Buttons>
@@ -439,9 +449,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => setFeedbackFindTake(val as number)}
         />
