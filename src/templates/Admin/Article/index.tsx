@@ -15,6 +15,9 @@ import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import dynamic from "next/dynamic";
+import { Dispatch, SetStateAction } from "react";
+import { valueFromAST } from "graphql";
 
 const ArticlePage = () => {
   const {
@@ -30,6 +33,7 @@ const ArticlePage = () => {
     setArticleOrderBy,
     articleDeleteOne,
     formatWIB,
+    articleFindTake,
   } = useArticleViewModel();
   return (
     <>
@@ -137,7 +141,7 @@ const ArticlePage = () => {
                       </td>
 
                       <td className="text-end ">
-                        <div className="dropdown  ps-15 pe-0">
+                        <div className="dropdown ps-15 pe-0">
                           <button
                             className="btn btn-secondary dropdown-toggle"
                             type="button"
@@ -198,6 +202,7 @@ const ArticlePage = () => {
             setArticleFindTake={(val) => {
               setArticleFindTake(val);
             }}
+            articleFindTake={articleFindTake}
           />
         </KTCardBody>
       </KTCard>
@@ -281,33 +286,84 @@ const Footer = ({
   setCurrentPage,
   setArticleFindTake,
   setArticleFindSkip,
+  articleFindTake,
   pageLength,
 }: {
   setArticleFindTake: (val: number) => void;
   setArticleFindSkip: (val: number) => void;
+  articleFindTake: number;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
 }) => {
+  const CheckBoxInput = dynamic(
+    () =>
+      import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
+        (module) => module.CheckBoxInput
+      ),
+    {
+      ssr: false,
+    }
+  );
   return (
-    <div className="row d-flex justify-content-between">
-      <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => setArticleFindTake(val as number)}
-        />
+    <div className="row justify-content-between gy-5">
+      <div className="row col-lg-auto gy-3 align-middle">
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {articleFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={articleFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setArticleFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
-      <div className="col-auto">
-        <Pagination
-          total={pageLength}
-          current={currentPage}
-          maxLength={5}
-          onPageChange={(val) => setCurrentPage(val)}
-        ></Pagination>
+
+      <div className="row col-lg-auto gy-3">
+        <div className="col-auto">
+          <Pagination
+            total={pageLength}
+            current={currentPage}
+            maxLength={5}
+            onPageChange={(val) => setCurrentPage(val)}
+          ></Pagination>
+        </div>
       </div>
     </div>
   );

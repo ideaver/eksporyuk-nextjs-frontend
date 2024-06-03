@@ -92,7 +92,7 @@ const useCheckbox = (
 const useRewardManagementViewModel = () => {
   const router = useRouter();
 
-  const [takePage, setTakePage] = useState<any>(100);
+  const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchRewards, setSearchRewards] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);

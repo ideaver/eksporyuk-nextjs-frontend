@@ -117,7 +117,7 @@ export const useCategoriesDropdown = () => {
 
 const useArticleViewModel = () => {
   const [articleFindSkip, setArticleFindSkip] = useState(0);
-  const [articleFindTake, setArticleFindTake] = useState(100);
+  const [articleFindTake, setArticleFindTake] = useState(10);
 
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
@@ -211,7 +211,6 @@ const useArticleViewModel = () => {
     articleFindStatus,
     articleFindCategory
   );
-
   useEffect(() => {
     if (
       articleFindSearch.length !== 0 ||

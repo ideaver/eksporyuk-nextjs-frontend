@@ -33,6 +33,7 @@ const NotificationPage = () => {
     setTakePage,
     setDateOrderBy,
     setCompletionStatus,
+    takePage,
   } = useNotificationsViewModel();
 
   return (
@@ -57,6 +58,7 @@ const NotificationPage = () => {
             setSkipPage={setSkipPage}
             setTakePage={setTakePage}
             totalPage={calculateTotalPage}
+            takePage={takePage}
           />
         </KTCardBody>
       </KTCard>
@@ -287,21 +289,63 @@ const Body = ({
   );
 };
 
-const Footer = ({ skipPage, setSkipPage, setTakePage, totalPage }: any) => {
+const Footer = ({
+  skipPage,
+  setSkipPage,
+  setTakePage,
+  totalPage,
+  takePage,
+}: any) => {
   if (skipPage === 0) skipPage = 1;
 
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(e) => setTakePage(e)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {takePage}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTakePage(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTakePage(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={takePage}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setTakePage(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

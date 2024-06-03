@@ -289,7 +289,7 @@ const useAdminCouponViewModel = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [couponSkip, setCouponSkip] = useState(0);
-  const [couponTake, setCouponTake] = useState(100);
+  const [couponTake, setCouponTake] = useState(10);
   const [couponSearch, setCouponSearch] = useState("");
   const [couponStatus, setCouponStatus] = useState<string>("all");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
@@ -402,6 +402,7 @@ const useAdminCouponViewModel = () => {
   }, [dispatch]);
 
   return {
+    couponTake,
     setOrderBy,
     couponDeleteOne,
     couponUpdateOne,

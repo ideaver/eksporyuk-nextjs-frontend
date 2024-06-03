@@ -53,6 +53,7 @@ const AdminCoupon = () => {
     couponUpdateOne,
     couponDeleteOne,
     setOrderBy,
+    couponTake,
   } = useAdminCouponViewModel();
 
   return (
@@ -290,6 +291,7 @@ const AdminCoupon = () => {
             setCurrentPage={(val: number) => {
               handlePageChange(val);
             }}
+            couponTake={couponTake}
           />
         </KTCardBody>
       </KTCard>
@@ -380,26 +382,63 @@ const Footer = ({
   setCouponTake,
   setCouponSkip,
   pageLength,
+  couponTake,
 }: {
   setCouponTake: Dispatch<SetStateAction<number>>;
   setCouponSkip: Dispatch<SetStateAction<number>>;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  couponTake: number;
 }) => {
   return (
     <div className="row d-flex justify-content-between p-10">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => {
-            setCouponTake(val as number);
-          }}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {couponTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setCouponTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setCouponTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={couponTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setCouponTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination
