@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
 const DemandPage = () => {
+  const buyerState = useSelector((state: RootState) => state.buyer);
   const {
     abbreviation,
     handleChangeAbbreviation,
@@ -85,44 +86,27 @@ const DemandPage = () => {
             <h5 className="text-muted mt-2 mb-8">
               Komoditas yang diinginkan buyer
             </h5>
-            <h5 className="required">Quantity Required</h5>
+            <h5 className="">Quantity Required</h5>
             <TextField
               placeholder="Masukan quantity required"
               type="number"
-              classNames={clsx(
-                {
-                  "is-invalid":
-                    formik.touched.demandQuantity &&
-                    formik.errors.demandQuantity,
-                },
-                {
-                  "is-valid":
-                    formik.touched.demandQuantity &&
-                    !formik.errors.demandQuantity,
-                }
-              )}
+              classNames={clsx()}
               props={{
-                ...formik.getFieldProps("demandQuantity"),
-
-                value: formik.values.demandQuantity,
+                value: buyerState.demandQuantity,
                 onChange: (e: any) => {
                   formik.setFieldValue("demandQuantity", e.target.value);
                   dispatch(changeDemandQuantity(e.target.value));
                 },
               }}
             />
-            {formik.touched.demandQuantity && formik.errors.demandQuantity && (
-              <div className="fv-plugins-message-container">
-                <span role="alert">{formik.errors.demandQuantity}</span>
-              </div>
-            )}
             <h5 className="text-muted mt-2 mb-8">
               Jumlah komoditas yang dibutuhkan buyer
             </h5>
-            <h5 className="required">Satuan</h5>
+            <h5 className="">Satuan</h5>
             <Dropdown
               value={abbreviation}
               options={[
+                { value: "none", label: "None" },
                 { value: "Ton", label: "Ton" },
                 { value: "Kg", label: "Kg" },
                 { value: "Pcs", label: "Pcs" },
@@ -134,18 +118,9 @@ const DemandPage = () => {
             <h5 className="text-muted mt-2 mb-8">
               Jumlah komoditas yang dibutuhkan buyer
             </h5>
-            <h5 className="required">Harga</h5>
+            <h5 className="">Harga</h5>
             <CurrencyInput
-              className={clsx(
-                "form-control",
-                {
-                  "is-invalid": formik.touched.price && formik.errors.price,
-                },
-                {
-                  "is-valid": formik.touched.price && !formik.errors.price,
-                }
-              )}
-              {...formik.getFieldProps("price")}
+              className={clsx("form-control")}
               placeholder="Masukan Harga (Rp)"
               intlConfig={{ locale: "id-ID" }}
               defaultValue={0}
@@ -155,15 +130,10 @@ const DemandPage = () => {
                 dispatch(changePrice(value as string));
               }}
             />
-            {formik.touched.price && formik.errors.price && (
-              <div className="fv-plugins-message-container">
-                <span role="alert">{formik.errors.price}</span>
-              </div>
-            )}
             <h5 className="text-muted mt-2 mb-8">
               Jumlah harga yang dibutuhkan buyer
             </h5>
-            <h5 className="required">Shipping Terms</h5>
+            <h5 className="">Shipping Terms</h5>
             <Dropdown
               value={shippingTerms}
               options={shippingOption}

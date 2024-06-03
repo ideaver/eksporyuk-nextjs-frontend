@@ -34,23 +34,6 @@ export const useBuyerInformationForm = () => {
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Nama diperlukan"),
-    companyAddress: Yup.string()
-      .min(5, "Minimal 5 simbol")
-      .max(300, "Maksimal 300 simbol")
-      .required("Alamat diperlukan"),
-    companyName: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    email: Yup.string()
-      .email("Format email salah")
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    telephoneNumber: Yup.string()
-      .min(6, "Minimal 6 simbol")
-      .max(25, "Maksimal 25 simbol")
-      .required("Alamat diperlukan"),
   });
 
   const buyer = useSelector((state: RootState) => state.buyer);
@@ -58,10 +41,6 @@ export const useBuyerInformationForm = () => {
   const BuyerInformationformik = useFormik({
     initialValues: {
       buyerName: buyerState.buyerName,
-      companyAddress: buyerState.companyAddress,
-      companyName: buyerState.companyName,
-      email: buyerState.email,
-      telephoneNumber: buyerState.telephoneNumber,
     },
     validationSchema: buyerSchema,
     onSubmit: (values) => {
@@ -102,6 +81,8 @@ export const useCountryDropdown = () => {
       },
     });
 
+    result.unshift({ value: 0, label: "None" });
+
     return {
       options: result,
       hasMore: true,
@@ -118,14 +99,14 @@ const useResetBuyerState = () => {
   const resetBuyerState = () => {
     dispatch(changeAbbreviation("Ton"));
     dispatch(changeBuyerName(""));
-    dispatch(changeCountry(1));
+    dispatch(changeCountry(0));
     dispatch(changeCompanyName(""));
     dispatch(changeCompanyAddress(""));
     dispatch(changeDemand(""));
     dispatch(changeDemandQuantity(""));
     dispatch(changePrice(""));
     dispatch(changeEmail(""));
-    dispatch(changeShippingTerms(InternationalTradeDeliveryTypeEnum.Cfr));
+    dispatch(changeShippingTerms("none"));
     dispatch(changeTelephoneNumber(""));
     router.push("/admin/buyers");
   };
