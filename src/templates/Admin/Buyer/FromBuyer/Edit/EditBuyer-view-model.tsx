@@ -44,17 +44,17 @@ export const breadcrumbs = [
 ];
 
 interface EditFormProps {
-  buyerName: string | undefined;
+  buyerName: string | undefined | null;
   companyName: string | undefined | null;
-  address: string | undefined;
-  email: string | undefined;
-  phone: string | undefined;
-  country: any | undefined;
-  demand: string | undefined;
-  quantity: number | undefined;
-  abbreviation: string | undefined;
+  address: string | undefined | null;
+  email: string | undefined | null;
+  phone: string | undefined | null;
+  country: any | undefined | null;
+  demand: string | undefined | null;
+  quantity: number | undefined | null;
+  abbreviation: string | undefined | null;
   price: string | undefined | null;
-  deliveryType: InternationalTradeDeliveryTypeEnum | undefined;
+  deliveryType: InternationalTradeDeliveryTypeEnum | undefined | null;
 }
 
 const useEditBuyerForm = ({
@@ -172,7 +172,7 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   const [companyName, setCompanyName] = useState(
     data?.buyerFindOne?.companyName
   );
-  const [address, setAddress] = useState(data?.buyerFindOne?.address);
+  const [address, setAddress] = useState<any>(data?.buyerFindOne?.address);
   const [email, setEmail] = useState(data?.buyerFindOne?.email);
   const [phone, setPhone] = useState(data?.buyerFindOne?.phone);
   const [country, setCountry] = useState({

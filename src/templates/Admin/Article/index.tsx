@@ -15,6 +15,9 @@ import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import dynamic from "next/dynamic";
+import { Dispatch, SetStateAction } from "react";
+import { valueFromAST } from "graphql";
 
 const ArticlePage = () => {
   const {
@@ -30,6 +33,9 @@ const ArticlePage = () => {
     setArticleOrderBy,
     articleDeleteOne,
     formatWIB,
+    setIsCustomTake,
+    isCustomTake,
+    articleFindTake,
   } = useArticleViewModel();
   return (
     <>
@@ -198,6 +204,9 @@ const ArticlePage = () => {
             setArticleFindTake={(val) => {
               setArticleFindTake(val);
             }}
+            articleFindTake={articleFindTake}
+            setIsCustomTake={setIsCustomTake}
+            isCustomTake={isCustomTake}
           />
         </KTCardBody>
       </KTCard>
@@ -281,33 +290,79 @@ const Footer = ({
   setCurrentPage,
   setArticleFindTake,
   setArticleFindSkip,
+  articleFindTake,
   pageLength,
+  isCustomTake,
+  setIsCustomTake,
 }: {
   setArticleFindTake: (val: number) => void;
   setArticleFindSkip: (val: number) => void;
+  articleFindTake: number;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  isCustomTake: boolean;
+  setIsCustomTake: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const CheckBoxInput = dynamic(
+    () =>
+      import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
+        (module) => module.CheckBoxInput
+      ),
+    {
+      ssr: false,
+    }
+  );
   return (
-    <div className="row d-flex justify-content-between">
-      <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => setArticleFindTake(val as number)}
-        />
+    <div className="row justify-content-between gy-5 py-5 px-10">
+      <div className="row col-lg-auto gy-3 align-middle">
+        <div className="row col-lg-auto align-middle">
+          {isCustomTake ? (
+            <TextField
+              type="number"
+              styleType="solid"
+              placeholder="Jumlah"
+              props={{
+                value: articleFindTake,
+                onChange: (e: any) =>
+                  setArticleFindTake(parseInt(e.target.value.toString())),
+              }}
+            ></TextField>
+          ) : (
+            <Dropdown
+              styleType="solid"
+              options={[
+                { label: "10", value: 10 },
+                { label: "50", value: 50 },
+              ]}
+              onValueChange={(e) => setArticleFindTake(parseInt(e as string))}
+            />
+          )}
+        </div>
+        <div className="col-lg-auto">
+          <CheckBoxInput
+            className="active fs-5"
+            name="follup"
+            value={"true"}
+            checked={isCustomTake}
+            onChange={(e) => {
+              setIsCustomTake((prev: boolean) => !prev);
+            }}
+          >
+            {`Custom`}
+          </CheckBoxInput>
+        </div>
       </div>
-      <div className="col-auto">
-        <Pagination
-          total={pageLength}
-          current={currentPage}
-          maxLength={5}
-          onPageChange={(val) => setCurrentPage(val)}
-        ></Pagination>
+
+      <div className="row col-lg-auto gy-3">
+        <div className="col-auto">
+          <Pagination
+            total={pageLength}
+            current={currentPage}
+            maxLength={5}
+            onPageChange={(val) => setCurrentPage(val)}
+          ></Pagination>
+        </div>
       </div>
     </div>
   );

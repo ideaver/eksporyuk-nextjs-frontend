@@ -32,6 +32,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
     setOrderBy,
     isCustomTake,
     setIsCustomTake,
+    takePage,
   } = useComissionViewModel({});
 
   return (
@@ -57,6 +58,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
         <Footer
           setSkipPage={setSkipPage}
           skipPage={skipPage}
+          takePage={takePage}
           setTakePage={setTakePage}
           totalPage={calculateTotalPage}
           isCustomTake={isCustomTake}
@@ -182,6 +184,7 @@ const Footer = ({
   totalPage,
   isCustomTake,
   setIsCustomTake,
+  takePage,
 }: any) => {
   const CheckBoxInput = dynamic(
     () =>
@@ -204,7 +207,8 @@ const Footer = ({
               styleType="solid"
               placeholder="Jumlah"
               props={{
-                onChange: (e: any) => setTakePage(parseInt(e.toString())),
+                value: takePage,
+                onChange: (e: any) => setTakePage(e.target.value.toString()),
               }}
             ></TextField>
           ) : (

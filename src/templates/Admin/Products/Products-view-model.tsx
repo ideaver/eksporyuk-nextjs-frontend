@@ -129,7 +129,11 @@ const useProductsViewModel = () => {
     variables: {
       take: parseInt(findTake.toString()),
       skip: findSkip,
-
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         name: {
           contains: searchProduct,
