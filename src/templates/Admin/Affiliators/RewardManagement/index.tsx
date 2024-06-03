@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { QueryResult } from "@apollo/client";
+import Link from "next/link";
 
 import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
@@ -188,15 +189,17 @@ const Body = ({
                       defaultChildren={false}
                       onChange={() => handleSingleCheck(index)}
                     >
-                      <div className="d-flex align-items-center gap-5">
-                        <img
-                          src="/media/avatars/300-2.jpg"
-                          width={50}
-                          height={50}
-                          alt=""
-                        />
-                        <p className="min-w-200px">{reward.title}</p>
-                      </div>
+                      <Link href={`/admin/affiliate/reward/detail/${reward.id}`}>
+                        <div className="d-flex align-items-center gap-5">
+                          <img
+                            src="/media/avatars/300-2.jpg"
+                            width={50}
+                            height={50}
+                            alt=""
+                          />
+                          <p className="min-w-200px mb-0">{reward.title}</p>
+                        </div>
+                      </Link>
                     </CheckBoxInput>
                   </td>
                   <td className="align-middle text-end text-muted fw-bold w-150px">
