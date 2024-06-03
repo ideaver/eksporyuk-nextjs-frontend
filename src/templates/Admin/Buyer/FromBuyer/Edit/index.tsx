@@ -80,7 +80,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("buyerName", e.target.value);
                   setBuyerName(e.target.value);
                 }}
-                value={formik.values.buyerName}
+                value={formik.values.buyerName ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -99,7 +99,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 </div>
               )}
               <h5 className="text-muted mt-2 mb-8">Nama lengkap buyer</h5>
-              <h5 className="required">Nama Perusahaan</h5>
+              <h5 className="">Nama Perusahaan</h5>
               <input
                 type="text"
                 placeholder="Masukan nama perusahaan"
@@ -126,7 +126,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 </div>
               )}
               <h5 className="text-muted mt-2 mb-8">Nama perusahaan buyer</h5>
-              <h5 className="required">Negara</h5>
+              <h5 className="">Negara</h5>
               <button className="btn btn-secondary pe-none py-3 my-2">
                 {country?.label}
               </button>
@@ -138,7 +138,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 loadOptions={loadOptions}
               ></AsyncPaginate>
               <h5 className="text-muted mt-2 mb-8">Pilih negara Asal buyer</h5>
-              <h5 className="required">Alamat Perusahaan</h5>
+              <h5 className="">Alamat Perusahaan</h5>
               <input
                 type="text"
                 placeholder="Masukan alamat perusahaan"
@@ -147,7 +147,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("address", e.target.value);
                   setAddress(e.target.value);
                 }}
-                value={formik.values.address}
+                value={formik.values.address ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -175,7 +175,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("email", e.target.value);
                   setEmail(e.target.value);
                 }}
-                value={formik.values.email}
+                value={formik.values.email ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -196,7 +196,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("phone", e.target.value);
                   setPhone(e.target.value);
                 }}
-                value={formik.values.phone}
+                value={formik.values.phone ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -247,7 +247,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Komoditas yang diinginkan buyer
               </h5>
-              <h5 className="required">Quantity Required</h5>
+              <h5 className="">Quantity Required</h5>
               <TextField
                 placeholder="Masukan quantity required"
                 type="number"
@@ -279,10 +279,11 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah komoditas yang dibutuhkan buyer
               </h5>
-              <h5 className="required">Satuan</h5>
+              <h5 className="">Satuan</h5>
               <Dropdown
                 value={abbreviation}
                 options={[
+                  { value: "none", label: "None" },
                   { value: "Ton", label: "Ton" },
                   { value: "Kg", label: "Kg" },
                   { value: "Pcs", label: "Pcs" },
@@ -292,7 +293,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah komoditas yang dibutuhkan buyer
               </h5>
-              <h5 className="required">Harga</h5>
+              <h5 className="">Harga</h5>
               <CurrencyInput
                 className={clsx(
                   "form-control",
@@ -307,7 +308,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 placeholder="Masukan Harga (Rp)"
                 intlConfig={{ locale: "id-ID" }}
                 defaultValue={0}
-                value={price}
+                value={price ?? ""}
                 decimalsLimit={2}
                 onValueChange={(value, name, values) => {
                   setPrice(value);
@@ -321,7 +322,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah harga yang dibutuhkan buyer
               </h5>
-              <h5 className="required">Shipping Terms</h5>
+              <h5 className="">Shipping Terms</h5>
               <Dropdown
                 value={deliveryType}
                 options={shippingOption}

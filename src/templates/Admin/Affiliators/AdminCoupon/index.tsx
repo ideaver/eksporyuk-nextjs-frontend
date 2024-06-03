@@ -33,22 +33,6 @@ import Flatpickr from "react-flatpickr";
 
 const AdminCoupon = () => {
   const {
-    couponForm,
-    status,
-    setStatus,
-    setCode,
-    code,
-    discountType,
-    setDiscountType,
-    discount,
-    setDiscount,
-    addDate,
-    setAddDate,
-    date,
-    setDate,
-    hanldeCouponCreateOne,
-  } = useCouponForm();
-  const {
     currentPage,
     calculateTotalPage,
     couponLength,
@@ -68,6 +52,8 @@ const AdminCoupon = () => {
     handleDeleteMany,
     couponUpdateOne,
     couponDeleteOne,
+    setOrderBy,
+    couponTake,
   } = useAdminCouponViewModel();
 
   return (
@@ -103,6 +89,9 @@ const AdminCoupon = () => {
             }}
             checked={checked}
             handleDeleteMany={handleDeleteMany}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
           />
           <>
             {couponFindMany.error ? (
@@ -302,6 +291,7 @@ const AdminCoupon = () => {
             setCurrentPage={(val: number) => {
               handlePageChange(val);
             }}
+            couponTake={couponTake}
           />
         </KTCardBody>
       </KTCard>
@@ -317,6 +307,7 @@ const Head = ({
   setCouponStatus,
   checked,
   handleDeleteMany,
+  setOrderBy,
 }: {
   checked: number[];
   couponSearch: string;
@@ -324,6 +315,7 @@ const Head = ({
   setCouponStatus: (value: string) => void;
   setCouponSearch: (value: string) => void;
   handleDeleteMany: () => Promise<void>;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -353,7 +345,18 @@ const Head = ({
             }}
           />
         </div>
-        <div className="col-lg-auto"></div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
+          />
+        </div>
         <div className="col-lg-auto">
           {checked.length > 0 ? (
             <Buttons buttonColor="danger" onClick={handleDeleteMany}>
@@ -379,27 +382,63 @@ const Footer = ({
   setCouponTake,
   setCouponSkip,
   pageLength,
+  couponTake,
 }: {
   setCouponTake: Dispatch<SetStateAction<number>>;
   setCouponSkip: Dispatch<SetStateAction<number>>;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  couponTake: number;
 }) => {
   return (
     <div className="row d-flex justify-content-between p-10">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => {
-            setCouponTake(val as number);
-          }}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {couponTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setCouponTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setCouponTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={couponTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setCouponTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

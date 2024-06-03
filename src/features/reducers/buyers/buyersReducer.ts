@@ -11,9 +11,9 @@ interface BuyerState {
   email: string;
   telephoneNumber: string;
   demand: string;
-  abbreviation: "Ton" | "Kg" | "Pcs";
+  abbreviation: "Ton" | "Kg" | "Pcs" | "none";
   demandQuantity: string;
-  shippingTerms: InternationalTradeDeliveryTypeEnum;
+  shippingTerms: InternationalTradeDeliveryTypeEnum | "none";
   price: string;
 
   // Add other buyers properties here
@@ -23,14 +23,14 @@ const initialState: BuyerState = {
   loadingImport: false,
   buyerName: "",
   companyName: "",
-  country: 1,
+  country: 0,
   companyAddress: "",
   email: "",
   telephoneNumber: "",
   demand: "",
   demandQuantity: "",
   abbreviation: "Ton",
-  shippingTerms: InternationalTradeDeliveryTypeEnum.Cfr,
+  shippingTerms: "none",
   price: "",
 
   // Initialize other buyer properties here
@@ -66,7 +66,7 @@ export const buyerSlice = createSlice({
     },
     changeShippingTerms: (
       state,
-      action: PayloadAction<InternationalTradeDeliveryTypeEnum>
+      action: PayloadAction<InternationalTradeDeliveryTypeEnum | "none">
     ) => {
       state.shippingTerms = action.payload;
     },
@@ -75,7 +75,7 @@ export const buyerSlice = createSlice({
     },
     changeAbbreviation: (
       state,
-      action: PayloadAction<"Ton" | "Kg" | "Pcs">
+      action: PayloadAction<"Ton" | "Kg" | "Pcs" | "none">
     ) => {
       state.abbreviation = action.payload;
     },

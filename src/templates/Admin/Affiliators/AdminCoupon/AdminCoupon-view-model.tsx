@@ -4,6 +4,7 @@ import {
   DiscountTypeEnum,
   PlatformCouponFindManyQuery,
   QueryMode,
+  SortOrder,
   useAffiliatorCouponFindManyQuery,
   useCouponCreateOneMutation,
   useCouponDeleteManyMutation,
@@ -205,7 +206,7 @@ const usePagination = ({
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (couponLength.data?.platformCouponFindMany?.length ?? 0) / 10
+      (couponLength.data?.platformCouponFindMany?.length ?? 0) / couponTake
     );
   };
 
@@ -291,11 +292,19 @@ const useAdminCouponViewModel = () => {
   const [couponTake, setCouponTake] = useState(10);
   const [couponSearch, setCouponSearch] = useState("");
   const [couponStatus, setCouponStatus] = useState<string>("all");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   const couponFindMany = usePlatformCouponFindManyQuery({
     variables: {
       take: parseInt(couponTake.toString()),
       skip: couponSkip,
+      orderBy: [
+        {
+          coupon: {
+            createdAt: orderBy,
+          },
+        },
+      ],
       where: {
         OR: [
           {
@@ -393,6 +402,8 @@ const useAdminCouponViewModel = () => {
   }, [dispatch]);
 
   return {
+    couponTake,
+    setOrderBy,
     couponDeleteOne,
     couponUpdateOne,
     handleDeleteMany,

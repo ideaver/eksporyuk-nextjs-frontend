@@ -4,7 +4,10 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
 import { PageTitle } from "@/_metronic/layout/core";
-import { CourseFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  CourseFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Alert } from "@/stories/molecules/Alert/Alert";
@@ -33,6 +36,9 @@ const CoursePage = ({}) => {
     handleSingleCheck,
     checkedItems,
     selectAll,
+    orderBy,
+    setOrderBy,
+    courseFindTake,
   } = useCoursesViewModel();
   return (
     <>
@@ -42,6 +48,10 @@ const CoursePage = ({}) => {
           <Head
             onSearch={(val) => {
               setCourseFindSearch(val);
+            }}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
             }}
           />
           <Body
@@ -59,6 +69,7 @@ const CoursePage = ({}) => {
             setMentorFindTake={(val) => {
               setCourseFindTake(val);
             }}
+            courseFindTake={courseFindTake}
           />
         </KTCardBody>
       </KTCard>
@@ -66,7 +77,15 @@ const CoursePage = ({}) => {
   );
 };
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
+const Head = ({
+  onSearch,
+  setOrderBy,
+  orderBy,
+}: {
+  onSearch: (val: string) => void;
+  setOrderBy: (e: SortOrder) => void;
+  orderBy: SortOrder;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -118,6 +137,19 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
               { label: "Tidak Aktif", value: "inactive" },
             ]}
             onValueChange={() => {}}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
           />
         </div>
         <div className="col-lg-auto">
@@ -188,25 +220,63 @@ const Footer = ({
   setCurrentPage,
   setMentorFindTake,
   pageLength,
+  courseFindTake,
 }: {
   setMentorFindTake: (val: number) => void;
   setMentorFindSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  courseFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => setMentorFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {courseFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={courseFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setMentorFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination
@@ -378,7 +448,14 @@ const Body = ({
                       </button>
                       <ul className="dropdown-menu">
                         <li>
-                          <Link href={"/admin/courses/edit/information?id=" + course.id} className="dropdown-item">Edit</Link>
+                          <Link
+                            href={
+                              "/admin/courses/edit/information?id=" + course.id
+                            }
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
                         </li>
                         <li>
                           <button className="dropdown-item">Hapus</button>

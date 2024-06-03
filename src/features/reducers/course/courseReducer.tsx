@@ -1,5 +1,5 @@
 import {
-  CourseDurationTypeEnum,
+  // CourseDurationTypeEnum,
   CourseLevelEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
@@ -17,7 +17,8 @@ interface CourseState {
   price: string;
   discountPrice?: string;
   courseLevel: CourseLevelEnum;
-  courseDuration: CourseDurationTypeEnum;
+  courseDuration: number;
+  // courseDuration: CourseDurationTypeEnum;
   objective: string[];
   courseMentor: OptionType[] | undefined;
   sections: ICourseSectionData[];
@@ -35,7 +36,7 @@ const initialState: CourseState = {
   price: "",
   discountPrice: "",
   courseLevel: CourseLevelEnum.Beginner,
-  courseDuration: CourseDurationTypeEnum.ThreeMonths,
+  courseDuration: 2,
   objective: [],
   courseMentor: [],
   sections: [],
@@ -79,7 +80,8 @@ export const courseSlice = createSlice({
     },
     changeCourseDuration: (
       state,
-      action: PayloadAction<CourseDurationTypeEnum>
+      // ini kuganti mas
+      action: PayloadAction<number>
     ) => {
       state.courseDuration = action.payload;
     },

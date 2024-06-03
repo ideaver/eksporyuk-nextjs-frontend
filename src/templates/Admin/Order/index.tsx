@@ -6,6 +6,7 @@ import { PageTitle } from "@/_metronic/layout/core";
 import {
   OrderFindManyQuery,
   OrderStatusEnum,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -37,6 +38,9 @@ const OrderPage = ({}) => {
     checkedItems,
     selectAll,
     setStatusFilter,
+    orderBy,
+    setOrderBy,
+    orderFindTake,
   } = useAdminOrderViewModel();
   return (
     <>
@@ -50,6 +54,10 @@ const OrderPage = ({}) => {
             }}
             onSearch={(val) => {
               setOrderFindSearch(val);
+            }}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
             }}
           />
           <Body
@@ -67,6 +75,7 @@ const OrderPage = ({}) => {
             setMentorFindTake={(val) => {
               setOrderFindTake(val);
             }}
+            orderFindTake={orderFindTake}
           />
         </KTCardBody>
       </KTCard>
@@ -84,9 +93,13 @@ const OrderPage = ({}) => {
 const Head = ({
   onStatusChanged,
   onSearch,
+  orderBy,
+  setOrderBy,
 }: {
   onStatusChanged: (val: string) => void;
   onSearch: (val: string) => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -116,6 +129,19 @@ const Head = ({
             ]}
             onValueChange={(val) => {
               onStatusChanged(val as string);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Asc },
+              { label: "Terlama", value: SortOrder.Desc },
+            ]}
+            onValueChange={(val) => {
+              setOrderBy(val as SortOrder);
             }}
           />
         </div>
@@ -189,25 +215,63 @@ const Footer = ({
   setCurrentPage,
   setMentorFindTake,
   pageLength,
+  orderFindTake,
 }: {
   setMentorFindTake: (val: number) => void;
   setMentorFindSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  orderFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => setMentorFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {orderFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={orderFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setMentorFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

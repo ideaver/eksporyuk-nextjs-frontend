@@ -1,113 +1,15 @@
 import { QueryResult } from "@apollo/client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   useRewardsCatalogFindManyQuery,
   RewardsCatalogFindManyQuery,
   QueryMode,
+  SortOrder,
+  useRewardsCatalogDeleteOneMutation,
+  useRewardsCatalogDeleteManyMutation,
 } from "@/app/service/graphql/gen/graphql";
-
-export const rewardsData = [
-  {
-    id: 1,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 2,
-    imageUrl: "path/to/image2.jpg",
-    name: "Kelas Bimbingan EksporYuk",
-    price: "2.000 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 3,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 4,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 5,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 6,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 7,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 8,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Tutup",
-  },
-  {
-    id: 9,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 10,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-  {
-    id: 11,
-    imageUrl: "path/to/image1.jpg",
-    name: "Kaos Anggota EksporYuk",
-    price: "150 Poin",
-    creationDate: "12 November 2022",
-    redemptionCount: 2200,
-    status: "Buka",
-  },
-];
 
 export const dateFormatter = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -189,15 +91,53 @@ const useCheckbox = (
 };
 
 const useRewardManagementViewModel = () => {
+  const router = useRouter();
+
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchRewards, setSearchRewards] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
+  // Graphql
+  const [rewardCatalogDeleteOneMutation] = useRewardsCatalogDeleteOneMutation();
+  const [rewardCatalogDeleteManyMutation] = useRewardsCatalogDeleteManyMutation();
+
+  const handleRewardCatalogDeleteOneMutation = async (rewardId: number) => {
+    const data = await rewardCatalogDeleteOneMutation({
+      variables: {
+        where: {
+          id: Number(rewardId)
+        }
+      }
+    });
+
+    return data;
+  }
+
+  const handleRewardCatalogDeleteManyMutation = async (rewardIds: number[]) => {
+    const data = await rewardCatalogDeleteManyMutation({
+      variables: {
+        where: {
+          id: {
+            in: rewardIds,
+          }
+        }
+      }
+    });
+
+    return data;
+  };
 
   // Query data
   const rewardsCatalogFindMany = useRewardsCatalogFindManyQuery({
     variables: {
       take: Number(takePage),
       skip: skipPage,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         title: {
           contains: searchRewards,
@@ -206,6 +146,31 @@ const useRewardManagementViewModel = () => {
       },
     },
   });
+
+  // Mutate data
+  const onDeleteOne = async (rewardId: number) => {
+    try {
+      const data = await handleRewardCatalogDeleteOneMutation(rewardId);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
+
+  const onDeleteMany = async (rewardIds: number[]) => {
+    try {
+      const data = await handleRewardCatalogDeleteManyMutation(rewardIds);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
 
   // Calculating total page
   const calculateTotalPage = () => {
@@ -246,7 +211,10 @@ const useRewardManagementViewModel = () => {
     selectAll,
     checkedItems,
     handleSingleCheck,
-    handleSelectAllCheck
+    handleSelectAllCheck,
+    setOrderBy,
+    onDeleteOne,
+    onDeleteMany,
   };
 };
 

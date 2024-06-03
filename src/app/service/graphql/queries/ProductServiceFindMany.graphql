@@ -2,8 +2,14 @@ query ProductServiceFindMany(
   $where: ProductServiceWhereInput
   $take: Int
   $skip: Int
+  $orderBy: [ProductServiceOrderByWithRelationInput!]
 ) {
-  productServiceFindMany(where: $where, take: $take, skip: $skip) {
+  productServiceFindMany(
+    where: $where
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+  ) {
     isActive
     images {
       path

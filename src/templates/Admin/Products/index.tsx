@@ -16,7 +16,10 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 
 import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
-import { ProductServiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  ProductServiceFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
 
 const CoursePage = ({}) => {
@@ -40,6 +43,8 @@ const CoursePage = ({}) => {
     setFindTake,
     handlePageChange,
     productsLength,
+    orderBy,
+    setOrderBy,
   } = useProductsViewModel();
 
   return (
@@ -47,7 +52,13 @@ const CoursePage = ({}) => {
       <PageTitle breadcrumbs={breadcrumbs}>Semua Produk</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchProduct} />
+          <Head
+            onSearch={setSearchProduct}
+            orderBy={orderBy}
+            setOrderBy={(e: any) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             data={productServiceFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -63,6 +74,7 @@ const CoursePage = ({}) => {
             findTake={(val) => {
               setFindTake(val);
             }}
+            takeValue={findTake}
           />
         </KTCardBody>
       </KTCard>
@@ -70,7 +82,7 @@ const CoursePage = ({}) => {
   );
 };
 
-const Head = ({ onSearch }: any) => {
+const Head = ({ onSearch, orderBy, setOrderBy }: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -115,6 +127,19 @@ const Head = ({ onSearch }: any) => {
               { label: "Tutup", value: "" },
             ]}
             onValueChange={() => {}}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
           />
         </div>
         <div className="col-lg-auto">
@@ -328,25 +353,63 @@ const Footer = ({
   setCurrentPage,
   findTake,
   pageLength,
+  takeValue,
 }: {
   findTake: (val: number) => void;
   findSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  takeValue: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => findTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {takeValue}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  findTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  findTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={takeValue}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  findTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

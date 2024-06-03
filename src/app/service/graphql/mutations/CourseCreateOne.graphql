@@ -12,7 +12,7 @@ mutation CourseCreateOne($data: CourseCreateInput!) {
     deepLink
     isCertificationProvided
     basePrice
-    sellingPrice
+    salePrice
     createdAt
     updatedAt
     status

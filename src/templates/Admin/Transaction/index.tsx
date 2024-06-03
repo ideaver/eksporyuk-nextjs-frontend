@@ -12,6 +12,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import {
   AdminFindManyTransactionQuery,
   AdminFindTransactionManyQuery,
+  SortOrder,
   TransactionCategoryEnum,
   TransactionStatusEnum,
 } from "@/app/service/graphql/gen/graphql";
@@ -49,6 +50,8 @@ const Transaction = () => {
     setDownloadReportDate,
     exportDataTransaction,
     handleLoadingExportChange,
+    orderBy,
+    setOrderBy,
   } = useTransactionViewModel();
   return (
     <>
@@ -81,6 +84,10 @@ const Transaction = () => {
               setTransactionFindCategory={setTransactionFindCategory}
               setTransactionFindSearch={setTransactionFindSearch}
               setTransactionFindStatus={setTransactionFindStatus}
+              orderBy={orderBy}
+              setOrderBy={(e) => {
+                setOrderBy(e);
+              }}
             />
             <Body
               data={transactionFindMany.data}
@@ -95,6 +102,7 @@ const Transaction = () => {
               setCurrentPage={(val: number) => {
                 handlePageChange(val);
               }}
+              transactionTake={transactionTake}
             />
           </KTCardBody>
         </KTCard>
@@ -140,6 +148,8 @@ const Head = ({
   setTransactionFindCategory,
   setTransactionFindSearch,
   setTransactionFindStatus,
+  orderBy,
+  setOrderBy,
 }: {
   statusDropdownOption: {
     value: string | TransactionStatusEnum;
@@ -159,6 +169,8 @@ const Head = ({
   setTransactionFindStatus: Dispatch<
     SetStateAction<"all" | TransactionStatusEnum>
   >;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <>
@@ -197,7 +209,19 @@ const Head = ({
               }}
             />
           </div>
-
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              value={orderBy}
+              options={[
+                { label: "Terbaru", value: SortOrder.Desc },
+                { label: "Terlama", value: SortOrder.Asc },
+              ]}
+              onValueChange={(val) => {
+                setOrderBy(val as SortOrder);
+              }}
+            />
+          </div>
           <div className="col-lg-auto">
             <Buttons
               data-bs-toggle="modal"
@@ -218,27 +242,63 @@ const Footer = ({
   setTransactionTake,
   setTransactionSkip,
   pageLength,
+  transactionTake,
 }: {
   setTransactionTake: Dispatch<SetStateAction<number>>;
   setTransactionSkip: Dispatch<SetStateAction<number>>;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  transactionTake: number;
 }) => {
   return (
     <div className="row d-flex justify-content-between p-10">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => {
-            setTransactionTake(val as number);
-          }}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {transactionTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTransactionTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTransactionTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={transactionTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setTransactionTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

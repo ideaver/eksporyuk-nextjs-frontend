@@ -44,17 +44,17 @@ export const breadcrumbs = [
 ];
 
 interface EditFormProps {
-  buyerName: string | undefined;
+  buyerName: string | undefined | null;
   companyName: string | undefined | null;
-  address: string | undefined;
-  email: string | undefined;
-  phone: string | undefined;
-  country: any | undefined;
-  demand: string | undefined;
-  quantity: number | undefined;
-  abbreviation: string | undefined;
+  address: string | undefined | null;
+  email: string | undefined | null;
+  phone: string | undefined | null;
+  country: any | undefined | null;
+  demand: string | undefined | null;
+  quantity: number | undefined | null;
+  abbreviation: string | undefined | null;
   price: string | undefined | null;
-  deliveryType: InternationalTradeDeliveryTypeEnum | undefined;
+  deliveryType: InternationalTradeDeliveryTypeEnum | undefined | null | string;
 }
 
 const useEditBuyerForm = ({
@@ -77,35 +77,10 @@ const useEditBuyerForm = ({
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Nama diperlukan"),
-    address: Yup.string()
-      .min(5, "Minimal 5 simbol")
-      .max(300, "Maksimal 300 simbol")
-      .required("Alamat diperlukan"),
-    companyName: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    email: Yup.string()
-      .email("Format email salah")
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    phone: Yup.string()
-      .min(6, "Minimal 6 simbol")
-      .max(25, "Maksimal 25 simbol")
-      .required("Alamat diperlukan"),
     demand: Yup.string()
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Demand diperlukan"),
-    quantity: Yup.string()
-      .min(1, "Minimal 1 simbol")
-      .max(50, "Maksimal 100 simbol")
-      .required("Jumlah demand diperlukan"),
-    price: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("price diperlukan"),
   });
 
   const editBuyerFormik = useFormik({
@@ -158,6 +133,8 @@ export const useCountryDropdown = () => {
       },
     });
 
+    result.unshift({ value: 0, label: "None" });
+
     return {
       options: result,
       hasMore: true,
@@ -172,7 +149,7 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   const [companyName, setCompanyName] = useState(
     data?.buyerFindOne?.companyName
   );
-  const [address, setAddress] = useState(data?.buyerFindOne?.address);
+  const [address, setAddress] = useState<any>(data?.buyerFindOne?.address);
   const [email, setEmail] = useState(data?.buyerFindOne?.email);
   const [phone, setPhone] = useState(data?.buyerFindOne?.phone);
   const [country, setCountry] = useState({
@@ -197,7 +174,7 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   const { formik } = useEditBuyerForm({
     buyerName,
     companyName,
-    address,
+    address: address,
     email,
     phone,
     country,
@@ -237,11 +214,14 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
             phone: {
               set: phone,
             },
-            country: {
-              connect: {
-                id: country.value,
-              },
-            },
+            country:
+              country.value === 0
+                ? null
+                : {
+                    connect: {
+                      id: country.value,
+                    },
+                  },
             productName: {
               set: demand,
             },

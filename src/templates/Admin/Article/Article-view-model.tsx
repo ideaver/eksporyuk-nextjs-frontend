@@ -47,7 +47,7 @@ const usePagination = (
     articleLength.data?.articleFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil((length as number) / 10);
+    return Math.ceil((length as number) / articleFindTake);
   };
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const useArticleViewModel = () => {
   const [articleFindStatus, setArticleFindStatus] = useState("all");
   const [articleFindCategory, setArticleFindCategory] = useState(0);
   const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
-    SortOrder.Asc
+    SortOrder.Desc
   );
 
   const articleFindMany = useArticleFindManyQuery({
@@ -211,7 +211,6 @@ const useArticleViewModel = () => {
     articleFindStatus,
     articleFindCategory
   );
-
   useEffect(() => {
     if (
       articleFindSearch.length !== 0 ||

@@ -1,7 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect } from "react";
 
-import { useInvoiceFindManyQuery, QueryMode } from "@/app/service/graphql/gen/graphql";
+import {
+  useInvoiceFindManyQuery,
+  QueryMode,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 
 interface ICommissionProps {}
 
@@ -15,101 +19,159 @@ export interface TableRow {
   badgeColor: any;
 }
 
-const useCommisionData = (skipPage: number, takePage: number, status: any, searchComission: string) => {
-  const numTakePage = Number(takePage);
+const useCommisionData = (
+  skipPage: number,
+  takePage: number,
+  status: any,
+  searchComission: string,
+  orderBy: SortOrder
+) => {
+  // const numTakePage = Number(takePage);
 
-  const getVariables = (skipPage: number, takePage: number, status: any) => {
-    let variables: any = {
-      take: numTakePage,
-      where: {
-        status: {
-          equals: status,
-        }
-      }
-    };
-  
-    // Add skip property when status is empty
-    if (!status) {
-      variables = {
-        ...variables,
-        skip: skipPage,
-      }
-    }
-  
-    if (status === "") {
-      variables = {
-        take: takePage,
-        skip: skipPage,
-        where: {
-          status: {
-            equals: null,
-          }
-        }
-      }
-    }
+  // const getVariables = (
+  //   skipPage: number,
+  //   takePage: number,
+  //   status: any,
+  //   orderBy: SortOrder
+  // ) => {
+  //   let variables: any = {
+  //     take: numTakePage,
+  //     orderBy: [
+  //       {
+  //         createdAt: orderBy,
+  //       },
+  //     ],
+  //     where: {
+  //       status: {
+  //         equals: status,
+  //       },
+  //     },
+  //   };
 
-    if (searchComission) {
-      variables = {
-        ...variables,
-        where: {
-          order: {
-            is: {
-              enrollment: {
-                every: {
-                  student: {
-                    is: {
-                      user: {
-                        is: {
-                          name: {
-                            contains: searchComission,
-                            mode: QueryMode.Insensitive,
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+  //   // Add skip property when status is empty
+  //   if (!status) {
+  //     variables = {
+  //       ...variables,
+  //       skip: skipPage,
+  //     };
+  //   }
 
-    return variables;
-  }
+  //   if (status === "") {
+  //     variables = {
+  //       take: takePage,
+  //       skip: skipPage,
+  //       orderBy: [
+  //         {
+  //           createdAt: orderBy,
+  //         },
+  //       ],
+  //       where: {
+  //         status: {
+  //           equals: null,
+  //         },
+  //       },
+  //     };
+  //   }
 
-  let variables: any = {
-    take: numTakePage,
-    where: {
-      status: {
-        equals: status,
-      }
-    }
-  };
+  //   if (searchComission) {
+  //     variables = {
+  //       ...variables,
+  //       where: {
+  //         order: {
+  //           is: {
+  //             enrollment: {
+  //               every: {
+  //                 student: {
+  //                   is: {
+  //                     user: {
+  //                       is: {
+  //                         name: {
+  //                           contains: searchComission,
+  //                           mode: QueryMode.Insensitive,
+  //                         },
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     };
+  //   }
 
-  // Add skip property when status is empty
-  if (!status) {
-    variables = {
-      ...variables,
-      skip: skipPage,
-    }
-  }
+  //   return variables;
+  // };
 
-  if (status === "") {
-    variables = {
-      take: numTakePage,
-      skip: skipPage,
-      where: {
-        status: {
-          equals: null,
-        }
-      }
-    }
-  }
+  // let variables: any = {
+  //   take: numTakePage,
+  //   orderBy: [
+  //     {
+  //       createdAt: orderBy,
+  //     },
+  //   ],
+  //   where: {
+  //     status: {
+  //       equals: status,
+  //     },
+  //   },
+  // };
+
+  // // Add skip property when status is empty
+  // if (!status) {
+  //   variables = {
+  //     ...variables,
+  //     skip: skipPage,
+  //   };
+  // }
+
+  // if (status === "") {
+  //   variables = {
+  //     take: numTakePage,
+  //     skip: skipPage,
+  //     orderBy: [
+  //       {
+  //         createdAt: orderBy,
+  //       },
+  //     ],
+  //     where: {
+  //       status: {
+  //         equals: null,
+  //       },
+  //     },
+  //   };
+  // }
 
   const { data, loading, error } = useInvoiceFindManyQuery({
-    variables: getVariables(skipPage, numTakePage, status),
+    variables: {
+      take: parseInt(takePage.toString()),
+      skip: skipPage,
+      orderBy: {
+        createdAt: orderBy,
+      },
+      where: {
+        status: {
+          equals: status == "all" ? null : status,
+        },
+        order: {
+          is: {
+            enrollment: {
+              every: {
+                course: {
+                  is: {
+                    title: {
+                      contains: searchComission,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   const [commissionData, setComissionData] = useState<TableRow[]>([]);
@@ -130,20 +192,23 @@ const useCommisionData = (skipPage: number, takePage: number, status: any, searc
         ),
         totalKomisi: invoice.amount,
         status: invoice.status,
-        badgeColor: invoice.status === "FULLPAID" ? "success" : invoice.status === "CANCELLED" ? "danger" : "warning",
+        badgeColor:
+          invoice.status === "FULLPAID"
+            ? "success"
+            : invoice.status === "CANCELLED"
+            ? "danger"
+            : "warning",
       }));
       setComissionData(commissionData);
     }
   }, [data]);
-  
+
   const calculateTotalPage = () => {
-    return Math.ceil(
-      (commissionData.length ?? 0) / takePage
-    )
+    return Math.ceil((commissionData.length ?? 0) / takePage);
   };
 
   return { commissionData, loading, error, calculateTotalPage };
-}
+};
 
 export const formatToIDR = (amount: string) => {
   return parseInt(amount).toLocaleString("id-ID", {
@@ -171,12 +236,31 @@ export const breadcrumbs = [
 const useComissionViewModel = ({}: ICommissionProps) => {
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const [status, setStatus] = useState<any>(null);
+  const [isCustomTake, setIsCustomTake] = useState(false);
   const [searchCommission, setSearchComission] = useState("");
 
-  const { commissionData, loading, error, calculateTotalPage } = useCommisionData(skipPage, takePage, status, searchCommission);
+  const { commissionData, loading, error, calculateTotalPage } =
+    useCommisionData(skipPage, takePage, status, searchCommission, orderBy);
 
-  return { takePage, setTakePage, skipPage, setSkipPage, status, setStatus, commissionData, loading, error, calculateTotalPage, setSearchComission};
+  return {
+    isCustomTake,
+    setIsCustomTake,
+    orderBy,
+    setOrderBy,
+    takePage,
+    setTakePage,
+    skipPage,
+    setSkipPage,
+    status,
+    setStatus,
+    commissionData,
+    loading,
+    error,
+    calculateTotalPage,
+    setSearchComission,
+  };
 };
 
 export default useComissionViewModel;

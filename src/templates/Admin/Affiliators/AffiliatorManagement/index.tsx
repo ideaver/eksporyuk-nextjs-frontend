@@ -8,7 +8,10 @@ import useAffiliatorViewModel, {
   dateFormatter,
 } from "./Affiliator-view-model";
 
-import { AffiliatorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  AffiliatorFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
@@ -36,6 +39,7 @@ const AffiliatorPage = () => {
     calculateTotalPage,
     setSearchAffiliator,
     affiliatorFindMany,
+    setOrderBy,
   } = useAffiliatorViewModel();
 
   return (
@@ -43,7 +47,12 @@ const AffiliatorPage = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Affiliator</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchAffiliator} />
+          <Head
+            onSearch={setSearchAffiliator}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             handleSelectAllCheck={handleSelectAllCheck}
             handleSingleCheck={handleSingleCheck}
@@ -66,7 +75,13 @@ const AffiliatorPage = () => {
 
 export default AffiliatorPage;
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
+const Head = ({
+  onSearch,
+  setOrderBy,
+}: {
+  onSearch: (val: string) => void;
+  setOrderBy: (e: SortOrder) => void;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -78,6 +93,20 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
             onChange: (e: any) => onSearch(e.target.value),
           }}
         ></TextField>
+      </div>
+      <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -280,15 +309,51 @@ const Footer = ({
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(e) => setTakePage(e)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {takePage}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTakePage(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setTakePage(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={takePage}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setTakePage(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

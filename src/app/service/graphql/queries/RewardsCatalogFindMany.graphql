@@ -1,5 +1,15 @@
-query RewardsCatalogFindMany($take: Int, $skip: Int, $where: RewardsCatalogWhereInput) {
-  rewardsCatalogFindMany(take: $take, skip: $skip, where: $where) {
+query RewardsCatalogFindMany(
+  $take: Int
+  $skip: Int
+  $where: RewardsCatalogWhereInput
+  $orderBy: [RewardsCatalogOrderByWithRelationInput!]
+) {
+  rewardsCatalogFindMany(
+    take: $take
+    skip: $skip
+    where: $where
+    orderBy: $orderBy
+  ) {
     id
     title
     course {

@@ -2,7 +2,10 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
-import { MentorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  MentorFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import useDeleteUser from "@/app/service/utils/crud/user/userDelete";
 import useUserEdit from "@/app/service/utils/crud/user/userEdit";
@@ -35,6 +38,9 @@ const MentorPage = ({}) => {
     handleSingleCheck,
     checkedItems,
     selectAll,
+    orderBy,
+    setOrderBy,
+    mentorFindTake,
   } = useMentorViewModel();
 
   return (
@@ -46,6 +52,10 @@ const MentorPage = ({}) => {
             onClick={() => setShowMentorSelectModal(true)}
             onSearch={(val) => {
               setMentorFindSearch(val);
+            }}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
             }}
           />
           <Body
@@ -63,6 +73,7 @@ const MentorPage = ({}) => {
             setMentorFindTake={(val) => {
               setMentorFindTake(val);
             }}
+            mentorFindTake={mentorFindTake}
           />
         </KTCardBody>
       </KTCard>
@@ -80,9 +91,13 @@ const MentorPage = ({}) => {
 const Head = ({
   onClick,
   onSearch,
+  orderBy,
+  setOrderBy,
 }: {
   onClick?: () => void;
   onSearch: (val: string) => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -98,6 +113,19 @@ const Head = ({
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Asc },
+              { label: "Terlama", value: SortOrder.Desc },
+            ]}
+            onValueChange={(val) => {
+              setOrderBy(val as SortOrder);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
           <Buttons onClick={onClick}>Tambah Mentor Baru</Buttons>
         </div>
       </div>
@@ -110,25 +138,62 @@ const Footer = ({
   setCurrentPage,
   setMentorFindTake,
   pageLength,
+  mentorFindTake,
 }: {
   setMentorFindTake: (val: number) => void;
   setMentorFindSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  mentorFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => setMentorFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {mentorFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              <input
+                type="number"
+                value={mentorFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setMentorFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

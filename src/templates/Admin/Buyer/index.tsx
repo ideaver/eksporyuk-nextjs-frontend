@@ -14,7 +14,10 @@ import Link from "next/link";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { AsyncPaginate } from "react-select-async-paginate";
-import { BuyerDeleteManyMutation } from "@/app/service/graphql/gen/graphql";
+import {
+  BuyerDeleteManyMutation,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import { MutationFunctionOptions } from "@apollo/client";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useSelector } from "react-redux";
@@ -37,6 +40,9 @@ const BuyerPage = () => {
     checked,
     buyerDeleteMany,
     handleDownloadTamplateFile,
+    orderBy,
+    setOrderBy,
+    buyerFindTake,
   } = useBuyerViewModel();
 
   return (
@@ -70,6 +76,10 @@ const BuyerPage = () => {
               }}
               checkedItems={checked}
               handleDownloadTamplateFile={handleDownloadTamplateFile}
+              orderBy={orderBy}
+              setOrderBy={(e) => {
+                setOrderBy(e);
+              }}
             />
             {buyerFindMany.error ? (
               <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -212,6 +222,7 @@ const BuyerPage = () => {
               setBuyerFindTake={(val) => {
                 setBuyerFindTake(val);
               }}
+              buyerFindTake={buyerFindTake}
             />
           </KTCardBody>
         </KTCard>
@@ -226,11 +237,15 @@ const Head = ({
   setSearchCountry,
   checkedItems,
   handleDownloadTamplateFile,
+  orderBy,
+  setOrderBy,
 }: {
   onSearch: (val: string) => void;
   setSearchCountry: (id: number) => void;
   checkedItems: number[];
   handleDownloadTamplateFile: () => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   const { loadOptions } = useCountryDropdown();
   const { buyerDeleteMany, buyerFindMany, deleteLoading, setDeleteLoading } =
@@ -255,7 +270,19 @@ const Head = ({
             onChange={(id) => setSearchCountry(id?.value as number)}
           />
         </div>
-
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
+          />
+        </div>
         <div className="col-lg-auto">
           <Buttons mode="light" onClick={handleDownloadTamplateFile}>
             Tamplate Data Buyer
@@ -320,25 +347,63 @@ const Footer = ({
   setBuyerFindTake,
   setBuyerFindSkip,
   pageLength,
+  buyerFindTake,
 }: {
   currentPage: number;
   pageLength: number;
   setCurrentPage: (val: number) => void;
   setBuyerFindTake: (val: number) => void;
   setBuyerFindSkip: (val: number) => void;
+  buyerFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(val) => setBuyerFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {buyerFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setBuyerFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setBuyerFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={buyerFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setBuyerFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

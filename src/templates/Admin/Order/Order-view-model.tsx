@@ -2,6 +2,7 @@ import {
   OrderFindManyQuery,
   OrderStatusEnum,
   QueryMode,
+  SortOrder,
   useOrderFindLengthQuery,
   useOrderFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -117,10 +118,17 @@ const useAdminOrderViewModel = () => {
     undefined
   );
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>("all");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
   const orderFindMany = useOrderFindManyQuery({
     variables: {
       take: parseInt(orderFindTake.toString()),
       skip: orderFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         AND: [
           {
@@ -260,6 +268,8 @@ const useAdminOrderViewModel = () => {
   });
 
   return {
+    orderBy,
+    setOrderBy,
     orderFindMany,
     orderFindTake,
     setOrderFindTake,
@@ -278,7 +288,7 @@ const useAdminOrderViewModel = () => {
     calculateTotalPage,
     exportModalState,
     setExportModalState,
-    setStatusFilter
+    setStatusFilter,
   };
 };
 export default useAdminOrderViewModel;

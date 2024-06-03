@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BuyerFindManyQuery,
   QueryMode,
+  SortOrder,
   useBuyerDeleteManyMutation,
   useBuyerFindLengthQuery,
   useBuyerFindManyQuery,
@@ -195,11 +196,17 @@ const useBuyerViewModel = () => {
 
   const [buyerFindSearch, setBuyerFindSearch] = useState("");
   const [buyerFindCountry, setBuyerFindCountry] = useState(0);
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   const buyerFindMany = useBuyerFindManyQuery({
     variables: {
       take: parseInt(buyerFindTake.toString()),
       skip: buyerFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -328,6 +335,8 @@ const useBuyerViewModel = () => {
   }
 
   return {
+    orderBy,
+    setOrderBy,
     handleImportDataBuyer,
     handleDownloadTamplateFile,
     deleteLoading,
