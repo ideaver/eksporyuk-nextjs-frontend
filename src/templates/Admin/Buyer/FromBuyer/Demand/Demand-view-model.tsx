@@ -30,14 +30,14 @@ const useResetBuyerState = () => {
   const resetBuyerState = () => {
     dispatch(changeAbbreviation("Ton"));
     dispatch(changeBuyerName(""));
-    dispatch(changeCountry(1));
+    dispatch(changeCountry(0));
     dispatch(changeCompanyName(""));
     dispatch(changeCompanyAddress(""));
     dispatch(changeDemand(""));
     dispatch(changeDemandQuantity(""));
     dispatch(changePrice(""));
     dispatch(changeEmail(""));
-    dispatch(changeShippingTerms(InternationalTradeDeliveryTypeEnum.Cfr));
+    dispatch(changeShippingTerms("none"));
     dispatch(changeTelephoneNumber(""));
     router.push("/admin/buyers");
   };
@@ -69,7 +69,7 @@ export const useBuyerInformationForm = () => {
   const [buyerCreateOne, response] = useBuyerCreateOneMutation({
     variables: {
       data: {
-        abbreviation,
+        abbreviation: abbreviation === "none" ? null : abbreviation,
         address: companyAddress,
         buyerName,
         companyName: companyName,
@@ -78,18 +78,23 @@ export const useBuyerInformationForm = () => {
             id: session?.user?.id,
           },
         },
-        country: {
-          connect: {
-            id: country,
-          },
-        },
+        country:
+          country == 0
+            ? null
+            : {
+                connect: {
+                  id: country,
+                },
+              },
         phone: telephoneNumber,
         email,
         price,
         productName: demand,
         quantity: parseFloat(demandQuantity),
         deliveryType:
-          shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum,
+          shippingTerms === "none"
+            ? null
+            : (shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum),
       },
     },
   });
@@ -100,21 +105,11 @@ export const useBuyerInformationForm = () => {
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Demand diperlukan"),
-    demandQuantity: Yup.string()
-      .min(1, "Minimal 1 simbol")
-      .max(50, "Maksimal 100 simbol")
-      .required("Jumlah demand diperlukan"),
-    price: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("price diperlukan"),
   });
 
   const DemandFormik = useFormik({
     initialValues: {
       demand: demand,
-      demandQuantity: demandQuantity,
-      price: price,
     },
     validationSchema: buyerSchema,
     onSubmit: async (values) => {
@@ -140,7 +135,7 @@ const AbbreviationHandler = () => {
     (state: RootState) => state.buyer.abbreviation
   );
 
-  const handleChangeAbbreviation = (value: "Ton" | "Kg" | "Pcs") => {
+  const handleChangeAbbreviation = (value: "Ton" | "Kg" | "Pcs" | "none") => {
     dispatch(changeAbbreviation(value));
   };
   return {
@@ -167,9 +162,10 @@ const ShippingTermsHandler = () => {
 };
 
 const useDemandViewModel = () => {
-  const shippingOption = Object.entries(InternationalTradeDeliveryTypeEnum).map(
-    ([value, label]) => ({ value: label, label })
-  );
+  const shippingOption: any = Object.entries(
+    InternationalTradeDeliveryTypeEnum
+  ).map(([value, label]) => ({ value: label, label }));
+  shippingOption.unshift({ value: "none", label: "none" });
 
   const { resetBuyerState } = useResetBuyerState();
 

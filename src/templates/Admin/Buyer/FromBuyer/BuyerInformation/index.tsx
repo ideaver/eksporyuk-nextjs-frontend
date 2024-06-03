@@ -7,7 +7,7 @@ import useBuyerInformationViewModel, {
 import { AsyncPaginate } from "react-select-async-paginate";
 import clsx from "clsx";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   changeBuyerName,
   changeCompanyAddress,
@@ -15,8 +15,10 @@ import {
   changeEmail,
   changeTelephoneNumber,
 } from "@/features/reducers/buyers/buyersReducer";
+import { RootState } from "@/app/store/store";
 
 const BuyerInformationPage = () => {
+  const buyerState = useSelector((state: RootState) => state.buyer);
   const { handleChangeCountry, resetBuyerState } =
     useBuyerInformationViewModel();
   const dispatch = useDispatch();
@@ -58,35 +60,18 @@ const BuyerInformationPage = () => {
             </div>
           )}
           <h5 className="text-muted mt-2 mb-8">Nama lengkap buyer</h5>
-          <h5 className="required">Nama Perusahaan</h5>
+          <h5 className="">Nama Perusahaan</h5>
           <input
             type="text"
             placeholder="Masukan nama perusahaan"
-            {...formik.getFieldProps("companyName")}
             onChange={(e) => {
-              formik.setFieldValue("companyName", e.target.value);
               dispatch(changeCompanyName(e.target.value));
             }}
-            value={formik.values.companyName}
-            className={clsx(
-              "w-100 px-4 p-3 form-control-md form-control",
-              {
-                "is-invalid":
-                  formik.touched.companyName && formik.errors.companyName,
-              },
-              {
-                "is-valid":
-                  formik.touched.companyName && !formik.errors.companyName,
-              }
-            )}
+            value={buyerState.companyName}
+            className={clsx("w-100 px-4 p-3 form-control-md form-control")}
           />
-          {formik.touched.companyName && formik.errors.companyName && (
-            <div className="fv-plugins-message-container">
-              <span role="alert">{formik.errors.companyName}</span>
-            </div>
-          )}
           <h5 className="text-muted mt-2 mb-8">Nama perusahaan buyer</h5>
-          <h5 className="required">Negara</h5>
+          <h5 className="">Negara</h5>
           <AsyncPaginate
             isSearchable={true}
             onChange={(e) => {
@@ -95,85 +80,38 @@ const BuyerInformationPage = () => {
             loadOptions={loadOptions}
           ></AsyncPaginate>
           <h5 className="text-muted mt-2 mb-8">Pilih negara Asal buyer</h5>
-          <h5 className="required">Alamat Perusahaan</h5>
+          <h5 className="">Alamat Perusahaan</h5>
           <input
             type="text"
             placeholder="Masukan alamat perusahaan"
-            {...formik.getFieldProps("companyAddress")}
             onChange={(e) => {
-              formik.setFieldValue("companyAddress", e.target.value);
               dispatch(changeCompanyAddress(e.target.value));
             }}
-            value={formik.values.companyAddress}
-            className={clsx(
-              "w-100 px-4 p-3 form-control-md form-control",
-              {
-                "is-invalid":
-                  formik.touched.companyAddress && formik.errors.companyAddress,
-              },
-              {
-                "is-valid":
-                  formik.touched.companyAddress &&
-                  !formik.errors.companyAddress,
-              }
-            )}
+            value={buyerState.companyAddress}
+            className={clsx("w-100 px-4 p-3 form-control-md form-control")}
           />
-          {formik.touched.companyAddress && formik.errors.companyAddress && (
-            <div className="fv-plugins-message-container">
-              <span role="alert">{formik.errors.companyAddress}</span>
-            </div>
-          )}
           <h5 className="text-muted mt-2 mb-8">Alamat perusahaan buyer</h5>
           <h5 className="">E-mail Buyer</h5>
           <input
             type="text"
             placeholder="Masukan email"
-            {...formik.getFieldProps("email")}
             onChange={(e) => {
-              formik.setFieldValue("email", e.target.value);
               dispatch(changeEmail(e.target.value));
             }}
-            value={formik.values.email}
-            className={clsx(
-              "w-100 px-4 p-3 form-control-md form-control",
-              {
-                "is-invalid": formik.touched.email && formik.errors.email,
-              },
-              {
-                "is-valid": formik.touched.email && !formik.errors.email,
-              }
-            )}
+            value={buyerState.email}
+            className={clsx("w-100 px-4 p-3 form-control-md form-control")}
           />
           <h5 className="text-muted mt-2 mb-8">E-mail buyer</h5>
           <h5 className="">No. Telepon</h5>
           <input
             type="number"
             placeholder="Masukan nomor telepon"
-            {...formik.getFieldProps("telephoneNumber")}
             onChange={(e) => {
-              formik.setFieldValue("telephoneNumber", e.target.value);
               dispatch(changeTelephoneNumber(e.target.value));
             }}
-            value={formik.values.telephoneNumber}
-            className={clsx(
-              "w-100 px-4 p-3 form-control-md form-control",
-              {
-                "is-invalid":
-                  formik.touched.telephoneNumber &&
-                  formik.errors.telephoneNumber,
-              },
-              {
-                "is-valid":
-                  formik.touched.telephoneNumber &&
-                  !formik.errors.telephoneNumber,
-              }
-            )}
+            value={buyerState.telephoneNumber}
+            className={clsx("w-100 px-4 p-3 form-control-md form-control")}
           />
-          {formik.touched.telephoneNumber && formik.errors.telephoneNumber && (
-            <div className="fv-plugins-message-container">
-              <span role="alert">{formik.errors.telephoneNumber}</span>
-            </div>
-          )}
           <h5 className="text-muted mt-2 mb-8">No. telepon buyer</h5>
         </KTCardBody>
         <div className={"row flex-end mt-10"}>

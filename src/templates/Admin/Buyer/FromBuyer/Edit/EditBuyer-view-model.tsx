@@ -54,7 +54,7 @@ interface EditFormProps {
   quantity: number | undefined | null;
   abbreviation: string | undefined | null;
   price: string | undefined | null;
-  deliveryType: InternationalTradeDeliveryTypeEnum | undefined | null;
+  deliveryType: InternationalTradeDeliveryTypeEnum | undefined | null | string;
 }
 
 const useEditBuyerForm = ({
@@ -77,35 +77,10 @@ const useEditBuyerForm = ({
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Nama diperlukan"),
-    address: Yup.string()
-      .min(5, "Minimal 5 simbol")
-      .max(300, "Maksimal 300 simbol")
-      .required("Alamat diperlukan"),
-    companyName: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    email: Yup.string()
-      .email("Format email salah")
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("Alamat diperlukan"),
-    phone: Yup.string()
-      .min(6, "Minimal 6 simbol")
-      .max(25, "Maksimal 25 simbol")
-      .required("Alamat diperlukan"),
     demand: Yup.string()
       .min(3, "Minimal 3 simbol")
       .max(50, "Maksimal 50 simbol")
       .required("Demand diperlukan"),
-    quantity: Yup.string()
-      .min(1, "Minimal 1 simbol")
-      .max(50, "Maksimal 100 simbol")
-      .required("Jumlah demand diperlukan"),
-    price: Yup.string()
-      .min(3, "Minimal 3 simbol")
-      .max(50, "Maksimal 50 simbol")
-      .required("price diperlukan"),
   });
 
   const editBuyerFormik = useFormik({
@@ -157,6 +132,8 @@ export const useCountryDropdown = () => {
         },
       },
     });
+
+    result.unshift({ value: 0, label: "None" });
 
     return {
       options: result,
@@ -237,11 +214,14 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
             phone: {
               set: phone,
             },
-            country: {
-              connect: {
-                id: country.value,
-              },
-            },
+            country:
+              country.value === 0
+                ? null
+                : {
+                    connect: {
+                      id: country.value,
+                    },
+                  },
             productName: {
               set: demand,
             },
