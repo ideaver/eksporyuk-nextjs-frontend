@@ -258,6 +258,7 @@ const useNewRewardViewModel = () => {
   const [endSales, setEndSales] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState<Date>(new Date());
 
   // Redux states
   const status = useSelector((state: RootState) => state.reward.status);
@@ -321,7 +322,6 @@ const useNewRewardViewModel = () => {
     namaReward,
     deskripsiReward,
     hargaPoint,
-    endSales,
   }: any) => {
     const data = await rewardsCatalogCreateMutation({
       variables: {
@@ -329,7 +329,7 @@ const useNewRewardViewModel = () => {
           title: namaReward,
           rewardsType: RewardsTypeEnum.Cash,
           pointsRequired: Number(hargaPoint),
-          endSales,
+          endSales: date,
           description: deskripsiReward,
           createdBy: {
             connect: {
@@ -360,7 +360,7 @@ const useNewRewardViewModel = () => {
 
   const onSubmit = async () => {
     // Check if any required field is empty
-    if (!namaReward || !deskripsiReward || !hargaPoint || !akhirMasaBerlaku || !firstSelectedCourse) {
+    if (!namaReward || !deskripsiReward || !hargaPoint || !date || !firstSelectedCourse) {
       setErrorMessage("All fields are required.");
       return;
     }
@@ -371,7 +371,6 @@ const useNewRewardViewModel = () => {
         namaReward,
         deskripsiReward,
         hargaPoint,
-        akhirMasaBerlaku,
       });
       const result = data.data;
       console.log(result);
@@ -414,7 +413,9 @@ const useNewRewardViewModel = () => {
     status,
     handleChangeHargaPoint,
     loading,
-    router
+    router,
+    date,
+    setDate,
   };
 };
 

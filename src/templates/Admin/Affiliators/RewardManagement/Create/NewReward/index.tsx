@@ -1,5 +1,6 @@
 import CurrencyInput from "react-currency-input-field";
 import { AsyncPaginate } from "react-select-async-paginate";
+import Flatpickr from "react-flatpickr";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -40,6 +41,8 @@ const CreateNewRewardContent = () => {
     handleChangeHargaPoint,
     loading,
     router,
+    date,
+    setDate,
   } = useNewRewardViewModel();
   const { loadOptions } = useCoursesDropdown();
   const { addCourse, selectedCourse, removeCourse } =
@@ -180,7 +183,7 @@ const CreateNewRewardContent = () => {
             {/* Input 5 */}
             <div className="mb-5">
               <h5>Akhir Masa Berlaku</h5>
-              <TextField
+              {/* <TextField
                 onClickPreffixIcon={function noRefCheck() {}}
                 onClickSuffixIcon={function noRefCheck() {}}
                 type="date"
@@ -188,6 +191,18 @@ const CreateNewRewardContent = () => {
                   value: akhirMasaBerlaku,
                   onChange: setAkhirMasaBerlaku,
                 }}
+              /> */}
+              <Flatpickr
+                value={date}
+                onChange={([date]) => {
+                  setDate(date);
+                }}
+                options={{
+                  enableTime: false,
+                  dateFormat: "Y-m-d",
+                }}
+                className="form-control form-control-solid"
+                placeholder="Pick date"
               />
               <p className="fw-bold fs-5 text-muted pt-2">
                 Batas akhir reward dapat ditukarkan. Kosongkan jika tidak ada
@@ -268,7 +283,13 @@ const CreateNewRewardContent = () => {
           className="d-flex justify-content-end mt-10 gap-3"
           style={{ width: "100%" }}
         >
-          <button className="btn btn-secondary" onClick={() => router.push("/admin/affiliate/reward")}>Batal</button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => router.push("/admin/affiliate/reward")}
+            disabled={loading}
+          >
+            Batal
+          </button>
           <button
             className="btn btn-primary"
             disabled={loading}
