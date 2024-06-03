@@ -183,15 +183,6 @@ const CreateNewRewardContent = () => {
             {/* Input 5 */}
             <div className="mb-5">
               <h5>Akhir Masa Berlaku</h5>
-              {/* <TextField
-                onClickPreffixIcon={function noRefCheck() {}}
-                onClickSuffixIcon={function noRefCheck() {}}
-                type="date"
-                props={{
-                  value: akhirMasaBerlaku,
-                  onChange: setAkhirMasaBerlaku,
-                }}
-              /> */}
               <Flatpickr
                 value={date}
                 onChange={([date]) => {
