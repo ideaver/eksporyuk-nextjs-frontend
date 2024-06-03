@@ -3,12 +3,17 @@ import { Modal } from "react-bootstrap";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { KTIcon } from "@/_metronic/helpers";
 
+import useRewardManagementViewModel from "../RewardManagement-view-model";
+
 interface deleteRewardModal {
   show: boolean;
   handleClose: () => void;
+  rewardId: number;
 }
 
-const DeleteRewardModal = ({ show, handleClose }: deleteRewardModal) => {
+const DeleteRewardModal = ({ show, handleClose, rewardId }: deleteRewardModal) => {
+  const { onDeleteOne } = useRewardManagementViewModel();
+
   return (
     <Modal show={show} centered={true}>
       <div className="modal-header">
@@ -36,7 +41,7 @@ const DeleteRewardModal = ({ show, handleClose }: deleteRewardModal) => {
         <Buttons
           buttonColor="danger"
           classNames="btn-lg"
-          onClick={() => {}}
+          onClick={() => onDeleteOne(rewardId)}
         >
           Iya
         </Buttons>

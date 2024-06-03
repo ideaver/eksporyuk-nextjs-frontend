@@ -1,0 +1,3 @@
+mutation RewardsCatalogDeleteOne($where: RewardsCatalogWhereUniqueInput!) {
+  rewardsCatalogDeleteOne(where: $where)
+}

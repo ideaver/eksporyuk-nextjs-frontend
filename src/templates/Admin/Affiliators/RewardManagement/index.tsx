@@ -141,10 +141,15 @@ const Body = ({
   selectAll: boolean;
 }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [rewardId, setRewardId] = useState(0);
 
   return (
     <>
-      <DeleteRewardModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} />
+      <DeleteRewardModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        rewardId={rewardId}
+      />
       {rewardsCatalogFindMany.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">
@@ -195,7 +200,9 @@ const Body = ({
                       defaultChildren={false}
                       onChange={() => handleSingleCheck(index)}
                     >
-                      <Link href={`/admin/affiliate/reward/detail/${reward.id}`}>
+                      <Link
+                        href={`/admin/affiliate/reward/detail/${reward.id}`}
+                      >
                         <div className="d-flex align-items-center gap-5">
                           <img
                             src="/media/avatars/300-2.jpg"
@@ -236,7 +243,15 @@ const Body = ({
                       </button>
                       <ul className="dropdown-menu">
                         <li>
-                          <button className="dropdown-item" onClick={() => setShowDeleteModal(true)}>Hapus</button>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setShowDeleteModal(true);
+                              setRewardId(reward.id);
+                            }}
+                          >
+                            Hapus
+                          </button>
                         </li>
                       </ul>
                     </div>
