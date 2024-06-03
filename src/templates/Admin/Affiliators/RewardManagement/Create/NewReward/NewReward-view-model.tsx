@@ -68,15 +68,98 @@ const useField = <T extends string | boolean | number>(
   return [value, handleChange] as const;
 };
 
+// export const useCoursesDropdown = () => {
+//   const getCourses = useCourseFindManyQuery({
+//     variables: {
+//       take: 10
+//     }
+//   });
+
+//   async function loadOptions(
+//     search: string,
+//     prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+//   ) {
+//     const result =
+//       getCourses.data?.courseFindMany?.map((course) => ({
+//         value: course.id,
+//         label: course.title,
+//       })) ?? [];
+
+//     const newOptions = result.filter(
+//       (option) =>
+//         !prevOptions.some(
+//           (prevOption) => (prevOption as CourseOptionType).value === option.value
+//         )
+//     );
+
+//     await getCourses.refetch({
+//       skip: prevOptions.length,
+//       where: {
+//         title: {
+//           equals: search,
+//           mode: QueryMode.Insensitive
+//         }
+//       },
+//     });
+
+//     return {
+//       options: newOptions,
+//       hasMore: true,
+//     };
+//   }
+
+//   return { loadOptions };
+// }
+
+// export const AddCourseHandler = () => {
+//   const dispatch = useDispatch();
+//   const currentCourseSelector = useSelector(
+//     (state: RootState) => state.reward.connectCourse
+//   );
+//   const [selectedCourse, setSelectedCourse] = useState<
+//   CourseOptionType[] | undefined
+//   >(currentCourseSelector);
+
+//   const addCourse = (course: CourseOptionType) => {
+//     const updatedCourses = selectedCourse
+//       ? [...selectedCourse, course]
+//       : [course];
+
+//       setSelectedCourse(updatedCourses);
+
+//     dispatch(changeConnectCourse(updatedCourses));
+//   };
+
+//   const removeCourse = (index: number) => {
+//     const updatedCourse = selectedCourse?.filter(
+//       (_, courseIndex) => courseIndex !== index
+//     );
+
+//     dispatch(changeConnectCourse(updatedCourse));
+//   };
+
+//   useEffect(() => {
+//     setSelectedCourse(currentCourseSelector);
+//   }, [currentCourseSelector]);
+
+//   return {
+//     selectedCourse,
+//     setSelectedCourse,
+//     currentCourseSelector,
+//     addCourse,
+//     removeCourse,
+//   };
+// };
+
 /**
  * custom hook for courses dropdown
  * @returns loadOptions
  */
 export const useCoursesDropdown = () => {
-  const getCourses = useCourseFindManyQuery({
+  const { data, refetch } = useCourseFindManyQuery({
     variables: {
-      take: 10
-    }
+      take: 10,
+    },
   });
 
   async function loadOptions(
@@ -84,7 +167,7 @@ export const useCoursesDropdown = () => {
     prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
   ) {
     const result =
-      getCourses.data?.courseFindMany?.map((course) => ({
+      data?.courseFindMany?.map((course) => ({
         value: course.id,
         label: course.title,
       })) ?? [];
@@ -92,28 +175,35 @@ export const useCoursesDropdown = () => {
     const newOptions = result.filter(
       (option) =>
         !prevOptions.some(
-          (prevOption) => (prevOption as CourseOptionType).value === option.value
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
         )
     );
 
-    await getCourses.refetch({
+    const response = await refetch({
       skip: prevOptions.length,
       where: {
         title: {
-          equals: search,
-          mode: QueryMode.Insensitive
-        }
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
       },
     });
 
+    const fetchedOptions =
+      response.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
     return {
-      options: newOptions,
-      hasMore: true,
+      options: [...prevOptions, ...fetchedOptions],
+      hasMore: fetchedOptions.length > 0,
     };
   }
 
   return { loadOptions };
-}
+};
 
 /**
  * custom hook for courses handler
@@ -124,36 +214,27 @@ export const AddCourseHandler = () => {
   const currentCourseSelector = useSelector(
     (state: RootState) => state.reward.connectCourse
   );
-  const [selectedCourse, setSelectedCourse] = useState<
-  CourseOptionType[] | undefined
-  >(currentCourseSelector);
+  const [selectedCourse, setSelectedCourse] = useState<CourseOptionType | undefined>(
+    currentCourseSelector?.[0]
+  );
 
   const addCourse = (course: CourseOptionType) => {
-    const updatedCourses = selectedCourse
-      ? [...selectedCourse, course]
-      : [course];
-
-      setSelectedCourse(updatedCourses);
-
-    dispatch(changeConnectCourse(updatedCourses));
+    setSelectedCourse(course);
+    dispatch(changeConnectCourse([course]));
   };
 
-  const removeCourse = (index: number) => {
-    const updatedCourse = selectedCourse?.filter(
-      (_, courseIndex) => courseIndex !== index
-    );
-
-    dispatch(changeConnectCourse(updatedCourse));
+  const removeCourse = () => {
+    setSelectedCourse(undefined);
+    dispatch(changeConnectCourse([]));
   };
 
   useEffect(() => {
-    setSelectedCourse(currentCourseSelector);
+    setSelectedCourse(currentCourseSelector?.[0]);
   }, [currentCourseSelector]);
 
   return {
     selectedCourse,
     setSelectedCourse,
-    currentCourseSelector,
     addCourse,
     removeCourse,
   };
@@ -215,7 +296,7 @@ const useNewRewardViewModel = () => {
   };
 
   // Modify soon
-  const firstSelectedCourse = selectedCourse?.[0]?.value;
+  const firstSelectedCourse = selectedCourse?.value;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

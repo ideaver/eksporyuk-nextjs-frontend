@@ -41,7 +41,7 @@ const CreateNewRewardContent = () => {
     loading,
   } = useNewRewardViewModel();
   const { loadOptions } = useCoursesDropdown();
-  const { addCourse, currentCourseSelector, selectedCourse, removeCourse } =
+  const { addCourse, selectedCourse, removeCourse } =
     AddCourseHandler();
 
   return (
@@ -200,7 +200,7 @@ const CreateNewRewardContent = () => {
               <h6 className="mt-4 text-muted">
                 Tambahkan Course yang Didapat dari Reward Ini
               </h6>
-              {selectedCourse &&
+              {/* {selectedCourse &&
                 selectedCourse?.map((course, index) => {
                   return (
                     <div className="d-flex mt-5" key={index}>
@@ -230,7 +230,36 @@ const CreateNewRewardContent = () => {
                 onChange={(value) => {
                   addCourse(value as CourseOptionType);
                 }}
-              ></AsyncPaginate>
+              ></AsyncPaginate> */}
+              {selectedCourse ? (
+                <div className="d-flex mt-5">
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: false,
+                        value: selectedCourse.label,
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={removeCourse}
+                    ></Buttons>
+                  </div>
+                </div>
+              ) : (
+                <AsyncPaginate
+                  className="mt-5"
+                  isSearchable={true}
+                  loadOptions={loadOptions}
+                  onChange={(value) => {
+                    addCourse(value as CourseOptionType);
+                  }}
+                ></AsyncPaginate>
+              )}
             </div>
           </KTCardBody>
         </KTCard>
@@ -239,7 +268,11 @@ const CreateNewRewardContent = () => {
           style={{ width: "100%" }}
         >
           <button className="btn btn-secondary">Batal</button>
-          <button className="btn btn-primary" disabled={loading} onClick={onSubmit}>
+          <button
+            className="btn btn-primary"
+            disabled={loading}
+            onClick={onSubmit}
+          >
             {loading ? "Mengirim Data..." : "Tambahkan Reward"}
           </button>
         </div>
