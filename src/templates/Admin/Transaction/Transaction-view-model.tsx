@@ -158,7 +158,7 @@ const usePagination = ({
 
 const useTransactionViewModel = () => {
   const [transactionSkip, setTransactionSkip] = useState<number>(0);
-  const [transactionTake, setTransactionTake] = useState<number>(100);
+  const [transactionTake, setTransactionTake] = useState<number>(10);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const dispatch = useDispatch();
 

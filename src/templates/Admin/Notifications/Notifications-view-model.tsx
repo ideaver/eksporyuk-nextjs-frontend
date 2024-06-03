@@ -6,7 +6,10 @@ import {
   QueryMode,
   NotificationFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { SortOrder, CompletionStatusEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  SortOrder,
+  CompletionStatusEnum,
+} from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
   {
@@ -153,8 +156,8 @@ const useNotificationsViewModel = () => {
           },
         ],
         onCompletionStatus: {
-          equals: completionStatus
-        }
+          equals: completionStatus,
+        },
       },
     },
   });
@@ -171,6 +174,7 @@ const useNotificationsViewModel = () => {
     useCheckbox(notificationFindMany);
 
   return {
+    takePage,
     setTakePage,
     skipPage,
     setSkipPage,

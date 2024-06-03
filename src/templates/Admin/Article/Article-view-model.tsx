@@ -116,9 +116,8 @@ export const useCategoriesDropdown = () => {
 };
 
 const useArticleViewModel = () => {
-  const [isCustomTake, setIsCustomTake] = useState(false);
   const [articleFindSkip, setArticleFindSkip] = useState(0);
-  const [articleFindTake, setArticleFindTake] = useState(100);
+  const [articleFindTake, setArticleFindTake] = useState(10);
 
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
@@ -239,12 +238,7 @@ const useArticleViewModel = () => {
     return format(wibDate, "kk:mm") + " WIB";
   };
 
-  useEffect(() => {
-    console.log(articleFindTake);
-  }, [articleFindTake]);
   return {
-    isCustomTake,
-    setIsCustomTake,
     formatWIB,
     articleDeleteOne,
     articleFindMany,

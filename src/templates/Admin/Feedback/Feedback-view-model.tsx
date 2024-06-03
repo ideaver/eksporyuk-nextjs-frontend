@@ -103,7 +103,7 @@ const usePagination = ({
 export type TFilter = "ALL" | "UNSOLVED" | "SOLVED" | "UNREADED" | "READED";
 
 const useFeedbackViewModel = () => {
-  const [feedbackTake, setFeedbackTake] = useState<number>(100);
+  const [feedbackTake, setFeedbackTake] = useState<number>(10);
   const [feedbackSkip, setFeedbackSkip] = useState<number>(0);
   const [filter, setFilter] = useState<TFilter>("ALL");
   const feedbackCategoryState = useSelector(
@@ -199,6 +199,7 @@ const useFeedbackViewModel = () => {
   } = useCategoryLength();
 
   return {
+    feedbackTake,
     orderBy,
     setOrderBy,
     feedbackFindMany,

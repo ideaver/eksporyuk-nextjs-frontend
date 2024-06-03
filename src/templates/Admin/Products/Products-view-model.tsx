@@ -78,7 +78,7 @@ const useCheckbox = (
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
-  const [findTake, setFindTake] = useState(100);
+  const [findTake, setFindTake] = useState(10);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const productsLength = useProductServiceFindManyQuery();
 
@@ -119,7 +119,7 @@ const useProductsViewModel = () => {
   } = usePagination();
 
   // Local states
-  const [takePage, setTakePage] = useState<any>(100);
+  const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchProduct, setSearchProduct] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);

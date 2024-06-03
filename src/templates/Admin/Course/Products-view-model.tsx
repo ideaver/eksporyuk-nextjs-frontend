@@ -39,7 +39,7 @@ export function getStatusBadgeColor(status: CourseStatusEnum | undefined) {
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [courseFindSkip, setCourseFindSkip] = useState(0);
-  const [courseFindTake, setCourseFindTake] = useState(100);
+  const [courseFindTake, setCourseFindTake] = useState(10);
   const courseLength = useCourseFindLengthQuery();
 
   const handlePageChange = (page: number) => {

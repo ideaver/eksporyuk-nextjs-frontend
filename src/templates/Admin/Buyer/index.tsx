@@ -42,6 +42,7 @@ const BuyerPage = () => {
     handleDownloadTamplateFile,
     orderBy,
     setOrderBy,
+    buyerFindTake,
   } = useBuyerViewModel();
 
   return (
@@ -221,6 +222,7 @@ const BuyerPage = () => {
               setBuyerFindTake={(val) => {
                 setBuyerFindTake(val);
               }}
+              buyerFindTake={buyerFindTake}
             />
           </KTCardBody>
         </KTCard>
@@ -345,24 +347,63 @@ const Footer = ({
   setBuyerFindTake,
   setBuyerFindSkip,
   pageLength,
+  buyerFindTake,
 }: {
   currentPage: number;
   pageLength: number;
   setCurrentPage: (val: number) => void;
   setBuyerFindTake: (val: number) => void;
   setBuyerFindSkip: (val: number) => void;
+  buyerFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => setBuyerFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {buyerFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setBuyerFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setBuyerFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={buyerFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setBuyerFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

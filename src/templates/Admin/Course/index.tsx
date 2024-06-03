@@ -38,6 +38,7 @@ const CoursePage = ({}) => {
     selectAll,
     orderBy,
     setOrderBy,
+    courseFindTake,
   } = useCoursesViewModel();
   return (
     <>
@@ -68,6 +69,7 @@ const CoursePage = ({}) => {
             setMentorFindTake={(val) => {
               setCourseFindTake(val);
             }}
+            courseFindTake={courseFindTake}
           />
         </KTCardBody>
       </KTCard>
@@ -218,24 +220,63 @@ const Footer = ({
   setCurrentPage,
   setMentorFindTake,
   pageLength,
+  courseFindTake,
 }: {
   setMentorFindTake: (val: number) => void;
   setMentorFindSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  courseFindTake: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => setMentorFindTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {courseFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setMentorFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={courseFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setMentorFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

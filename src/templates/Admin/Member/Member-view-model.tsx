@@ -27,7 +27,7 @@ export const breadcrumbs = [
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentFindSkip, setStudentFindSkip] = useState(0);
-  const [studentFindTake, setStudentFindTake] = useState(100);
+  const [studentFindTake, setStudentFindTake] = useState(10);
   const studentLength = useStudentFindLengthQuery();
 
   const handlePageChange = (page: number) => {

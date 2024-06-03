@@ -56,7 +56,7 @@ export const genRandomIP = () => {
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
-  const [findTake, setFindTake] = useState(100);
+  const [findTake, setFindTake] = useState(10);
   const activityLength = useActivityFindManyQuery();
 
   const handlePageChange = (page: number) => {
@@ -96,7 +96,7 @@ const useActivityViewModel = () => {
   } = usePagination();
 
   // Local states
-  const [takePage, setTakePage] = useState<any>(100);
+  const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
@@ -114,6 +114,7 @@ const useActivityViewModel = () => {
   });
 
   return {
+    findTake,
     orderBy,
     setOrderBy,
     currentPage,

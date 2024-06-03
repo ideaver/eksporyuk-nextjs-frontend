@@ -33,8 +33,6 @@ const ArticlePage = () => {
     setArticleOrderBy,
     articleDeleteOne,
     formatWIB,
-    setIsCustomTake,
-    isCustomTake,
     articleFindTake,
   } = useArticleViewModel();
   return (
@@ -143,7 +141,7 @@ const ArticlePage = () => {
                       </td>
 
                       <td className="text-end ">
-                        <div className="dropdown  ps-15 pe-0">
+                        <div className="dropdown ps-15 pe-0">
                           <button
                             className="btn btn-secondary dropdown-toggle"
                             type="button"
@@ -205,8 +203,6 @@ const ArticlePage = () => {
               setArticleFindTake(val);
             }}
             articleFindTake={articleFindTake}
-            setIsCustomTake={setIsCustomTake}
-            isCustomTake={isCustomTake}
           />
         </KTCardBody>
       </KTCard>
@@ -292,8 +288,6 @@ const Footer = ({
   setArticleFindSkip,
   articleFindTake,
   pageLength,
-  isCustomTake,
-  setIsCustomTake,
 }: {
   setArticleFindTake: (val: number) => void;
   setArticleFindSkip: (val: number) => void;
@@ -301,8 +295,6 @@ const Footer = ({
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
-  isCustomTake: boolean;
-  setIsCustomTake: Dispatch<SetStateAction<boolean>>;
 }) => {
   const CheckBoxInput = dynamic(
     () =>
@@ -314,43 +306,52 @@ const Footer = ({
     }
   );
   return (
-    <div className="row justify-content-between gy-5 py-5 px-10">
+    <div className="row justify-content-between gy-5">
       <div className="row col-lg-auto gy-3 align-middle">
-        <div className="row col-lg-auto align-middle">
-          {isCustomTake ? (
-            <TextField
-              type="number"
-              styleType="solid"
-              placeholder="Jumlah"
-              props={{
-                value: articleFindTake,
-                onChange: (e: any) =>
-                  setArticleFindTake(parseInt(e.target.value.toString())),
-              }}
-            ></TextField>
-          ) : (
-            <Dropdown
-              styleType="solid"
-              options={[
-                { label: "10", value: 10 },
-                { label: "50", value: 50 },
-              ]}
-              onValueChange={(e) => setArticleFindTake(parseInt(e as string))}
-            />
-          )}
-        </div>
-        <div className="col-lg-auto">
-          <CheckBoxInput
-            className="active fs-5"
-            name="follup"
-            value={"true"}
-            checked={isCustomTake}
-            onChange={(e) => {
-              setIsCustomTake((prev: boolean) => !prev);
-            }}
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            {`Custom`}
-          </CheckBoxInput>
+            {articleFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={articleFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  setArticleFindTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
         </div>
       </div>
 

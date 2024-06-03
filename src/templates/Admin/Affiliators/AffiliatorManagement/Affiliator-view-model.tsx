@@ -100,7 +100,7 @@ const useCheckbox = (
 };
 
 const useAffiliatorViewModel = () => {
-  const [takePage, setTakePage] = useState<any>(100);
+  const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchAffiliator, setSearchAffiliator] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
