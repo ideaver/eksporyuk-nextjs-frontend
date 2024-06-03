@@ -16,7 +16,10 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 
 import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
-import { ProductServiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  ProductServiceFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
 
 const CoursePage = ({}) => {
@@ -40,6 +43,8 @@ const CoursePage = ({}) => {
     setFindTake,
     handlePageChange,
     productsLength,
+    orderBy,
+    setOrderBy,
   } = useProductsViewModel();
 
   return (
@@ -47,7 +52,13 @@ const CoursePage = ({}) => {
       <PageTitle breadcrumbs={breadcrumbs}>Semua Produk</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchProduct} />
+          <Head
+            onSearch={setSearchProduct}
+            orderBy={orderBy}
+            setOrderBy={(e: any) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             data={productServiceFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -70,7 +81,7 @@ const CoursePage = ({}) => {
   );
 };
 
-const Head = ({ onSearch }: any) => {
+const Head = ({ onSearch, orderBy, setOrderBy }: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -115,6 +126,19 @@ const Head = ({ onSearch }: any) => {
               { label: "Tutup", value: "" },
             ]}
             onValueChange={() => {}}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
           />
         </div>
         <div className="col-lg-auto">

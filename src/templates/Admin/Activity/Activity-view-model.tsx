@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   useActivityFindManyQuery,
   ActivityFindManyQuery,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -35,13 +36,13 @@ export const formatRelativeTime = (dateStr: string): string => {
   if (minutes < 1) {
     return "just now";
   } else if (minutes < 60) {
-    return `${minutes} min${minutes !== 1 ? 's' : ''} ago`;
+    return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
   } else if (hours < 24) {
-    return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
   } else if (days < 7) {
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
   } else {
-    return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+    return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
   }
 };
 
@@ -49,20 +50,20 @@ export const formatRelativeTime = (dateStr: string): string => {
 export const genRandomIP = () => {
   const getRandomOctet = () => Math.floor(Math.random() * 256);
   return `${getRandomOctet()}.${getRandomOctet()}.${getRandomOctet()}.${getRandomOctet()}`;
-}
+};
 
 // Pagination
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
-  const [findTake, setFindTake] = useState(10);
+  const [findTake, setFindTake] = useState(100);
   const activityLength = useActivityFindManyQuery();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setFindSkip((page - 1) * findTake);
-  }; 
-  
+  };
+
   const calculateTotalPage = () => {
     return Math.ceil(
       (activityLength.data?.activityFindMany?.length ?? 0) / findTake
@@ -77,7 +78,7 @@ const usePagination = () => {
     setFindTake,
     handlePageChange,
     calculateTotalPage,
-    activityLength
+    activityLength,
   };
 };
 
@@ -91,22 +92,30 @@ const useActivityViewModel = () => {
     setFindTake,
     handlePageChange,
     calculateTotalPage,
-    activityLength
+    activityLength,
   } = usePagination();
 
   // Local states
-  const [takePage, setTakePage] = useState<any>(10);
+  const [takePage, setTakePage] = useState<any>(100);
   const [skipPage, setSkipPage] = useState<any>(0);
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   // Query data...
   const activityFindMany = useActivityFindManyQuery({
     variables: {
       take: parseInt(findTake.toString()),
       skip: findSkip,
-    }
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
+    },
   });
 
   return {
+    orderBy,
+    setOrderBy,
     currentPage,
     setCurrentPage,
     setFindSkip,
@@ -115,7 +124,7 @@ const useActivityViewModel = () => {
     calculateTotalPage,
     activityLength,
     activityFindMany,
-  }
+  };
 };
 
 export default useActivityViewModel;

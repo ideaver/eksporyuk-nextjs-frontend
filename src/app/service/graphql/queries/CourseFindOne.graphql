@@ -12,7 +12,7 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
     deepLink
     isCertificationProvided
     basePrice
-    sellingPrice
+    salePrice
     createdAt
     updatedAt
     status
@@ -75,7 +75,7 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
         deepLink
         isCertificationProvided
         basePrice
-        sellingPrice
+        salePrice
         createdAt
         updatedAt
         status
@@ -244,8 +244,8 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
       affiliatorLink
       courseCoupon
       posts
-      CartItem
-      RewardsCatalog
+      cartItem
+      rewardsCatalog
     }
     images {
       path

@@ -6,6 +6,7 @@ import { PageTitle } from "@/_metronic/layout/core";
 import {
   OrderFindManyQuery,
   OrderStatusEnum,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -37,6 +38,8 @@ const OrderPage = ({}) => {
     checkedItems,
     selectAll,
     setStatusFilter,
+    orderBy,
+    setOrderBy,
   } = useAdminOrderViewModel();
   return (
     <>
@@ -50,6 +53,10 @@ const OrderPage = ({}) => {
             }}
             onSearch={(val) => {
               setOrderFindSearch(val);
+            }}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
             }}
           />
           <Body
@@ -84,9 +91,13 @@ const OrderPage = ({}) => {
 const Head = ({
   onStatusChanged,
   onSearch,
+  orderBy,
+  setOrderBy,
 }: {
   onStatusChanged: (val: string) => void;
   onSearch: (val: string) => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -116,6 +127,19 @@ const Head = ({
             ]}
             onValueChange={(val) => {
               onStatusChanged(val as string);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Asc },
+              { label: "Terlama", value: SortOrder.Desc },
+            ]}
+            onValueChange={(val) => {
+              setOrderBy(val as SortOrder);
             }}
           />
         </div>
@@ -202,9 +226,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => setMentorFindTake(val as number)}
         />

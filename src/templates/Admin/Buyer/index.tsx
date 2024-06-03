@@ -14,7 +14,10 @@ import Link from "next/link";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { AsyncPaginate } from "react-select-async-paginate";
-import { BuyerDeleteManyMutation } from "@/app/service/graphql/gen/graphql";
+import {
+  BuyerDeleteManyMutation,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import { MutationFunctionOptions } from "@apollo/client";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useSelector } from "react-redux";
@@ -37,6 +40,8 @@ const BuyerPage = () => {
     checked,
     buyerDeleteMany,
     handleDownloadTamplateFile,
+    orderBy,
+    setOrderBy,
   } = useBuyerViewModel();
 
   return (
@@ -70,6 +75,10 @@ const BuyerPage = () => {
               }}
               checkedItems={checked}
               handleDownloadTamplateFile={handleDownloadTamplateFile}
+              orderBy={orderBy}
+              setOrderBy={(e) => {
+                setOrderBy(e);
+              }}
             />
             {buyerFindMany.error ? (
               <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -226,11 +235,15 @@ const Head = ({
   setSearchCountry,
   checkedItems,
   handleDownloadTamplateFile,
+  orderBy,
+  setOrderBy,
 }: {
   onSearch: (val: string) => void;
   setSearchCountry: (id: number) => void;
   checkedItems: number[];
   handleDownloadTamplateFile: () => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   const { loadOptions } = useCountryDropdown();
   const { buyerDeleteMany, buyerFindMany, deleteLoading, setDeleteLoading } =
@@ -255,7 +268,19 @@ const Head = ({
             onChange={(id) => setSearchCountry(id?.value as number)}
           />
         </div>
-
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
+          />
+        </div>
         <div className="col-lg-auto">
           <Buttons mode="light" onClick={handleDownloadTamplateFile}>
             Tamplate Data Buyer
@@ -333,9 +358,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => setBuyerFindTake(val as number)}
         />

@@ -2,7 +2,10 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
-import { StudentFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  SortOrder,
+  StudentFindManyQuery,
+} from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import useDeleteUser from "@/app/service/utils/crud/user/userDelete";
 import useUserEdit from "@/app/service/utils/crud/user/userEdit";
@@ -32,13 +35,21 @@ const MemberPage = ({}) => {
     currentPage,
     handlePageChange,
     setStudentFindTake,
+    orderBy,
+    setOrderBy,
   } = useMemberViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Kelas</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={(value) => setStudentFindSearch(value)} />
+          <Head
+            onSearch={(value) => setStudentFindSearch(value)}
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             studentFindMany={studentFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -61,7 +72,15 @@ const MemberPage = ({}) => {
   );
 };
 
-const Head = ({ onSearch }: { onSearch: (value: string) => void }) => {
+const Head = ({
+  onSearch,
+  orderBy,
+  setOrderBy,
+}: {
+  onSearch: (value: string) => void;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -75,8 +94,21 @@ const Head = ({ onSearch }: { onSearch: (value: string) => void }) => {
         ></TextField>
       </div>
       {/* TODO This is for multiple instace, make when integrating */}
-      {/* <div className="row col-lg-auto gy-3 align-items-center">
-            <div className="col-lg-auto">
+      <div className="row col-lg-auto gy-3 align-items-center">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Asc },
+              { label: "Terlama", value: SortOrder.Desc },
+            ]}
+            onValueChange={(val) => {
+              setOrderBy(val as SortOrder);
+            }}
+          />
+        </div>
+        {/* <div className="col-lg-auto">
               <p className="mb-0 fw-bold">3 Items Selected</p>
             </div>
             <div className="col-lg-auto">
@@ -90,8 +122,8 @@ const Head = ({ onSearch }: { onSearch: (value: string) => void }) => {
               >
                 Delete Selected
               </Buttons>
-            </div>
-          </div> */}
+            </div> */}
+      </div>
     </div>
   );
 };
@@ -114,9 +146,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => setStudentFindTake(val as number)}
         />

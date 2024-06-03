@@ -1,5 +1,6 @@
 import {
   QueryMode,
+  SortOrder,
   StudentFindManyQuery,
   useStudentFindLengthQuery,
   useStudentFindManyQuery,
@@ -26,7 +27,7 @@ export const breadcrumbs = [
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentFindSkip, setStudentFindSkip] = useState(0);
-  const [studentFindTake, setStudentFindTake] = useState(10);
+  const [studentFindTake, setStudentFindTake] = useState(100);
   const studentLength = useStudentFindLengthQuery();
 
   const handlePageChange = (page: number) => {
@@ -112,11 +113,17 @@ const useMemberViewModel = () => {
     studentLength,
   } = usePagination();
   const [studentFindSearch, setStudentFindSearch] = useState("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   const studentFindMany = useStudentFindManyQuery({
     variables: {
       take: parseInt(studentFindTake.toString()),
       skip: studentFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -152,7 +159,10 @@ const useMemberViewModel = () => {
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(studentFindMany);
+
   return {
+    orderBy,
+    setOrderBy,
     studentFindMany,
     studentFindTake,
     setStudentFindTake,

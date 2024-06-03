@@ -1,5 +1,10 @@
-query FeedbackFindMany($skip: Int, $take: Int, $where: FeedbackWhereInput) {
-  feedbackFindMany(skip: $skip, take: $take, where: $where) {
+query FeedbackFindMany(
+  $skip: Int
+  $take: Int
+  $where: FeedbackWhereInput
+  $orderBy: [FeedbackOrderByWithRelationInput!]
+) {
+  feedbackFindMany(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
     id
     content
     feedbackCategory

@@ -47,7 +47,7 @@ const usePagination = (
     articleLength.data?.articleFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil((length as number) / 10);
+    return Math.ceil((length as number) / articleFindTake);
   };
 
   useEffect(() => {
@@ -117,13 +117,13 @@ export const useCategoriesDropdown = () => {
 
 const useArticleViewModel = () => {
   const [articleFindSkip, setArticleFindSkip] = useState(0);
-  const [articleFindTake, setArticleFindTake] = useState(10);
+  const [articleFindTake, setArticleFindTake] = useState(100);
 
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
   const [articleFindCategory, setArticleFindCategory] = useState(0);
   const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
-    SortOrder.Asc
+    SortOrder.Desc
   );
 
   const articleFindMany = useArticleFindManyQuery({

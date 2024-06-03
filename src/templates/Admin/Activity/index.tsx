@@ -16,7 +16,10 @@ import useActivityViewModel, {
   formatRelativeTime,
   genRandomIP,
 } from "./Activity-view-model";
-import { ActivityFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  ActivityFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 
 const Activity = () => {
   const {
@@ -28,6 +31,8 @@ const Activity = () => {
     calculateTotalPage,
     activityLength,
     activityFindMany,
+    orderBy,
+    setOrderBy,
   } = useActivityViewModel();
 
   return (
@@ -35,7 +40,12 @@ const Activity = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Aktifitas</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head />
+          <Head
+            orderBy={orderBy}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
+          />
           <Body data={activityFindMany} />
           <Footer
             pageLength={calculateTotalPage()}
@@ -54,13 +64,32 @@ const Activity = () => {
 
 export default Activity;
 
-const Head = () => {
+const Head = ({
+  orderBy,
+  setOrderBy,
+}: {
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
         <h1>Aktifitas User</h1>
       </div>
       <div className="row col-lg-auto gy-3 align-items-center">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={orderBy}
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(val) => {
+              setOrderBy(val as SortOrder);
+            }}
+          />
+        </div>
         <div className="col-lg-auto">
           <button className="btn btn-secondary">View All</button>
         </div>
@@ -106,7 +135,9 @@ const Body = ({ data }: { data: QueryResult<ActivityFindManyQuery> }) => {
             return (
               <KTTableBody key={index}>
                 <td className="text-start min-w-200px">
-                  <span className="text-primary fs-6 fw-bold">{genRandomIP()}</span>
+                  <span className="text-primary fs-6 fw-bold">
+                    {genRandomIP()}
+                  </span>
                 </td>
                 <td className="text-start min-w-200px">
                   <span className="text-dark cursor-pointer fs-6 fw-bold">
@@ -157,9 +188,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => findTake(val as number)}
         />

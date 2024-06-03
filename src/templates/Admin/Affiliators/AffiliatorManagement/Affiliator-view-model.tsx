@@ -2,6 +2,7 @@ import {
   useAffiliatorFindManyQuery,
   AffiliatorFindManyQuery,
   QueryMode,
+  SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { useState, useEffect } from "react";
@@ -99,15 +100,21 @@ const useCheckbox = (
 };
 
 const useAffiliatorViewModel = () => {
-  const [takePage, setTakePage] = useState<any>(10);
+  const [takePage, setTakePage] = useState<any>(100);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchAffiliator, setSearchAffiliator] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   // Querying process
   const affiliatorFindMany = useAffiliatorFindManyQuery({
     variables: {
       take: Number(takePage),
       skip: skipPage,
+      orderBy: [
+        {
+          updatedAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -150,7 +157,10 @@ const useAffiliatorViewModel = () => {
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(affiliatorFindMany);
+
   return {
+    orderBy,
+    setOrderBy,
     affiliatorFindMany,
     selectAll,
     checkedItems,

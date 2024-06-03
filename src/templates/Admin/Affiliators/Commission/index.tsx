@@ -13,12 +13,26 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import dynamic from "next/dynamic";
 
 interface ComissionPageProps {}
 
 const CommissionPage = ({}: ComissionPageProps) => {
-  const { setTakePage, skipPage, setSkipPage, setStatus, commissionData, loading, error, calculateTotalPage, setSearchComission } =
-    useComissionViewModel({});
+  const {
+    setTakePage,
+    skipPage,
+    setSkipPage,
+    setStatus,
+    commissionData,
+    loading,
+    error,
+    calculateTotalPage,
+    setSearchComission,
+    setOrderBy,
+    isCustomTake,
+    setIsCustomTake,
+  } = useComissionViewModel({});
 
   return (
     <>
@@ -26,7 +40,13 @@ const CommissionPage = ({}: ComissionPageProps) => {
       <KTCard>
         <KTCardBody>
           <div className="mb-10">
-            <Head setStatus={setStatus} onSearch={setSearchComission} />
+            <Head
+              setStatus={setStatus}
+              onSearch={setSearchComission}
+              setOrderBy={(e: any) => {
+                setOrderBy(e);
+              }}
+            />
           </div>
         </KTCardBody>
         <QueryComissionTable
@@ -39,6 +59,8 @@ const CommissionPage = ({}: ComissionPageProps) => {
           skipPage={skipPage}
           setTakePage={setTakePage}
           totalPage={calculateTotalPage}
+          isCustomTake={isCustomTake}
+          setIsCustomTake={setIsCustomTake}
         />
       </KTCard>
     </>
@@ -47,7 +69,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
 
 export default CommissionPage;
 
-const Head = ({ setStatus, onSearch }: any) => {
+const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -65,18 +87,7 @@ const Head = ({ setStatus, onSearch }: any) => {
           <Dropdown
             styleType="solid"
             options={[
-              { label: "Semua Kelas", value: "all" },
-              { label: "Aktif", value: "active" },
-              { label: "Tidak Aktif", value: "inactive" },
-            ]}
-            onValueChange={() => {}}
-          />
-        </div>
-        <div className="col-lg-auto">
-          <Dropdown
-            styleType="solid"
-            options={[
-              { label: "Semua Status", value: "" },
+              { label: "Semua Status", value: "all" },
               { label: "Pending", value: "PENDING" },
               { label: "Unpaid", value: "UNPAID" },
               { label: "Halfpaid", value: "HALFPAID" },
@@ -87,6 +98,18 @@ const Head = ({ setStatus, onSearch }: any) => {
             ]}
             onValueChange={(e) => {
               setStatus(e);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e);
             }}
           />
         </div>
@@ -152,32 +175,76 @@ const QueryComissionTable = ({ commissionData, error, loading }: any) => {
   );
 };
 
-const Footer = ({ setSkipPage, skipPage, setTakePage, totalPage }: any) => {
+const Footer = ({
+  setSkipPage,
+  skipPage,
+  setTakePage,
+  totalPage,
+  isCustomTake,
+  setIsCustomTake,
+}: any) => {
+  const CheckBoxInput = dynamic(
+    () =>
+      import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
+        (module) => module.CheckBoxInput
+      ),
+    {
+      ssr: false,
+    }
+  );
   if (skipPage === 0) skipPage = 1;
 
   return (
-    <div className="row justify-content-between p-5">
-      <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
-          ]}
-          onValueChange={(e) => setTakePage(e)}
-        />
+    <div className="row justify-content-between gy-5 py-5 px-10">
+      <div className="row col-lg-auto gy-3 align-middle">
+        <div className="row col-lg-auto align-middle">
+          {isCustomTake ? (
+            <TextField
+              type="number"
+              styleType="solid"
+              placeholder="Jumlah"
+              props={{
+                onChange: (e: any) => setTakePage(parseInt(e.toString())),
+              }}
+            ></TextField>
+          ) : (
+            <Dropdown
+              styleType="solid"
+              options={[
+                { label: "10", value: 10 },
+                { label: "50", value: 50 },
+              ]}
+              onValueChange={(e) => setTakePage(e)}
+            />
+          )}
+        </div>
+        <div className="col-lg-auto">
+          <CheckBoxInput
+            className="active fs-5"
+            name="follup"
+            value={"true"}
+            checked={isCustomTake}
+            onChange={(e) => {
+              setIsCustomTake((prev: boolean) => !prev);
+            }}
+          >
+            {`Custom`}
+          </CheckBoxInput>
+        </div>
       </div>
-      <div className="col-auto">
-        <Pagination
-          total={totalPage()}
-          current={skipPage}
-          maxLength={5}
-          onPageChange={(e) => {
-            if (e === 1) e = 0;
-            setSkipPage(e);
-          }}
-        ></Pagination>
+
+      <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Pagination
+            total={totalPage()}
+            current={skipPage}
+            maxLength={5}
+            onPageChange={(e) => {
+              if (e === 1) e = 0;
+              setSkipPage(e);
+            }}
+          ></Pagination>
+        </div>
       </div>
     </div>
   );

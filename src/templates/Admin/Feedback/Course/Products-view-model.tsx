@@ -2,6 +2,7 @@ import {
   CourseFindManyQuery,
   CourseStatusEnum,
   QueryMode,
+  SortOrder,
   useCourseFindLengthQuery,
   useCourseFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -38,7 +39,7 @@ export function getStatusBadgeColor(status: CourseStatusEnum | undefined) {
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [courseFindSkip, setCourseFindSkip] = useState(0);
-  const [courseFindTake, setCourseFindTake] = useState(10);
+  const [courseFindTake, setCourseFindTake] = useState(100);
   const courseLength = useCourseFindLengthQuery();
 
   const handlePageChange = (page: number) => {
@@ -125,11 +126,17 @@ const useCoursesViewModel = () => {
   } = usePagination();
   // const [showMentorSelectModal, setShowMentorSelectModal] = useState(false);
   const [courseFindSearch, setCourseFindSearch] = useState("");
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
 
   const courseFindMany = useCourseFindManyQuery({
     variables: {
       take: parseInt(courseFindTake.toString()),
       skip: courseFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -167,6 +174,8 @@ const useCoursesViewModel = () => {
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(courseFindMany);
   return {
+    setOrderBy,
+    orderBy,
     courseFindMany,
     courseFindTake,
     setCourseFindTake,

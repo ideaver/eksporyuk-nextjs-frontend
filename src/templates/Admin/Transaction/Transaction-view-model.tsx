@@ -1,5 +1,6 @@
 import {
   QueryMode,
+  SortOrder,
   TransactionCategoryEnum,
   TransactionStatusEnum,
   useAdminFindTransactionLengthQuery,
@@ -145,7 +146,7 @@ const usePagination = ({
     transactionLength.data?.adminFindManyTransaction?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil((length as number) / 10);
+    return Math.ceil((length as number) / transactionTake);
   };
   return {
     currentPage,
@@ -157,7 +158,8 @@ const usePagination = ({
 
 const useTransactionViewModel = () => {
   const [transactionSkip, setTransactionSkip] = useState<number>(0);
-  const [transactionTake, setTransactionTake] = useState<number>(10);
+  const [transactionTake, setTransactionTake] = useState<number>(100);
+  const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const dispatch = useDispatch();
 
   const [transactionFindSearch, setTransactionFindSearch] =
@@ -173,7 +175,11 @@ const useTransactionViewModel = () => {
     variables: {
       skip: transactionSkip,
       take: parseInt(transactionTake.toString()),
-      orderBy: null,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
       where: {
         OR: [
           {
@@ -280,6 +286,8 @@ const useTransactionViewModel = () => {
   };
 
   return {
+    orderBy,
+    setOrderBy,
     handleLoadingExportChange,
     exportDataTransaction,
     downloadReportDate,

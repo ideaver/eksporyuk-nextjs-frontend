@@ -12,6 +12,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import {
   AdminFindManyTransactionQuery,
   AdminFindTransactionManyQuery,
+  SortOrder,
   TransactionCategoryEnum,
   TransactionStatusEnum,
 } from "@/app/service/graphql/gen/graphql";
@@ -49,6 +50,8 @@ const Transaction = () => {
     setDownloadReportDate,
     exportDataTransaction,
     handleLoadingExportChange,
+    orderBy,
+    setOrderBy,
   } = useTransactionViewModel();
   return (
     <>
@@ -81,6 +84,10 @@ const Transaction = () => {
               setTransactionFindCategory={setTransactionFindCategory}
               setTransactionFindSearch={setTransactionFindSearch}
               setTransactionFindStatus={setTransactionFindStatus}
+              orderBy={orderBy}
+              setOrderBy={(e) => {
+                setOrderBy(e);
+              }}
             />
             <Body
               data={transactionFindMany.data}
@@ -140,6 +147,8 @@ const Head = ({
   setTransactionFindCategory,
   setTransactionFindSearch,
   setTransactionFindStatus,
+  orderBy,
+  setOrderBy,
 }: {
   statusDropdownOption: {
     value: string | TransactionStatusEnum;
@@ -159,6 +168,8 @@ const Head = ({
   setTransactionFindStatus: Dispatch<
     SetStateAction<"all" | TransactionStatusEnum>
   >;
+  orderBy: SortOrder;
+  setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
     <>
@@ -197,7 +208,19 @@ const Head = ({
               }}
             />
           </div>
-
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              value={orderBy}
+              options={[
+                { label: "Terbaru", value: SortOrder.Desc },
+                { label: "Terlama", value: SortOrder.Asc },
+              ]}
+              onValueChange={(val) => {
+                setOrderBy(val as SortOrder);
+              }}
+            />
+          </div>
           <div className="col-lg-auto">
             <Buttons
               data-bs-toggle="modal"
@@ -231,9 +254,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(val) => {
             setTransactionTake(val as number);

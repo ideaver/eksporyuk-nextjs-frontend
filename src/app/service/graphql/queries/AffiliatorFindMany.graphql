@@ -1,5 +1,15 @@
-query AffiliatorFindMany($take: Int, $skip: Int, $where: AffiliatorWhereInput) {
-  affiliatorFindMany(take: $take, skip: $skip, where: $where) {
+query AffiliatorFindMany(
+  $take: Int
+  $skip: Int
+  $where: AffiliatorWhereInput
+  $orderBy: [AffiliatorOrderByWithRelationInput!]
+) {
+  affiliatorFindMany(
+    take: $take
+    skip: $skip
+    where: $where
+    orderBy: $orderBy
+  ) {
     id
     user {
       id

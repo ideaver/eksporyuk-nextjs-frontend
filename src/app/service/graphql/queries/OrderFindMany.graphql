@@ -1,4 +1,9 @@
-query OrderFindMany($where: OrderWhereInput, $orderBy: [OrderOrderByWithRelationInput!], $take: Int, $skip: Int) {
+query OrderFindMany(
+  $where: OrderWhereInput
+  $orderBy: [OrderOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
   orderFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
     id
     platformFee
@@ -124,7 +129,7 @@ query OrderFindMany($where: OrderWhereInput, $orderBy: [OrderOrderByWithRelation
           deepLink
           isCertificationProvided
           basePrice
-          sellingPrice
+          salePrice
           createdAt
           updatedAt
           status

@@ -15,7 +15,10 @@ import useRewardManagementViewModel, {
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { RewardsCatalogFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  RewardsCatalogFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 
 const RewardManagement = () => {
   const {
@@ -31,6 +34,7 @@ const RewardManagement = () => {
     takePage,
     setTakePage,
     calculateTotalPage,
+    setOrderBy,
   } = useRewardManagementViewModel();
 
   return (
@@ -38,7 +42,12 @@ const RewardManagement = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Semua Reward Affiliasi</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchRewards} />
+          <Head
+            onSearch={setSearchRewards}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             rewardsCatalogFindMany={rewardsCatalogFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -59,7 +68,13 @@ const RewardManagement = () => {
   );
 };
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
+const Head = ({
+  onSearch,
+  setOrderBy,
+}: {
+  onSearch: (val: string) => void;
+  setOrderBy: (e: SortOrder) => void;
+}) => {
   const router = useRouter();
 
   return (
@@ -75,7 +90,7 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
         ></TextField>
       </div>
       <div className="row col-lg-auto gy-3">
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -84,6 +99,18 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
               { label: "Tidak Aktif", value: "inactive" },
             ]}
             onValueChange={() => {}}
+          />
+        </div> */}
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
           />
         </div>
         <div className="col-lg-auto">
@@ -238,11 +265,12 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
-          onValueChange={(e) => {}}
+          onValueChange={(e) => {
+            setTakePage(e);
+          }}
         />
       </div>
       <div className="col-auto">

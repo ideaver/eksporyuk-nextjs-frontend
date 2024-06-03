@@ -8,7 +8,10 @@ import useAffiliatorViewModel, {
   dateFormatter,
 } from "./Affiliator-view-model";
 
-import { AffiliatorFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  AffiliatorFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
@@ -36,6 +39,7 @@ const AffiliatorPage = () => {
     calculateTotalPage,
     setSearchAffiliator,
     affiliatorFindMany,
+    setOrderBy,
   } = useAffiliatorViewModel();
 
   return (
@@ -43,7 +47,12 @@ const AffiliatorPage = () => {
       <PageTitle breadcrumbs={breadcrumbs}>Affiliator</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head onSearch={setSearchAffiliator} />
+          <Head
+            onSearch={setSearchAffiliator}
+            setOrderBy={(e) => {
+              setOrderBy(e);
+            }}
+          />
           <Body
             handleSelectAllCheck={handleSelectAllCheck}
             handleSingleCheck={handleSingleCheck}
@@ -66,7 +75,13 @@ const AffiliatorPage = () => {
 
 export default AffiliatorPage;
 
-const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
+const Head = ({
+  onSearch,
+  setOrderBy,
+}: {
+  onSearch: (val: string) => void;
+  setOrderBy: (e: SortOrder) => void;
+}) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -78,6 +93,20 @@ const Head = ({ onSearch }: { onSearch: (val: string) => void }) => {
             onChange: (e: any) => onSearch(e.target.value),
           }}
         ></TextField>
+      </div>
+      <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrderBy(e as SortOrder);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -283,9 +312,8 @@ const Footer = ({
         <Dropdown
           styleType="solid"
           options={[
-            { label: "10", value: 10 },
-            { label: "20", value: 20 },
-            { label: "30", value: 30 },
+            { label: "100", value: 100 },
+            { label: "200", value: 200 },
           ]}
           onValueChange={(e) => setTakePage(e)}
         />

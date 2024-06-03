@@ -17,7 +17,7 @@ query CourseFindMany(
     deepLink
     isCertificationProvided
     basePrice
-    sellingPrice
+    salePrice
     createdAt
     updatedAt
     status
@@ -116,8 +116,8 @@ query CourseFindMany(
       affiliatorLink
       courseCoupon
       posts
-      CartItem
-      RewardsCatalog
+      cartItem
+      rewardsCatalog
     }
     images {
       path
