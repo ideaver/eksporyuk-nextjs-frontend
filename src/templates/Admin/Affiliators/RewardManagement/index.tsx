@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
@@ -10,12 +11,14 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import useRewardManagementViewModel, {
-  dateFormatter,
-} from "./RewardManagement-view-model";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import DeleteRewardModal from "./components/DeleteRewardModal";
+
+import useRewardManagementViewModel, {
+  dateFormatter,
+} from "./RewardManagement-view-model";
 import {
   RewardsCatalogFindManyQuery,
   SortOrder,
@@ -137,8 +140,11 @@ const Body = ({
   checkedItems: { id: any; value: boolean }[];
   selectAll: boolean;
 }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   return (
     <>
+      <DeleteRewardModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} />
       {rewardsCatalogFindMany.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">
@@ -228,17 +234,9 @@ const Body = ({
                       >
                         Actions
                       </button>
-                      <ul className="dropdown-menu d-none">
+                      <ul className="dropdown-menu">
                         <li>
-                          <button className="dropdown-item" onClick={() => {}}>
-                            Kirim Pengaturan ulang kata sandi
-                          </button>
-                        </li>
-                        <li>
-                          <button className="dropdown-item">Edit</button>
-                        </li>
-                        <li>
-                          <button className="dropdown-item">Hapus</button>
+                          <button className="dropdown-item" onClick={() => setShowDeleteModal(true)}>Hapus</button>
                         </li>
                       </ul>
                     </div>
