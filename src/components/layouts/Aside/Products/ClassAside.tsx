@@ -1,6 +1,6 @@
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import {
-  CourseDurationTypeEnum,
+  // CourseDurationTypeEnum,
   CourseLevelEnum,
   CourseStatusEnum,
   useCourseFindOneQuery,
@@ -62,7 +62,8 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
           price: courseData?.basePrice.toString() || "",
           courseAuthor: courseData?.createdBy.user.name || "",
           courseDuration:
-            courseData?.duration || CourseDurationTypeEnum.ThreeMonths,
+            // courseData?.duration || CourseDurationTypeEnum.ThreeMonths,
+            courseData?.duration || 2,
           courseLevel: courseData?.level || CourseLevelEnum.Beginner,
           courseMentor:
             courseData?.mentors?.map((mentor) => ({
@@ -212,19 +213,18 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
               <Dropdown
                 options={[
                   {
-                    value: CourseDurationTypeEnum.ThreeMonths,
+                    // value: CourseDurationTypeEnum.ThreeMonths,
+                    value: 2,
                     label: "3 Bulan",
                   },
-                  { value: CourseDurationTypeEnum.SixMonths, label: "6 Bulan" },
+                  { value: 2, label: "6 Bulan" },
                   {
-                    value: CourseDurationTypeEnum.TwelveMonths,
+                    value: 2,
                     label: "12 Bulan",
                   },
                 ]}
                 value={duration}
-                onValueChange={(value) =>
-                  handleDurationChange(value as CourseDurationTypeEnum)
-                }
+                onValueChange={(value) => handleDurationChange(value as number)}
               ></Dropdown>
             </KTCardBody>
           </KTCard>

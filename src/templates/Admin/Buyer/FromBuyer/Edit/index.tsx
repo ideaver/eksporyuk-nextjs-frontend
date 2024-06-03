@@ -80,7 +80,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("buyerName", e.target.value);
                   setBuyerName(e.target.value);
                 }}
-                value={formik.values.buyerName}
+                value={formik.values.buyerName ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -147,7 +147,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("address", e.target.value);
                   setAddress(e.target.value);
                 }}
-                value={formik.values.address}
+                value={formik.values.address ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -175,7 +175,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("email", e.target.value);
                   setEmail(e.target.value);
                 }}
-                value={formik.values.email}
+                value={formik.values.email ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -196,7 +196,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   formik.setFieldValue("phone", e.target.value);
                   setPhone(e.target.value);
                 }}
-                value={formik.values.phone}
+                value={formik.values.phone ?? ""}
                 className={clsx(
                   "w-100 px-4 p-3 form-control-md form-control",
                   {
@@ -307,7 +307,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 placeholder="Masukan Harga (Rp)"
                 intlConfig={{ locale: "id-ID" }}
                 defaultValue={0}
-                value={price}
+                value={price ?? ""}
                 decimalsLimit={2}
                 onValueChange={(value, name, values) => {
                   setPrice(value);
