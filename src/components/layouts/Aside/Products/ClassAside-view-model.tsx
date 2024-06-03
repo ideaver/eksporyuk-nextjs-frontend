@@ -1,6 +1,6 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
-  CourseDurationTypeEnum,
+  // CourseDurationTypeEnum,
   CourseStatusEnum,
   FileTypeEnum,
   QuestionTypeEnum,
@@ -296,9 +296,12 @@ const useClassViewModel = () => {
   const handleStatusChange = (status: CourseStatusEnum) => {
     dispatch(changeStatus(status));
   };
-  const handleDurationChange = (duration: CourseDurationTypeEnum) => {
+  const handleDurationChange = (duration: number) => {
     dispatch(changeCourseDuration(duration));
   };
+  // const handleDurationChange = (duration: CourseDurationTypeEnum) => {
+  //   dispatch(changeCourseDuration(duration));
+  // };
 
   return {
     thumbnail,
