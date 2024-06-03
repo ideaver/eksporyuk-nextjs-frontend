@@ -39,6 +39,7 @@ const CreateNewRewardContent = () => {
     status,
     handleChangeHargaPoint,
     loading,
+    router,
   } = useNewRewardViewModel();
   const { loadOptions } = useCoursesDropdown();
   const { addCourse, selectedCourse, removeCourse } =
@@ -267,7 +268,7 @@ const CreateNewRewardContent = () => {
           className="d-flex justify-content-end mt-10 gap-3"
           style={{ width: "100%" }}
         >
-          <button className="btn btn-secondary">Batal</button>
+          <button className="btn btn-secondary" onClick={() => router.push("/admin/affiliate/reward")}>Batal</button>
           <button
             className="btn btn-primary"
             disabled={loading}

@@ -414,6 +414,7 @@ const useNewRewardViewModel = () => {
     status,
     handleChangeHargaPoint,
     loading,
+    router
   };
 };
 
