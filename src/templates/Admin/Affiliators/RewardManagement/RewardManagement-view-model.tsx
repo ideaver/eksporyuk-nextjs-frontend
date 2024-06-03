@@ -8,6 +8,7 @@ import {
   QueryMode,
   SortOrder,
   useRewardsCatalogDeleteOneMutation,
+  useRewardsCatalogDeleteManyMutation,
 } from "@/app/service/graphql/gen/graphql";
 
 export const dateFormatter = (dateStr: string) => {
@@ -99,6 +100,7 @@ const useRewardManagementViewModel = () => {
 
   // Graphql
   const [rewardCatalogDeleteOneMutation] = useRewardsCatalogDeleteOneMutation();
+  const [rewardCatalogDeleteManyMutation] = useRewardsCatalogDeleteManyMutation();
 
   const handleRewardCatalogDeleteOneMutation = async (rewardId: number) => {
     const data = await rewardCatalogDeleteOneMutation({
@@ -111,6 +113,20 @@ const useRewardManagementViewModel = () => {
 
     return data;
   }
+
+  const handleRewardCatalogDeleteManyMutation = async (rewardIds: number[]) => {
+    const data = await rewardCatalogDeleteManyMutation({
+      variables: {
+        where: {
+          id: {
+            in: rewardIds,
+          }
+        }
+      }
+    });
+
+    return data;
+  };
 
   // Query data
   const rewardsCatalogFindMany = useRewardsCatalogFindManyQuery({
@@ -142,7 +158,19 @@ const useRewardManagementViewModel = () => {
     } finally {
       router.refresh();
     }
-  }
+  };
+
+  const onDeleteMany = async (rewardIds: number[]) => {
+    try {
+      const data = await handleRewardCatalogDeleteManyMutation(rewardIds);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
 
   // Calculating total page
   const calculateTotalPage = () => {
@@ -186,6 +214,7 @@ const useRewardManagementViewModel = () => {
     handleSelectAllCheck,
     setOrderBy,
     onDeleteOne,
+    onDeleteMany,
   };
 };
 

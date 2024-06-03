@@ -9,15 +9,16 @@ interface deleteRewardModal {
   show: boolean;
   handleClose: () => void;
   rewardId: number;
+  rewardIds: number[];
 }
 
-const DeleteRewardModal = ({ show, handleClose, rewardId }: deleteRewardModal) => {
-  const { onDeleteOne } = useRewardManagementViewModel();
+const DeleteRewardModal = ({ show, handleClose, rewardId, rewardIds }: deleteRewardModal) => {
+  const { onDeleteOne, onDeleteMany } = useRewardManagementViewModel();
 
   return (
     <Modal show={show} centered={true}>
       <div className="modal-header">
-        <h2>Hapus Reward</h2>
+        <h2>Hapus {rewardIds.length > 1 ? "Semua" : undefined} Reward</h2>
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
           onClick={handleClose}
@@ -27,7 +28,7 @@ const DeleteRewardModal = ({ show, handleClose, rewardId }: deleteRewardModal) =
       </div>
 
       <div className="modal-body">
-        <h5 className="text-center">Apakah anda yakin untuk menghapus reward ini?</h5>
+        <h5 className="text-center">Apakah anda yakin untuk menghapus {rewardIds.length > 1 ? "semua" : undefined} reward ini?</h5>
       </div>
 
       <div className="modal-footer mx-auto">
@@ -41,7 +42,13 @@ const DeleteRewardModal = ({ show, handleClose, rewardId }: deleteRewardModal) =
         <Buttons
           buttonColor="danger"
           classNames="btn-lg"
-          onClick={() => onDeleteOne(rewardId)}
+          onClick={() => {
+            if (rewardIds.length !== 0) {
+              onDeleteMany(rewardIds);
+            } else {
+              onDeleteOne(rewardId);
+            }
+          }}
         >
           Iya
         </Buttons>

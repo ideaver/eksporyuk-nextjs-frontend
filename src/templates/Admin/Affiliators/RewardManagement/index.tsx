@@ -41,17 +41,26 @@ const RewardManagement = () => {
     setOrderBy,
   } = useRewardManagementViewModel();
 
+  const [rewardId, setRewardId] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  let rewardIds: number[] = [];
+
+  console.log("main", rewardIds);
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Reward Affiliasi</PageTitle>
       <KTCard className="h-100">
         <KTCardBody>
-          <Head
+          {/* <Head
             onSearch={setSearchRewards}
             setOrderBy={(e) => {
               setOrderBy(e);
             }}
-          />
+            rewardIds={rewardIds}
+            setShowDeleteModal={setShowDeleteModal}
+          /> */}
           <Body
             rewardsCatalogFindMany={rewardsCatalogFindMany}
             handleSelectAllCheck={handleSelectAllCheck}
@@ -72,61 +81,6 @@ const RewardManagement = () => {
   );
 };
 
-const Head = ({
-  onSearch,
-  setOrderBy,
-}: {
-  onSearch: (val: string) => void;
-  setOrderBy: (e: SortOrder) => void;
-}) => {
-  const router = useRouter();
-
-  return (
-    <div className="row justify-content-between gy-5">
-      <div className="col-lg-auto">
-        <TextField
-          styleType="solid"
-          preffixIcon="magnifier"
-          placeholder="Search"
-          props={{
-            onChange: (e: any) => onSearch(e.target.value),
-          }}
-        ></TextField>
-      </div>
-      <div className="row col-lg-auto gy-3">
-        {/* <div className="col-lg-auto">
-          <Dropdown
-            styleType="solid"
-            options={[
-              { label: "Semua Status", value: "all" },
-              { label: "Aktif", value: "active" },
-              { label: "Tidak Aktif", value: "inactive" },
-            ]}
-            onValueChange={() => {}}
-          />
-        </div> */}
-        <div className="col-lg-auto">
-          <Dropdown
-            styleType="solid"
-            options={[
-              { label: "Terbaru", value: SortOrder.Desc },
-              { label: "Terlama", value: SortOrder.Asc },
-            ]}
-            onValueChange={(e) => {
-              setOrderBy(e as SortOrder);
-            }}
-          />
-        </div>
-        <div className="col-lg-auto">
-          <Buttons onClick={() => router.push("reward/create/new-reward")}>
-            Add New Reward
-          </Buttons>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Body = ({
   rewardsCatalogFindMany,
   handleSelectAllCheck,
@@ -140,8 +94,15 @@ const Body = ({
   checkedItems: { id: any; value: boolean }[];
   selectAll: boolean;
 }) => {
+  const { setSearchRewards, setOrderBy } = useRewardManagementViewModel();
+  const router = useRouter();
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rewardId, setRewardId] = useState(0);
+
+  let rewardIds: number[] = [];
+
+  rewardIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
   return (
     <>
@@ -149,7 +110,61 @@ const Body = ({
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
         rewardId={rewardId}
+        rewardIds={rewardIds}
       />
+
+      <div className="row justify-content-between gy-5">
+        <div className="col-lg-auto">
+          <TextField
+            styleType="solid"
+            preffixIcon="magnifier"
+            placeholder="Search"
+            props={{
+              onChange: (e: any) => setSearchRewards(e.target.value),
+            }}
+          ></TextField>
+        </div>
+        <div className="row col-lg-auto gy-3">
+          {/* <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Semua Status", value: "all" },
+              { label: "Aktif", value: "active" },
+              { label: "Tidak Aktif", value: "inactive" },
+            ]}
+            onValueChange={() => {}}
+          />
+        </div> */}
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              options={[
+                { label: "Terbaru", value: SortOrder.Desc },
+                { label: "Terlama", value: SortOrder.Asc },
+              ]}
+              onValueChange={(e) => {
+                setOrderBy(e as SortOrder);
+              }}
+            />
+          </div>
+          <div className="col-lg-auto">
+            <button
+              className={`ms-auto d-inline btn btn-danger ${
+                rewardIds.length !== 0 ? "d-inline-block" : "d-none"
+              }`}
+              onClick={() => setShowDeleteModal(true)}
+            >
+              Hapus Reward
+            </button>
+          </div>
+          <div className="col-lg-auto">
+            <Buttons onClick={() => router.push("reward/create/new-reward")}>
+              Add New Reward
+            </Buttons>
+          </div>
+        </div>
+      </div>
       {rewardsCatalogFindMany.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">
