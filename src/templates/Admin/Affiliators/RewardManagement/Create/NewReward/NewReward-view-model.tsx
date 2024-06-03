@@ -3,9 +3,11 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useSession } from "next-auth/react";
+import { OptionsOrGroups, GroupBase } from "react-select";
 
-import { useRewardsCatalogCreateOneMutation } from "@/app/service/graphql/gen/graphql";
+import { useRewardsCatalogCreateOneMutation, useCourseFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import { RewardsTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { QueryMode } from "@/app/service/graphql/gen/graphql";
 
 import { RootState } from "@/app/store/store";
 import {
@@ -15,7 +17,13 @@ import {
   changeHargaPoint,
   changeNamaReward,
   changeStatus,
+  changeConnectCourse,
 } from "@/features/reducers/affiliators/rewardReducer";
+
+export type CourseOptionType = {
+  value: number;
+  label: string;
+};
 
 export const breadcrumbs = [
   {
@@ -60,11 +68,104 @@ const useField = <T extends string | boolean | number>(
   return [value, handleChange] as const;
 };
 
+/**
+ * custom hook for courses dropdown
+ * @returns loadOptions
+ */
+export const useCoursesDropdown = () => {
+  const getCourses = useCourseFindManyQuery({
+    variables: {
+      take: 10
+    }
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      getCourses.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) => (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    await getCourses.refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          equals: search,
+          mode: QueryMode.Insensitive
+        }
+      },
+    });
+
+    return {
+      options: newOptions,
+      hasMore: true,
+    };
+  }
+
+  return { loadOptions };
+}
+
+/**
+ * custom hook for courses handler
+ * @returns selectedCourse, setSelectedCourse, currentCourseSelector, addCourse, removeCourse
+ */
+export const AddCourseHandler = () => {
+  const dispatch = useDispatch();
+  const currentCourseSelector = useSelector(
+    (state: RootState) => state.reward.connectCourse
+  );
+  const [selectedCourse, setSelectedCourse] = useState<
+  CourseOptionType[] | undefined
+  >(currentCourseSelector);
+
+  const addCourse = (course: CourseOptionType) => {
+    const updatedCourses = selectedCourse
+      ? [...selectedCourse, course]
+      : [course];
+
+      setSelectedCourse(updatedCourses);
+
+    dispatch(changeConnectCourse(updatedCourses));
+  };
+
+  const removeCourse = (index: number) => {
+    const updatedCourse = selectedCourse?.filter(
+      (_, courseIndex) => courseIndex !== index
+    );
+
+    dispatch(changeConnectCourse(updatedCourse));
+  };
+
+  useEffect(() => {
+    setSelectedCourse(currentCourseSelector);
+  }, [currentCourseSelector]);
+
+  return {
+    selectedCourse,
+    setSelectedCourse,
+    currentCourseSelector,
+    addCourse,
+    removeCourse,
+  };
+};
+
 const useNewRewardViewModel = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session } = useSession();
+
+  const { selectedCourse } = AddCourseHandler();
 
   const currentId = session?.user.id;
 
@@ -75,6 +176,7 @@ const useNewRewardViewModel = () => {
   const [pointsRequired, setPointsRequired] = useState(0);
   const [endSales, setEndSales] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Redux states
   const status = useSelector((state: RootState) => state.reward.status);
@@ -111,6 +213,9 @@ const useNewRewardViewModel = () => {
   const handleChangeHargaPoint = (price: string) => {
     dispatch(changeHargaPoint(price));
   };
+
+  // Modify soon
+  const firstSelectedCourse = selectedCourse?.[0]?.value;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -149,6 +254,11 @@ const useNewRewardViewModel = () => {
             connect: {
               id: currentId
             }
+          },
+          course: {
+            connect: {
+              id: firstSelectedCourse,
+            }
           }
         },
       },
@@ -164,15 +274,17 @@ const useNewRewardViewModel = () => {
     dispatch(changeAkhirMasaBerlaku(""));
     dispatch(changeStatus("published"));
     dispatch(changeFotoProduk(""));
+    dispatch(changeConnectCourse([]));
   }
 
   const onSubmit = async () => {
     // Check if any required field is empty
-    if (!namaReward || !deskripsiReward || !hargaPoint || !akhirMasaBerlaku) {
+    if (!namaReward || !deskripsiReward || !hargaPoint || !akhirMasaBerlaku || !firstSelectedCourse) {
       setErrorMessage("All fields are required.");
       return;
     }
 
+    setLoading(true);
     try {
       const data = await handleRewardsCatalogCreateOneMutation({
         namaReward,
@@ -185,8 +297,10 @@ const useNewRewardViewModel = () => {
     } catch (error) {
       console.log(error);
     } finally {
+      setLoading(false);
       resetForm();
-      router.push("/admin/affiliate/reward");
+      await router.push("/admin/affiliate/reward");
+      router.reload();
     }
   };
 
@@ -218,6 +332,7 @@ const useNewRewardViewModel = () => {
     handleStatusChange,
     status,
     handleChangeHargaPoint,
+    loading,
   };
 };
 
