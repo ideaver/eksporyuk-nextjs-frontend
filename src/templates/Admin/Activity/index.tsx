@@ -33,6 +33,7 @@ const Activity = () => {
     activityFindMany,
     orderBy,
     setOrderBy,
+    findTake,
   } = useActivityViewModel();
 
   return (
@@ -55,6 +56,7 @@ const Activity = () => {
             findTake={(val) => {
               setFindTake(val);
             }}
+            takeValue={findTake}
           />
         </KTCardBody>
       </KTCard>
@@ -175,24 +177,62 @@ const Footer = ({
   setCurrentPage,
   findTake,
   pageLength,
+  takeValue,
 }: {
   findTake: (val: number) => void;
   findSkip: (val: number) => void;
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  takeValue: number;
 }) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
-        <Dropdown
-          styleType="solid"
-          options={[
-            { label: "100", value: 100 },
-            { label: "200", value: 200 },
-          ]}
-          onValueChange={(val) => findTake(val as number)}
-        />
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {takeValue}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  findTake(10);
+                }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  findTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              <input
+                type="number"
+                value={takeValue}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
+                onChange={(e) => {
+                  findTake(parseInt(e.target.value));
+                }}
+              />
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="col-auto">
         <Pagination

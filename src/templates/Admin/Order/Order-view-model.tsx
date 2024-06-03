@@ -28,7 +28,7 @@ export const breadcrumbs = [
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [orderFindSkip, setorderFindSkip] = useState(0);
-  const [orderFindTake, setOrderFindTake] = useState(100);
+  const [orderFindTake, setOrderFindTake] = useState(10);
   const ordersLemngth = useOrderFindLengthQuery();
 
   const handlePageChange = (page: number) => {
