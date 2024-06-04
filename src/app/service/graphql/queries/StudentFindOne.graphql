@@ -185,6 +185,7 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
                 isCertificationProvided
                 basePrice
                 salePrice
+                affiliateCommission
                 createdAt
                 updatedAt
                 status

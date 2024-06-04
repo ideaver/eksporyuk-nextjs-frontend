@@ -66,6 +66,7 @@ query UserFindOne($where: UserWhereUniqueInput!) {
           isCertificationProvided
           basePrice
           salePrice
+          affiliateCommission
           createdAt
           updatedAt
           status

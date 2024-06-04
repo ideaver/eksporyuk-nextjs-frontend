@@ -288,6 +288,7 @@ query OrderFindOne($where: OrderWhereUniqueInput!) {
             isCertificationProvided
             basePrice
             salePrice
+            affiliateCommission
             createdAt
             updatedAt
             status

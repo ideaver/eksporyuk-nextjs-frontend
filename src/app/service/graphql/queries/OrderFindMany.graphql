@@ -193,6 +193,7 @@ query OrderFindMany(
             isCertificationProvided
             basePrice
             salePrice
+            affiliateCommission
             createdAt
             updatedAt
             status
