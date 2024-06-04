@@ -13,7 +13,7 @@ import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { ChangeEvent, useMemo } from "react";
 import { useRouter } from "next/router";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   TypeCategory,
   changeContent,
@@ -24,6 +24,8 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { RootState } from "@/app/store/store";
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
 
 const InformationPage = () => {
   const ReactQuill = useMemo(
@@ -36,12 +38,15 @@ const InformationPage = () => {
     thumbnail,
     handleFileChange,
     handleStatusChange,
+    handleTargetChange,
     status,
     category,
     handleCategoryChange,
     resetArticleState,
     isLoading,
     handleArticleCreateOne,
+    targetOptions,
+    target,
   } = useInformationViewModel();
 
   const { formik } = useArticleForm();
@@ -112,6 +117,32 @@ const InformationPage = () => {
                     </div>
                   )}
                   <h5 className="text-muted mt-3">Masukan judul artikel</h5>
+                  <h5 className="required mt-5">Target Artikel</h5>
+                  <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
+                    {target.map((e: any, index) => (
+                      <Buttons
+                        key={index}
+                        classNames="fit-content"
+                        icon="cross"
+                        buttonColor="secondary"
+                        showIcon
+                        onClick={() => {
+                          handleTargetChange(target.filter((v) => v !== e));
+                        }}
+                      >
+                        <span>{e}</span>
+                      </Buttons>
+                    ))}
+                  </div>
+
+                  <Dropdown
+                    options={targetOptions}
+                    onValueChange={(val) => {
+                      handleTargetChange([...target, val as UserRoleEnum]);
+                    }}
+                  />
+                  <h5 className="text-muted mt-3">Masukan target artikel</h5>
+
                   <h5 className="required mt-5">Konten Artikel</h5>
                   <div
                     style={{
@@ -123,6 +154,7 @@ const InformationPage = () => {
                         toolbar: [
                           [{ header: [1, 2, false] }],
                           [
+                            "link",
                             "bold",
                             "italic",
                             "underline",
@@ -136,7 +168,7 @@ const InformationPage = () => {
                       }}
                       theme="snow"
                       value={formik.values.content}
-                      style={{ height: "80%" }}
+                      style={{ height: "70%" }}
                       onChange={(e) => {
                         formik.setFieldValue("content", e);
                         dispatch(changeContent(e));

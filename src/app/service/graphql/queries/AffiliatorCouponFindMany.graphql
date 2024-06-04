@@ -48,8 +48,8 @@ query AffiliatorCouponFindMany(
       type
       source
       _count {
-        avaibilities
-        restrictions
+        # avaibilities
+        # restrictions
         termsOrFaqs
         claimedByOrders
         ReferralLink

@@ -1,5 +1,6 @@
 import {
   QueryMode,
+  UserRoleEnum,
   useArticleCategoryCreateOneMutation,
   useArticleCategoryFindManyQuery,
   useArticleCreateOneMutation,
@@ -10,6 +11,7 @@ import {
   changeCategory,
   changeContent,
   changeStatus,
+  changeTarget,
   changeTitle,
 } from "@/features/reducers/articles/articlesReducer";
 import { useFormik } from "formik";
@@ -78,6 +80,7 @@ const useResetArticleState = () => {
     dispatch(changeContent(""));
     dispatch(changeTitle(""));
     dispatch(changeStatus("published"));
+    dispatch(changeTarget([]));
     router.push("/admin/articles");
   };
 
@@ -90,6 +93,7 @@ export const useCategoryForm = () => {
 
   const [articleCategoryCreateOne, response] =
     useArticleCategoryCreateOneMutation();
+
   const categorySchema = Yup.object().shape({
     categoryName: Yup.string()
       .min(3, "Minimal 3 simbol")
@@ -203,6 +207,7 @@ const useInformationViewModel = () => {
 
   const status = useSelector((state: RootState) => state.article.status);
   const category = useSelector((state: RootState) => state.article.category);
+  const target = useSelector((state: RootState) => state.article.target);
 
   const { resetArticleState } = useResetArticleState();
   const { articleFindMany, articleLength } = useArticleViewModel();
@@ -229,6 +234,9 @@ const useInformationViewModel = () => {
           data: {
             title: articleState.title,
             content: articleState.content,
+            target: {
+              set: target,
+            },
             createdByAdmin: {
               connect: {
                 id: session?.user.id,
@@ -282,11 +290,25 @@ const useInformationViewModel = () => {
   const handleStatusChange = (status: string) => {
     dispatch(changeStatus(status));
   };
-  const handleCategoryChange = (status: TypeCategory[]) => {
-    dispatch(changeCategory(status));
+  const handleCategoryChange = (category: TypeCategory[]) => {
+    dispatch(changeCategory(category));
+  };
+  const handleTargetChange = (target: UserRoleEnum[]) => {
+    dispatch(changeTarget(target));
   };
 
+  const targetOptions = [
+    { value: UserRoleEnum.Student, label: "Student" },
+    { value: UserRoleEnum.Affiliator, label: "Affiliator" },
+    { value: UserRoleEnum.Customer, label: "Customer" },
+    { value: UserRoleEnum.Mentor, label: "Mentor" },
+    { value: UserRoleEnum.Admin, label: "Admin" },
+    { value: UserRoleEnum.Superuser, label: "Superuser" },
+  ];
+
   return {
+    target,
+    targetOptions,
     isLoading,
     resetArticleState,
     category,
@@ -294,6 +316,7 @@ const useInformationViewModel = () => {
     status,
     handleFileChange,
     handleStatusChange,
+    handleTargetChange,
     handleArticleCreateOne,
     thumbnail,
     fileImage,

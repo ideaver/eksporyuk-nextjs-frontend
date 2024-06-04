@@ -34,6 +34,7 @@ const useDetailArticleViewModel = ({ id, data }: IDetailArticle) => {
       label: val?.name,
     }))
   );
+  const [target, setTarget] = useState(data?.articleFindOne?.target);
 
   return {
     thumbnail,
@@ -41,6 +42,7 @@ const useDetailArticleViewModel = ({ id, data }: IDetailArticle) => {
     title,
     status,
     category,
+    target,
   };
 };
 

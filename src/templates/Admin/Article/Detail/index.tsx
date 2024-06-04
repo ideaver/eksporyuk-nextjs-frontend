@@ -11,7 +11,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 
 const DetailArticle = ({ id, data }: IDetailArticle) => {
-  const { thumbnail, content, title, status, category } =
+  const { thumbnail, content, title, status, category, target } =
     useDetailArticleViewModel({
       id,
       data,
@@ -23,17 +23,29 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
       <div className="row gx-8">
         <Aside
           status={status}
-          category={category ?? [{ value: 0, label: "kategori nol" }]}
+          category={category ?? [{ value: 0, label: "none" }]}
           thumbnail={thumbnail}
         />
         <div className="col-lg-8">
           <KTCard className="">
             <KTCardBody>
               <h3 className="mb-5">Detail Artikel</h3>
-              <h5 className="">Judul Artikel</h5>
-              <h1 className="my-4">{title}</h1>
-              <h5 className="mt-5">Konten Artikel</h5>
-              <div className="my-2">
+              <h4 className="">Judul Artikel</h4>
+              <h5 className="my-4 mx-4">{title}</h5>
+              <h4 className="mt-5">Target Artikel</h4>
+              <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
+                {target?.map((e: any, index) => (
+                  <Buttons
+                    key={index}
+                    classNames="fit-content"
+                    buttonColor="secondary"
+                  >
+                    <span>{e}</span>
+                  </Buttons>
+                ))}
+              </div>
+              <h4 className="mt-5">Konten Artikel</h4>
+              <div className="my-2 mx-4">
                 <div dangerouslySetInnerHTML={{ __html: content as string }} />
               </div>
             </KTCardBody>
