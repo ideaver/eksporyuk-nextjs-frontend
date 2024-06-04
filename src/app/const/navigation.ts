@@ -190,7 +190,7 @@ export const adminMenus: MenuSection[] = [
       },
       {
         title: "Manajemen Membership",
-        to: "/admin/membership",
+        to: "/admin/subscriber",
         icon: "classmates",
       },
     ],

@@ -21,8 +21,15 @@ import {
 import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 
 const InformationMembership = () => {
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
   const dispatch = useDispatch();
   const router = useRouter();
   const {
@@ -191,7 +198,38 @@ const InformationMembership = () => {
                 Masukan durasi membership
               </h5>
               <h5 className="required">Benefit</h5>
-              <Textarea
+              <div
+                style={{
+                  height: "220px",
+                }}
+              >
+                <ReactQuill
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, false] }],
+                      [
+                        "link",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                      ],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["clean"],
+                    ],
+                  }}
+                  theme="snow"
+                  value={formik.values.benefits}
+                  style={{ height: "70%" }}
+                  onChange={(e) => {
+                    formik.setFieldValue("benefits", e);
+                    dispatch(changeBenefits(e));
+                  }}
+                />
+              </div>
+              {/* <Textarea
                 placeholder="Masukan Benefit"
                 classNames={clsx(
                   {
@@ -211,7 +249,7 @@ const InformationMembership = () => {
                   },
                   value: formik.values.benefits,
                 }}
-              />
+              /> */}
               {formik.touched.benefits && formik.errors.benefits && (
                 <div className="fv-plugins-message-container">
                   <span role="alert">{formik.errors.benefits}</span>

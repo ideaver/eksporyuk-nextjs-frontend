@@ -122,7 +122,7 @@ const Membership = () => {
                             <ul className="dropdown-menu">
                               <li>
                                 <Link
-                                  href={`/admin/membership/edit/${membership.id}`}
+                                  href={`/admin/subscriber/edit/${membership.id}`}
                                   className="dropdown-item"
                                 >
                                   Edit
@@ -222,7 +222,7 @@ const Head = ({
         <div className="col-lg-auto">
           <Buttons>
             <Link
-              href={"/admin/membership/information-membership"}
+              href={"/admin/subscriber/information-subscriber"}
               className="text-white"
             >
               Add New Membership

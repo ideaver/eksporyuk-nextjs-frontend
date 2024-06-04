@@ -13,8 +13,15 @@ import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
 import CurrencyInput from "react-currency-input-field";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 
 const EditMembership = ({ id, data }: IEditMembershipProps) => {
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
   const router = useRouter();
   const {
     formik,
@@ -28,6 +35,7 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
     setMembershipType,
     setDuration,
     price,
+    benefits,
   } = useEditMembershipViewModel({ id, data });
   return (
     <>
@@ -187,7 +195,38 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
                 Masukan durasi membership
               </h5>
               <h5 className="required">Benefit</h5>
-              <Textarea
+              <div
+                style={{
+                  height: "220px",
+                }}
+              >
+                <ReactQuill
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, false] }],
+                      [
+                        "link",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                      ],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["clean"],
+                    ],
+                  }}
+                  theme="snow"
+                  value={benefits}
+                  style={{ height: "70%" }}
+                  onChange={(e) => {
+                    formik.setFieldValue("benefits", e);
+                    setBenefits(e);
+                  }}
+                />
+              </div>
+              {/* <Textarea
                 placeholder="Masukan Benefit"
                 classNames={clsx(
                   {
@@ -207,7 +246,7 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
                   },
                   value: formik.values.benefits,
                 }}
-              />
+              /> */}
               {formik.touched.benefits && formik.errors.benefits && (
                 <div className="fv-plugins-message-container">
                   <span role="alert">{formik.errors.benefits}</span>

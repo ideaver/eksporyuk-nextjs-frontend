@@ -21,7 +21,7 @@ import { useSession } from "next-auth/react";
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/membership",
+    path: "/admin/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -101,7 +101,7 @@ export const useMembershipForm = () => {
         console.log(error);
       } finally {
         setIsloading(false);
-        await router.push("/admin/membership");
+        await router.push("/admin/subscriber");
         router.reload();
       }
     },
