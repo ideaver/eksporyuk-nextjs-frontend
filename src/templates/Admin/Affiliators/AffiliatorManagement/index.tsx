@@ -161,10 +161,10 @@ const Body = ({
                 defaultChildren={false}
                 onChange={handleSelectAllCheck}
               >
-                <>ID Member</>
+                <>Username</>
               </CheckBoxInput>
             </th>
-            <th className="min-w-200px">Nama Lengkap & Username</th>
+            <th className="min-w-200px">Nama Lengkap</th>
             <th className="text-end min-w-200px">Email</th>
             <th className="text-end min-w-200px">Affiliator</th>
             <th className="text-end min-w-200px">Tanggal Terdaftar</th>
@@ -187,11 +187,11 @@ const Body = ({
                         href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
                         className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                         style={{
-                          maxWidth: "90px",
+                          maxWidth: "150px",
                           display: "inline-block",
                         }}
                       >
-                        {affiliator.user.id}
+                        {affiliator.user.username}
                       </Link>
                     </CheckBoxInput>
                   </td>
@@ -219,9 +219,9 @@ const Body = ({
                             {affiliator.user.name}
                           </span>
                         </Link>
-                        <span className="fw-bold text-muted">
+                        {/* <span className="fw-bold text-muted">
                           {affiliator.user.username}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
                   </td>

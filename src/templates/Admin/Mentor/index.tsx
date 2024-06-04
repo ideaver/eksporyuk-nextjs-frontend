@@ -258,20 +258,20 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th className="w-150px">
+              <th className="w-200px">
                 <CheckBoxInput
-                  className="w-150px"
+                  className="w-200px"
                   checked={selectAll}
                   name="check-all"
                   value="all"
                   defaultChildren={false}
                   onChange={handleSelectAllCheck}
                 >
-                  <>ID Member</>
+                  <>Username</>
                 </CheckBoxInput>
               </th>
               <th className="min-w-300px">Nama Lengkap</th>
-              <th className="text-end min-w-275px">Username</th>
+              {/* <th className="text-end min-w-275px">Username</th> */}
               <th className="text-end min-w-200px">Tanggal Pendaftaran</th>
               <th className="text-end min-w-200px">Jumlah Course</th>
               <th className="text-end min-w-200px">Jumlah Siswa</th>
@@ -294,11 +294,11 @@ const Body = ({
                         href={`/admin/mentors/detail/${mentor.id}/profile`}
                         className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                         style={{
-                          maxWidth: "90px",
+                          maxWidth: "150px",
                           display: "inline-block",
                         }}
                       >
-                        {mentor.id}
+                        {mentor.user.username}
                       </Link>
                     </CheckBoxInput>
                   </td>
@@ -332,9 +332,9 @@ const Body = ({
                     </div>
                   </td>
 
-                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                  {/* <td className="align-middle text-end text-muted fw-bold w-150px">
                     {mentor.user.username}
-                  </td>
+                  </td> */}
                   <td className="align-middle text-end text-muted fw-bold w-150px">
                     {mentor.user.createdAt}
                   </td>
