@@ -1,0 +1,8 @@
+mutation MembershipCategoryUpdateOne(
+  $data: MembershipCategoryUpdateInput!
+  $where: MembershipCategoryWhereUniqueInput!
+) {
+  membershipCategoryUpdateOne(data: $data, where: $where) {
+    id
+  }
+}
