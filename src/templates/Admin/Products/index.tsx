@@ -237,11 +237,11 @@ const Body = ({
           >
             <th className="min-w-375px">
               <CheckBoxInput
-                checked={false}
+                checked={selectAll}
                 name="check-all"
                 value="all"
                 defaultChildren={false}
-                onChange={() => {}}
+                onChange={handleSelectAllCheck}
               >
                 <>Nama Produk</>
               </CheckBoxInput>
