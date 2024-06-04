@@ -52,13 +52,6 @@ export const useTotalSales = () => {
   const [series, setSeries] = useState<any>();
   const [categories, setCategories] = useState<any>();
 
-  //convert to ISOstring
-  useEffect(() => {
-    setDateEnd(date.toISOString());
-    setDateStart(pastDate.toISOString());
-    totalSales.refetch();
-  }, [date, timeReduction]);
-
   const totalSales = useTotalSalesAndOmzetsQuery({
     variables: {
       totalSalesAndOmzet: {
@@ -67,6 +60,13 @@ export const useTotalSales = () => {
       },
     },
   });
+
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+    totalSales.refetch();
+  }, [date, timeReduction, pastDate, totalSales]);
 
   const chartSales = useSalesDataQueryQuery({
     variables: {
@@ -132,7 +132,7 @@ export const useTotalOmzet = () => {
   useEffect(() => {
     setDateEnd(date.toISOString());
     setDateStart(pastDate.toISOString());
-  }, [date, timeReduction]);
+  }, [date, timeReduction, pastDate]);
 
   const totalOmzet = useTotalSalesAndOmzetsQuery({
     variables: {
@@ -204,13 +204,6 @@ export const useTotalLead = () => {
   const [series, setSeries] = useState<any>();
   const [categories, setCategories] = useState<any>();
 
-  //convert to ISOstring
-  useEffect(() => {
-    setDateEnd(date.toISOString());
-    setDateStart(pastDate.toISOString());
-    chartLead.refetch();
-  }, [date, timeReduction]);
-
   const totalLead = useTotalSalesAndOmzetsQuery({
     variables: {
       totalSalesAndOmzet: {
@@ -244,7 +237,12 @@ export const useTotalLead = () => {
       );
     },
   });
-
+  //convert to ISOstring
+  useEffect(() => {
+    setDateEnd(date.toISOString());
+    setDateStart(pastDate.toISOString());
+    chartLead.refetch();
+  }, [date, timeReduction, chartLead, pastDate]);
   const totalLeadData: any = totalLead?.data?.totalSalesAndOmzet;
 
   return {
@@ -287,7 +285,7 @@ export const useOrderCountByCustomPeriod = () => {
   useEffect(() => {
     setDateEnd(date.toISOString());
     setDateStart(pastDate.toISOString());
-  }, [date, timeReduction]);
+  }, [date, timeReduction, pastDate]);
 
   const orderCountByCustomPeriod = useOrderCountsByCustomPeriodQuery({
     variables: {
@@ -363,7 +361,7 @@ export const useNewMember = () => {
     setDateEnd(date.toISOString());
     setDateStart(pastDate.toISOString());
     // chartLead.refetch();
-  }, [date, timeReduction]);
+  }, [date, timeReduction, pastDate]);
 
   const newMemberTotal = useUserCountQuery({
     variables: {
@@ -521,7 +519,7 @@ export const usePopularCourse = () => {
   useEffect(() => {
     setDateEnd(date.toISOString());
     setDateStart(pastDate.toISOString());
-  }, [date, timeReduction]);
+  }, [date, timeReduction, pastDate]);
   const { data } = usePopularCoursesQuery({
     variables: {
       popularCourse: {
