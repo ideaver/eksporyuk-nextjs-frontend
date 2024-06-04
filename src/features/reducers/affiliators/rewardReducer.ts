@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DiscountTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { CourseOptionType } from "@/templates/Admin/Affiliators/RewardManagement/Create/NewReward/NewReward-view-model";
+
+// type CourseOptionType = {
+//   value: number;
+//   label: string;
+// }
 
 interface RewardState {
   namaReward: string;
@@ -9,6 +15,7 @@ interface RewardState {
   hargaPoint: string;
   akhirMasaBerlaku: string;
   status: string;
+  connectCourse: CourseOptionType[] | undefined;
 }
 
 const initialState: RewardState = {
@@ -18,6 +25,7 @@ const initialState: RewardState = {
   hargaPoint: "",
   akhirMasaBerlaku: "2024-06-01",
   status: "published",
+  connectCourse: []
 }
 
 export const rewardSlice = createSlice({
@@ -42,6 +50,9 @@ export const rewardSlice = createSlice({
     changeStatus: (state, action: PayloadAction<string>) => {
       state.status = action.payload;
     },
+    changeConnectCourse: (state, action: PayloadAction<CourseOptionType[] | undefined>) => {
+      state.connectCourse = action.payload;
+    }
   }
 });
 
@@ -52,6 +63,7 @@ export const {
   changeHargaPoint,
   changeAkhirMasaBerlaku,
   changeStatus,
+  changeConnectCourse,
 } = rewardSlice.actions;
 
 export default rewardSlice.reducer;

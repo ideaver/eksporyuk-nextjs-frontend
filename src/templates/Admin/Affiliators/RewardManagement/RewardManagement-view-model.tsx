@@ -1,11 +1,14 @@
 import { QueryResult } from "@apollo/client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   useRewardsCatalogFindManyQuery,
   RewardsCatalogFindManyQuery,
   QueryMode,
   SortOrder,
+  useRewardsCatalogDeleteOneMutation,
+  useRewardsCatalogDeleteManyMutation,
 } from "@/app/service/graphql/gen/graphql";
 
 export const dateFormatter = (dateStr: string) => {
@@ -88,10 +91,42 @@ const useCheckbox = (
 };
 
 const useRewardManagementViewModel = () => {
+  const router = useRouter();
+
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchRewards, setSearchRewards] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
+  // Graphql
+  const [rewardCatalogDeleteOneMutation] = useRewardsCatalogDeleteOneMutation();
+  const [rewardCatalogDeleteManyMutation] = useRewardsCatalogDeleteManyMutation();
+
+  const handleRewardCatalogDeleteOneMutation = async (rewardId: number) => {
+    const data = await rewardCatalogDeleteOneMutation({
+      variables: {
+        where: {
+          id: Number(rewardId)
+        }
+      }
+    });
+
+    return data;
+  }
+
+  const handleRewardCatalogDeleteManyMutation = async (rewardIds: number[]) => {
+    const data = await rewardCatalogDeleteManyMutation({
+      variables: {
+        where: {
+          id: {
+            in: rewardIds,
+          }
+        }
+      }
+    });
+
+    return data;
+  };
 
   // Query data
   const rewardsCatalogFindMany = useRewardsCatalogFindManyQuery({
@@ -111,6 +146,31 @@ const useRewardManagementViewModel = () => {
       },
     },
   });
+
+  // Mutate data
+  const onDeleteOne = async (rewardId: number) => {
+    try {
+      const data = await handleRewardCatalogDeleteOneMutation(rewardId);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
+
+  const onDeleteMany = async (rewardIds: number[]) => {
+    try {
+      const data = await handleRewardCatalogDeleteManyMutation(rewardIds);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
 
   // Calculating total page
   const calculateTotalPage = () => {
@@ -153,6 +213,8 @@ const useRewardManagementViewModel = () => {
     handleSingleCheck,
     handleSelectAllCheck,
     setOrderBy,
+    onDeleteOne,
+    onDeleteMany,
   };
 };
 
