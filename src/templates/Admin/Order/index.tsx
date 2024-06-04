@@ -4,6 +4,7 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import {
+  CartItemTypeEnum,
   OrderFindManyQuery,
   OrderStatusEnum,
   SortOrder,
@@ -22,8 +23,10 @@ import { useState } from "react";
 import Flatpickr from "react-flatpickr";
 import { breadcrumbs } from "../Products/Products-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
+import { useSession } from "next-auth/react";
 
 const OrderPage = ({}) => {
+  const { data: session } = useSession();
   const {
     exportModalState,
     setExportModalState,
@@ -41,6 +44,12 @@ const OrderPage = ({}) => {
     orderBy,
     setOrderBy,
     orderFindTake,
+    orderTypeOptions,
+    setCategoryOrderType,
+    categoryOrderType,
+    exportOrder,
+    isLoading,
+    setIsloading,
   } = useAdminOrderViewModel();
   return (
     <>
@@ -80,10 +89,39 @@ const OrderPage = ({}) => {
         </KTCardBody>
       </KTCard>
       <ExportModal
+        loading={isLoading}
         onClose={() => {}}
+        orderTypeOptions={orderTypeOptions}
+        onDropdownChange={(e) => {
+          setCategoryOrderType(e);
+        }}
+        orderType={categoryOrderType}
         date={exportModalState}
         onChange={([startDate, endDate]) => {
           setExportModalState([startDate, endDate]);
+        }}
+        onClick={async () => {
+          setIsloading(true);
+          try {
+            const response = await exportOrder({
+              variables: {
+                exportOrder: {
+                  adminId: session?.user.id as string,
+                  startDate: exportModalState[0],
+                  endDate: exportModalState[1],
+                  orderType:
+                    categoryOrderType === "all" ? null : categoryOrderType,
+                },
+              },
+            });
+            const link = document.createElement("a");
+            link.href = response.data?.exportOrder?.fileURL as string;
+            link.click();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsloading(false);
+          }
         }}
       />
     </>
@@ -286,13 +324,23 @@ const Footer = ({
 };
 
 const ExportModal = ({
+  loading,
   date,
   onChange,
   onClose,
+  onDropdownChange,
+  orderTypeOptions,
+  orderType,
+  onClick,
 }: {
+  loading: boolean;
   date: Date;
   onChange: (value: any) => void;
   onClose: () => void;
+  onDropdownChange: (val: any) => void;
+  orderTypeOptions: any;
+  orderType: CartItemTypeEnum | "all";
+  onClick: () => void;
 }) => {
   return (
     <div>
@@ -312,7 +360,7 @@ const ExportModal = ({
           </Buttons>
         }
         buttonSubmit={
-          <Buttons data-bs-dismiss="modal" classNames="fw-bold">
+          <Buttons classNames="fw-bold" disabled={loading} onClick={onClick}>
             Export
           </Buttons>
         }
@@ -333,6 +381,13 @@ const ExportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
+        <p className="fw-bold text-gray-700">Pilih Category</p>
+
+        <Dropdown
+          options={orderTypeOptions}
+          onValueChange={onDropdownChange}
+          value={orderType}
+        />
       </KTModal>
     </div>
   );
@@ -411,12 +466,15 @@ const Body = ({
               <th className="text-end min-w-150px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
+
             {orderFindMany.data?.orderFindMany?.map((order, index) => {
-              const latestStatus = order?.statuses?.sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )[0];
+              const latestStatus = order?.statuses
+                ?.slice()
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )[0];
               const latestInvoices = order?.invoices?.sort(
                 (a, b) =>
                   new Date(b.createdAt).getTime() -
