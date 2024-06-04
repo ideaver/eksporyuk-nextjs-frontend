@@ -121,7 +121,10 @@ const Membership = () => {
                             </button>
                             <ul className="dropdown-menu">
                               <li>
-                                <Link href={``} className="dropdown-item">
+                                <Link
+                                  href={`/admin/membership/edit/${membership.id}`}
+                                  className="dropdown-item"
+                                >
                                   Edit
                                 </Link>
                               </li>
