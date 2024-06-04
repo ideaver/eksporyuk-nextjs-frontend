@@ -128,22 +128,20 @@ const useField = (
   action: (value: string) => UnknownAction
 ) => {
   const dispatch = useDispatch();
-  const initialValue = useSelector(selector);
-  const [value, setValue] = useState(initialValue);
+  const value = useSelector(selector);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement> | string
   ) => {
-    let value: string;
+    let newValue: string;
 
     if (typeof event === "string") {
-      value = event;
+      newValue = event;
     } else {
-      value = event.target.value;
+      newValue = event.target.value;
     }
 
-    setValue(value);
-    dispatch(action(value));
+    dispatch(action(newValue));
   };
   return [value, handleChange];
 };
@@ -154,17 +152,13 @@ const useField = (
  */
 const ClassDescriptionHandler = () => {
   const dispatch = useDispatch();
-  const currentClassDescription = useSelector(
+  const inputClassDescription = useSelector(
     (state: RootState) => state.course.classDescription
   );
 
-  const [inputClassDescription, setInputClassDescription] = useState(
-    currentClassDescription
-  );
-
-  useEffect(() => {
-    dispatch(changeClassDescription(inputClassDescription));
-  }, [inputClassDescription, dispatch]);
+  const setInputClassDescription = (value: string) => {
+    dispatch(changeClassDescription(value));
+  };
 
   return { inputClassDescription, setInputClassDescription };
 };
