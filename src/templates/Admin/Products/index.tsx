@@ -267,24 +267,26 @@ const Body = ({
                     defaultChildren={false}
                     onChange={() => handleSingleCheck(index)}
                   >
-                    <div className="d-flex align-items-center">
-                      <div className="symbol symbol-50px me-5">
-                        <span className="symbol-label bg-gray-600">
-                          <img
-                            src={
-                              product?.images?.[0]?.path ??
-                              "/media/products/1.png"
-                            }
-                            width={50}
-                            height={50}
-                            alt=""
-                          />
+                    <Link href={`/admin/products/detail/${product.id}`}>
+                      <div className="d-flex align-items-center">
+                        <div className="symbol symbol-50px me-5">
+                          <span className="symbol-label bg-gray-600">
+                            <img
+                              src={
+                                product?.images?.[0]?.path ??
+                                "/media/products/1.png"
+                              }
+                              width={50}
+                              height={50}
+                              alt=""
+                            />
+                          </span>
+                        </div>
+                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                          {product?.name}
                         </span>
                       </div>
-                      <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                        {product?.name}
-                      </span>
-                    </div>
+                    </Link>
                   </CheckBoxInput>
                 </td>
                 <td className="fw-bold text-muted text-end align-middle w-125px">

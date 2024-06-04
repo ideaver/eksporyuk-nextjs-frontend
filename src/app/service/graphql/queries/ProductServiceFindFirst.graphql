@@ -1,0 +1,16 @@
+query ProductServiceFindFirst($where: ProductServiceWhereInput) {
+  productServiceFindFirst(where: $where) {
+    name
+    images {
+      path
+    }
+    portofolio
+    benefits
+    salePrice
+    productServiceCategory
+    isActive
+    description
+    id
+    basePrice
+  }
+}
