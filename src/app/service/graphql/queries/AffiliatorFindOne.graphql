@@ -76,5 +76,10 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
         value
       }
     }
+    creditCards {
+      cardNumber
+      cardHolderName
+      cvv
+    }
   }
 }

@@ -2,6 +2,14 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
   studentFindOne(where: $where) {
     id
     updatedAt
+    creditCards {
+      cardNumber
+      cardHolderName
+      createdAt
+      customerId
+      id
+      isAccepted
+    }
     user {
       id
       name
