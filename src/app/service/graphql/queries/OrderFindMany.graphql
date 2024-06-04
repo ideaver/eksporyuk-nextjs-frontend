@@ -179,7 +179,29 @@ query OrderFindMany(
           durationDay
           benefits
           price
-          benefitCourses
+          benefitCourses {
+            id
+            title
+            description
+            prerequisites
+            objective
+            outcome
+            startDate
+            endDate
+            maxEnrollment
+            deepLink
+            isCertificationProvided
+            basePrice
+            salePrice
+            createdAt
+            updatedAt
+            status
+            level
+            duration
+            categoryId
+            createdById
+            videoUrlId
+          }
           affiliateFirstCommission
           affiliateCommission
           createdAt

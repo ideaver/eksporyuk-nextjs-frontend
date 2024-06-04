@@ -93,7 +93,7 @@ const ArticlePage = () => {
                           href={`/admin/articles/detail/${article.id}`}
                           className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                           style={{
-                            maxWidth: "90px",
+                            maxWidth: "200px",
                             display: "inline-block",
                           }}
                         >
