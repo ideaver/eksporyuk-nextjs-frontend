@@ -59,7 +59,7 @@ const ProductDetail = ({
           </div>
           {data?.productServiceFindFirst?.benefits && (
             <div className="mb-5">
-              <h3 className="">Benefits</h3>
+              <h3 className="">{data.productServiceFindFirst.benefits.length !== 0 ? "Benefits" : null}</h3>
               <ul className="lead text-body">
                 {data.productServiceFindFirst.benefits.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -69,7 +69,7 @@ const ProductDetail = ({
           )}
           {data?.productServiceFindFirst?.portofolio && (
             <div className="mb-5">
-              <h3 className="">Portfolio</h3>
+              <h3 className="">{data.productServiceFindFirst.portofolio.length !== 0 ? "Portfolio" : null}</h3>
               <ul className="lead text-body">
                 {data.productServiceFindFirst.portofolio.map((item, index) => (
                   <li key={index}>
