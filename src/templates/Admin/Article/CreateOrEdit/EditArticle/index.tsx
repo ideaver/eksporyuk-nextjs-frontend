@@ -17,6 +17,7 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { useRouter } from "next/router";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
 
 const EditArticle = ({ id, data }: IEditArticle) => {
   const ReactQuill = useMemo(
@@ -37,6 +38,9 @@ const EditArticle = ({ id, data }: IEditArticle) => {
     handleUpdateFile,
     handleArticleUpdateOne,
     isLoading,
+    target,
+    setTarget,
+    targetOptions,
   } = useEditArticleViewModel({ data, id });
 
   const router = useRouter();
@@ -104,6 +108,33 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                     </div>
                   )}
                   <h5 className="text-muted mt-3">Edit judul artikel</h5>
+                  <h5 className="required mt-5">Target Artikel</h5>
+                  <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
+                    {target?.map((e: any, index) => (
+                      <Buttons
+                        key={index}
+                        classNames="fit-content"
+                        icon="cross"
+                        buttonColor="secondary"
+                        showIcon
+                        onClick={() => {
+                          setTarget((prev) => prev?.filter((v) => v !== e));
+                        }}
+                      >
+                        <span>{e}</span>
+                      </Buttons>
+                    ))}
+                  </div>
+
+                  <Dropdown
+                    options={targetOptions}
+                    onValueChange={(val) => {
+                      setTarget((prev: any) => {
+                        return [...prev, val as UserRoleEnum];
+                      });
+                    }}
+                  />
+                  <h5 className="text-muted mt-3">Masukan target artikel</h5>
                   <h5 className="required mt-5">Konten Artikel</h5>
                   <div>
                     <ReactQuill
@@ -111,6 +142,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                         toolbar: [
                           [{ header: [1, 2, false] }],
                           [
+                            "link",
                             "bold",
                             "italic",
                             "underline",
