@@ -2,6 +2,7 @@ import { PageTitle } from "@/_metronic/layout/core";
 import useAdminCouponViewModel, {
   breadcrumbs,
   useCouponForm,
+  useCoursesDropdown,
 } from "./AdminCoupon-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -30,6 +31,7 @@ import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import Flatpickr from "react-flatpickr";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const AdminCoupon = () => {
   const {
@@ -478,7 +480,11 @@ const AddCouponModal = ({
     date,
     setDate,
     hanldeCouponCreateOne,
+    setConnectCourse,
   } = useCouponForm();
+
+  const { loadOptions } = useCoursesDropdown();
+
   return (
     <div>
       <KTModal
@@ -635,6 +641,21 @@ const AddCouponModal = ({
           //   }}
           // />
           null}
+        </div>
+        <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">
+            Penerapan Kupon
+          </h4>
+          <h6 className="mt-4 text-muted">
+            Pilih Course yang Dapat Menggunakan Kupon Ini
+          </h6>
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              setConnectCourse(value?.value);
+            }}
+          ></AsyncPaginate>
         </div>
       </KTModal>
     </div>

@@ -6,7 +6,7 @@ import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/In
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CourseState {
+export interface CourseState {
   id?: string;
   thumbnail: string;
   status: string;
