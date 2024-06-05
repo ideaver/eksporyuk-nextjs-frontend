@@ -35,6 +35,29 @@ query MentorFindOne($where: MentorWhereUniqueInput!) {
       gender
       avatarImageId
       referralLinkId
+      accounts {
+        id
+        name
+        userId
+        accountNumber
+        accountInquiryId
+        accountInquiry {
+          accountHolder
+          accountNumber
+          bank {
+            bankLogo {
+              path
+            }
+            bankLogoPath
+            code
+            name
+          }
+          bankCode
+          id
+          inquiryKey
+          inquiryStatus
+        }
+      }
       addresses {
         id
         name
