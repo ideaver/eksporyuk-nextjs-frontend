@@ -39,66 +39,12 @@ const RewardManagement = () => {
     setTakePage,
     calculateTotalPage,
     setOrderBy,
+    currentPage,
+    handlePageChange,
+    setFindTake,
+    findTake,
   } = useRewardManagementViewModel();
-
-  const [rewardId, setRewardId] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  let rewardIds: number[] = [];
-
-  console.log("main", rewardIds);
-
-  return (
-    <>
-      <PageTitle breadcrumbs={breadcrumbs}>Semua Reward Affiliasi</PageTitle>
-      <KTCard className="h-100">
-        <KTCardBody>
-          {/* <Head
-            onSearch={setSearchRewards}
-            setOrderBy={(e) => {
-              setOrderBy(e);
-            }}
-            rewardIds={rewardIds}
-            setShowDeleteModal={setShowDeleteModal}
-          /> */}
-          <Body
-            rewardsCatalogFindMany={rewardsCatalogFindMany}
-            handleSelectAllCheck={handleSelectAllCheck}
-            handleSingleCheck={handleSingleCheck}
-            checkedItems={checkedItems}
-            selectAll={selectAll}
-          />
-          <Footer
-            skipPage={skipPage}
-            setSkipPage={setSkipPage}
-            takePage={takePage}
-            setTakePage={setTakePage}
-            totalPage={calculateTotalPage}
-          />
-        </KTCardBody>
-      </KTCard>
-    </>
-  );
-};
-
-const Body = ({
-  rewardsCatalogFindMany,
-  handleSelectAllCheck,
-  handleSingleCheck,
-  checkedItems,
-  selectAll,
-}: {
-  rewardsCatalogFindMany: QueryResult<RewardsCatalogFindManyQuery>;
-  handleSelectAllCheck: () => void;
-  handleSingleCheck: (index: number) => void;
-  checkedItems: { id: any; value: boolean }[];
-  selectAll: boolean;
-}) => {
-  const { setSearchRewards, setOrderBy } = useRewardManagementViewModel();
-  const router = useRouter();
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [rewardId, setRewardId] = useState(0);
 
   let rewardIds: number[] = [];
 
@@ -106,21 +52,54 @@ const Body = ({
 
   return (
     <>
-      <DeleteRewardModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
-        rewardId={rewardId}
-        rewardIds={rewardIds}
-      />
+      <PageTitle breadcrumbs={breadcrumbs}>Semua Reward Affiliasi</PageTitle>
+      <KTCard className="h-100">
+        <KTCardBody>
+          <Head
+            onSearch={setSearchRewards}
+            setOrderBy={(e: any) => {
+              setOrderBy(e);
+            }}
+            rewardIds={rewardIds}
+            setShowDeleteModal={setShowDeleteModal}
+          />
+          <Body
+            rewardsCatalogFindMany={rewardsCatalogFindMany}
+            handleSelectAllCheck={handleSelectAllCheck}
+            handleSingleCheck={handleSingleCheck}
+            checkedItems={checkedItems}
+            selectAll={selectAll}
+            showDeleteModal={showDeleteModal}
+            setShowDeleteModal={setShowDeleteModal}
+          />
+          <Footer
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            findSkip={(val) => {}}
+            findTake={(val) => {
+              setFindTake(val);
+            }}
+            takeValue={findTake}
+          />
+        </KTCardBody>
+      </KTCard>
+    </>
+  );
+};
 
-      <div className="row justify-content-between gy-5">
+const Head = ({ onSearch, setOrderBy, rewardIds, setShowDeleteModal }: any) => {
+  const router = useRouter();
+
+  return (
+    <div className="row justify-content-between gy-5">
         <div className="col-lg-auto">
           <TextField
             styleType="solid"
             preffixIcon="magnifier"
             placeholder="Search"
             props={{
-              onChange: (e: any) => setSearchRewards(e.target.value),
+              onChange: (e: any) => onSearch(e.target.value),
             }}
           ></TextField>
         </div>
@@ -165,6 +144,42 @@ const Body = ({
           </div>
         </div>
       </div>
+  )
+}
+
+const Body = ({
+  rewardsCatalogFindMany,
+  handleSelectAllCheck,
+  handleSingleCheck,
+  checkedItems,
+  selectAll,
+  showDeleteModal,
+  setShowDeleteModal,
+}: {
+  rewardsCatalogFindMany: QueryResult<RewardsCatalogFindManyQuery>;
+  handleSelectAllCheck: () => void;
+  handleSingleCheck: (index: number) => void;
+  checkedItems: { id: any; value: boolean }[];
+  selectAll: boolean;
+  showDeleteModal: boolean;
+  setShowDeleteModal: (index: boolean) => void;
+}) => {
+  const router = useRouter();
+
+  const [rewardId, setRewardId] = useState(0);
+
+  let rewardIds: number[] = [];
+
+  rewardIds = checkedItems.filter((item) => item.value).map((item) => item.id);
+
+  return (
+    <>
+      <DeleteRewardModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        rewardId={rewardId}
+        rewardIds={rewardIds}
+      />
       {rewardsCatalogFindMany.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">
@@ -281,15 +296,92 @@ const Body = ({
   );
 };
 
-const Footer = ({
-  skipPage,
-  setSkipPage,
-  takePage,
-  setTakePage,
-  totalPage,
-}: any) => {
-  if (skipPage === 0) skipPage = 1;
+// const Footer = ({
+//   skipPage,
+//   setSkipPage,
+//   takePage,
+//   setTakePage,
+//   totalPage,
+// }: any) => {
+//   if (skipPage === 0) skipPage = 1;
 
+//   return (
+//     <div className="row justify-content-between">
+//       <div className="col-auto">
+//         <div className="dropdown">
+//           <button
+//             className="btn btn-secondary dropdown-toggle p-3"
+//             type="button"
+//             data-bs-toggle="dropdown"
+//             aria-expanded="false"
+//           >
+//             {takePage}
+//           </button>
+//           <ul className="dropdown-menu">
+//             <li>
+//               <button
+//                 className="dropdown-item"
+//                 onClick={() => {
+//                   setTakePage(10);
+//                 }}
+//               >
+//                 10
+//               </button>
+//             </li>
+//             <li>
+//               <button
+//                 className="dropdown-item"
+//                 onClick={() => {
+//                   setTakePage(50);
+//                 }}
+//               >
+//                 50
+//               </button>
+//             </li>
+//             <li>
+//               {/* <button className="dropdown-item">Hapus</button> */}
+//               <input
+//                 type="number"
+//                 value={takePage}
+//                 className="form-control py-2"
+//                 placeholder="Nilai Custom"
+//                 min={0}
+//                 onChange={(e) => {
+//                   setTakePage(parseInt(e.target.value));
+//                 }}
+//               />
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+//       <div className="col-auto">
+//         <Pagination
+//           total={totalPage()}
+//           current={skipPage}
+//           maxLength={5}
+//           onPageChange={(e) => {
+//             if (e === 1) e = 0;
+//             setSkipPage(e);
+//           }}
+//         ></Pagination>
+//       </div>
+//     </div>
+//   );
+// };
+const Footer = ({
+  currentPage,
+  setCurrentPage,
+  findTake,
+  pageLength,
+  takeValue,
+}: {
+  findTake: (val: number) => void;
+  findSkip: (val: number) => void;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+  takeValue: number;
+}) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -300,14 +392,14 @@ const Footer = ({
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {takePage}
+            {takeValue}
           </button>
           <ul className="dropdown-menu">
             <li>
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(10);
+                  findTake(10);
                 }}
               >
                 10
@@ -317,22 +409,21 @@ const Footer = ({
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(50);
+                  findTake(50);
                 }}
               >
                 50
               </button>
             </li>
             <li>
-              {/* <button className="dropdown-item">Hapus</button> */}
               <input
                 type="number"
-                value={takePage}
+                value={takeValue}
                 className="form-control py-2"
                 placeholder="Nilai Custom"
                 min={0}
                 onChange={(e) => {
-                  setTakePage(parseInt(e.target.value));
+                  findTake(parseInt(e.target.value));
                 }}
               />
             </li>
@@ -341,13 +432,10 @@ const Footer = ({
       </div>
       <div className="col-auto">
         <Pagination
-          total={totalPage()}
-          current={skipPage}
+          total={pageLength}
+          current={currentPage}
           maxLength={5}
-          onPageChange={(e) => {
-            if (e === 1) e = 0;
-            setSkipPage(e);
-          }}
+          onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
     </div>
