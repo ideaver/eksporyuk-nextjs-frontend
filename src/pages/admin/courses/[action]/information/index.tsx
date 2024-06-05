@@ -1,4 +1,5 @@
 import {
+  AffiliateCommissionTypeEnum,
   CourseLevelEnum,
   CourseStatusEnum,
   useCourseFindOneQuery,
@@ -34,17 +35,19 @@ const InformationPage: NextPage = () => {
   const dispatch = useDispatch();
   const currentCourseData = useSelector((state: RootState) => state.course);
   const courseData = data?.courseFindOne;
-
   const dispatchCourseData: CourseState = useMemo(
     () => ({
       id: courseData?.id.toString() || "",
       courseName: courseData?.title || "",
       classDescription: courseData?.description || "",
       price: courseData?.basePrice.toString() || "",
+      affiliateCommission: courseData?.affiliateCommission || 0,
       courseAuthor: courseData?.createdBy.user.name || "",
       courseDuration:
         // courseData?.duration || CourseDurationTypeEnum.ThreeMonths,
         courseData?.duration || 2,
+      courseType:
+        (courseData?.duration ?? 0) >= 9999999 ? "one-time" : "subscription",
       courseLevel: courseData?.level || CourseLevelEnum.Beginner,
       courseMentor:
         courseData?.mentors?.map((mentor) => ({
@@ -55,6 +58,11 @@ const InformationPage: NextPage = () => {
       objective: courseData?.objective || [],
       thumbnail: courseData?.images?.[0].path ?? "",
       status: courseData?.status ?? CourseStatusEnum.Published,
+      affiliateCommissionType:
+        courseData?.affiliateCommissionType ||
+        AffiliateCommissionTypeEnum.Amount,
+      certificateTemplateId: courseData?.certificateTemplate?.[0]?.id || 0,
+      discountPrice: courseData?.salePrice?.toString() || "",
       sections:
         courseData?.sections?.map((section) => ({
           id: section.id?.toString() ?? "",

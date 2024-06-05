@@ -1,15 +1,19 @@
 import {
+  AffiliateCommissionTypeEnum,
   CourseLevelEnum,
   QueryMode,
   useMentorFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
+  changeAffiliateCommission,
+  changeAffiliateCommissionType,
   changeClassDescription,
   changeCourseAuthor,
   changeCourseLevel,
   changeCourseMentor,
   changeCourseName,
+  changeDiscountPrice,
   changeIntroVideo,
   changePrice,
 } from "@/features/reducers/course/courseReducer";
@@ -124,7 +128,7 @@ export const AddMentorHandler = () => {
  * @returns
  */
 const useField = (
-  selector: (state: RootState) => string,
+  selector: (state: RootState) => string | number,
   action: (value: string) => UnknownAction
 ) => {
   const dispatch = useDispatch();
@@ -174,7 +178,6 @@ const useInformationViewModel = () => {
     (state: RootState) => state.course.courseName,
     (value) => changeCourseName(value)
   );
-
   const [inputIntroVideo, setInputIntroVideo] = useField(
     (state: RootState) => state.course.introVideo,
     (value) => changeIntroVideo(value)
@@ -187,6 +190,21 @@ const useInformationViewModel = () => {
     (state: RootState) => state.course.price,
     (value) => changePrice(value)
   );
+  const [inputClassDiscountPrice, setInputClassDiscountPrice] = useField(
+    (state: RootState) => state.course.discountPrice ?? "",
+    (value) => changeDiscountPrice(value)
+  );
+  const [inputCourseAffiliateCommission, setInputCourseAffiliateCommission] =
+    useField(
+      (state: RootState) => state.course.affiliateCommission,
+      (value) => changeAffiliateCommission(parseInt(value))
+    );
+  const [inputAffilaiteCommissionType, setInputAffilaiteCommissionType] =
+    useField(
+      (state: RootState) => state.course.affiliateCommissionType,
+      (value) =>
+        changeAffiliateCommissionType(value as AffiliateCommissionTypeEnum)
+    );
   const [inputClassLevel, setInputClassLevel] = useField(
     (state: RootState) => state.course.courseLevel,
     (value) => changeCourseLevel(value as CourseLevelEnum)
@@ -204,6 +222,12 @@ const useInformationViewModel = () => {
     setInputClassPrice,
     inputClassLevel,
     setInputClassLevel,
+    inputCourseAffiliateCommission,
+    setInputCourseAffiliateCommission,
+    setInputClassDiscountPrice,
+    inputClassDiscountPrice,
+    inputAffilaiteCommissionType,
+    setInputAffilaiteCommissionType,
   };
 };
 

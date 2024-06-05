@@ -130,5 +130,13 @@ query CourseFindMany(
       updatedAt
       createdById
     }
+    affiliateCommission
+    certificateTemplate {
+      id
+      name
+      imagePath
+      filePath
+    }
+    affiliateCommissionType
   }
 }
