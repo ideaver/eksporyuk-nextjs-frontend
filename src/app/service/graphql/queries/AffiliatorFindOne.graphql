@@ -13,6 +13,35 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
       addresses {
         name
       }
+      accounts {
+        id
+        accountNumber
+        name
+        balance
+        createdAt
+        updatedAt
+        accountCategory
+        userId
+        accountInquiryId
+        accountInquiry {
+          id
+          accountNumber
+          accountHolder
+          inquiryStatus
+          inquiryKey
+          createdAt
+          updatedAt
+          bankCode
+          bank {
+            bankLogo {
+              path
+            }
+            bankLogoPath
+            code
+            name
+          }
+        }
+      }
       orders {
         _count {
           enrollment
