@@ -90,7 +90,49 @@ const useCheckbox = (
   };
 };
 
+// Pagination
+const usePagination = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [findSkip, setFindSkip] = useState(0);
+  const [findTake, setFindTake] = useState(10);
+  const rewardsLength = useRewardsCatalogFindManyQuery();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setFindSkip((page - 1) * findTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (rewardsLength.data?.rewardsCatalogFindMany?.length ?? 0) / findTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    rewardsLength,
+  };
+};
+
 const useRewardManagementViewModel = () => {
+  const {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    rewardsLength,
+  } = usePagination();
+
   const router = useRouter();
 
   const [takePage, setTakePage] = useState<any>(10);
@@ -131,8 +173,8 @@ const useRewardManagementViewModel = () => {
   // Query data
   const rewardsCatalogFindMany = useRewardsCatalogFindManyQuery({
     variables: {
-      take: Number(takePage),
-      skip: skipPage,
+      take: parseInt(findTake.toString()),
+      skip: findSkip,
       orderBy: [
         {
           createdAt: orderBy,
@@ -173,12 +215,12 @@ const useRewardManagementViewModel = () => {
   };
 
   // Calculating total page
-  const calculateTotalPage = () => {
-    return Math.ceil(
-      (rewardsCatalogFindMany.data?.rewardsCatalogFindMany?.length ?? 0) /
-        takePage
-    );
-  };
+  // const calculateTotalPage = () => {
+  //   return Math.ceil(
+  //     (rewardsCatalogFindMany.data?.rewardsCatalogFindMany?.length ?? 0) /
+  //       takePage
+  //   );
+  // };
 
   const breadcrumbs = [
     {
@@ -215,6 +257,10 @@ const useRewardManagementViewModel = () => {
     setOrderBy,
     onDeleteOne,
     onDeleteMany,
+    currentPage,
+    handlePageChange,
+    setFindTake,
+    findTake,
   };
 };
 

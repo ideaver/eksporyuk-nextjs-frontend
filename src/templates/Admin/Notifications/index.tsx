@@ -34,6 +34,10 @@ const NotificationPage = () => {
     setDateOrderBy,
     setCompletionStatus,
     takePage,
+    currentPage,
+    handlePageChange,
+    setFindTake,
+    findTake,
   } = useNotificationsViewModel();
 
   return (
@@ -54,11 +58,14 @@ const NotificationPage = () => {
             selectAll={selectAll}
           />
           <Footer
-            skipPage={skipPage}
-            setSkipPage={setSkipPage}
-            setTakePage={setTakePage}
-            totalPage={calculateTotalPage}
-            takePage={takePage}
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            findSkip={(val) => {}}
+            findTake={(val) => {
+              setFindTake(val);
+            }}
+            takeValue={findTake}
           />
         </KTCardBody>
       </KTCard>
@@ -290,14 +297,19 @@ const Body = ({
 };
 
 const Footer = ({
-  skipPage,
-  setSkipPage,
-  setTakePage,
-  totalPage,
-  takePage,
-}: any) => {
-  if (skipPage === 0) skipPage = 1;
-
+  currentPage,
+  setCurrentPage,
+  findTake,
+  pageLength,
+  takeValue,
+}: {
+  findTake: (val: number) => void;
+  findSkip: (val: number) => void;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+  takeValue: number;
+}) => {
   return (
     <div className="row justify-content-between">
       <div className="col-auto">
@@ -308,14 +320,14 @@ const Footer = ({
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {takePage}
+            {takeValue}
           </button>
           <ul className="dropdown-menu">
             <li>
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(10);
+                  findTake(10);
                 }}
               >
                 10
@@ -325,22 +337,21 @@ const Footer = ({
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(50);
+                  findTake(50);
                 }}
               >
                 50
               </button>
             </li>
             <li>
-              {/* <button className="dropdown-item">Hapus</button> */}
               <input
                 type="number"
-                value={takePage}
+                value={takeValue}
                 className="form-control py-2"
                 placeholder="Nilai Custom"
                 min={0}
                 onChange={(e) => {
-                  setTakePage(parseInt(e.target.value));
+                  findTake(parseInt(e.target.value));
                 }}
               />
             </li>
@@ -349,13 +360,10 @@ const Footer = ({
       </div>
       <div className="col-auto">
         <Pagination
-          total={totalPage()}
-          current={skipPage}
+          total={pageLength}
+          current={currentPage}
           maxLength={5}
-          onPageChange={(e) => {
-            if (e === 1) e = 0;
-            setSkipPage(e);
-          }}
+          onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
     </div>
