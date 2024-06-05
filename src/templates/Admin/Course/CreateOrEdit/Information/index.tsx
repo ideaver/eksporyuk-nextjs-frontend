@@ -1,5 +1,8 @@
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { CourseLevelEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  AffiliateCommissionTypeEnum,
+  CourseLevelEnum,
+} from "@/app/service/graphql/gen/graphql";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -33,6 +36,12 @@ const ClassInformation = ({}) => {
     setInputClassPrice,
     inputClassLevel,
     setInputClassLevel,
+    inputClassDiscountPrice,
+    setInputClassDiscountPrice,
+    inputCourseAffiliateCommission,
+    setInputCourseAffiliateCommission,
+    inputAffilaiteCommissionType,
+    setInputAffilaiteCommissionType,
   } = useInformationViewModel();
 
   const { loadOptions } = useMentorsDropdown();
@@ -88,14 +97,15 @@ const ClassInformation = ({}) => {
           }}
         />
         <h5 className="text-muted mt-3">Video harus berasal dari Youtube</h5>
-        <h5 className="required mt-5">Author</h5>
+        {/* removed and might be use for future use */}
+        {/* <h5 className="required mt-5">Author</h5>
         <TextField
           props={{
             value: inputClassAuthor,
             onChange: setInputClassAuthor,
           }}
         />
-        <h5 className="text-muted mt-3">Pembuat materi kelas</h5>
+        <h5 className="text-muted mt-3">Pembuat materi kelas</h5> */}
         <h5 className="required mt-5">Mentor</h5>
         {/* TODO Create Selected Mentor */}
         {selectedMentor &&
@@ -129,26 +139,99 @@ const ClassInformation = ({}) => {
             addMentor(value as OptionType);
           }}
         ></AsyncPaginate>
-        <h5 className="required mt-5">Harga Kelas</h5>
-        <div className="input-group">
-          <span className="input-group-text" id="price-field">
-            Rp
-          </span>
-          <CurrencyInput
-            className="form-control"
-            id="price-field"
-            name="price"
-            placeholder="Masukan Harga (Rp)"
-            intlConfig={{ locale: "id-ID" }}
-            defaultValue={0}
-            value={inputClassPrice as string}
-            decimalsLimit={2}
-            onValueChange={(value, name, values) => {
-              if (typeof setInputClassPrice === "function") {
-                setInputClassPrice(value ?? "");
-              }
-            }}
-          />
+        <div className="row">
+          <div className="col">
+            {" "}
+            <h5 className="required mt-5">Harga Kelas</h5>
+            <div className="input-group">
+              <span className="input-group-text" id="price-field">
+                Rp
+              </span>
+              <CurrencyInput
+                className="form-control"
+                id="price-field"
+                name="price"
+                placeholder="Masukan Harga (Rp)"
+                intlConfig={{ locale: "id-ID" }}
+                defaultValue={0}
+                value={inputClassPrice as string}
+                decimalsLimit={2}
+                onValueChange={(value, name, values) => {
+                  if (typeof setInputClassPrice === "function") {
+                    setInputClassPrice(value ?? "");
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <div className="col">
+            <h5 className="mt-5">Harga Diskon</h5>
+            <div className="input-group">
+              <span className="input-group-text" id="price-field">
+                Rp
+              </span>
+              <CurrencyInput
+                className="form-control"
+                id="price-field"
+                name="price"
+                placeholder="Masukan Harga (Rp)"
+                intlConfig={{ locale: "id-ID" }}
+                defaultValue={0}
+                value={inputClassDiscountPrice as string}
+                decimalsLimit={2}
+                onValueChange={(value, name, values) => {
+                  if (typeof setInputClassDiscountPrice === "function") {
+                    setInputClassDiscountPrice(value ?? "");
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <h5 className="required mt-5">Tipe Afiliasi Komisi</h5>
+            <Dropdown
+              value={inputAffilaiteCommissionType}
+              options={[
+                { value: AffiliateCommissionTypeEnum.Amount, label: "Jumlah" },
+                {
+                  value: AffiliateCommissionTypeEnum.Percentage,
+                  label: "Persentasi",
+                },
+              ]}
+              onValueChange={(value) => {
+                if (typeof setInputAffilaiteCommissionType === "function") {
+                  setInputAffilaiteCommissionType(
+                    value as AffiliateCommissionTypeEnum
+                  );
+                }
+              }}
+            ></Dropdown>
+          </div>
+          <div className="col">
+            <h5 className="required mt-5">Harga Afiliasi Komisi</h5>
+            <div className="input-group">
+              <span className="input-group-text" id="price-field">
+                {inputAffilaiteCommissionType === "AMOUNT" ? "Rp" : "%"}
+              </span>
+              <CurrencyInput
+                className="form-control"
+                id="price-field"
+                name="price"
+                placeholder="Masukan Komisi (Rp)"
+                intlConfig={{ locale: "id-ID" }}
+                defaultValue={0}
+                value={inputCourseAffiliateCommission as string}
+                decimalsLimit={2}
+                onValueChange={(value, name, values) => {
+                  if (typeof setInputCourseAffiliateCommission === "function") {
+                    setInputCourseAffiliateCommission(value ?? "");
+                  }
+                }}
+              />
+            </div>
+          </div>
         </div>
         <h5 className="mt-5">Tingkat Kesulitan</h5>
         <Dropdown

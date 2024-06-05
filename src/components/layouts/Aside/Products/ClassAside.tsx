@@ -23,6 +23,8 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
     handlePrevious,
     isLoading,
     createCourseError,
+    handleCourseTypeChange,
+    courseType,
   } = useClassViewModel();
   const router = useRouter();
 
@@ -200,23 +202,70 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
                 }
               ></Dropdown>
               <p className="text-muted fw-bold mt-5">Atur Status</p>
-              <h3 className="mb-5 mt-5">Durasi Kelas</h3>
+              <h3 className="mb-5 mt-5">Tipe Kelas</h3>
               <Dropdown
                 options={[
                   {
-                    // value: CourseDurationTypeEnum.ThreeMonths,
-                    value: 2,
-                    label: "3 Bulan",
+                    value: "subscription",
+                    label: "Langganan",
                   },
-                  { value: 2, label: "6 Bulan" },
-                  {
-                    value: 2,
-                    label: "12 Bulan",
-                  },
+                  { value: "one-time", label: "Sekali Beli" },
                 ]}
-                value={duration}
-                onValueChange={(value) => handleDurationChange(value as number)}
+                value={courseType}
+                onValueChange={(value) =>
+                  handleCourseTypeChange(value as "subscription" | "one-time")
+                }
               ></Dropdown>
+              {courseType === "subscription" && (
+                <>
+                  <h3 className="mb-5 mt-5">Durasi Kelas</h3>
+
+                  <div className="dropdown">
+                    <button
+                      className="form form-control form-select text-start"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      {duration} Hari
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            handleDurationChange(100);
+                          }}
+                        >
+                          3 Bulan (100 Hari)
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            handleDurationChange(200);
+                          }}
+                        >
+                          6 Bulan (200 Hari)
+                        </button>
+                      </li>
+                      <li>
+                        <input
+                          type="number"
+                          value={duration}
+                          className="form-control py-2"
+                          placeholder="Nilai Custom (Hari)"
+                          min={0}
+                          onChange={(e) => {
+                            handleDurationChange(parseInt(e.target.value));
+                          }}
+                        />
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              )}
             </KTCardBody>
           </KTCard>
         </div>
