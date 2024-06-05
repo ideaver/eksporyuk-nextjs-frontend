@@ -288,5 +288,13 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
         referralLinkId
       }
     }
+    affiliateCommission
+    certificateTemplate {
+      id
+      name
+      imagePath
+      filePath
+    }
+    affiliateCommissionType
   }
 }

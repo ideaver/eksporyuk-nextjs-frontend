@@ -1,6 +1,8 @@
 import {
+  AffiliateCommissionTypeEnum,
   // CourseDurationTypeEnum,
   CourseLevelEnum,
+  CourseStatusEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
@@ -9,7 +11,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface CourseState {
   id?: string;
   thumbnail: string;
-  status: string;
+  status: CourseStatusEnum;
   courseName: string;
   classDescription: string;
   introVideo: string;
@@ -18,7 +20,10 @@ export interface CourseState {
   discountPrice?: string;
   courseLevel: CourseLevelEnum;
   courseDuration: number;
-  // courseDuration: CourseDurationTypeEnum;
+  affiliateCommission: number;
+  affiliateCommissionType: AffiliateCommissionTypeEnum;
+  certificateTemplateId: number;
+  courseType: "subscription" | "one-time";
   objective: string[];
   courseMentor: OptionType[] | undefined;
   sections: ICourseSectionData[];
@@ -28,15 +33,19 @@ export interface CourseState {
 const initialState: CourseState = {
   id: "",
   thumbnail: "/media/avatars/blank.png",
-  status: "draft",
+  status: CourseStatusEnum.Published,
   courseName: "",
   classDescription: "",
   introVideo: "",
   courseAuthor: "",
   price: "",
   discountPrice: "",
+  courseType: "subscription",
   courseLevel: CourseLevelEnum.Beginner,
-  courseDuration: 2,
+  courseDuration: 100,
+  affiliateCommission: 100,
+  affiliateCommissionType: AffiliateCommissionTypeEnum.Amount,
+  certificateTemplateId: 0,
   objective: [],
   courseMentor: [],
   sections: [],
@@ -54,7 +63,7 @@ export const courseSlice = createSlice({
     changeThumbnail: (state, action: PayloadAction<string>) => {
       state.thumbnail = action.payload;
     },
-    changeStatus: (state, action: PayloadAction<string>) => {
+    changeStatus: (state, action: PayloadAction<CourseStatusEnum>) => {
       state.status = action.payload;
     },
     changeCourseName: (state, action: PayloadAction<string>) => {
@@ -78,12 +87,26 @@ export const courseSlice = createSlice({
     changeCourseLevel: (state, action: PayloadAction<CourseLevelEnum>) => {
       state.courseLevel = action.payload;
     },
-    changeCourseDuration: (
-      state,
-      // ini kuganti mas
-      action: PayloadAction<number>
-    ) => {
+    changeCourseDuration: (state, action: PayloadAction<number>) => {
       state.courseDuration = action.payload;
+    },
+    changeAffiliateCommission: (state, action: PayloadAction<number>) => {
+      state.affiliateCommission = action.payload;
+    },
+    changeAffiliateCommissionType: (
+      state,
+      action: PayloadAction<AffiliateCommissionTypeEnum>
+    ) => {
+      state.affiliateCommissionType = action.payload;
+    },
+    changeCertificateTemplateId: (state, action: PayloadAction<number>) => {
+      state.certificateTemplateId = action.payload;
+    },
+    changeCourseType: (
+      state,
+      action: PayloadAction<"subscription" | "one-time">
+    ) => {
+      state.courseType = action.payload;
     },
     changeObjective: (state, action: PayloadAction<string[]>) => {
       state.objective = action.payload;
@@ -120,6 +143,10 @@ export const {
   changeCourseMentor,
   changeCourseDuration,
   editCourse,
+  changeCourseType,
+  changeAffiliateCommission,
+  changeAffiliateCommissionType,
+  changeCertificateTemplateId,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;
