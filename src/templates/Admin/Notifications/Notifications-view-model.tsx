@@ -119,7 +119,49 @@ const useCheckbox = (
   };
 };
 
+// Pagination
+const usePagination = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [findSkip, setFindSkip] = useState(0);
+  const [findTake, setFindTake] = useState(10);
+  const notifLength = useNotificationFindManyQuery();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setFindSkip((page - 1) * findTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (notifLength.data?.notificationFindMany?.length ?? 0) / findTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    notifLength,
+  };
+};
+
 const useNotificationsViewModel = () => {
+  const {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    notifLength,
+  } = usePagination();
+
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchNotification, setSearchNotification] = useState<string>("");
@@ -129,8 +171,8 @@ const useNotificationsViewModel = () => {
   // Querying process
   const notificationFindMany = useNotificationFindManyQuery({
     variables: {
-      take: Number(takePage),
-      skip: skipPage,
+      take: parseInt(findTake.toString()),
+      skip: findSkip,
       orderBy: [
         {
           createdAt: dateOrderBy === "asc" ? SortOrder.Asc : SortOrder.Desc,
@@ -162,13 +204,6 @@ const useNotificationsViewModel = () => {
     },
   });
 
-  // Calculating total page
-  const calculateTotalPage = () => {
-    return Math.ceil(
-      (notificationFindMany.data?.notificationFindMany?.length ?? 0) / takePage
-    );
-  };
-
   // Checkbox stuff
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(notificationFindMany);
@@ -188,6 +223,10 @@ const useNotificationsViewModel = () => {
     handleSelectAllCheck,
     setDateOrderBy,
     setCompletionStatus,
+    currentPage,
+    handlePageChange,
+    findTake,
+    setFindTake,
   };
 };
 
