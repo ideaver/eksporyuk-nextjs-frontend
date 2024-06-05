@@ -5,24 +5,28 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
 
 const Mailketing = () => {
   const {
     emailName,
     emailAddress,
-    autoCapture,
     sendEmail,
     sendSubject,
     sendMessage,
     setEmailName,
     setEmailAddress,
-    setAutoCapture,
     setSendEmail,
     setSendSubject,
     setSendMessage,
     isLoading,
     setIsLoading,
-    handleMailketingSettingChange,
+    handleMailketingSend,
+    userRole,
+    setUserRole,
+    sendOption,
+    setSendOption,
   } = useMailketingViewModel();
   return (
     <>
@@ -62,49 +66,127 @@ const Mailketing = () => {
               Nama yang akan ditampilkan sebagai pengirim e-mail
             </h5>
             <h4>Alamat E-Mail Pengirim</h4>
-            <TextField classNames="mb-1" placeholder="Masukan alamat e-mail" />
+            <TextField
+              classNames="mb-1"
+              placeholder="Masukan alamat e-mail"
+              props={{
+                value: emailAddress,
+                onChange: (e: any) => {
+                  setEmailAddress(e.target.value);
+                },
+              }}
+            />
             <h5 className="text-muted mb-10">Alamat e-mail pengirim</h5>
-            <h4 className="">
-              Auto Capture Register WP{" "}
-              <KTIcon
-                iconName="arrow-right"
-                className="text-dark"
-                iconType="solid"
-              />{" "}
-              List Mailketing
-            </h4>
-            <TextField classNames="mb-1" placeholder="Masukan nama e-mail" />
-            <h5 className="text-muted mb-10">
-              Setiap pengguna baru yang terdaftar akan tersimpan di list ini
-            </h5>
-            <div className="d-flex justify-content-end">
-              <Buttons onClick={handleMailketingSettingChange}>
-                Simpan Pengaturan
-              </Buttons>
-            </div>
           </KTCardBody>
         </KTCard>
 
         <KTCard>
           <KTCardBody>
-            <h3 className="fw-bold">Test Mailketing</h3>
+            <h3 className="fw-bold">Mailketing</h3>
             <h5 className="mb-10 text-muted">
-              Test integrasi mailketing dengan mengirimkan e-mail
+              Mailketing dengan mengirimkan e-mail
             </h5>
-            <h4>Kirim Ke</h4>
-            <TextField
-              classNames="mb-10"
-              placeholder="Masukan e-mail"
-              props={{
-                value: sendEmail,
-                onChange: (e: any) => {
-                  setSendEmail(e.target.value);
-                },
-              }}
-            />
+            <h4>
+              Kirim Ke{" "}
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  defaultChecked
+                  name="inlineRadioOptions"
+                  id="inlineRadio1"
+                  value="email"
+                  onChange={(e) => {
+                    setSendOption(e.target.value);
+                  }}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio1">
+                  E-mail
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="inlineRadioOptions"
+                  id="inlineRadio2"
+                  value="role"
+                  onChange={(e) => {
+                    setSendOption(e.target.value);
+                  }}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio2">
+                  Role
+                </label>
+              </div>
+            </h4>
+            {sendOption === "email" ? (
+              <>
+                {" "}
+                {sendEmail.map((value, index) => {
+                  return (
+                    <div className="d-flex mt-5" key={index}>
+                      <div className="w-100">
+                        <TextField
+                          placeholder="Jhondoe@gmail.com"
+                          props={{
+                            value: value,
+                            onChange: (e: any) => {
+                              setSendEmail((prev) =>
+                                prev.map((val, i) =>
+                                  i === index ? e.target.value : val
+                                )
+                              );
+                            },
+                          }}
+                        ></TextField>
+                      </div>
+                      <div className="ms-5">
+                        <Buttons
+                          icon="cross"
+                          buttonColor="danger"
+                          showIcon={true}
+                          onClick={() =>
+                            setSendEmail((prev) =>
+                              prev.filter((e, i) => i != index)
+                            )
+                          }
+                        ></Buttons>
+                      </div>
+                    </div>
+                  );
+                })}
+                <Buttons
+                  showIcon={true}
+                  mode="light"
+                  classNames="mt-5 mb-5"
+                  onClick={() => {
+                    setSendEmail((prev) => [...prev, ""]);
+                  }}
+                >
+                  Tambahkan E-mail
+                </Buttons>
+              </>
+            ) : (
+              <div className="mb-5 mt-3">
+                <Dropdown
+                  value={userRole}
+                  options={[
+                    { value: UserRoleEnum.Student, label: "Student" },
+                    { value: UserRoleEnum.Admin, label: "Admin" },
+                    { value: UserRoleEnum.Mentor, label: "Mentor" },
+                    { value: UserRoleEnum.Affiliator, label: "Affiliator" },
+                  ]}
+                  onValueChange={(value) => {
+                    setUserRole(value as UserRoleEnum);
+                  }}
+                />
+              </div>
+            )}
+
             <h4>Subject</h4>
             <TextField
-              classNames="mb-10"
+              classNames="mb-5"
               placeholder="Masukan subject"
               props={{
                 value: sendSubject,
@@ -126,7 +208,7 @@ const Mailketing = () => {
             />
           </KTCardBody>
           <div className="d-flex justify-content-end">
-            <Buttons>Kirim Test E-mail</Buttons>
+            <Buttons onClick={handleMailketingSend}>Kirim E-mail</Buttons>
           </div>
         </KTCard>
       </LoadingOverlayWrapper>
