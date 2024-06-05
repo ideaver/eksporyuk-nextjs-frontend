@@ -11,9 +11,9 @@ import {
 import { RootState } from "@/app/store/store";
 import {
   changeCourseDuration,
+  changeCourseType,
   changeStatus,
   changeThumbnail,
-  resetCourse,
 } from "@/features/reducers/course/courseReducer";
 import { IResourceData } from "@/types/contents/course/IResourceData";
 import {
@@ -21,7 +21,7 @@ import {
   ILessonVideoContent,
 } from "@/types/contents/products/ILessonData";
 import { ApolloError } from "@apollo/client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,18 +41,19 @@ const stringToFile = (dataUrl: string, filename: string): File => {
 
 const convertFile = async (file: any, session: any, filename: string) => {
   const newFile = stringToFile(file, filename);
-  console.log(newFile);
   const response = await postDataAPI({
     endpoint: "upload/file",
     body: {
       file: newFile,
     },
     fields: {
-      userId: session?.user.id,
+      userId: session.user.id,
     },
     isMultipartRequest: true,
   });
-
+  if (response?.status === 404) {
+    await signOut();
+  }
   const url = response?.data;
   return url;
 };
@@ -64,10 +65,14 @@ const useCreateCourse = () => {
     useCourseCreateOneMutation();
   const [fileCreateOne] = useFileCreateOneMutation();
   const createCourse = async () => {
+    const randomName =
+      Math.random().toString(36).substring(2) +
+      Date.now().toString(36) +
+      ".png";
     const thumbnail = await convertFile(
       currentCourseSelector.thumbnail,
       session,
-      "img.png"
+      randomName
     );
     const courseIntro = fileCreateOne({
       variables: {
@@ -204,6 +209,8 @@ const useCreateCourse = () => {
         },
         basePrice: parseInt(currentCourseSelector.price),
         level: currentCourseSelector.courseLevel,
+        affiliateCommission: currentCourseSelector.affiliateCommission,
+        affiliateCommissionType: currentCourseSelector.affiliateCommissionType,
         objective: {
           set: currentCourseSelector.objective,
         },
@@ -216,8 +223,13 @@ const useCreateCourse = () => {
     createCourseMutation({
       variables: courseVariable,
     });
+    if (data !== undefined) {
+      Promise.resolve(data);
+    } else if (error !== undefined || data === undefined) {
+      Promise.reject(error);
+    }
   };
-  return { currentCourseSelector, createCourse, loading, error };
+  return { currentCourseSelector, createCourse, loading, error, data };
 };
 
 const useNavigation = () => {
@@ -255,7 +267,9 @@ const useNavigation = () => {
       try {
         await createCourse.createCourse();
         setIsLoading(false);
-        dispatch(resetCourse());
+        // dispatch(resetCourse());
+        console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
+        console.log("SUCCESS CREATED COURSE", createCourse.data);
         router.push(`/admin/courses`);
       } catch (error: any) {
         console.log("TERJADI ERROR DI:", (error as ApolloError).message);
@@ -279,6 +293,7 @@ const useClassViewModel = () => {
   const duration = useSelector(
     (state: RootState) => state.course.courseDuration
   );
+  const courseType = useSelector((state: RootState) => state.course.courseType);
   const { handleNext, handlePrevious, isLoading, createCourseError } =
     useNavigation();
 
@@ -299,6 +314,14 @@ const useClassViewModel = () => {
   const handleDurationChange = (duration: number) => {
     dispatch(changeCourseDuration(duration));
   };
+  const handleCourseTypeChange = (courseType: "subscription" | "one-time") => {
+    dispatch(changeCourseType(courseType));
+    if (courseType === "one-time") {
+      dispatch(changeCourseDuration(999999999999999));
+    } else {
+      dispatch(changeCourseDuration(2));
+    }
+  };
   // const handleDurationChange = (duration: CourseDurationTypeEnum) => {
   //   dispatch(changeCourseDuration(duration));
   // };
@@ -314,6 +337,8 @@ const useClassViewModel = () => {
     handlePrevious,
     isLoading,
     createCourseError,
+    handleCourseTypeChange,
+    courseType,
   };
 };
 
