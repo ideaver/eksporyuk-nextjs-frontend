@@ -1,8 +1,10 @@
 import {
+  CartItemTypeEnum,
   OrderFindManyQuery,
   OrderStatusEnum,
   QueryMode,
   SortOrder,
+  useExportOrderMutation,
   useOrderFindLengthQuery,
   useOrderFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -119,6 +121,19 @@ const useAdminOrderViewModel = () => {
   );
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>("all");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+  const [categoryOrderType, setCategoryOrderType] = useState<
+    CartItemTypeEnum | "all"
+  >("all");
+  const [isLoading, setIsloading] = useState(false);
+
+  const orderTypeOptions = [
+    { value: "all", label: "Semua Category" },
+    { value: CartItemTypeEnum.Membership, label: "Membership" },
+    { value: CartItemTypeEnum.Bundle, label: "Bundle" },
+    { value: CartItemTypeEnum.Course, label: "Course" },
+    { value: CartItemTypeEnum.Product, label: "Product" },
+    { value: CartItemTypeEnum.Service, label: "Service" },
+  ];
 
   const orderFindMany = useOrderFindManyQuery({
     variables: {
@@ -256,18 +271,25 @@ const useAdminOrderViewModel = () => {
       },
     },
   });
+  const [exportOrder] = useExportOrderMutation();
 
-  console.log(orderFindMany.data?.orderFindMany);
+  // console.log(orderFindMany.data?.orderFindMany);
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(orderFindMany);
 
-  const [exportModalState, setExportModalState] = useState<any>({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
+  const [exportModalState, setExportModalState] = useState<any>([
+    new Date(),
+    new Date(),
+  ]);
 
   return {
+    isLoading,
+    setIsloading,
+    exportOrder,
+    categoryOrderType,
+    setCategoryOrderType,
+    orderTypeOptions,
     orderBy,
     setOrderBy,
     orderFindMany,
