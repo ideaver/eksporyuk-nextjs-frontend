@@ -10,6 +10,7 @@ import {
   SortOrder,
   useProductServiceDeleteOneMutation,
   useProductServiceDeleteManyMutation,
+  ProductServiceCategoryTypeEnum
 } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -127,6 +128,8 @@ const useProductsViewModel = () => {
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchProduct, setSearchProduct] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+  const [serviceType, setServiceType] = useState<any>(null);
+  const [status, setStatus] = useState(null);
 
   // Graphql
   const [productServiceDeleteOneMutation] = useProductServiceDeleteOneMutation();
@@ -198,6 +201,12 @@ const useProductsViewModel = () => {
           contains: searchProduct,
           mode: QueryMode.Insensitive,
         },
+        productServiceCategory: {
+          equals: serviceType,
+        },
+        isActive: {
+          equals: status,
+        }
       },
     },
   });
@@ -230,6 +239,8 @@ const useProductsViewModel = () => {
     productsLength,
     onDeleteOne,
     onDeleteMany,
+    setServiceType,
+    setStatus,
   };
 };
 

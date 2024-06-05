@@ -48,14 +48,14 @@ const CoursePage = ({}) => {
     productsLength,
     orderBy,
     setOrderBy,
+    setServiceType,
+    setStatus,
   } = useProductsViewModel();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   let productIds: number[] = [];
 
   productIds = checkedItems.filter((item) => item.value).map((item) => item.id);
-
-  console.log(productIds);
 
   return (
     <>
@@ -70,6 +70,8 @@ const CoursePage = ({}) => {
             }}
             productIds={productIds}
             setShowDeleteModal={setShowDeleteModal}
+            setServiceType={setServiceType}
+            setStatus={setStatus}
           />
           <Body
             data={productServiceFindMany}
@@ -102,6 +104,8 @@ const Head = ({
   setOrderBy,
   productIds,
   setShowDeleteModal,
+  setServiceType,
+  setStatus,
 }: any) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -123,11 +127,18 @@ const Head = ({
               { label: "Semua Tipe Produk", value: "all" },
               { label: "Legalitas", value: "LEGALITY" },
               { label: "Website", value: "WEBSITE" },
+              { label: "Lainnya", value: "OTHER" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={(e: any) => {
+              if (e === "all") {
+                setServiceType(null);
+              } else {
+                setServiceType(e);
+              }
+            }}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -137,7 +148,7 @@ const Head = ({
             ]}
             onValueChange={() => {}}
           />
-        </div>
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -146,7 +157,13 @@ const Head = ({
               { label: "Buka", value: "true" },
               { label: "Tutup", value: "" },
             ]}
-            onValueChange={() => {}}
+            onValueChange={(e: any) => {
+              if (e === "all") {
+                setStatus(null);
+              } else {
+                setStatus(e === "true");
+              }
+            }}
           />
         </div>
         <div className="col-lg-auto">
@@ -316,7 +333,10 @@ const Body = ({
                   </span>
                 </td>
                 <td className="align-middle text-end">
-                  <Badge label="Buka" badgeColor="success" />{" "}
+                  <Badge
+                    label={product.isActive ? "Buka" : "Tutup"}
+                    badgeColor={product.isActive ? "success" : "danger"}
+                  />{" "}
                 </td>
                 <td className="align-middle text-end ">
                   <div className="dropdown  ps-15 pe-0">
