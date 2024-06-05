@@ -12,6 +12,7 @@ import {
   useCouponFindOneQuery,
   useCouponUpdateOneMutation,
   usePlatformCouponFindManyQuery,
+  useCourseFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { changeCouponLoading } from "@/features/reducers/affiliators/couponReducer";
 import { QueryResult } from "@apollo/client";
@@ -28,6 +29,12 @@ import {
 } from "react";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
+import { OptionsOrGroups, GroupBase } from "react-select";
+
+type CourseOptionType = {
+  value: number;
+  label: string;
+};
 
 export const breadcrumbs = [
   {
@@ -44,6 +51,56 @@ export const breadcrumbs = [
   },
 ];
 
+export const useCoursesDropdown = () => {
+  const { data, refetch } = useCourseFindManyQuery({
+    variables: {
+      take: 10,
+    }
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const fetchedOptions =
+      response.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    return {
+      options: [...prevOptions, ...fetchedOptions],
+      hasMore: fetchedOptions.length > 0,
+    };
+  }
+
+  return { loadOptions };
+};
+
 export const useCouponForm = () => {
   const { couponFindMany } = useAdminCouponViewModel();
   const dispatch = useDispatch();
@@ -57,6 +114,7 @@ export const useCouponForm = () => {
   const [discount, setDiscount] = useState<string>("0");
   const [addDate, setAddDate] = useState(false);
   const [date, setDate] = useState<Date>(new Date("2025-05-01"));
+  const [connectCourse, setConnectCourse] = useState<number>();
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -95,6 +153,11 @@ export const useCouponForm = () => {
                 },
               },
             },
+            courseCoupon: {
+              connect: {
+                id: connectCourse,
+              }
+            }
           },
         },
       });
@@ -123,6 +186,8 @@ export const useCouponForm = () => {
     setAddDate,
     date,
     setDate,
+    connectCourse,
+    setConnectCourse,
   };
 };
 

@@ -1,0 +1,3 @@
+mutation ProductServiceDeleteMany($where: ProductServiceWhereInput) {
+  productServiceDeleteMany(where: $where)
+}

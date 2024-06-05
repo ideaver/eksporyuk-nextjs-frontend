@@ -1,15 +1,19 @@
 import {
+  AffiliateCommissionTypeEnum,
   CourseLevelEnum,
   QueryMode,
   useMentorFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
+  changeAffiliateCommission,
+  changeAffiliateCommissionType,
   changeClassDescription,
   changeCourseAuthor,
   changeCourseLevel,
   changeCourseMentor,
   changeCourseName,
+  changeDiscountPrice,
   changeIntroVideo,
   changePrice,
 } from "@/features/reducers/course/courseReducer";
@@ -124,26 +128,24 @@ export const AddMentorHandler = () => {
  * @returns
  */
 const useField = (
-  selector: (state: RootState) => string,
+  selector: (state: RootState) => string | number,
   action: (value: string) => UnknownAction
 ) => {
   const dispatch = useDispatch();
-  const initialValue = useSelector(selector);
-  const [value, setValue] = useState(initialValue);
+  const value = useSelector(selector);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement> | string
   ) => {
-    let value: string;
+    let newValue: string;
 
     if (typeof event === "string") {
-      value = event;
+      newValue = event;
     } else {
-      value = event.target.value;
+      newValue = event.target.value;
     }
 
-    setValue(value);
-    dispatch(action(value));
+    dispatch(action(newValue));
   };
   return [value, handleChange];
 };
@@ -154,17 +156,13 @@ const useField = (
  */
 const ClassDescriptionHandler = () => {
   const dispatch = useDispatch();
-  const currentClassDescription = useSelector(
+  const inputClassDescription = useSelector(
     (state: RootState) => state.course.classDescription
   );
 
-  const [inputClassDescription, setInputClassDescription] = useState(
-    currentClassDescription
-  );
-
-  useEffect(() => {
-    dispatch(changeClassDescription(inputClassDescription));
-  }, [inputClassDescription, dispatch]);
+  const setInputClassDescription = (value: string) => {
+    dispatch(changeClassDescription(value));
+  };
 
   return { inputClassDescription, setInputClassDescription };
 };
@@ -180,7 +178,6 @@ const useInformationViewModel = () => {
     (state: RootState) => state.course.courseName,
     (value) => changeCourseName(value)
   );
-
   const [inputIntroVideo, setInputIntroVideo] = useField(
     (state: RootState) => state.course.introVideo,
     (value) => changeIntroVideo(value)
@@ -193,6 +190,21 @@ const useInformationViewModel = () => {
     (state: RootState) => state.course.price,
     (value) => changePrice(value)
   );
+  const [inputClassDiscountPrice, setInputClassDiscountPrice] = useField(
+    (state: RootState) => state.course.discountPrice ?? "",
+    (value) => changeDiscountPrice(value)
+  );
+  const [inputCourseAffiliateCommission, setInputCourseAffiliateCommission] =
+    useField(
+      (state: RootState) => state.course.affiliateCommission,
+      (value) => changeAffiliateCommission(parseInt(value))
+    );
+  const [inputAffilaiteCommissionType, setInputAffilaiteCommissionType] =
+    useField(
+      (state: RootState) => state.course.affiliateCommissionType,
+      (value) =>
+        changeAffiliateCommissionType(value as AffiliateCommissionTypeEnum)
+    );
   const [inputClassLevel, setInputClassLevel] = useField(
     (state: RootState) => state.course.courseLevel,
     (value) => changeCourseLevel(value as CourseLevelEnum)
@@ -210,6 +222,12 @@ const useInformationViewModel = () => {
     setInputClassPrice,
     inputClassLevel,
     setInputClassLevel,
+    inputCourseAffiliateCommission,
+    setInputCourseAffiliateCommission,
+    setInputClassDiscountPrice,
+    inputClassDiscountPrice,
+    inputAffilaiteCommissionType,
+    setInputAffilaiteCommissionType,
   };
 };
 

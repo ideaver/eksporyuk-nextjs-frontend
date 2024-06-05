@@ -1,0 +1,6 @@
+mutation ExportOrder($exportOrder: ExportDataOrderArgs!) {
+  exportOrder(exportOrder: $exportOrder) {
+    fileURL
+    totalDataExported
+  }
+}

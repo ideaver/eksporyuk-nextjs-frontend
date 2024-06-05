@@ -10,6 +10,7 @@ interface ServiceState {
   servicePortfolio: string[];
   serviceImages: { path: string, fileType: string }[];
   uploadImages: { path: string }[];
+  serviceDiscountCost: string;
 }
 
 const initialState: ServiceState = {
@@ -22,6 +23,7 @@ const initialState: ServiceState = {
   servicePortfolio: [],
   serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG"}],
   uploadImages: [{ path: "" }],
+  serviceDiscountCost: "",
 };
 
 export const serviceSlice = createSlice({
@@ -55,6 +57,9 @@ export const serviceSlice = createSlice({
     changeUploadImages: (state, action: PayloadAction<{ path: string }[]>) => {
       state.uploadImages = action.payload;
     },
+    changeServiceDiscountCost: (state, action: PayloadAction<string>) => {
+      state.serviceDiscountCost = action.payload;
+    }
   }
 });
 
@@ -68,6 +73,7 @@ export const {
   changeServiceImages,
   changeServicePortfolio,
   changeUploadImages,
+  changeServiceDiscountCost,
 } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { QueryResult } from "@apollo/client";
 
@@ -8,6 +8,9 @@ import {
   ProductServiceFindManyQuery,
   QueryMode,
   SortOrder,
+  useProductServiceDeleteOneMutation,
+  useProductServiceDeleteManyMutation,
+  ProductServiceCategoryTypeEnum
 } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -106,6 +109,8 @@ const usePagination = () => {
 };
 
 const useProductsViewModel = () => {
+  const router = useRouter();
+
   const {
     currentPage,
     setCurrentPage,
@@ -123,6 +128,63 @@ const useProductsViewModel = () => {
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchProduct, setSearchProduct] = useState<string>("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+  const [serviceType, setServiceType] = useState<any>(null);
+  const [status, setStatus] = useState(null);
+
+  // Graphql
+  const [productServiceDeleteOneMutation] = useProductServiceDeleteOneMutation();
+  const [productServiceDeleteManyMutation] = useProductServiceDeleteManyMutation();
+
+  // Mutation process
+  const handleProductServiceDeleteOneMutation = async (productId: number) => {
+    const data = await productServiceDeleteOneMutation({
+      variables: {
+        where: {
+          id: productId
+        }
+      }
+    });
+
+    return data;
+  }
+
+  const handleProductServiceDeleteManyMutation = async (productIds: number[]) => {
+    const data = await productServiceDeleteManyMutation({
+      variables: {
+        where: {
+          id: {
+            in: productIds,
+          }
+        }
+      }
+    });
+
+    return data;
+  };
+
+  const onDeleteOne = async (productId: number) => {
+    try {
+      const data = await handleProductServiceDeleteOneMutation(productId);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
+
+  const onDeleteMany = async (productIds: number[]) => {
+    try {
+      const data = await handleProductServiceDeleteManyMutation(productIds);
+      const result = data.data;
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      router.refresh();
+    }
+  };
 
   // Query process
   const productServiceFindMany = useProductServiceFindManyQuery({
@@ -139,6 +201,12 @@ const useProductsViewModel = () => {
           contains: searchProduct,
           mode: QueryMode.Insensitive,
         },
+        productServiceCategory: {
+          equals: serviceType,
+        },
+        isActive: {
+          equals: status,
+        }
       },
     },
   });
@@ -169,6 +237,10 @@ const useProductsViewModel = () => {
     setFindTake,
     handlePageChange,
     productsLength,
+    onDeleteOne,
+    onDeleteMany,
+    setServiceType,
+    setStatus,
   };
 };
 

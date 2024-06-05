@@ -1,0 +1,64 @@
+query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
+  membershipCategoryFindOne(where: $where) {
+    id
+    name
+    description
+    membershipType
+    durationDay
+    benefits
+    price
+    orderIndex
+    affiliateFirstCommission
+    affiliateCommission
+    createdAt
+    updatedAt
+    createdById
+    _count {
+      benefitCourses
+      memberships
+      onCartItems
+    }
+    memberships {
+      id
+      startDate
+      endDate
+      orderId
+      userId
+      membershipCategoryId
+    }
+    benefitCourses {
+      id
+      title
+      description
+      prerequisites
+      objective
+      outcome
+      startDate
+      endDate
+      maxEnrollment
+      deepLink
+      isCertificationProvided
+      basePrice
+      salePrice
+      affiliateCommission
+      createdAt
+      updatedAt
+      status
+      level
+      duration
+      categoryId
+      createdById
+      videoUrlId
+    }
+    createdBy {
+      user {
+        avatarImageId
+        email
+        id
+        name
+        username
+        phoneId
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+query MembershipCategoryFindLength(
+  $where: MembershipCategoryWhereInput
+  $orderBy: [MembershipCategoryOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  membershipCategoryFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+  }
+}

@@ -1,0 +1,15 @@
+mutation ProductServiceUpdateOne($data: ProductServiceUpdateInput!, $where: ProductServiceWhereUniqueInput!) {
+  productServiceUpdateOne(data: $data, where: $where) {
+    name
+    description
+    productServiceCategory
+    images {
+      path
+    }
+    basePrice
+    isActive
+    benefits
+    portofolio
+    salePrice
+  }
+}

@@ -1,0 +1,5 @@
+mutation MembershipCategoryDeleteOne(
+  $where: MembershipCategoryWhereUniqueInput!
+) {
+  membershipCategoryDeleteOne(where: $where)
+}
