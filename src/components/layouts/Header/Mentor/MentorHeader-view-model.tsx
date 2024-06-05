@@ -14,6 +14,10 @@ const useMentorHeaderViewModel = ({id, data}:IMentorheaderViewModel ) => {
         //   label: "Sertifikat",
         //   to: `/admin/mentors/detail/${id}/certificate`,
         // },
+        {
+          label: "Info Rekening",
+          to: `/admin/mentors/detail/${id}/informasi-rekening`,
+        },
       ];
 
       const breadcrumbs = [
