@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { QueryResult } from "@apollo/client";
+import { useRouter } from "next/router";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
@@ -218,6 +219,8 @@ const Body = ({
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
 }) => {
+  const router = useRouter();
+
   return (
     <>
       {data.error ? (
@@ -326,19 +329,21 @@ const Body = ({
                     >
                       Actions
                     </button>
-                    {/* <ul className="dropdown-menu">
-              <li>
-                <button className="dropdown-item" onClick={() => {}}>
-                  Kirim Pengaturan ulang kata sandi
-                </button>
-              </li>
-              <li>
-                <button className="dropdown-item">Edit</button>
-              </li>
-              <li>
-                <button className="dropdown-item">Hapus</button>
-              </li>
-            </ul> */}
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() =>
+                            router.push(`/admin/products/edit/${product.id}`)
+                          }
+                        >
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button className="dropdown-item">Hapus</button>
+                      </li>
+                    </ul>
                   </div>
                 </td>
               </KTTableBody>
