@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { QueryResult } from "@apollo/client";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
@@ -15,6 +16,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import DeleteProductModal from "./components/DeleteProductModal";
 
 import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
 import {
@@ -47,6 +49,13 @@ const CoursePage = ({}) => {
     orderBy,
     setOrderBy,
   } = useProductsViewModel();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  let productIds: number[] = [];
+
+  productIds = checkedItems.filter((item) => item.value).map((item) => item.id);
+
+  console.log(productIds);
 
   return (
     <>
@@ -59,6 +68,8 @@ const CoursePage = ({}) => {
             setOrderBy={(e: any) => {
               setOrderBy(e);
             }}
+            productIds={productIds}
+            setShowDeleteModal={setShowDeleteModal}
           />
           <Body
             data={productServiceFindMany}
@@ -66,6 +77,8 @@ const CoursePage = ({}) => {
             handleSingleCheck={handleSingleCheck}
             checkedItems={checkedItems}
             selectAll={selectAll}
+            setShowDeleteModal={setShowDeleteModal}
+            showDeleteModal={showDeleteModal}
           />
           <Footer
             pageLength={calculateTotalPage()}
@@ -83,7 +96,13 @@ const CoursePage = ({}) => {
   );
 };
 
-const Head = ({ onSearch, orderBy, setOrderBy }: any) => {
+const Head = ({
+  onSearch,
+  orderBy,
+  setOrderBy,
+  productIds,
+  setShowDeleteModal,
+}: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -144,64 +163,25 @@ const Head = ({ onSearch, orderBy, setOrderBy }: any) => {
           />
         </div>
         <div className="col-lg-auto">
-          <Buttons>
-            <Link href="/admin/products/create-service" className="text-white">
-              Tambah Service Baru
-            </Link>
-          </Buttons>
+          {productIds.length > 0 ? (
+            <button
+              className={`ms-auto d-inline btn btn-danger`}
+              onClick={() => setShowDeleteModal(true)}
+            >
+              Hapus Product
+            </button>
+          ) : (
+            <Buttons>
+              <Link
+                href="/admin/products/create-service"
+                className="text-white"
+              >
+                Tambah Service Baru
+              </Link>
+            </Buttons>
+          )}
         </div>
       </div>
-      <KTModal
-        dataBsTarget="kt_create_coupon_modalllllsss"
-        title="Tambah Kupon"
-        fade
-        modalCentered
-        footerContentCentered
-        onClose={() => {}}
-        modalSize="lg"
-        buttonClose={
-          <Buttons
-            buttonColor="secondary"
-            classNames="fw-bold"
-            data-bs-dismiss="modal"
-          >
-            Batal
-          </Buttons>
-        }
-        buttonSubmit={<Buttons classNames="fw-bold">Simpan</Buttons>}
-      >
-        <div>
-          <h4 className="required fw-bold text-gray-700">Pilih Kupon Utama</h4>
-          <Dropdown
-            styleType="solid"
-            props={{ id: "couponName" }}
-            options={[
-              { label: "EKSPORYUK", value: "mainCoupon1" },
-              { label: "Kupon Utama 2", value: "mainCoupon2" },
-            ]}
-            onValueChange={() => {}}
-          />
-          <p className="fw-bold text-gray-600 mt-3">
-            Pilih kupon utama yang dibuat oleh admin
-          </p>
-        </div>
-        <div>
-          <h4 className="required fw-bold text-gray-700">Kode Kupon</h4>
-          <TextField styleType="solid" placeholder="Masukkan Nama Kupon anda" />
-          <p className="fw-bold text-gray-600 mt-3">
-            Masukkan kode kupon yang ingin anda gunakan dan bagikan
-          </p>
-        </div>
-        <Alert
-          alertColor="warning"
-          mode="light"
-          label="Hanya bisa membuat 1 kupon dari setiap kupon utama. Kupon yang sudah anda buat tidak dapat diubah kembali."
-          title="PERHATIAN"
-          labelColor="dark"
-          border="dashed"
-          prefixIcon="shield-cross"
-        ></Alert>
-      </KTModal>
     </div>
   );
 };
@@ -212,17 +192,36 @@ const Body = ({
   handleSingleCheck,
   checkedItems,
   selectAll,
+  showDeleteModal,
+  setShowDeleteModal,
 }: {
   data: QueryResult<ProductServiceFindManyQuery>;
   handleSelectAllCheck: () => void;
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
+  showDeleteModal: boolean;
+  setShowDeleteModal: (index: boolean) => void;
 }) => {
+  const { setOrderBy, orderBy, setSearchProduct } = useProductsViewModel();
   const router = useRouter();
+
+  // const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productId, setProductId] = useState(0);
+
+  let productIds: number[] = [];
+
+  productIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
   return (
     <>
+      <DeleteProductModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        productId={productId}
+        productIds={productIds}
+      />
+
       {data.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">{data?.error.message}</h3>
@@ -238,7 +237,7 @@ const Body = ({
             fontWeight="bold"
             className="text-uppercase align-middle"
           >
-            <th className="min-w-375px">
+            <th className="min-w-150px">
               <CheckBoxInput
                 checked={selectAll}
                 name="check-all"
@@ -341,7 +340,15 @@ const Body = ({
                         </button>
                       </li>
                       <li>
-                        <button className="dropdown-item">Hapus</button>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            setShowDeleteModal(true);
+                            setProductId(product.id);
+                          }}
+                        >
+                          Hapus
+                        </button>
                       </li>
                     </ul>
                   </div>
