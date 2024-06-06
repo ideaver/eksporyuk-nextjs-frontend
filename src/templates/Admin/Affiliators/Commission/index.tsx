@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { QueryResult } from "@apollo/client";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 
-import { PageTitle } from "@/_metronic/layout/core";
 import useComissionViewModel, {
   formatToIDR,
   breadcrumbs,
 } from "./Comission-view-model";
 import { InvoiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import DetailComissionModal from "./components/DetailComissionModal";
 
+import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -17,7 +20,6 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
-import dynamic from "next/dynamic";
 
 interface ComissionPageProps {}
 
@@ -55,19 +57,17 @@ const CommissionPage = ({}: ComissionPageProps) => {
             />
           </div>
         </KTCardBody>
-        <Body 
-          data={invoiceFindMany}
-        />
+        <Body data={invoiceFindMany} />
         <Footer
-            pageLength={calculateTotalPage()}
-            currentPage={currentPage}
-            setCurrentPage={(val) => handlePageChange(val)}
-            findSkip={(val) => {}}
-            findTake={(val) => {
-              setFindTake(val);
-            }}
-            takeValue={findTake}
-          />
+          pageLength={calculateTotalPage()}
+          currentPage={currentPage}
+          setCurrentPage={(val) => handlePageChange(val)}
+          findSkip={(val) => {}}
+          findTake={(val) => {
+            setFindTake(val);
+          }}
+          takeValue={findTake}
+        />
       </KTCard>
     </>
   );
@@ -125,8 +125,16 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
 };
 
 const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [commisionId, setComissionId] = useState(0);
+
   return (
     <div className="table-responsive mb-10 p-10">
+      <DetailComissionModal
+        show={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        id={commisionId}
+      />
       {data.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">{data.error.message}</h3>
@@ -164,8 +172,16 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
             return (
               <KTTableBody key={index}>
                 <td className="fw-bold">INV {user.orderId}</td>
-                <td className="fw-bold">
-                  <Link
+                <td
+                  className="fw-bold text-dark text-hover-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setShowDetailModal(true);
+                    setComissionId(user.id);
+                  }}
+                >
+                  {user.order?.enrollment?.[0].course?.title}
+                  {/* <Link
                     className="text-dark text-hover-primary"
                     href={
                       "commission/" +
@@ -174,7 +190,7 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
                     }
                   >
                     {user.order?.enrollment?.[0].course?.title}
-                  </Link>
+                  </Link> */}
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {
