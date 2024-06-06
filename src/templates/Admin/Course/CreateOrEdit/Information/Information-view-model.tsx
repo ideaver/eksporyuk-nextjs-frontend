@@ -14,6 +14,7 @@ import {
   changeCourseMentor,
   changeCourseName,
   changeDiscountPrice,
+  changeErrorMessage,
   changeIntroVideo,
   changePrice,
 } from "@/features/reducers/course/courseReducer";
@@ -174,6 +175,10 @@ const ClassDescriptionHandler = () => {
 const useInformationViewModel = () => {
   const { inputClassDescription, setInputClassDescription } =
     ClassDescriptionHandler();
+  const [inputErrorMessage, setErrorMessage] = useField(
+    (state: RootState) => state.course.errorMessage ?? "",
+    (value) => changeErrorMessage(value)
+  );
   const [inputClassName, setInputClassName] = useField(
     (state: RootState) => state.course.courseName,
     (value) => changeCourseName(value)
@@ -228,6 +233,8 @@ const useInformationViewModel = () => {
     inputClassDiscountPrice,
     inputAffilaiteCommissionType,
     setInputAffilaiteCommissionType,
+    inputErrorMessage,
+    setErrorMessage,
   };
 };
 

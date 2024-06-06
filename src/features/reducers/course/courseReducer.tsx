@@ -28,6 +28,7 @@ export interface CourseState {
   courseMentor: OptionType[] | undefined;
   sections: ICourseSectionData[];
   editSection?: ICourseSectionData;
+  errorMessage?: string;
 }
 
 const initialState: CourseState = {
@@ -50,6 +51,7 @@ const initialState: CourseState = {
   courseMentor: [],
   sections: [],
   editSection: undefined,
+  errorMessage: "",
 };
 
 export const courseSlice = createSlice({
@@ -123,6 +125,9 @@ export const courseSlice = createSlice({
     changeEditSection: (state, action: PayloadAction<ICourseSectionData>) => {
       state.editSection = action.payload;
     },
+    changeErrorMessage: (state, action: PayloadAction<string>) => {
+      state.errorMessage = action.payload;
+    },
   },
 });
 
@@ -147,6 +152,7 @@ export const {
   changeAffiliateCommission,
   changeAffiliateCommissionType,
   changeCertificateTemplateId,
+  changeErrorMessage,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;
