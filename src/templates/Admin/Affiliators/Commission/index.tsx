@@ -90,13 +90,13 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
             styleType="solid"
             options={[
               { label: "Semua Status", value: "all" },
-              { label: "Pending", value: "PENDING" },
-              { label: "Unpaid", value: "UNPAID" },
-              { label: "Halfpaid", value: "HALFPAID" },
-              { label: "Full Paid", value: "FULLPAID" },
-              { label: "Cancelled", value: "CANCELLED" },
-              { label: "Failed", value: "FAILED" },
-              { label: "Refunded", value: "REFUNDED" },
+              { label: "Tertunda", value: "PENDING" },
+              { label: "Belum Dibayar", value: "UNPAID" },
+              { label: "Setengah Dibayar", value: "HALFPAID" },
+              { label: "Lunas", value: "FULLPAID" },
+              { label: "Dibatalkan", value: "CANCELLED" },
+              { label: "Gagal", value: "FAILED" },
+              { label: "Di Refund", value: "REFUNDED" },
             ]}
             onValueChange={(e) => {
               setStatus(e);
@@ -146,31 +146,45 @@ const QueryComissionTable = ({ commissionData, error, loading }: any) => {
             <th className="fw-bold text-muted text-end min-w-100px">STATUS</th>
           </KTTableHead>
 
-          {commissionData.map((user: any, index: number) => (
-            <KTTableBody key={index}>
-              <td className="fw-bold">INV {user.idOrder}</td>
-              <td className="fw-bold">
-                <Link
-                  className="text-dark text-hover-primary"
-                  href={
-                    "commission/" +
-                    user.idOrder.toString().replace(" ", "") +
-                    "/detail-order/"
-                  }
-                >
-                  {user.namaKelas}
-                </Link>
-              </td>
-              <td className="fw-bold text-muted text-end">{user.pembeli}</td>
-              <td className="fw-bold text-muted text-end">{user.affiliasi}</td>
-              <td className="fw-bold text-muted text-end">
-                {formatToIDR(user.totalKomisi)}
-              </td>
-              <td className="text-end">
-                <Badge label={user.status} badgeColor={user.badgeColor} />
-              </td>
-            </KTTableBody>
-          ))}
+          {commissionData.map((user: any, index: number) => {
+            const statusMap: { [key: string]: string } = {
+              PENDING: "Tertunda",
+              UNPAID: "Belum Dibayar",
+              HALFPAID: "Setengah Dibayar",
+              FULLPAID: "Lunas",
+              CANCELLED: "Dibatalkan",
+              FAILED: "Gagal",
+              REFUNDED: "Di Refund",
+            };
+
+            return (
+              <KTTableBody key={index}>
+                <td className="fw-bold">INV {user.idOrder}</td>
+                <td className="fw-bold">
+                  <Link
+                    className="text-dark text-hover-primary"
+                    href={
+                      "commission/" +
+                      user.idOrder.toString().replace(" ", "") +
+                      "/detail-order/"
+                    }
+                  >
+                    {user.namaKelas}
+                  </Link>
+                </td>
+                <td className="fw-bold text-muted text-end">{user.pembeli}</td>
+                <td className="fw-bold text-muted text-end">
+                  {user.affiliasi}
+                </td>
+                <td className="fw-bold text-muted text-end">
+                  {formatToIDR(user.totalKomisi)}
+                </td>
+                <td className="text-end">
+                  <Badge label={statusMap[user.status || ""]} badgeColor={user.badgeColor} />
+                </td>
+              </KTTableBody>
+            );
+          })}
         </KTTable>
       )}
     </div>
