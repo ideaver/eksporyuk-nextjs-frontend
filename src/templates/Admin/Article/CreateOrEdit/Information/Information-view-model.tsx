@@ -1,6 +1,8 @@
 import {
+  AnnouncementTypeEnum,
   QueryMode,
   UserRoleEnum,
+  useAnnouncementCreateOneMutation,
   useArticleCategoryCreateOneMutation,
   useArticleCategoryFindManyQuery,
   useArticleCreateOneMutation,
@@ -23,6 +25,12 @@ import { useSession } from "next-auth/react";
 import { GroupBase, OptionsOrGroups } from "react-select";
 import useArticleViewModel from "../../Article-view-model";
 import { postDataAPI } from "@/app/service/api/rest-service";
+import {
+  changeAnnouncementType,
+  changeContentAnnouncement,
+  changeCourse,
+  changeTitleAnnouncement,
+} from "@/features/reducers/announcement/announcementReducer";
 
 export const breadcrumbs = [
   {
@@ -197,11 +205,98 @@ export const useArticleForm = () => {
   };
 };
 
+export const useAnnouncementForm = () => {
+  //parse to { id:value }
+  // const categoryArticle = articleState.category.map((e) => ({ id: e.value }));
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const announcementState = useSelector(
+    (state: RootState) => state.announcement
+  );
+  const [isLoadingAnnouncement, setIsLoadingAnnouncement] = useState(false);
+
+  const resetAnnouncementState = () => {
+    dispatch(changeTitleAnnouncement(""));
+    dispatch(changeContentAnnouncement(""));
+    dispatch(changeCourse(null));
+    dispatch(changeAnnouncementType(AnnouncementTypeEnum.Affiliate));
+  };
+
+  const [announcementCreateOne, response] = useAnnouncementCreateOneMutation({
+    onCompleted: () => {},
+  });
+
+  //validation schema for article form
+  const announcementSchema = Yup.object().shape({
+    titleAnnouncement: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("Title announcement diperlukan"),
+    contentAnnouncement: Yup.string()
+      .min(20, "Minimal 20 simbol")
+      .required("Content diperlukan"),
+  });
+
+  const announcementForm = useFormik({
+    initialValues: {
+      contentAnnouncement: announcementState.contentAnnouncement,
+      titleAnnouncement: announcementState.titleAnnouncement,
+    },
+    validationSchema: announcementSchema,
+    onSubmit: () => {},
+  });
+
+  const handleAnnouncementCreateOne = async () => {
+    if (announcementForm.isValid.valueOf() === false) return;
+    setIsLoadingAnnouncement(true);
+    try {
+      await announcementCreateOne({
+        variables: {
+          data: {
+            createdByAdmin: {
+              connect: {
+                id: session?.user.id,
+              },
+            },
+            content: announcementState.contentAnnouncement,
+            title: announcementState.titleAnnouncement,
+            type: announcementState.announcementType,
+            course: {
+              connect: {
+                id: announcementState?.course?.value,
+              },
+            },
+          },
+        },
+      });
+      resetAnnouncementState();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadingAnnouncement(false);
+      await router.push("/admin/articles");
+      router.reload();
+    }
+  };
+
+  return {
+    handleAnnouncementCreateOne,
+    isLoadingAnnouncement,
+    announcementForm,
+    response,
+    announcementCreateOne,
+    resetAnnouncementState,
+  };
+};
+
 const useInformationViewModel = () => {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
 
   const dispatch = useDispatch();
+  // article
   const [thumbnail, setThumbnail] = useState<string | null>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -300,13 +395,15 @@ const useInformationViewModel = () => {
   const targetOptions = [
     { value: UserRoleEnum.Student, label: "Student" },
     { value: UserRoleEnum.Affiliator, label: "Affiliator" },
-    { value: UserRoleEnum.Customer, label: "Customer" },
-    { value: UserRoleEnum.Mentor, label: "Mentor" },
-    { value: UserRoleEnum.Admin, label: "Admin" },
-    { value: UserRoleEnum.Superuser, label: "Superuser" },
   ];
 
+  //announcement
+  const handleConnectCourse = (course: { value: number; label: string }) => {
+    dispatch(changeCourse(course));
+  };
+
   return {
+    // article
     target,
     targetOptions,
     isLoading,
@@ -321,6 +418,8 @@ const useInformationViewModel = () => {
     thumbnail,
     fileImage,
     uploadFile,
+    // announcement
+    handleConnectCourse,
   };
 };
 

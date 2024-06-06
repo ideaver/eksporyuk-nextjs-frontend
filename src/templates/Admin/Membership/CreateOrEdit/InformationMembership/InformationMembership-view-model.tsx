@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import {
   changeBenefits,
+  changeCourses,
   changeDescription,
   changeDuration,
   changeMembershipType,
@@ -14,9 +15,13 @@ import {
 } from "@/features/reducers/membership/membershipReducer";
 import {
   MembershipTypeEnum,
+  QueryMode,
+  useCourseFindManyQuery,
   useMembershipCategoryCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useSession } from "next-auth/react";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import { CourseOptionType } from "@/templates/Admin/Affiliators/RewardManagement/Create/NewReward/NewReward-view-model";
 
 export const breadcrumbs = [
   {
@@ -33,6 +38,56 @@ export const breadcrumbs = [
   },
 ];
 
+export const useCoursesDropdown = () => {
+  const { data, refetch } = useCourseFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const fetchedOptions =
+      response.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    return {
+      options: [...prevOptions, ...fetchedOptions],
+      hasMore: fetchedOptions.length > 0,
+    };
+  }
+
+  return { loadOptions };
+};
+
 export const useMembershipForm = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -40,6 +95,7 @@ export const useMembershipForm = () => {
 
   const membershipState = useSelector((state: RootState) => state.memebrship);
   const dispatch = useDispatch();
+  const idCourses = membershipState.courses.map((e) => ({ id: e.value }));
 
   const [membershipCeateOne] = useMembershipCategoryCreateOneMutation();
 
@@ -50,6 +106,7 @@ export const useMembershipForm = () => {
     dispatch(changeBenefits(""));
     dispatch(changeDuration(0));
     dispatch(changeMembershipType(MembershipTypeEnum.ThreeMonth));
+    dispatch(changeCourses([]));
   };
 
   const membershipSchema = Yup.object().shape({
@@ -82,16 +139,19 @@ export const useMembershipForm = () => {
         await membershipCeateOne({
           variables: {
             data: {
+              createdBy: {
+                connect: {
+                  id: session?.user.id,
+                },
+              },
               name: membershipState.name,
               description: membershipState.description,
               benefits: membershipState.benefits,
               price: parseFloat(membershipState.price),
               membershipType: membershipState.membershipType,
               durationDay: membershipState.duration,
-              createdBy: {
-                connect: {
-                  id: session?.user.id,
-                },
+              benefitCourses: {
+                connect: idCourses,
               },
             },
           },
@@ -118,10 +178,22 @@ export const useMembershipForm = () => {
 
 const useInformationMembershipViewModel = () => {
   const dispatch = useDispatch();
+  const coursesState = useSelector(
+    (state: RootState) => state.memebrship.courses
+  );
   const handleChangeMembershipType = (type: MembershipTypeEnum) => {
     dispatch(changeMembershipType(type));
   };
+  const handleChangeCourses = (course: { value: number; label: string }) => {
+    dispatch(changeCourses([...coursesState, course]));
+  };
+  const handleDeleteCourses = (id: number) => {
+    dispatch(changeCourses(coursesState.filter((val) => val.value !== id)));
+  };
+
   return {
+    handleDeleteCourses,
+    handleChangeCourses,
     handleChangeMembershipType,
   };
 };

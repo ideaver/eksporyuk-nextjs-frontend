@@ -1,10 +1,12 @@
 import couponReducer from "@/features/reducers/affiliators/couponReducer";
 import rewardReducer from "@/features/reducers/affiliators/rewardReducer";
+import announcementReducer from "@/features/reducers/announcement/announcementReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import courseReducer from "@/features/reducers/course/courseReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
+import followupReducer from "@/features/reducers/followup/followupReducer";
 import membershipReducer from "@/features/reducers/membership/membershipReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
@@ -72,6 +74,16 @@ const membershipPersistConfig = {
   storage,
 };
 
+const followUpPersistConfig = {
+  key: "followUp",
+  storage,
+};
+
+const announcementPersistConfig = {
+  key: "announcement",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -126,6 +138,15 @@ const persistedMembershipReducer = persistReducer(
   membershipPersistConfig,
   membershipReducer
 );
+const persistedFollowUpReducer = persistReducer(
+  followUpPersistConfig,
+  followupReducer
+);
+
+const persistedAnnouncementReducer = persistReducer(
+  announcementPersistConfig,
+  announcementReducer
+);
 
 // rest of the code...
 export const store = configureStore({
@@ -142,6 +163,8 @@ export const store = configureStore({
     service: persistedServiceReducer,
     course: persistedCourseReducer,
     memebrship: persistedMembershipReducer,
+    followUp: persistedFollowUpReducer,
+    announcement: persistedAnnouncementReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

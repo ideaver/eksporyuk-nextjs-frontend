@@ -286,6 +286,15 @@ const useCreateCourse = () => {
         level: currentCourseSelector.courseLevel,
         affiliateCommission: currentCourseSelector.affiliateCommission,
         affiliateCommissionType: currentCourseSelector.affiliateCommissionType,
+        ...(currentCourseSelector.certificateTemplateId !== 0
+          ? {
+              certificateTemplate: {
+                connect: {
+                  id: currentCourseSelector.certificateTemplateId,
+                },
+              },
+            }
+          : {}),
         objective: {
           set: currentCourseSelector.objective,
         },
@@ -430,8 +439,8 @@ const useEditCourse = () => {
             },
             material: {
               connect: {
-                path: material
-              }
+                path: material,
+              },
             },
           },
         };
@@ -621,6 +630,15 @@ const useEditCourse = () => {
             objective: {
               set: currentCourseSelector.objective,
             },
+            ...(currentCourseSelector.certificateTemplateId !== 0
+              ? {
+                  certificateTemplate: {
+                    connect: {
+                      id: currentCourseSelector.certificateTemplateId,
+                    },
+                  },
+                }
+              : {}),
             images: {
               set: [
                 {
@@ -673,6 +691,7 @@ const useNavigation = () => {
 
   const pageMap: { [key: string]: string } = {
     "/information": "/sylabus",
+    "/sylabus": "/certificate",
   };
 
   const previousPageMap: { [key: string]: string } = Object.entries(
@@ -742,10 +761,10 @@ const useNavigation = () => {
             const res = await updateCourse.editCourse();
             if (res !== undefined) {
               setIsLoading(false);
-              // dispatch(resetCourse());
+              dispatch(resetCourse());
               console.log("SUCCSS UPDATED WITH ERROR", updateCourse.error);
               console.log("SUCCESS UPDATED COURSE", updateCourse.data);
-              // window.location.href = "/admin/courses";
+              window.location.href = "/admin/courses";
             } else {
               setIsLoading(false);
               console.log("TERJADI ERROR DI:", res);

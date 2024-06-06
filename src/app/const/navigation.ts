@@ -133,6 +133,11 @@ export const adminMenus: MenuSection[] = [
             to: "/admin/products",
             icon: "parcel",
           },
+          {
+            title: "Pengaturan Membership",
+            to: "/admin/subscriber",
+            icon: "classmates",
+          },
           // {
           //   title: "Semua Bundle",
           //   to: "/admin/products/bundle",
@@ -188,11 +193,6 @@ export const adminMenus: MenuSection[] = [
         title: "Manajemen Aktifitas",
         to: "/admin/activity",
         icon: "people",
-      },
-      {
-        title: "Manajemen Membership",
-        to: "/admin/subscriber",
-        icon: "classmates",
       },
     ],
     section: "Menu Admin",
