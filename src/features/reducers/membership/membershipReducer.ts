@@ -8,6 +8,7 @@ interface membershipState {
   membershipType: MembershipTypeEnum;
   price: string;
   benefits: string;
+  courses: { value: number; label: string }[];
 }
 const initialState: membershipState = {
   name: "",
@@ -16,6 +17,7 @@ const initialState: membershipState = {
   membershipType: MembershipTypeEnum.ThreeMonth,
   price: "0",
   benefits: "",
+  courses: [],
 };
 
 export const membershipSlice = createSlice({
@@ -43,6 +45,12 @@ export const membershipSlice = createSlice({
     changePrice: (state, action: PayloadAction<string>) => {
       state.price = action.payload;
     },
+    changeCourses: (
+      state,
+      action: PayloadAction<{ value: number; label: string }[]>
+    ) => {
+      state.courses = action.payload;
+    },
   },
 });
 
@@ -53,6 +61,7 @@ export const {
   changeBenefits,
   changePrice,
   changeDuration,
+  changeCourses,
 } = membershipSlice.actions;
 
 export default membershipSlice.reducer;

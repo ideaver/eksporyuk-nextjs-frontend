@@ -1,6 +1,7 @@
 import { PageTitle } from "@/_metronic/layout/core";
 import useInformationMembershipViewModel, {
   breadcrumbs,
+  useCoursesDropdown,
   useMembershipForm,
 } from "./InformationMembership-view-model";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
@@ -10,7 +11,7 @@ import clsx from "clsx";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import CurrencyInput from "react-currency-input-field";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   changeBenefits,
   changeDescription,
@@ -24,6 +25,8 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { RootState } from "@/app/store/store";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const InformationMembership = () => {
   const ReactQuill = useMemo(
@@ -39,7 +42,12 @@ const InformationMembership = () => {
     isLoading,
     setIsloading,
   } = useMembershipForm();
-  const { handleChangeMembershipType } = useInformationMembershipViewModel();
+  const { loadOptions } = useCoursesDropdown();
+  const {
+    handleChangeMembershipType,
+    handleChangeCourses,
+    handleDeleteCourses,
+  } = useInformationMembershipViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Membership</PageTitle>
@@ -196,6 +204,44 @@ const InformationMembership = () => {
               )}
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
+              </h5>
+              <h5 className="">Benefit Kelas</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {useSelector(
+                  (state: RootState) => state.memebrship.courses
+                )?.map((e, index) => {
+                  return (
+                    <div key={e.value}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          handleDeleteCourses(e.value);
+                        }}
+                        key={index}
+                      >
+                        {e.label}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <AsyncPaginate
+                className="mt-5"
+                isSearchable={true}
+                loadOptions={loadOptions}
+                onChange={(val) => {
+                  handleChangeCourses({
+                    value: val?.value as number,
+                    label: val?.label as string,
+                  });
+                }}
+              ></AsyncPaginate>
+
+              <h5 className="text-muted mt-2 mb-8">
+                Masukan benefit kelas ketika berlangganan
               </h5>
               <h5 className="required">Benefit</h5>
               <div
