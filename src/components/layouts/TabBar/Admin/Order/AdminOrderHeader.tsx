@@ -31,6 +31,7 @@ const AdminOrderLayout = ({
     setFollowUpTamplate,
     handleEditState,
     handleDeleteFollowUp,
+    handleSendFollowUp,
   } = useAdminOrderHeaderViewModel({ urlType, id, data });
 
   const router = useRouter();
@@ -79,6 +80,7 @@ const AdminOrderLayout = ({
           }}
           handleEditState={handleEditState}
           handleDeleteFollowUp={handleDeleteFollowUp}
+          linkAPIWhatsapp={handleSendFollowUp}
         />
         <ChangeOrderModal
           show={showOrderStatusModal}

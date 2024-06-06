@@ -3,7 +3,8 @@ import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { useState } from "react";
+import Link from "next/link";
+import { MouseEventHandler, useState } from "react";
 
 export const FollowUpModal = ({
   follupValues,
@@ -13,6 +14,7 @@ export const FollowUpModal = ({
   onChange,
   handleEditState,
   handleDeleteFollowUp,
+  linkAPIWhatsapp,
 }: {
   follupValues: string[] | null | undefined;
   selectedFollupValue: string;
@@ -23,6 +25,7 @@ export const FollowUpModal = ({
   onChange?: any;
   handleEditState?: any;
   handleDeleteFollowUp?: any;
+  linkAPIWhatsapp: () => string;
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -46,9 +49,14 @@ export const FollowUpModal = ({
         </Buttons>
       }
       buttonSubmit={
-        <Buttons data-bs-dismiss="modal" classNames="fw-bold">
+        <Link
+          // data-bs-dismiss="modal"
+          target="_blank"
+          href={`${linkAPIWhatsapp()}`}
+          className="fw-bold btn btn-primary"
+        >
           Kirim Follow-Up
-        </Buttons>
+        </Link>
       }
       footerContentCentered
       onClose={handleModalClose}

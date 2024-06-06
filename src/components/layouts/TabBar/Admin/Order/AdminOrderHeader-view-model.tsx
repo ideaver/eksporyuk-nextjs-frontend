@@ -16,6 +16,7 @@ import {
   changeId,
   changeName,
 } from "@/features/reducers/followup/followupReducer";
+import { useRouter } from "next/router";
 function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
   switch (status) {
     case OrderStatusEnum.Pending:
@@ -185,8 +186,8 @@ const useAdminOrderHeaderViewModel = ({
   id,
   data,
 }: IAdminOrderHeaderViewModel) => {
-  // edit state
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [showOrderStatusModal, setShowOrderStatusModal] = useState(false);
   const follupValues = ["follup-1", "follup-2", "follup-3"];
@@ -207,12 +208,7 @@ const useAdminOrderHeaderViewModel = ({
     const filterContent = followUpFindMany.data?.followUpFindMany?.filter(
       (e) => e.name == event.target.value
     )[0];
-    // const contentReplaced = filterContent?.content
-    //   ?.replace(/\[\[nama\]\]/g, `${data?.createdByUser.name}`)
-    //   .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(data?.createdAt))
-    //   .replace(/\[\[email\]\]/g, `${data?.createdByUser.email}`)
-    //   .replace(/\[\[nomor-telepon\]\]/g, `${data?.createdByUser.phoneId}`)
-    //   .replace(/\[\[kupon\]\]/g, `${data?.coupon?.affiliatorCoupon?.code}`);
+
     setFollowUpTamplate(filterContent?.content);
   };
 
@@ -251,6 +247,17 @@ const useAdminOrderHeaderViewModel = ({
     }
   };
   const [followUpDeleteOne] = useFollowUpDeleteOneMutation();
+  const handleSendFollowUp = () => {
+    const contentReplaced = followUpTamplate
+      ?.replace(/\[\[nama\]\]/g, `${data?.createdByUser.name}`)
+      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(data?.createdAt))
+      .replace(/\[\[email\]\]/g, `${data?.createdByUser.email}`)
+      .replace(/\[\[nomor-telepon\]\]/g, `${data?.createdByUser.phoneId}`)
+      .replace(/\[\[kupon\]\]/g, `${data?.coupon?.affiliatorCoupon?.code}`);
+    const encodedMessage = encodeURIComponent(contentReplaced as string);
+
+    return `https://api.whatsapp.com/send?phone=${data?.createdByUser.phoneId}&text=${encodedMessage}`;
+  };
 
   const handleDeleteFollowUp = async (name: string) => {
     const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
@@ -336,6 +343,7 @@ const useAdminOrderHeaderViewModel = ({
   ];
 
   return {
+    handleSendFollowUp,
     handleDeleteFollowUp,
     handleEditState,
     followUpTamplate,

@@ -45,6 +45,7 @@ const AffiliateLayout = ({ urlType, id }: IAffiliateHeaderViewModel) => {
           follupValues={follupValues}
           selectedFollupValue={selectedFollupValue}
           handleFollupChange={handleFollupChange}
+          linkAPIWhatsapp={() => ""}
         />
       </div>
       <div className="row gy-5 mb-5">
