@@ -1,6 +1,7 @@
 import { PageTitle } from "@/_metronic/layout/core";
 import useInformationViewModel, {
   breadcrumbs,
+  useAnnouncementForm,
   useArticleForm,
   useCategoriesDropdown,
   useCategoryForm,
@@ -18,6 +19,7 @@ import {
   TypeCategory,
   changeContent,
   changeTitle,
+  changeToogleForm,
 } from "@/features/reducers/articles/articlesReducer";
 import clsx from "clsx";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -26,13 +28,34 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { RootState } from "@/app/store/store";
 import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
+import {
+  changeContentAnnouncement,
+  changeTitleAnnouncement,
+} from "@/features/reducers/announcement/announcementReducer";
 
 const InformationPage = () => {
   const ReactQuill = useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
     []
   );
+  const router = useRouter();
   const dispatch = useDispatch();
+  const formToogle = useSelector(
+    (state: RootState) => state.article.toogleForm
+  );
+  const courseAnnouncement = useSelector(
+    (state: RootState) => state.announcement.course
+  );
+
+  const {
+    announcementForm,
+    response,
+    announcementCreateOne,
+    resetAnnouncementState,
+    handleAnnouncementCreateOne,
+    isLoadingAnnouncement,
+  } = useAnnouncementForm();
 
   const {
     thumbnail,
@@ -47,7 +70,10 @@ const InformationPage = () => {
     handleArticleCreateOne,
     targetOptions,
     target,
+    handleConnectCourse,
   } = useInformationViewModel();
+
+  const { loadOptions } = useCoursesDropdown();
 
   const { formik } = useArticleForm();
 
@@ -68,82 +94,251 @@ const InformationPage = () => {
             },
           }),
         }}
-        active={isLoading}
+        active={isLoading || isLoadingAnnouncement}
         spinner
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <div className="row gx-8">
-            <Aside
-              handleCategoryChange={handleCategoryChange}
-              category={category}
-              thumbnail={thumbnail}
-              handleFileChange={handleFileChange}
-              handleStatusChange={handleStatusChange}
-              status={status}
-            />
-            <div className="col-lg-8">
+        <div className="dropdown w-100 mb-5 text-end">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {formToogle}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  dispatch(changeToogleForm("Article"));
+                }}
+              >
+                Article
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  dispatch(changeToogleForm("Announcement"));
+                }}
+              >
+                Announcement
+              </button>
+            </li>
+          </ul>
+        </div>
+        {formToogle === "Article" ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <div className="row gx-8">
+              <Aside
+                handleCategoryChange={handleCategoryChange}
+                category={category}
+                thumbnail={thumbnail}
+                handleFileChange={handleFileChange}
+                handleStatusChange={handleStatusChange}
+                status={status}
+              />
+              <div className="col-lg-8">
+                <KTCard className="">
+                  <KTCardBody>
+                    <h3 className="mb-5">Tulis Artikel</h3>
+                    <h5 className="required">Judul Artikel</h5>
+                    <TextField
+                      placeholder="Masukan judul artikel"
+                      classNames={clsx(
+                        {
+                          "is-invalid":
+                            formik.touched.title && formik.errors.title,
+                        },
+                        {
+                          "is-valid":
+                            formik.touched.title && !formik.errors.title,
+                        }
+                      )}
+                      props={{
+                        ...formik.getFieldProps("title"),
+                        value: formik.values.title,
+                        onChange: (e: any) => {
+                          formik.setFieldValue("title", e.target.value);
+                          dispatch(changeTitle(e.target.value));
+                        },
+                      }}
+                    />
+                    {formik.touched.title && formik.errors.title && (
+                      <div className="fv-plugins-message-container">
+                        <span role="alert">{formik.errors.title}</span>
+                      </div>
+                    )}
+                    <h5 className="text-muted mt-3">Masukan judul artikel</h5>
+                    <h5 className="required mt-5">Target Artikel</h5>
+                    <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
+                      {target.map((e: any, index) => (
+                        <Buttons
+                          key={index}
+                          classNames="fit-content"
+                          icon="cross"
+                          buttonColor="secondary"
+                          showIcon
+                          onClick={() => {
+                            handleTargetChange(target.filter((v) => v !== e));
+                          }}
+                        >
+                          <span>{e}</span>
+                        </Buttons>
+                      ))}
+                    </div>
+
+                    <Dropdown
+                      options={targetOptions}
+                      onValueChange={(val) => {
+                        handleTargetChange([...target, val as UserRoleEnum]);
+                      }}
+                    />
+                    <h5 className="text-muted mt-3">Masukan target artikel</h5>
+
+                    <h5 className="required mt-5">Konten Artikel</h5>
+                    <div
+                      style={{
+                        height: "220px",
+                      }}
+                    >
+                      <ReactQuill
+                        modules={{
+                          toolbar: [
+                            [{ header: [1, 2, false] }],
+                            [
+                              "link",
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strike",
+                              "blockquote",
+                            ],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                            [{ align: [] }],
+                            ["clean"],
+                          ],
+                        }}
+                        theme="snow"
+                        value={formik.values.content}
+                        style={{ height: "70%" }}
+                        onChange={(e) => {
+                          formik.setFieldValue("content", e);
+                          dispatch(changeContent(e));
+                        }}
+                      />
+                    </div>
+
+                    {formik.touched.content && formik.errors.content && (
+                      <div className="fv-plugins-message-container">
+                        <span role="alert">{formik.errors.content}</span>
+                      </div>
+                    )}
+                    <h5 className="text-muted mt-3">Masukan konten artikel</h5>
+                  </KTCardBody>
+                </KTCard>
+
+                <div className="d-flex flex-end mt-6 gap-4">
+                  <Buttons
+                    buttonColor="secondary"
+                    onClick={() => {
+                      resetArticleState();
+                    }}
+                  >
+                    Batal
+                  </Buttons>
+                  <Buttons type="submit" onClick={handleArticleCreateOne}>
+                    Simpan
+                  </Buttons>
+                </div>
+              </div>
+            </div>
+          </form>
+        ) : (
+          <>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <KTCard className="">
                 <KTCardBody>
-                  <h3 className="mb-5">Tulis Artikel</h3>
-                  <h5 className="required">Judul Artikel</h5>
+                  <h3 className="mb-5">Tulis Announcement</h3>
+                  <h5 className="required">Judul Announcement</h5>
                   <TextField
-                    placeholder="Masukan judul artikel"
+                    placeholder="Masukan judul Announcement"
                     classNames={clsx(
                       {
                         "is-invalid":
-                          formik.touched.title && formik.errors.title,
+                          announcementForm.touched.titleAnnouncement &&
+                          announcementForm.errors.titleAnnouncement,
                       },
                       {
                         "is-valid":
-                          formik.touched.title && !formik.errors.title,
+                          announcementForm.touched.titleAnnouncement &&
+                          !announcementForm.errors.titleAnnouncement,
                       }
                     )}
                     props={{
-                      ...formik.getFieldProps("title"),
-                      value: formik.values.title,
+                      ...announcementForm.getFieldProps("titleAnnouncement"),
+                      value: announcementForm.values.titleAnnouncement,
                       onChange: (e: any) => {
-                        formik.setFieldValue("title", e.target.value);
-                        dispatch(changeTitle(e.target.value));
+                        announcementForm.setFieldValue(
+                          "titleAnnouncement",
+                          e.target.value
+                        );
+                        dispatch(changeTitleAnnouncement(e.target.value));
                       },
                     }}
                   />
-                  {formik.touched.title && formik.errors.title && (
-                    <div className="fv-plugins-message-container">
-                      <span role="alert">{formik.errors.title}</span>
-                    </div>
-                  )}
-                  <h5 className="text-muted mt-3">Masukan judul artikel</h5>
-                  <h5 className="required mt-5">Target Artikel</h5>
-                  <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-                    {target.map((e: any, index) => (
-                      <Buttons
-                        key={index}
-                        classNames="fit-content"
-                        icon="cross"
-                        buttonColor="secondary"
-                        showIcon
-                        onClick={() => {
-                          handleTargetChange(target.filter((v) => v !== e));
-                        }}
-                      >
-                        <span>{e}</span>
-                      </Buttons>
-                    ))}
-                  </div>
-
+                  {announcementForm.touched.titleAnnouncement &&
+                    announcementForm.errors.titleAnnouncement && (
+                      <div className="fv-plugins-message-container">
+                        <span role="alert">
+                          {announcementForm.errors.titleAnnouncement}
+                        </span>
+                      </div>
+                    )}
+                  <h5 className="text-muted mt-3">Masukan judul</h5>
+                  <h5 className="required mt-5">Tipe Announcement</h5>
                   <Dropdown
                     options={targetOptions}
                     onValueChange={(val) => {
                       handleTargetChange([...target, val as UserRoleEnum]);
                     }}
                   />
-                  <h5 className="text-muted mt-3">Masukan target artikel</h5>
+                  <h5 className="text-muted mt-3">Masukan tipe announcement</h5>
 
-                  <h5 className="required mt-5">Konten Artikel</h5>
+                  <h5 className="required">Hubungkan Kelas</h5>
+                  {courseAnnouncement?.label ? (
+                    <div className="d-flex mt-5">
+                      <div className="w-100">
+                        <TextField
+                          props={{
+                            disabled: true,
+                            value: courseAnnouncement.label,
+                          }}
+                        ></TextField>
+                      </div>
+                    </div>
+                  ) : null}
+                  <AsyncPaginate
+                    className="mt-5"
+                    isSearchable={true}
+                    loadOptions={loadOptions}
+                    onChange={(value) => {
+                      handleConnectCourse(value as any);
+                    }}
+                  ></AsyncPaginate>
+                  <h5 className="text-muted mt-3">Hubungkan dengan kelas</h5>
+
+                  <h5 className="required mt-5">Konten Announcement</h5>
                   <div
                     style={{
                       height: "220px",
@@ -167,40 +362,52 @@ const InformationPage = () => {
                         ],
                       }}
                       theme="snow"
-                      value={formik.values.content}
+                      value={announcementForm.values.contentAnnouncement}
                       style={{ height: "70%" }}
                       onChange={(e) => {
-                        formik.setFieldValue("content", e);
-                        dispatch(changeContent(e));
+                        announcementForm.setFieldValue(
+                          "contentAnnouncement",
+                          e
+                        );
+                        dispatch(changeContentAnnouncement(e));
                       }}
                     />
                   </div>
 
-                  {formik.touched.content && formik.errors.content && (
-                    <div className="fv-plugins-message-container">
-                      <span role="alert">{formik.errors.content}</span>
-                    </div>
-                  )}
-                  <h5 className="text-muted mt-3">Masukan konten artikel</h5>
+                  {announcementForm.touched.contentAnnouncement &&
+                    announcementForm.errors.contentAnnouncement && (
+                      <div className="fv-plugins-message-container">
+                        <span role="alert">
+                          {announcementForm.errors.contentAnnouncement}
+                        </span>
+                      </div>
+                    )}
+                  <h5 className="text-muted mt-3">
+                    Masukan konten announcement
+                  </h5>
                 </KTCardBody>
               </KTCard>
-
               <div className="d-flex flex-end mt-6 gap-4">
                 <Buttons
                   buttonColor="secondary"
                   onClick={() => {
-                    resetArticleState();
+                    resetAnnouncementState();
+                    router.back();
                   }}
                 >
                   Batal
                 </Buttons>
-                <Buttons type="submit" onClick={handleArticleCreateOne}>
+                <Buttons
+                  type="submit"
+                  disabled={!announcementForm.isValid.valueOf()}
+                  onClick={handleAnnouncementCreateOne}
+                >
                   Simpan
                 </Buttons>
               </div>
-            </div>
-          </div>
-        </form>
+            </form>
+          </>
+        )}
       </LoadingOverlayWrapper>
       <AddCategoryModal />
     </>

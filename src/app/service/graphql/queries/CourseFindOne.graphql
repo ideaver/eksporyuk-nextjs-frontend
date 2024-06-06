@@ -292,7 +292,6 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
     certificateTemplate {
       id
       name
-      imagePath
       filePath
     }
     affiliateCommissionType

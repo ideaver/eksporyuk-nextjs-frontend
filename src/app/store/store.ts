@@ -1,5 +1,6 @@
 import couponReducer from "@/features/reducers/affiliators/couponReducer";
 import rewardReducer from "@/features/reducers/affiliators/rewardReducer";
+import announcementReducer from "@/features/reducers/announcement/announcementReducer";
 import articlesReducer from "@/features/reducers/articles/articlesReducer";
 import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import courseReducer from "@/features/reducers/course/courseReducer";
@@ -72,6 +73,11 @@ const membershipPersistConfig = {
   storage,
 };
 
+const announcementPersistConfig = {
+  key: "announcement",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -127,6 +133,11 @@ const persistedMembershipReducer = persistReducer(
   membershipReducer
 );
 
+const persistedAnnouncementReducer = persistReducer(
+  announcementPersistConfig,
+  announcementReducer
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -142,6 +153,7 @@ export const store = configureStore({
     service: persistedServiceReducer,
     course: persistedCourseReducer,
     memebrship: persistedMembershipReducer,
+    announcement: persistedAnnouncementReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

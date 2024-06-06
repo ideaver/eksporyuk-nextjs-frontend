@@ -1,0 +1,35 @@
+query AnnouncementFindMany(
+  $where: AnnouncementWhereInput
+  $orderBy: [AnnouncementOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  announcementFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    type
+    createdByAdminId
+    createdByMentorId
+    courseId
+    createdByAdmin {
+      user {
+        email
+        id
+        name
+        phoneId
+        avatarImageId
+      }
+    }
+    course {
+      title
+    }
+  }
+}
