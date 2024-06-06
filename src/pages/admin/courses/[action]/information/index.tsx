@@ -138,13 +138,21 @@ const InformationPage: NextPage = () => {
 
   return (
     <>
-      {loading && (
-        <LoadingUI
-          error={isEdit ? error?.message : undefined}
-          loading={loading}
-        />
-      )}
-      {!loading && (
+      {isEdit ? (
+        <>
+          {loading && (
+            <LoadingUI
+              error={isEdit ? error?.message : undefined}
+              loading={loading}
+            />
+          )}
+          {!loading && (
+            <AsideProductLayout>
+              <ClassInformation />
+            </AsideProductLayout>
+          )}
+        </>
+      ) : (
         <AsideProductLayout>
           <ClassInformation />
         </AsideProductLayout>

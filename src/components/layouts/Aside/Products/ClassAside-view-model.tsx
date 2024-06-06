@@ -6,14 +6,17 @@ import {
   QuestionTypeEnum,
   useCourseCreateOneMutation,
   useFileCreateOneMutation,
+  useUserFindOneQuery,
   VisibilityEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
   changeCourseDuration,
   changeCourseType,
+  changeErrorMessage,
   changeStatus,
   changeThumbnail,
+  resetCourse,
 } from "@/features/reducers/course/courseReducer";
 import { IResourceData } from "@/types/contents/course/IResourceData";
 import {
@@ -47,13 +50,10 @@ const convertFile = async (file: any, session: any, filename: string) => {
       file: newFile,
     },
     fields: {
-      userId: session.user.id,
+      userId: session,
     },
     isMultipartRequest: true,
   });
-  if (response?.status === 404) {
-    await signOut();
-  }
   const url = response?.data;
   return url;
 };
@@ -61,17 +61,37 @@ const convertFile = async (file: any, session: any, filename: string) => {
 const useCreateCourse = () => {
   const currentCourseSelector = useSelector((state: RootState) => state.course);
   const { data: session, status } = useSession();
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useUserFindOneQuery({
+    variables: {
+      where: {
+        id: session?.user.id,
+      },
+    },
+  });
+
   const [createCourseMutation, { data, error, loading }] =
     useCourseCreateOneMutation();
   const [fileCreateOne] = useFileCreateOneMutation();
   const createCourse = async () => {
+    if (
+      !userLoading &&
+      (userError != undefined || userData?.userFindOne === null)
+    ) {
+      await signOut();
+      return Promise.reject("User not found");
+    }
+    console.log(userData?.userFindOne?.id);
     const randomName =
       Math.random().toString(36).substring(2) +
       Date.now().toString(36) +
       ".png";
     const thumbnail = await convertFile(
       currentCourseSelector.thumbnail,
-      session,
+      userData?.userFindOne?.id,
       randomName
     );
     const courseIntro = fileCreateOne({
@@ -117,7 +137,7 @@ const useCreateCourse = () => {
             console.log("INI FILE RESOURCE", file);
             const uploadedPath = await convertFile(
               file.fileUrl,
-              session,
+              userData?.userFindOne?.id,
               file.fileName
             );
             return {
@@ -220,20 +240,27 @@ const useCreateCourse = () => {
       },
     };
     console.log("DATA COURSE", courseVariable);
-    createCourseMutation({
-      variables: courseVariable,
-    });
-    if (data !== undefined) {
-      Promise.resolve(data);
-    } else if (error !== undefined || data === undefined) {
-      Promise.reject(error);
+    try {
+      const result = await createCourseMutation({
+        variables: courseVariable,
+      });
+      console.log("DATA FROM CREATE DATA", result.data);
+      if (result.data) {
+        return Promise.resolve(result.data);
+      } else {
+        return Promise.reject(new Error("Mutation did not return a result"));
+      }
+    } catch (error) {
+      console.log("ERROR FROM CREATE DATA", error);
+      return Promise.reject(error);
     }
   };
-  return { currentCourseSelector, createCourse, loading, error, data };
+  return { createCourse, loading, error, data, currentCourseSelector };
 };
 
 const useNavigation = () => {
   const router = useRouter();
+  const action = router.query.id ? "edit" : "create";
   const dispatch = useDispatch();
   const createCourse = useCreateCourse();
   const [isLoading, setIsLoading] = useState(false);
@@ -252,7 +279,7 @@ const useNavigation = () => {
   const navigate = (pageMap: { [key: string]: string }) => {
     const pathEnd = router.pathname.split("/").pop();
     const page = pageMap[`/${pathEnd}`];
-    const action = router.query.id ? "edit" : "create";
+
     if (page) {
       router.push(`/admin/courses/${action}${page}`);
     }
@@ -261,23 +288,82 @@ const useNavigation = () => {
   const handleNext = async () => {
     const pathEnd = router.pathname.split("/").pop();
     const lastPage = Object.values(pageMap).pop();
+    const courseData = createCourse.currentCourseSelector;
     if (`/${pathEnd}` === lastPage) {
-      setIsLoading(true);
-      setCreateCourseError(undefined);
-      try {
-        await createCourse.createCourse();
-        setIsLoading(false);
-        // dispatch(resetCourse());
-        console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
-        console.log("SUCCESS CREATED COURSE", createCourse.data);
-        router.push(`/admin/courses`);
-      } catch (error: any) {
-        console.log("TERJADI ERROR DI:", (error as ApolloError).message);
-        setCreateCourseError(error.toString());
-        setIsLoading(false);
+      if (
+        courseData.sections === undefined ||
+        courseData.sections.length === 0
+      ) {
+        dispatch(changeErrorMessage("Section Kosong"));
+      } else if (courseData.objective.length === 0) {
+        dispatch(changeErrorMessage("Objective Kosong"));
+      } else {
+        if (action == "create") {
+          dispatch(changeErrorMessage(""));
+          setIsLoading(true);
+          setCreateCourseError(undefined);
+          try {
+            const res = await createCourse.createCourse();
+            if (res !== undefined) {
+              setIsLoading(false);
+              dispatch(resetCourse());
+              console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
+              console.log("SUCCESS CREATED COURSE", createCourse.data);
+              window.location.href = "/admin/courses";
+            } else {
+              setIsLoading(false);
+              console.log("TERJADI ERROR DI:", res);
+            }
+          } catch (error: any | undefined | null) {
+            dispatch(
+              changeErrorMessage(
+                (error as ApolloError)?.message ?? error.toString()
+              )
+            );
+            console.log(
+              "TERJADI ERROR DI:",
+              (error as ApolloError)?.message ?? "NO MESSAGE FOUND"
+            );
+            setCreateCourseError(error?.toString());
+            setIsLoading(false);
+          }
+        } else {
+          dispatch(changeErrorMessage(""));
+        }
       }
     } else {
-      navigate(pageMap);
+      const isEmptyHTML = (str: string) => {
+        const strippedString = str.replace(/<[^>]*>/g, "").trim();
+        return strippedString.length === 0;
+      };
+      if (courseData.courseName === "") {
+        dispatch(changeErrorMessage("Nama Kelas Kosong"));
+      } else if (isEmptyHTML(courseData.classDescription)) {
+        dispatch(changeErrorMessage("Deskripsi Kelas Kosong"));
+      } else if (courseData.introVideo === "") {
+        dispatch(changeErrorMessage("Intro Video Kosong"));
+      } else if (courseData.price === "" || parseInt(courseData.price) === 0) {
+        dispatch(changeErrorMessage("Harga kelas kosong"));
+      } else if (
+        courseData.thumbnail === "" ||
+        courseData.thumbnail === "/media/avatars/blank.png"
+      ) {
+        dispatch(changeErrorMessage("Gambar kelas kosong"));
+      } else if (courseData.affiliateCommission == 0) {
+        dispatch(changeErrorMessage("Affiliasi Komisi kosong"));
+      } else if (
+        courseData.courseType === "subscription" &&
+        courseData.courseDuration < 1
+      ) {
+        dispatch(
+          changeErrorMessage("Durasi Kelas langganan kurang dari satu hari!")
+        );
+      } else {
+        dispatch(changeErrorMessage(""));
+        navigate(pageMap);
+      }
+
+      window.scrollTo(0, 0);
     }
   };
 

@@ -1,6 +1,5 @@
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { CourseStatusEnum } from "@/app/service/graphql/gen/graphql";
-import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { useRouter } from "next/router";
@@ -275,14 +274,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
             urlType={isEdit ? "edit" : "create"}
             id={courseId}
           ></ClassTabBar>
-          {createCourseError && (
-            <Alert
-              title="Terjadi Masalah"
-              label={createCourseError}
-              alertColor="danger"
-              dismissable
-            />
-          )}
+
           {children}
 
           <div className={"row flex-end mt-10"}>
