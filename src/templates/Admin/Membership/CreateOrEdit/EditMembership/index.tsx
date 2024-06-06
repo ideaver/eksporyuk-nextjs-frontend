@@ -16,6 +16,8 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { useCoursesDropdown } from "../InformationMembership/InformationMembership-view-model";
 
 const EditMembership = ({ id, data }: IEditMembershipProps) => {
   const ReactQuill = useMemo(
@@ -36,7 +38,11 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
     setDuration,
     price,
     benefits,
+    courses,
+    handleChangeCourses,
+    handleDeleteCourses,
   } = useEditMembershipViewModel({ id, data });
+  const { loadOptions } = useCoursesDropdown();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Edit Membership</PageTitle>
@@ -193,6 +199,42 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
               )}
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
+              </h5>
+              <h5 className="">Benefit Kelas</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {courses?.map((e, index) => {
+                  return (
+                    <div key={index}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          handleDeleteCourses(e.value);
+                        }}
+                        key={index}
+                      >
+                        {e.label}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <AsyncPaginate
+                className="mt-5"
+                isSearchable={true}
+                loadOptions={loadOptions}
+                onChange={(val) => {
+                  handleChangeCourses({
+                    value: val?.value as number,
+                    label: val?.label as string,
+                  });
+                }}
+              ></AsyncPaginate>
+
+              <h5 className="text-muted mt-2 mb-8">
+                Masukan benefit kelas ketika berlangganan
               </h5>
               <h5 className="required">Benefit</h5>
               <div

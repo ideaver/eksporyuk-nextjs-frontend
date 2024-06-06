@@ -49,6 +49,7 @@ interface EditMembershipForm {
   membershipType: MembershipTypeEnum | undefined;
   duration: number | undefined;
   id: string | string[] | undefined;
+  courses: { value: number; label: string }[] | undefined;
 }
 
 const useEditMembershipForm = ({
@@ -59,6 +60,7 @@ const useEditMembershipForm = ({
   membershipType,
   duration,
   id,
+  courses,
 }: EditMembershipForm) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -79,6 +81,11 @@ const useEditMembershipForm = ({
       .required("Benefit diperlukan"),
     duration: Yup.number().required("Content diperlukan"),
   });
+
+  const idCourses = courses?.map((e) => ({
+    id: e.value,
+  }));
+  console.log(idCourses);
 
   const editMembershipForm = useFormik({
     initialValues: {
@@ -116,6 +123,9 @@ const useEditMembershipForm = ({
               membershipType: {
                 set: membershipType,
               },
+              benefitCourses: {
+                set: idCourses,
+              },
             },
           },
         });
@@ -146,6 +156,20 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
   const [duration, setDuration] = useState(
     data.membershipCategoryFindOne?.durationDay
   );
+  const [courses, setCourses] = useState(
+    data.membershipCategoryFindOne?.benefitCourses?.map((e) => ({
+      value: e.id,
+      label: e.title,
+    }))
+  );
+
+  const handleChangeCourses = (course: { value: number; label: string }) => {
+    setCourses((prev: any) => [...prev, course]);
+  };
+
+  const handleDeleteCourses = (id: number) => {
+    setCourses((prev) => prev?.filter((val) => val.value !== id));
+  };
 
   const { formik, isLoading, setIsloading } = useEditMembershipForm({
     id,
@@ -155,9 +179,13 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     benefits,
     membershipType,
     duration,
+    courses,
   });
 
   return {
+    handleChangeCourses,
+    handleDeleteCourses,
+    courses,
     benefits,
     formik,
     isLoading,
