@@ -647,7 +647,7 @@ const AddCouponModal = ({
             Penerapan Kupon
           </h4>
           <h6 className="mt-4 text-muted">
-            Pilih Course yang Dapat Menggunakan Kupon Ini
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6>
           <AsyncPaginate
             className="mt-5"
