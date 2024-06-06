@@ -21,7 +21,10 @@ const MasterLayout = ({ children }: MasterLayoutProps) => {
   }, [router]);
 
   const renderLayout = () => {
-    if (router.pathname === "/auth") {
+    if (
+      router.pathname === "/auth" ||
+      router.pathname === "/terms/privacy-policy"
+    ) {
       return (
         <>
           {children}
