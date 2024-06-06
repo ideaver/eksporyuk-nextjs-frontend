@@ -1,10 +1,12 @@
 export interface ILessonVideoContent {
   content: string;
   videoUrl: string;
+  duration: number;
 }
 export interface ILessonPDFContent {
   content: string;
   file: string;
+  fileName: string;
 }
 
 export interface ILessonBasic {
@@ -34,6 +36,7 @@ export const createDefaultLessonData = (): ILessonBasic => ({
   content: {
     content: "",
     videoUrl: "",
+    duration: 0
   },
 });
 

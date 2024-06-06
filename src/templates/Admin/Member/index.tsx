@@ -256,7 +256,7 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th className="w-200px">
+              {/* <th className="w-200px">
                 <CheckBoxInput
                   className="w-200px"
                   checked={selectAll}
@@ -267,7 +267,7 @@ const Body = ({
                 >
                   <>Username</>
                 </CheckBoxInput>
-              </th>
+              </th> */}
               <th className="min-w-300px">Nama Lengkap</th>
               {/* <th className="text-end min-w-100px">Kategori</th> */}
               <th className="text-end min-w-275px">Affiliasi</th>
@@ -278,7 +278,7 @@ const Body = ({
             </KTTableHead>
             {studentFindMany.data?.studentFindMany?.map((student, index) => (
               <tr key={index}>
-                <td className="align-middle">
+                {/* <td className="align-middle">
                   <CheckBoxInput
                     className="ps-0"
                     checked={checkedItems[index]?.value ?? false}
@@ -298,7 +298,7 @@ const Body = ({
                       {student.user.username}
                     </Link>
                   </CheckBoxInput>
-                </td>
+                </td> */}
                 <td className="align-middle ">
                   <Link
                     href={`/admin/members/detail/${student.id}/profile`}
