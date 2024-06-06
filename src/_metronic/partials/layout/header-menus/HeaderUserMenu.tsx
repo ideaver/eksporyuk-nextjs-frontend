@@ -28,7 +28,7 @@ const HeaderUserMenu: FC = () => {
                 {/* {currentUser?.first_name} {currentUser?.first_name} */}
                 {session?.user.name}
                 <span className="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">
-                  {session?.user.role}
+                  ADMIN
                 </span>
               </div>
               <a
@@ -43,14 +43,14 @@ const HeaderUserMenu: FC = () => {
                 }}
               >
                 {/* {currentUser?.email} */}
-                {session?.user.email}aaaaaaaaaaaaaaaaaa
+                {session?.user.email}
               </a>
             </div>
           </div>
         </div>
 
         <div className="separator my-2"></div>
-
+{/* 
         <div className="menu-item px-5">
           <Link href={"/crafted/pages/profile"} className="menu-link px-5">
             Profil Saya
@@ -62,7 +62,7 @@ const HeaderUserMenu: FC = () => {
             Pengaturan Akun
           </Link>
         </div>
-        <div className="separator my-2"></div>
+        <div className="separator my-2"></div> */}
 
         <div className="menu-item px-5">
           {/* <a onClick={logout} className='menu-link px-5'>
