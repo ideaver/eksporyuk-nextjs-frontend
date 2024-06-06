@@ -12,7 +12,6 @@ query CertificateTemplateFindMany(
   ) {
     id
     name
-    imagePath
     filePath
     _count {
       certificates

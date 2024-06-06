@@ -15,7 +15,7 @@ const AffiliateLayout = ({ urlType, id }: IAffiliateHeaderViewModel) => {
     selectedFollupValue,
     follupValues,
     orderTableDatas,
-    breadcrumbs
+    breadcrumbs,
   } = useAffiliateHeaderViewModel({ urlType, id });
   const router = useRouter();
 
