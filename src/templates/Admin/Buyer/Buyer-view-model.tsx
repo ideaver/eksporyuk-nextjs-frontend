@@ -255,13 +255,14 @@ const useBuyerViewModel = () => {
 
   const handleDownloadTamplateFile = async () => {
     try {
-      const response = await fetch("/files/tamplate-import-buyers.xlsx");
+      const response = await fetch("/files/template-import-buyers.xlsx");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
-      a.download = "tamplate-import-buyers.xlsx";
+      a.download = "template-import-buyers.xlsx";
+      // a.click();
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

@@ -168,6 +168,7 @@ export const adminMenus: MenuSection[] = [
       },
       { title: "Manajemen Buyer", to: "/admin/buyers", icon: "parcel" },
       { title: "Manajemen Transaksi", to: "/admin/transaction", icon: "bill" },
+      { title: "Mailketing SMTP", to: "/admin/mailketing", icon: "sms" },
       {
         title: "Support Center",
         to: "/admin/support",

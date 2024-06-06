@@ -8,8 +8,8 @@ import {
 import {
   changeEditLesson,
   changeEditQuiz,
-  changeLessons,
 } from "@/features/reducers/products/productReducer";
+import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
@@ -55,7 +55,7 @@ const CourseSylabusPage = () => {
   // End RTK
 
   // Start Lesson
-  const handleSubmitSection = (val: ICourseSectionData) => {
+const handleSubmitSection = (val: ICourseSectionData) => {
     dispatch(
       changeSections(
         currentCourseSectionSelector.some(
@@ -63,7 +63,7 @@ const CourseSylabusPage = () => {
         )
           ? currentCourseSectionSelector.map((courseSection) =>
               courseSection.id === val.id
-                ? { ...courseSection, ...val }
+                ? { ...courseSection, title: val.title, description: val.description }
                 : courseSection
             )
           : currentCourseSectionSelector.concat(val)
@@ -76,7 +76,9 @@ const CourseSylabusPage = () => {
     }
   };
   const handleRemoveSection = (index: number) => {
-    const newSection =  currentCourseSectionSelector.filter((_, i) => i !== index);
+    const newSection = currentCourseSectionSelector.filter(
+      (_, i) => i !== index
+    );
     dispatch(changeSections(newSection));
   };
 
@@ -279,6 +281,13 @@ const CourseSylabusPage = () => {
 
   return (
     <>
+      {currentCourseSelector.errorMessage && (
+        <Alert
+          label={currentCourseSelector.errorMessage as string}
+          title="Terjadi Masalah"
+          alertColor="danger"
+        ></Alert>
+      )}
       <KTCard className="">
         <KTCardBody>
           <h3 className="mb-5">Susun Silabus</h3>
