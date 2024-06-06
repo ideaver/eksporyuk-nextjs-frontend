@@ -375,7 +375,7 @@ const Body = ({
                         <img
                           className="symbol-label bg-gray-600"
                           src={
-                            course.images?.[0].path ?? "/media/products/1.png"
+                            course.images?.[0]?.path ?? "/media/avatars/blank.png"
                           }
                           width={50}
                           height={50}

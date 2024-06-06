@@ -254,7 +254,7 @@ const useAdminOrderHeaderViewModel = ({
       .replace(/\[\[email\]\]/g, `${data?.createdByUser.email}`)
       .replace(/\[\[nomor-telepon\]\]/g, `${data?.createdByUser.phoneId}`)
       .replace(/\[\[kupon\]\]/g, `${data?.coupon?.affiliatorCoupon?.code}`);
-    const encodedMessage = encodeURIComponent(contentReplaced as string);
+    const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
     return `https://api.whatsapp.com/send?phone=${data?.createdByUser.phoneId}&text=${encodedMessage}`;
   };
@@ -263,7 +263,7 @@ const useAdminOrderHeaderViewModel = ({
     const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
       (e) => e.name === name
     )[0];
-    console.log(editFolup);
+
     try {
       await followUpDeleteOne({
         variables: {
