@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req: NextRequestWithAuth) {
     const url = req.nextUrl.clone();
-
     if (req.nextauth.token) {
       if (url.pathname === "/" || url.pathname === "/auth") {
         url.pathname = "/home";
@@ -22,5 +21,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/((?!public|images|media).*)", "/auth"],
+  matcher: ["/((?!public|images|media|terms).*)", "/auth"],
 };

@@ -35,14 +35,14 @@ export default NextAuth({
       },
       async authorize(credentials, req) {
         var user;
-        if(process.env.NEXT_PUBLIC_MAINTENANCE == "true") {
+        if (process.env.NEXT_PUBLIC_MAINTENANCE == "true") {
           user = {
             id: "1",
             name: "admin",
             email: "admin@mail.com",
             password: "admin",
             role: "ADMIN",
-            image: "/media/avatars/300-1.jpg",
+            image: "/media/avatars/blank.png",
           };
         } else {
           user = {
@@ -71,6 +71,8 @@ export default NextAuth({
   },
   pages: {
     signIn: "/auth",
+    error: "/error",
+    newUser: "/home",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -84,6 +86,7 @@ export default NextAuth({
       return token;
     },
     async session({ session, token, user }) {
+      
       if (session?.user) {
         session.user.name = token.name;
         session.user.email = token.email;
