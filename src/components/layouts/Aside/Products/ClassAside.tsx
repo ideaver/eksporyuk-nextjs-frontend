@@ -289,7 +289,7 @@ const AsideProductLayout = ({ children }: AsideProductLayoutProps) => {
             )}
 
             <Buttons classNames={"col-lg-2 mt-5 mt-lg-0"} onClick={handleNext}>
-              {router.pathname === "/admin/courses/[action]/sylabus"
+              {router.pathname === "/admin/courses/[action]/certificate"
                 ? "Kirim"
                 : "Selanjutnya"}
             </Buttons>
