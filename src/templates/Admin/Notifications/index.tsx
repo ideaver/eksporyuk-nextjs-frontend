@@ -157,8 +157,6 @@ const Body = ({
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
 }) => {
-  console.log(data.data?.notificationFindMany);
-
   return (
     <>
       {data.error ? (
@@ -214,23 +212,25 @@ const Body = ({
                     defaultChildren={false}
                     onChange={() => handleSingleCheck(index)}
                   >
-                    <div className="d-flex justify-content-start align-items-center gap-3">
-                      <div
-                        className="bg-gray p-2"
-                        style={{
-                          backgroundColor: "#E1E3EA",
-                          borderRadius: "5px",
-                        }}
-                      >
-                        <i
-                          className="bi bi-envelope"
-                          style={{ fontSize: "30px" }}
-                        ></i>
+                    <Link href={`/admin/notifications/detail/${notif.id}`}>
+                      <div className="d-flex justify-content-start align-items-center gap-3">
+                        <div
+                          className="bg-gray p-2"
+                          style={{
+                            backgroundColor: "#E1E3EA",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          <i
+                            className="bi bi-envelope"
+                            style={{ fontSize: "30px" }}
+                          ></i>
+                        </div>
+                        <p className="fw-bold text-truncate m-0">
+                          {notif.title}
+                        </p>
                       </div>
-                      <p className="text-muted fw-bold text-truncate m-0">
-                        {notif.title}
-                      </p>
-                    </div>
+                    </Link>
                   </CheckBoxInput>
                 </td>
                 <td className="text-end min-w-200px">
