@@ -256,16 +256,16 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th className="w-150px">
+              <th className="w-200px">
                 <CheckBoxInput
-                  className="w-150px"
+                  className="w-200px"
                   checked={selectAll}
                   name="check-all"
                   value="all"
                   defaultChildren={false}
                   onChange={handleSelectAllCheck}
                 >
-                  <>ID Member</>
+                  <>Username</>
                 </CheckBoxInput>
               </th>
               <th className="min-w-300px">Nama Lengkap</th>
@@ -291,11 +291,11 @@ const Body = ({
                       href={`/admin/members/detail/${student.id}/profile`}
                       className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                       style={{
-                        maxWidth: "90px",
+                        maxWidth: "150px",
                         display: "inline-block",
                       }}
                     >
-                      {student.id}
+                      {student.user.username}
                     </Link>
                   </CheckBoxInput>
                 </td>

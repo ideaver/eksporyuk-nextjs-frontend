@@ -5,6 +5,7 @@ import buyersReducer from "@/features/reducers/buyers/buyersReducer";
 import courseReducer from "@/features/reducers/course/courseReducer";
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
+import membershipReducer from "@/features/reducers/membership/membershipReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
 import serviceReducer from "@/features/reducers/products/serviceReducer";
@@ -66,6 +67,11 @@ const servicePersistConfig = {
   storage,
 };
 
+const membershipPersistConfig = {
+  key: "membership",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -116,6 +122,11 @@ const persistedServiceReducer = persistReducer(
   serviceReducer
 );
 
+const persistedMembershipReducer = persistReducer(
+  membershipPersistConfig,
+  membershipReducer
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -130,6 +141,7 @@ export const store = configureStore({
     transaction: persistedTransactionReducer,
     service: persistedServiceReducer,
     course: persistedCourseReducer,
+    memebrship: persistedMembershipReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

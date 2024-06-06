@@ -320,20 +320,10 @@ const Dashboard = ({}) => {
                 colorSubtle: "danger-subtle",
               },
             ]}
-            categories={[
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-            ]}
+            categories={[]}
             chartColor="success"
             className="h-100"
-            series={[55, 30, 33, 55, 30, 33, 55, 30, 33]}
+            series={[]}
           />
         </div>
       </div>

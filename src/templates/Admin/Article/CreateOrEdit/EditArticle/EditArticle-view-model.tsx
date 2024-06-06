@@ -1,6 +1,7 @@
 import {
   ArticleFindOneQuery,
   FileWhereInput,
+  UserRoleEnum,
   useArticleUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useFormik } from "formik";
@@ -121,6 +122,7 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
       label: val?.name,
     }))
   );
+  const [target, setTarget] = useState(articleData?.target);
 
   const {
     articleForm: formik,
@@ -159,24 +161,29 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     }
   };
 
-  console.log(file);
+  const uploadFile = async () => {
+    try {
+      const form = {
+        file: file,
+        userId: session?.user?.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body: form,
+        isMultipartRequest: true,
+      });
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
 
   const handleArticleUpdateOne = async () => {
     if (formik.isValid.valueOf() === false) return;
     setIsLoading(true);
 
     try {
-      const body = {
-        file: file,
-        userId: session?.user?.id,
-      };
-
-      const response = await postDataAPI({
-        endpoint: "upload/file",
-        body,
-        isMultipartRequest: true,
-      });
-
+      const response = await uploadFile();
       await articleUpdateOne({
         variables: {
           where: {
@@ -188,6 +195,9 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
             },
             content: {
               set: content,
+            },
+            target: {
+              set: target,
             },
             createdByAdmin: {
               connect: {
@@ -221,7 +231,19 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     }
   };
 
+  const targetOptions = [
+    { value: UserRoleEnum.Student, label: "Student" },
+    { value: UserRoleEnum.Affiliator, label: "Affiliator" },
+    { value: UserRoleEnum.Customer, label: "Customer" },
+    { value: UserRoleEnum.Mentor, label: "Mentor" },
+    { value: UserRoleEnum.Admin, label: "Admin" },
+    { value: UserRoleEnum.Superuser, label: "Superuser" },
+  ];
+
   return {
+    targetOptions,
+    target,
+    setTarget,
     editedThumbnail,
     isLoading,
     content,

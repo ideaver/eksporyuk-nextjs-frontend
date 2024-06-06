@@ -40,6 +40,8 @@ const CreateService = () => {
     errorMessage,
     onSubmit,
     isLoading,
+    serviceDiscountCost,
+    handleChangeServiceDiscountCost,
   } = useCreateServiceViewModal();
 
   return (
@@ -204,6 +206,28 @@ const CreateService = () => {
                 decimalsLimit={2}
                 onValueChange={(value, name, values) =>
                   handleChangeServiceCost(value ?? "")
+                }
+              />
+            </div>
+          </div>
+
+          <div className="mb-5">
+            <h4 className="fw-bold text-gray-700">Harga Diskon</h4>
+            <div className="input-group">
+              <span className="input-group-text" id="price-field">
+                Rp
+              </span>
+              <CurrencyInput
+                className="form-control"
+                id="price-field"
+                name="price"
+                placeholder="Masukan Harga Diskon (Rp)"
+                intlConfig={{ locale: "id-ID" }}
+                defaultValue={0}
+                value={serviceDiscountCost}
+                decimalsLimit={2}
+                onValueChange={(value, name, values) =>
+                  handleChangeServiceDiscountCost(value ?? "")
                 }
               />
             </div>

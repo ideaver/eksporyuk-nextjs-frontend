@@ -1,0 +1,3 @@
+mutation ProductServiceDeleteOne($where: ProductServiceWhereUniqueInput!) {
+  productServiceDeleteOne(where: $where)
+}

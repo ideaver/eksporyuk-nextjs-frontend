@@ -1,3 +1,4 @@
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface TypeCategory {
@@ -10,6 +11,7 @@ interface ArticleState {
   status: string;
   title: string;
   content: string;
+  target: UserRoleEnum[];
 }
 
 const initialState: ArticleState = {
@@ -17,6 +19,7 @@ const initialState: ArticleState = {
   status: "published",
   title: "",
   content: "",
+  target: [],
 };
 
 export const articleSlice = createSlice({
@@ -35,10 +38,18 @@ export const articleSlice = createSlice({
     changeContent: (state, action: PayloadAction<string>) => {
       state.content = action.payload;
     },
+    changeTarget: (state, action: PayloadAction<UserRoleEnum[]>) => {
+      state.target = action.payload;
+    },
   },
 });
 
-export const { changeCategory, changeContent, changeStatus, changeTitle } =
-  articleSlice.actions;
+export const {
+  changeTarget,
+  changeCategory,
+  changeContent,
+  changeStatus,
+  changeTitle,
+} = articleSlice.actions;
 
 export default articleSlice.reducer;
