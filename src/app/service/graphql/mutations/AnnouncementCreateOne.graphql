@@ -1,0 +1,5 @@
+mutation AnnouncementCreateOne($data: AnnouncementCreateInput!) {
+  announcementCreateOne(data: $data) {
+    id
+  }
+}
