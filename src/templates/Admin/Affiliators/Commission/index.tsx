@@ -1,10 +1,16 @@
 import Link from "next/link";
+import { QueryResult } from "@apollo/client";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 
-import { PageTitle } from "@/_metronic/layout/core";
 import useComissionViewModel, {
   formatToIDR,
   breadcrumbs,
 } from "./Comission-view-model";
+import { InvoiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import DetailComissionModal from "./components/DetailComissionModal";
+
+import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -14,7 +20,6 @@ import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
-import dynamic from "next/dynamic";
 
 interface ComissionPageProps {}
 
@@ -24,16 +29,18 @@ const CommissionPage = ({}: ComissionPageProps) => {
     skipPage,
     setSkipPage,
     setStatus,
-    commissionData,
-    loading,
-    error,
     calculateTotalPage,
     setSearchComission,
     setOrderBy,
     isCustomTake,
     setIsCustomTake,
     takePage,
-  } = useComissionViewModel({});
+    invoiceFindMany,
+    currentPage,
+    handlePageChange,
+    setFindTake,
+    findTake,
+  } = useComissionViewModel();
 
   return (
     <>
@@ -50,19 +57,16 @@ const CommissionPage = ({}: ComissionPageProps) => {
             />
           </div>
         </KTCardBody>
-        <QueryComissionTable
-          commissionData={commissionData}
-          loading={loading}
-          error={error}
-        />
+        <Body data={invoiceFindMany} />
         <Footer
-          setSkipPage={setSkipPage}
-          skipPage={skipPage}
-          takePage={takePage}
-          setTakePage={setTakePage}
-          totalPage={calculateTotalPage}
-          isCustomTake={isCustomTake}
-          setIsCustomTake={setIsCustomTake}
+          pageLength={calculateTotalPage()}
+          currentPage={currentPage}
+          setCurrentPage={(val) => handlePageChange(val)}
+          findSkip={(val) => {}}
+          findTake={(val) => {
+            setFindTake(val);
+          }}
+          takeValue={findTake}
         />
       </KTCard>
     </>
@@ -90,13 +94,13 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
             styleType="solid"
             options={[
               { label: "Semua Status", value: "all" },
-              { label: "Pending", value: "PENDING" },
-              { label: "Unpaid", value: "UNPAID" },
-              { label: "Halfpaid", value: "HALFPAID" },
-              { label: "Full Paid", value: "FULLPAID" },
-              { label: "Cancelled", value: "CANCELLED" },
-              { label: "Failed", value: "FAILED" },
-              { label: "Refunded", value: "REFUNDED" },
+              { label: "Tertunda", value: "PENDING" },
+              { label: "Belum Dibayar", value: "UNPAID" },
+              { label: "Setengah Dibayar", value: "HALFPAID" },
+              { label: "Lunas", value: "FULLPAID" },
+              { label: "Dibatalkan", value: "CANCELLED" },
+              { label: "Gagal", value: "FAILED" },
+              { label: "Di Refund", value: "REFUNDED" },
             ]}
             onValueChange={(e) => {
               setStatus(e);
@@ -120,14 +124,22 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
   );
 };
 
-const QueryComissionTable = ({ commissionData, error, loading }: any) => {
+const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [commisionId, setComissionId] = useState(0);
+
   return (
     <div className="table-responsive mb-10 p-10">
-      {error ? (
+      <DetailComissionModal
+        show={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        id={commisionId}
+      />
+      {data.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
-          <h3 className="text-center">{error.message}</h3>
+          <h3 className="text-center">{data.error.message}</h3>
         </div>
-      ) : loading ? (
+      ) : data.loading ? (
         <div className="d-flex justify-content-center align-items-center h-500px">
           <h3 className="text-center">Loading....</h3>
         </div>
@@ -146,31 +158,70 @@ const QueryComissionTable = ({ commissionData, error, loading }: any) => {
             <th className="fw-bold text-muted text-end min-w-100px">STATUS</th>
           </KTTableHead>
 
-          {commissionData.map((user: any, index: number) => (
-            <KTTableBody key={index}>
-              <td className="fw-bold">INV {user.idOrder}</td>
-              <td className="fw-bold">
-                <Link
-                  className="text-dark text-hover-primary"
-                  href={
-                    "commission/" +
-                    user.idOrder.toString().replace(" ", "") +
-                    "/detail-order/"
-                  }
+          {data.data?.invoiceFindMany?.map((user, index) => {
+            const statusMap: { [key: string]: string } = {
+              PENDING: "Tertunda",
+              UNPAID: "Belum Dibayar",
+              HALFPAID: "Setengah Dibayar",
+              FULLPAID: "Lunas",
+              CANCELLED: "Dibatalkan",
+              FAILED: "Gagal",
+              REFUNDED: "Di Refund",
+            };
+
+            return (
+              <KTTableBody key={index}>
+                <td className="fw-bold">INV {user.orderId}</td>
+                <td
+                  className="fw-bold text-dark text-hover-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setShowDetailModal(true);
+                    setComissionId(user.id);
+                  }}
                 >
-                  {user.namaKelas}
-                </Link>
-              </td>
-              <td className="fw-bold text-muted text-end">{user.pembeli}</td>
-              <td className="fw-bold text-muted text-end">{user.affiliasi}</td>
-              <td className="fw-bold text-muted text-end">
-                {formatToIDR(user.totalKomisi)}
-              </td>
-              <td className="text-end">
-                <Badge label={user.status} badgeColor={user.badgeColor} />
-              </td>
-            </KTTableBody>
-          ))}
+                  {user.order?.enrollment?.[0]?.course?.title}
+                  {/* <Link
+                    className="text-dark text-hover-primary"
+                    href={
+                      "commission/" +
+                      user?.orderId?.toString().replace(" ", "") +
+                      "/detail-order/"
+                    }
+                  >
+                    {user.order?.enrollment?.[0].course?.title}
+                  </Link> */}
+                </td>
+                <td className="fw-bold text-muted text-end">
+                  {
+                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
+                      .user.name
+                  }
+                </td>
+                <td className="fw-bold text-muted text-end">
+                  {
+                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
+                      .user.affiliator?.user.name
+                  }
+                </td>
+                <td className="fw-bold text-muted text-end">
+                  {formatToIDR(String(user.amount))}
+                </td>
+                <td className="text-end">
+                  <Badge
+                    label={statusMap[user.status || ""]}
+                    badgeColor={
+                      user.status === "FULLPAID"
+                        ? "success"
+                        : user.status === "CANCELLED"
+                        ? "danger"
+                        : "warning"
+                    }
+                  />
+                </td>
+              </KTTableBody>
+            );
+          })}
         </KTTable>
       )}
     </div>
@@ -178,28 +229,22 @@ const QueryComissionTable = ({ commissionData, error, loading }: any) => {
 };
 
 const Footer = ({
-  setSkipPage,
-  skipPage,
-  setTakePage,
-  totalPage,
-  isCustomTake,
-  setIsCustomTake,
-  takePage,
-}: any) => {
-  const CheckBoxInput = dynamic(
-    () =>
-      import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
-        (module) => module.CheckBoxInput
-      ),
-    {
-      ssr: false,
-    }
-  );
-  if (skipPage === 0) skipPage = 1;
-
+  currentPage,
+  setCurrentPage,
+  findTake,
+  pageLength,
+  takeValue,
+}: {
+  findTake: (val: number) => void;
+  findSkip: (val: number) => void;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+  takeValue: number;
+}) => {
   return (
-    <div className="row justify-content-between gy-5 py-5 px-10">
-      <div className="row col-lg-auto gy-3 align-middle">
+    <div className="row justify-content-between">
+      <div className="col-auto">
         <div className="dropdown">
           <button
             className="btn btn-secondary dropdown-toggle p-3"
@@ -207,14 +252,14 @@ const Footer = ({
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {takePage}
+            {takeValue}
           </button>
           <ul className="dropdown-menu">
             <li>
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(10);
+                  findTake(10);
                 }}
               >
                 10
@@ -224,41 +269,34 @@ const Footer = ({
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setTakePage(50);
+                  findTake(50);
                 }}
               >
                 50
               </button>
             </li>
             <li>
-              {/* <button className="dropdown-item">Hapus</button> */}
               <input
                 type="number"
-                value={takePage}
+                value={takeValue}
                 className="form-control py-2"
                 placeholder="Nilai Custom"
                 min={0}
                 onChange={(e) => {
-                  setTakePage(parseInt(e.target.value));
+                  findTake(parseInt(e.target.value));
                 }}
               />
             </li>
           </ul>
         </div>
       </div>
-
-      <div className="row col-lg-auto gy-3">
-        <div className="col-lg-auto">
-          <Pagination
-            total={totalPage()}
-            current={skipPage}
-            maxLength={5}
-            onPageChange={(e) => {
-              if (e === 1) e = 0;
-              setSkipPage(e);
-            }}
-          ></Pagination>
-        </div>
+      <div className="col-auto">
+        <Pagination
+          total={pageLength}
+          current={currentPage}
+          maxLength={5}
+          onPageChange={(val) => setCurrentPage(val)}
+        ></Pagination>
       </div>
     </div>
   );

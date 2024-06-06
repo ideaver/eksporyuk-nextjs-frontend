@@ -17,6 +17,7 @@ query InvoiceFindMany(
       id
       enrollment {
         course {
+          id
           title
           enrollments {
             student {
