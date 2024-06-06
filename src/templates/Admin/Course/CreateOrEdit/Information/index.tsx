@@ -17,6 +17,7 @@ import useInformationViewModel, {
   OptionType,
   useMentorsDropdown,
 } from "./Information-view-model";
+import { on } from "events";
 
 const ClassInformation = ({}) => {
   const ReactQuill = useMemo(
@@ -126,8 +127,9 @@ const ClassInformation = ({}) => {
                   <div className="w-100">
                     <TextField
                       props={{
-                        enabled: false,
+                        enabled: "false",
                         value: mentor.label,
+                        onChange: () => {},
                       }}
                     ></TextField>
                   </div>

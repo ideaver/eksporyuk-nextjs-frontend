@@ -2,6 +2,7 @@ import {
   AffiliateCommissionTypeEnum,
   CourseLevelEnum,
   CourseStatusEnum,
+  FileTypeEnum,
   useCourseFindOneQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
@@ -35,6 +36,7 @@ const InformationPage: NextPage = () => {
   const dispatch = useDispatch();
   const currentCourseData = useSelector((state: RootState) => state.course);
   const courseData = data?.courseFindOne;
+
   const dispatchCourseData: CourseState = useMemo(
     () => ({
       id: courseData?.id.toString() || "",
@@ -56,12 +58,12 @@ const InformationPage: NextPage = () => {
         })) || [],
       introVideo: courseData?.videoUrlId || "",
       objective: courseData?.objective || [],
-      thumbnail: courseData?.images?.[0].path ?? "",
+      thumbnail: courseData?.images?.[0]?.path ?? "/media/avatars/blank.png",
       status: courseData?.status ?? CourseStatusEnum.Published,
       affiliateCommissionType:
         courseData?.affiliateCommissionType ||
         AffiliateCommissionTypeEnum.Amount,
-      certificateTemplateId: courseData?.certificateTemplate?.[0]?.id || 0,
+      certificateTemplateId: courseData?.certificateTemplate?.id || 0,
       discountPrice: courseData?.salePrice?.toString() || "",
       sections:
         courseData?.sections?.map((section) => ({
@@ -69,15 +71,31 @@ const InformationPage: NextPage = () => {
           description: section.description ?? "",
           title: section.name ?? "",
           lessons:
-            section.lessons?.map((lesson) => ({
-              id: lesson.id?.toString() ?? "",
-              title: lesson.title ?? "",
-              lessonType: "Video",
-              content: {
-                content: lesson.description ?? "",
-                videoUrl: lesson.material?.path ?? "",
-              },
-            })) ?? [],
+            section.lessons?.map((lesson) => {
+              console.log("INI MILISEC", lesson.duration);
+              return {
+                id: lesson.id?.toString() ?? "",
+                title: lesson.title ?? "",
+                lessonType:
+                  lesson.material?.fileType === FileTypeEnum.Mp4
+                    ? "Video"
+                    : "PDF",
+                content:
+                  lesson.material?.fileType === FileTypeEnum.Mp4
+                    ? {
+                        content: lesson.description ?? "",
+                        videoUrl: lesson.material?.path ?? "",
+                        duration: parseFloat(
+                          ((lesson.duration ?? 0) / 1000 / 60).toFixed(3) ?? "0"
+                        ),
+                      }
+                    : {
+                        content: lesson.description ?? "",
+                        file: lesson.material?.path ?? "",
+                        fileName: lesson.material?.path ?? "",
+                      },
+              };
+            }) ?? [],
           quizs: section.quizzes
             ? section.quizzes.map((quiz) => {
                 const quizTypeSelection = quiz?.questions?.some(

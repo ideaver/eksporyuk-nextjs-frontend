@@ -55,7 +55,7 @@ const CourseSylabusPage = () => {
   // End RTK
 
   // Start Lesson
-  const handleSubmitSection = (val: ICourseSectionData) => {
+const handleSubmitSection = (val: ICourseSectionData) => {
     dispatch(
       changeSections(
         currentCourseSectionSelector.some(
@@ -63,7 +63,7 @@ const CourseSylabusPage = () => {
         )
           ? currentCourseSectionSelector.map((courseSection) =>
               courseSection.id === val.id
-                ? { ...courseSection, ...val }
+                ? { ...courseSection, title: val.title, description: val.description }
                 : courseSection
             )
           : currentCourseSectionSelector.concat(val)

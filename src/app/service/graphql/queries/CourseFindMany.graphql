@@ -134,7 +134,7 @@ query CourseFindMany(
     certificateTemplate {
       id
       name
-      imagePath
+      exampleTemplateCertificatePath
       filePath
     }
     affiliateCommissionType
