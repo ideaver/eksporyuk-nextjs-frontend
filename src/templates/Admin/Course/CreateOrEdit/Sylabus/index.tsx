@@ -76,7 +76,9 @@ const CourseSylabusPage = () => {
     }
   };
   const handleRemoveSection = (index: number) => {
-    const newSection =  currentCourseSectionSelector.filter((_, i) => i !== index);
+    const newSection = currentCourseSectionSelector.filter(
+      (_, i) => i !== index
+    );
     dispatch(changeSections(newSection));
   };
 
