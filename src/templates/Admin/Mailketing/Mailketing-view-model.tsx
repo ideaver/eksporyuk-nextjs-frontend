@@ -2,6 +2,7 @@ import {
   UserRoleEnum,
   useSendMailForMailketingMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { ApolloError } from "@apollo/client";
 import { useState } from "react";
 
 export const breadcrumbs = [
@@ -31,6 +32,8 @@ const useMailketingViewModel = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [swalProps, setSwalProps] = useState({});
+
   const [sendMailForMailketing] = useSendMailForMailketingMutation();
 
   const handleMailketingSend = async () => {
@@ -48,8 +51,22 @@ const useMailketingViewModel = () => {
           },
         },
       });
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Berhasil terkirim",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setEmailName("Admin EksporYuk");
       setEmailAddress("admin@eksporyuk.com");
@@ -62,6 +79,8 @@ const useMailketingViewModel = () => {
   };
 
   return {
+    setSwalProps,
+    swalProps,
     sendOption,
     setSendOption,
     userRole,

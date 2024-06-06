@@ -7,8 +7,29 @@ import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import SweetAlert2 from "react-sweetalert2";
+import { useMemo } from "react";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+
+{
+  /* <SweetAlert2
+{...swalProps}
+didOpen={() => {
+  // run when swal is opened...
+}}
+didClose={async () => {
+  console.log("closed");
+  setSwalProps({});
+}}
+/> */
+}
 
 const Mailketing = () => {
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
   const {
     emailName,
     emailAddress,
@@ -27,6 +48,8 @@ const Mailketing = () => {
     setUserRole,
     sendOption,
     setSendOption,
+    swalProps,
+    setSwalProps,
   } = useMailketingViewModel();
   return (
     <>
@@ -196,7 +219,37 @@ const Mailketing = () => {
               }}
             />
             <h4 className="">Isi Pesan</h4>
-            <Textarea
+            <div
+              style={{
+                height: "220px",
+              }}
+            >
+              <ReactQuill
+                modules={{
+                  toolbar: [
+                    [{ header: [1, 2, false] }],
+                    [
+                      "link",
+                      "bold",
+                      "italic",
+                      "underline",
+                      "strike",
+                      "blockquote",
+                    ],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    [{ align: [] }],
+                    ["clean"],
+                  ],
+                }}
+                theme="snow"
+                value={sendMessage}
+                style={{ height: "70%" }}
+                onChange={(e) => {
+                  setSendMessage(e);
+                }}
+              />
+            </div>
+            {/* <Textarea
               classNames="mb-10 min-h-100px"
               placeholder="Masukan pesan"
               props={{
@@ -205,12 +258,22 @@ const Mailketing = () => {
                   setSendMessage(e.target.value);
                 },
               }}
-            />
+            /> */}
           </KTCardBody>
           <div className="d-flex justify-content-end">
             <Buttons onClick={handleMailketingSend}>Kirim E-mail</Buttons>
           </div>
         </KTCard>
+        <SweetAlert2
+          {...swalProps}
+          didOpen={() => {
+            // run when swal is opened...
+          }}
+          didClose={async () => {
+            console.log("closed");
+            setSwalProps({});
+          }}
+        />
       </LoadingOverlayWrapper>
     </>
   );
