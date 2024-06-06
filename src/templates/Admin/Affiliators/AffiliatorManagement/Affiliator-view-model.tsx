@@ -99,7 +99,49 @@ const useCheckbox = (
   };
 };
 
+// Pagination
+const usePagination = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [findSkip, setFindSkip] = useState(0);
+  const [findTake, setFindTake] = useState(10);
+  const affiliatorLength = useAffiliatorFindManyQuery();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setFindSkip((page - 1) * findTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (affiliatorLength.data?.affiliatorFindMany?.length ?? 0) / findTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    affiliatorLength,
+  };
+};
+
 const useAffiliatorViewModel = () => {
+  const {
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    calculateTotalPage,
+    affiliatorLength,
+  } = usePagination();
+
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchAffiliator, setSearchAffiliator] = useState<string>("");
@@ -108,8 +150,8 @@ const useAffiliatorViewModel = () => {
   // Querying process
   const affiliatorFindMany = useAffiliatorFindManyQuery({
     variables: {
-      take: Number(takePage),
-      skip: skipPage,
+      take: parseInt(findTake.toString()),
+      skip: findSkip,
       orderBy: [
         {
           updatedAt: orderBy,
@@ -148,13 +190,6 @@ const useAffiliatorViewModel = () => {
     },
   });
 
-  // Calculating total page
-  const calculateTotalPage = () => {
-    return Math.ceil(
-      (affiliatorFindMany.data?.affiliatorFindMany?.length ?? 0) / takePage
-    );
-  };
-
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(affiliatorFindMany);
 
@@ -173,6 +208,14 @@ const useAffiliatorViewModel = () => {
     calculateTotalPage,
     searchAffiliator,
     setSearchAffiliator,
+    currentPage,
+    setCurrentPage,
+    findSkip,
+    setFindSkip,
+    findTake,
+    setFindTake,
+    handlePageChange,
+    affiliatorLength,
   };
 };
 

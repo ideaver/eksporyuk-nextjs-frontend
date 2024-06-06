@@ -102,6 +102,18 @@ const ProfilePage = ({
             </div>
           </div>
 
+          <div className="row mb-7">
+            <label className="col-lg-4 fw-bold text-muted">
+              Info Rekening
+            </label>
+
+            <div className="col-lg-8 fv-row">
+              <span className="fw-bolder fs-6 text-dark">
+                {data?.creditCards?.[0]?.cardNumber ?? "Tidak Ada Rekening"}
+              </span>
+            </div>
+          </div>
+
           <div className="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
             <KTIcon iconName="lock" className="fs-2tx text-primary me-4" />
             <div className="d-flex flex-stack flex-grow-1">

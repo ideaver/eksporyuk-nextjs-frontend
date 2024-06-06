@@ -6,7 +6,9 @@ import { Alert } from "@/stories/molecules/Alert/Alert";
 import ForgotPasswordModal from "../../component/ForgotPasswordModal";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
 
-const AffiliatorProfilePage = ({ data }: any) => {
+import { AffiliatorFindOneQuery } from "@/app/service/graphql/gen/graphql";
+
+const AffiliatorProfilePage = ({ data }: { data: AffiliatorFindOneQuery | undefined}) => {
   const userData = data?.affiliatorFindOne?.user;
   const userAddress = userData?.addresses?.find((a: any) => a.name == "true");
   const {
@@ -112,6 +114,18 @@ const AffiliatorProfilePage = ({ data }: any) => {
             <div className="col-lg-8 fv-row">
               <span className="fw-bolder fs-6 text-dark">
                 {formatDate(userData?.createdAt) ?? "test"}
+              </span>
+            </div>
+          </div>
+
+          <div className="row mb-7">
+            <label className="col-lg-4 fw-bold text-muted">
+              Info Rekening
+            </label>
+
+            <div className="col-lg-8 fv-row">
+              <span className="fw-bolder fs-6 text-dark">
+                {data?.affiliatorFindOne?.creditCards?.[0]?.cardNumber ?? "Tidak Ada Rekening"}
               </span>
             </div>
           </div>

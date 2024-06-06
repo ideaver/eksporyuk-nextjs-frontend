@@ -22,6 +22,10 @@ const useProfileHeaderViewModel = ({id}:IMemberProfileHeaderViewModel ) => {
           label: "Riwayat Order",
           to: `/admin/members/detail/${id}/orders`,
         },
+        {
+          label: "Informasi Rekening",
+          to: `/admin/members/detail/${id}/informasi-rekening`,
+        },
       ];
 
       const breadcrumbs = [

@@ -1,8 +1,9 @@
 import CurrencyInput from "react-currency-input-field";
 
-import useCreateServiceViewModal, {
+import useEditServiceViewModel, {
   breadcrumbs,
-} from "./CreateService-view-model";
+  IEditProduct,
+} from "./EditService-view-model";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
@@ -12,7 +13,7 @@ import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioIn
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 
-const CreateService = () => {
+const EditService = ({ id, data }: IEditProduct) => {
   const {
     serviceType,
     setServiceType,
@@ -20,38 +21,34 @@ const CreateService = () => {
     setServiceName,
     serviceDesc,
     setServiceDesc,
-    handleFileChange,
-    handleFileClick,
     serviceImages,
     serviceCost,
+    serviceDiscountCost,
+    itemPortfolios,
+    status,
     handleChangeServiceCost,
+    handleChangeServiceDiscountCost,
+    handleStatusChange,
+    handleFileChange,
+    handleRemoveImage,
+    handleFileClick,
+    fileInputRef,
     itemObjective,
     addObjectiveItem,
     removeObjectiveItem,
     handleInputObjectiveChange,
-    itemPortfolio,
     addPortfolioItem,
     removePortfolioItem,
     handleInputPortfolioChange,
-    handleStatusChange,
-    serviceStatus,
-    fileInputRef,
-    handleRemoveImage,
-    errorMessage,
     onSubmit,
     isLoading,
-    serviceDiscountCost,
-    handleChangeServiceDiscountCost,
-  } = useCreateServiceViewModal();
+  } = useEditServiceViewModel({ data, id });
 
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Tambah Service Baru</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Edit Service</PageTitle>
       <KTCard>
         <KTCardBody>
-          {errorMessage && (
-            <div className="alert alert-danger">{errorMessage}</div>
-          )}
           <h3 className="mb-10">Informasi Service</h3>
 
           <div className="mb-3">
@@ -62,7 +59,7 @@ const CreateService = () => {
             >
               <RadioInput
                 name="service-type"
-                onChange={setServiceType}
+                onChange={(e: any) => setServiceType(e.target.value)}
                 checked={serviceType === "LEGALITY"}
                 value="LEGALITY"
               >
@@ -70,7 +67,7 @@ const CreateService = () => {
               </RadioInput>
               <RadioInput
                 name="service-type"
-                onChange={setServiceType}
+                onChange={(e: any) => setServiceType(e.target.value)}
                 checked={serviceType === "WEBSITE"}
                 value="WEBSITE"
               >
@@ -78,7 +75,7 @@ const CreateService = () => {
               </RadioInput>
               <RadioInput
                 name="service-type"
-                onChange={setServiceType}
+                onChange={(e: any) => setServiceType(e.target.value)}
                 checked={serviceType === "OTHER"}
                 value="OTHER"
               >
@@ -95,7 +92,7 @@ const CreateService = () => {
               placeholder="Dokumen legalitas..."
               props={{
                 value: serviceName,
-                onChange: setServiceName,
+                onChange: (e: any) => setServiceName(e.target.value),
               }}
             />
             <p className="fw-bold fs-6 text-muted">Nama Service</p>
@@ -111,7 +108,7 @@ const CreateService = () => {
               placeholder="Masukan deskripsi dari service ini"
               props={{
                 value: serviceDesc,
-                onChange: setServiceDesc,
+                onChange: (e: any) => setServiceDesc(e.target.value),
               }}
               rows={10}
             />
@@ -139,7 +136,7 @@ const CreateService = () => {
               <label style={{ cursor: "pointer" }}>
                 {serviceImages && serviceImages.length > 0 ? (
                   <div className="d-flex flex-wrap">
-                    {serviceImages.map((image, index) => (
+                    {serviceImages.map((image: any, index: any) => (
                       <div key={index} className="position-relative">
                         <label htmlFor="foto-produk">
                           {image.path ? (
@@ -277,7 +274,7 @@ const CreateService = () => {
               <h4 className="required fw-bold text-gray-700">
                 Portfolio Website
               </h4>
-              {itemPortfolio.map((item: any, index: any) => (
+              {itemPortfolios.map((item: any, index: any) => (
                 <div className="d-flex mt-5" key={index}>
                   <div className="w-100">
                     <TextField
@@ -349,12 +346,12 @@ const CreateService = () => {
                   Tambahkan Objektif
                 </Buttons>
               </div>
-              
+
               <div className="mb-3">
                 <h4 className="required fw-bold text-gray-700">
                   Portfolio Website
                 </h4>
-                {itemPortfolio.map((item: any, index: any) => (
+                {itemPortfolios.map((item: any, index: any) => (
                   <div className="d-flex mt-5" key={index}>
                     <div className="w-100">
                       <TextField
@@ -396,14 +393,18 @@ const CreateService = () => {
                 { value: "true", label: "Aktif" },
                 { value: "", label: "Tidak Aktif" },
               ]}
-              value={serviceStatus ? "true" : ""}
+              value={status ? "true" : ""}
               onValueChange={(value: any) => handleStatusChange(value)}
             ></Dropdown>
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
 
-          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit} disabled={isLoading}>
-            {isLoading ? "Submit Data..." : "Buat Service"}
+          <button
+            className="btn btn-primary w-100 mt-3"
+            onClick={onSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Submit Data..." : "Edit Service"}
           </button>
         </KTCardBody>
       </KTCard>
@@ -411,4 +412,4 @@ const CreateService = () => {
   );
 };
 
-export default CreateService;
+export default EditService;

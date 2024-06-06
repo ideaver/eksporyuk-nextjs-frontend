@@ -2,6 +2,14 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
   studentFindOne(where: $where) {
     id
     updatedAt
+    creditCards {
+      cardNumber
+      cardHolderName
+      createdAt
+      customerId
+      id
+      isAccepted
+    }
     user {
       id
       name
@@ -21,6 +29,27 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
       deletedReason
       phoneId
       referredById
+      accounts {
+        accountInquiryId
+        accountInquiry {
+          bank {
+            bankLogo {
+              path
+            }
+            bankLogoPath
+            name
+          }
+          accountNumber
+          accountHolder
+          bankCode
+          id
+          inquiryKey
+          inquiryStatus
+        }
+        accountNumber
+        name
+        userId
+      }
       addresses {
         id
         name

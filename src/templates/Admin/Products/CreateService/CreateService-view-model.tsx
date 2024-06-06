@@ -15,6 +15,7 @@ import {
   changeServiceStatus,
   changeServicePortfolio,
   changeUploadImages,
+  changeServiceDiscountCost,
 } from "@/features/reducers/products/serviceReducer";
 import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
 import { postDataAPI } from "@/app/service/api/rest-service";
@@ -169,10 +170,18 @@ const useCreateServiceViewModel = () => {
   const serviceCost = useSelector(
     (state: RootState) => state.service.serviceCost
   );
+
+  const serviceDiscountCost = useSelector(
+    (state: RootState) => state.service.serviceDiscountCost
+  );
   
   const handleChangeServiceCost = (price: string) => {
     dispatch(changeServiceCost(price));
   };
+
+  const handleChangeServiceDiscountCost = (price: string) => {
+    dispatch(changeServiceDiscountCost(price));
+  }
 
   // Status handler
   const serviceStatus = useSelector(
@@ -292,7 +301,8 @@ const useCreateServiceViewModel = () => {
     serviceStatus,
     serviceObjective,
     servicePortfolio,
-    uploadImages
+    uploadImages,
+    serviceDiscountCost,
   }: any) => {
     const data = await productServiceCreateMutation({
       variables: {
@@ -311,6 +321,7 @@ const useCreateServiceViewModel = () => {
           portofolio: {
             set: servicePortfolio,
           },
+          salePrice: Number(serviceDiscountCost),
         },
       },
     });
@@ -328,6 +339,7 @@ const useCreateServiceViewModel = () => {
     dispatch(changeServiceObjective([]));
     dispatch(changeServicePortfolio([]));
     dispatch(changeServiceImages([]));
+    dispatch(changeServiceDiscountCost(""));
   }
 
   // Submit all data
@@ -362,6 +374,7 @@ const useCreateServiceViewModel = () => {
         serviceObjective,
         servicePortfolio,
         uploadImages: uploadImgArray,
+        serviceDiscountCost,
       });
       const result = data.data;
       console.log(result);
@@ -417,6 +430,8 @@ const useCreateServiceViewModel = () => {
     onSubmit,
     errorMessage,
     isLoading,
+    handleChangeServiceDiscountCost,
+    serviceDiscountCost,
   };
 };
 
