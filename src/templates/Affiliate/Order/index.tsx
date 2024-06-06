@@ -17,9 +17,9 @@ import { gql, useQuery } from "@apollo/client";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 
-interface OrderPageProps { }
+interface OrderPageProps {}
 
-const OrderPage = ({ }: OrderPageProps) => {
+const OrderPage = ({}: OrderPageProps) => {
   const {
     breadcrumbs,
     exportModalState,
@@ -51,6 +51,7 @@ const OrderPage = ({ }: OrderPageProps) => {
         follupValues={follupValues}
         selectedFollupValue={selectedFollupValue}
         handleFollupChange={handleFollupChange}
+        linkAPIWhatsapp={() => ""}
       />
     </>
   );
@@ -77,7 +78,7 @@ const Head = () => {
               { label: "Aktif", value: "active" },
               { label: "Tidak Aktif", value: "inactive" },
             ]}
-            onValueChange={() => { }}
+            onValueChange={() => {}}
           />
         </div>
         <div className="col-lg-auto">
@@ -101,7 +102,7 @@ const Footer = () => {
             { label: "20", value: 20 },
             { label: "30", value: 30 },
           ]}
-          onValueChange={() => { }}
+          onValueChange={() => {}}
         />
       </div>
       <div className="col-auto">
@@ -109,7 +110,7 @@ const Footer = () => {
           total={10}
           current={1}
           maxLength={5}
-          onPageChange={() => { }}
+          onPageChange={() => {}}
         ></Pagination>
       </div>
     </div>
@@ -181,22 +182,23 @@ const QueryTableOrder = () => {
   const [orderData, setOrderData] = useState<TableRow[]>([]);
 
   const GET_ORDER = gql`
-  query OrderFindMany($where: OrderWhereInput) {
-  orderFindMany(where: $where) {
-    id
-    platformFee
-    createdAt
-    updatedAt
-    cartId
-    createdByUserId
-    couponId
-    referralLinkId
-    createdByUser {
-      id
-      name
+    query OrderFindMany($where: OrderWhereInput) {
+      orderFindMany(where: $where) {
+        id
+        platformFee
+        createdAt
+        updatedAt
+        cartId
+        createdByUserId
+        couponId
+        referralLinkId
+        createdByUser {
+          id
+          name
+        }
+      }
     }
-  }
-}`;
+  `;
 
   const { loading, error, data } = useQuery(GET_ORDER);
 
@@ -223,17 +225,17 @@ const QueryTableOrder = () => {
     const options: Intl.DateTimeFormatOptions = {
       day: "numeric",
       month: "long",
-      year: "numeric"
+      year: "numeric",
     };
     const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', options);
+    return date.toLocaleDateString("id-ID", options);
   };
 
   const formatToIDR = (amount: string) => {
-    return parseInt(amount).toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+    return parseInt(amount).toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     });
   };
 
@@ -261,7 +263,9 @@ const QueryTableOrder = () => {
                 <Link
                   className="text-dark text-hover-primary"
                   href={
-                    "order/" + user.idOrder.toString().replace(" ", "") + "/detail-order/"
+                    "order/" +
+                    user.idOrder.toString().replace(" ", "") +
+                    "/detail-order/"
                   }
                 >
                   {user.namaProduk}
@@ -280,7 +284,9 @@ const QueryTableOrder = () => {
               <td className="fw-bold text-muted text-end">
                 {formatDate(user.tanggalPembelian)}
               </td>
-              <td className="fw-bold text-muted text-end">{formatToIDR(user.totalHarga)}</td>
+              <td className="fw-bold text-muted text-end">
+                {formatToIDR(user.totalHarga)}
+              </td>
               <td className="text-end">
                 <Badge label={user.status} badgeColor={user.badgeColor} />
               </td>
@@ -342,14 +348,20 @@ const ExportModal = ({
         title="Export Data"
         fade
         modalCentered
-        onClose={() => {
-
-        }}
+        onClose={() => {}}
         buttonClose={
-          <Buttons buttonColor="secondary" data-bs-dismiss="modal" classNames="fw-bold">Batal</Buttons>
+          <Buttons
+            buttonColor="secondary"
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+          >
+            Batal
+          </Buttons>
         }
         buttonSubmit={
-          <Buttons data-bs-dismiss="modal" classNames="fw-bold">Export</Buttons>
+          <Buttons data-bs-dismiss="modal" classNames="fw-bold">
+            Export
+          </Buttons>
         }
         footerContentCentered
         modalSize="lg"

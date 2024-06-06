@@ -83,7 +83,7 @@ const Membership = () => {
                       <tr key={membership.id} className="">
                         <td className="">
                           <Link
-                            href={``}
+                            href={`/admin/subscriber/detail/${membership.id}`}
                             className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                             style={{
                               maxWidth: "150px",

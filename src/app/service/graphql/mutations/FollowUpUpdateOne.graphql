@@ -1,0 +1,9 @@
+mutation FollowUpUpdateOne(
+  $data: FollowUpUpdateInput!
+  $where: FollowUpWhereUniqueInput!
+) {
+  followUpUpdateOne(data: $data, where: $where) {
+    id
+    name
+  }
+}
