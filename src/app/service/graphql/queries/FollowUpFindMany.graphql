@@ -1,0 +1,10 @@
+query FollowUpFindMany($where: FollowUpWhereInput, $take: Int, $skip: Int) {
+  followUpFindMany(where: $where, take: $take, skip: $skip) {
+    id
+    name
+    content
+    createdAt
+    updatedAt
+    adminId
+  }
+}
