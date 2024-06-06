@@ -258,7 +258,7 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th className="w-200px">
+              {/* <th className="w-200px">
                 <CheckBoxInput
                   className="w-200px"
                   checked={selectAll}
@@ -269,7 +269,7 @@ const Body = ({
                 >
                   <>Username</>
                 </CheckBoxInput>
-              </th>
+              </th> */}
               <th className="min-w-300px">Nama Lengkap</th>
               {/* <th className="text-end min-w-275px">Username</th> */}
               <th className="text-end min-w-200px">Tanggal Pendaftaran</th>
@@ -281,7 +281,7 @@ const Body = ({
             {mentorFindMany.data?.mentorFindMany?.map((mentor, index) => {
               return (
                 <tr key={index}>
-                  <td className="align-middle">
+                  {/* <td className="align-middle">
                     <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
@@ -301,7 +301,7 @@ const Body = ({
                         {mentor.user.username}
                       </Link>
                     </CheckBoxInput>
-                  </td>
+                  </td> */}
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
                       <div className="symbol symbol-50px me-5 symbol-circle">

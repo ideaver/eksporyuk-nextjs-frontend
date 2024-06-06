@@ -11,7 +11,10 @@ type Props = {
   handleClose: () => void;
   handleSubmit: (value: IResourceData) => void;
 };
-
+interface UrlFile {
+  fileUrl: string;
+  fileName: string;
+}
 type FileIcons = {
   [key: string]: string;
   doc: string;
@@ -30,7 +33,7 @@ type FileIcons = {
 };
 
 const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[] | UrlFile[]>([]);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -44,30 +47,48 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
   };
 
   const handleDelete = (index: number) => {
-    const newFiles = files.filter((_, i) => i !== index);
-    setFiles(newFiles);
+    const fileToDelete = files[index];
+
+    if (fileToDelete instanceof File) {
+      const newFiles = (files as File[]).filter((_, i) => i !== index);
+      setFiles(newFiles);
+    } else {
+      const newFiles = (
+        files as { fileUrl: string; fileName: string }[]
+      ).filter((_, i) => i !== index);
+      setFiles(newFiles);
+    }
   };
 
   const handleView = (index: number) => {
     const file = files[index];
+    if (file instanceof File) {
+      if (!file) {
+        console.error(`No file found at index ${index}`);
+        return;
+      }
 
-    if (!file) {
-      console.error(`No file found at index ${index}`);
-      return;
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const url = e.target?.result;
+        window.open(url as string, "_blank");
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+      };
+
+      reader.readAsDataURL(file as File);
+    } else {
+      const file = (
+        files as {
+          fileUrl: string;
+          fileName: string;
+        }[]
+      )[index];
+      window.open(file.fileUrl, "_blank");
     }
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const url = e.target?.result;
-      window.open(url as string, "_blank");
-    };
-
-    reader.onerror = (error) => {
-      console.error("Error reading file:", error);
-    };
-
-    reader.readAsDataURL(file);
   };
   const fileIcons: FileIcons = {
     doc: "doc.svg",
@@ -94,18 +115,23 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
     });
   };
 
-  const stringToFile = (dataUrl: string, filename: string): File => {
-    const arr = dataUrl.split(",");
-    const mime = arr?.[0].match(/:(.*?);/)?.[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
+  const stringToFile = (dataUrl: string, filename: string): File | null => {
+    try {
+      const arr = dataUrl.split(",");
+      const mime = arr?.[0].match(/:(.*?);/)?.[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
 
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+
+      return new File([u8arr], filename, { type: mime });
+    } catch (error) {
+      console.error("Invalid Base64 string:", error);
+      return null;
     }
-
-    return new File([u8arr], filename, { type: mime });
   };
 
   const handleReset = () => {
@@ -113,13 +139,16 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
     setTitle("");
     setDescription("");
   };
-
   useEffect(() => {
     if (isEdit) {
-      const files: File[] = [];
+      const files: File[] | UrlFile[] = [];
       isEdit.files?.forEach((file) => {
-        const fileData = stringToFile(file.fileUrl,file.fileName);
-        files.push(fileData);
+        const fileData = stringToFile(file.fileUrl, file.fileName);
+        if (fileData) {
+          (files as File[]).push(fileData);
+        } else {
+          (files as UrlFile[]).push(...(isEdit.files as unknown as UrlFile[]));
+        }
       });
       setTitle(isEdit.title);
       setDescription(isEdit.description);
@@ -194,20 +223,33 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
         ) : (
           <div className="row mt-5  gy-5">
             {files.map((file, index) => {
-              const fileExtension = file.name.split(".").pop()?.toLowerCase();
+              let fileName: string;
+              let fileExtension: string | undefined;
+
+              if (file instanceof File) {
+                fileName = file.name;
+                fileExtension = fileName?.split(".").pop()?.toLowerCase();
+              } else {
+                const url = new URL(file.fileName);
+                const pathParts = url.pathname.split("/");
+                fileName = pathParts[pathParts.length - 1];
+                fileExtension = fileName.split(".").pop()?.toLowerCase();
+              }
+
               const iconFile =
                 fileIcons[fileExtension as string] || "folder-document.svg";
+
               return (
                 <div key={index} className="col">
                   <div className="card h-100 shadow pe-5 ps-5">
                     <img
                       src={`/media/svg/files/${iconFile}`}
                       className="card-img-top mt-5"
-                      alt={file.name}
+                      alt={fileName}
                       height={60}
                     />
                     <div className="card-body">
-                      <h5 className="card-title">{file.name}</h5>
+                      <h5 className="card-title">{fileName}</h5>
                     </div>
                     <div className="card-footer">
                       <div className="btns-file d-flex justify-content-between gap-2 mt-5">
@@ -240,10 +282,15 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
         <button
           className="btn btn-primary"
           onClick={async () => {
-            const filesString: string[] = [];
+            const filesString: (string | UrlFile)[] = [];
+
             for (let index = 0; index < files.length; index++) {
-              const res = await fileToString(files[index]);
-              filesString.push(res);
+              if (files[index] instanceof File) {
+                const res = await fileToString((files as File[])[index]);
+                filesString.push(res);
+              } else {
+                filesString.push(files[index] as UrlFile);
+              }
             }
 
             handleSubmit({
@@ -253,11 +300,15 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
                   : Math.random().toString(36).substr(2, 9),
               title: title,
               description: description,
-              files: filesString.map((convertedFile, index) => {
-                return {
-                  fileUrl: convertedFile,
-                  fileName: files[index].name,
-                };
+              files: filesString.map((file, index) => {
+                if (typeof file === "string") {
+                  return {
+                    fileUrl: file,
+                    fileName: (files[index] as File).name,
+                  };
+                } else {
+                  return file;
+                }
               }),
             });
             handleReset();
