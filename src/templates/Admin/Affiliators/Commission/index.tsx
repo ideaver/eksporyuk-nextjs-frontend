@@ -180,7 +180,7 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
                     setComissionId(user.id);
                   }}
                 >
-                  {user.order?.enrollment?.[0].course?.title}
+                  {user.order?.enrollment?.[0]?.course?.title}
                   {/* <Link
                     className="text-dark text-hover-primary"
                     href={
@@ -194,13 +194,13 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {
-                    user.order?.enrollment?.[0].course?.enrollments?.[0].student
+                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
                       .user.name
                   }
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {
-                    user.order?.enrollment?.[0].course?.enrollments?.[0].student
+                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
                       .user.affiliator?.user.name
                   }
                 </td>
