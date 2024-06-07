@@ -299,20 +299,25 @@ const useKuponAffiliasiViewModel = () => {
           id: couponId,
         },
         data: {
-          isActive: {
-            set: Boolean(isActive),
-          },
-          value: {
-            set: Number(value),
-          },
-          endDate: {
-            set: endDate,
-          },
+          // isActive: {
+          //   set: Boolean(isActive),
+          // },
+          // value: {
+          //   set: Number(value),
+          // },
+          // endDate: {
+          //   set: endDate,
+          // },
           affiliatorCoupon: {
             update: {
               data: {
                 code: {
                   set: couponCode,
+                },
+                extendedFrom: {
+                  connect: {
+                    id: platformCoupon?.value,
+                  },
                 },
               },
             },

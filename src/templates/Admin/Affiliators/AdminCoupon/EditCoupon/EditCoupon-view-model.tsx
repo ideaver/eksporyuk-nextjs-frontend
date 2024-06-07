@@ -108,13 +108,13 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
           },
         },
       });
-      // await couponFindMany.refetch();
+      await couponFindMany.refetch();
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
-      // await router.push("/admin/affiliate/admin-coupon");
-      // router.reload();
+      await router.push("/admin/affiliate/admin-coupon");
+      router.reload();
     }
   };
 
