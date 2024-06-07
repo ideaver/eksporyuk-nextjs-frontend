@@ -73,7 +73,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Detail Komisi</h2>
+        <h2>Detail Order INV {data?.transactionFindOne?.id}</h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
