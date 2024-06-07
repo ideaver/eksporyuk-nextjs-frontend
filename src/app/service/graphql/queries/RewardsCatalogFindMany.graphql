@@ -18,5 +18,8 @@ query RewardsCatalogFindMany(
     }
     pointsRequired
     createdAt
+    _count {
+      rewardsRedeem
+    }
   }
 }
