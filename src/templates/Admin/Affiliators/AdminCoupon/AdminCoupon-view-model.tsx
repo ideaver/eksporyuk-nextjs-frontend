@@ -127,6 +127,38 @@ export const AddMentorHandler = ({ courses, setCourses }: any) => {
   };
 };
 
+export const AddNotAllowedCourses = ({ courses, setNotAllowedCourses }: any) => {
+  const [selectedCourse, setSelectedCourses] = useState<any>([]);
+
+  const addCourse = (mentor: any) => {
+    const updatedMentors = selectedCourse
+      ? [...selectedCourse, mentor]
+      : [mentor];
+
+    setSelectedCourses(updatedMentors);
+    setNotAllowedCourses(updatedMentors);
+  };
+
+  const removeCourse = (index: number) => {
+    const updatedMentors = selectedCourse?.filter(
+      (_: any, mentorIndex: any) => mentorIndex !== index
+    );
+
+    setSelectedCourses(updatedMentors);
+  };
+
+  useEffect(() => {
+    setSelectedCourses(selectedCourse);
+  }, [selectedCourse]);
+
+  return {
+    selectedCourse,
+    setSelectedCourses,
+    addCourse,
+    removeCourse,
+  };
+};
+
 export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
     variables: {
@@ -193,15 +225,25 @@ export const useCouponForm = () => {
   const [connectCourse, setConnectCourse] = useState<number>();
   const [maxClaim, setMaxClaim] = useState<number>();
   const [courses, setCourses] = useState<any>([]);
+  const [notAllowedCourses, setNotAllowedCourses] = useState<any>([]);
 
+  // Kupon hanya bisa digunakan di kelas
   const selectedCourses = courses.map((item: any) => ({
     id: item.value
   }));
 
-  const {selectedMentor,
-    setSelectedMentor,
-    addMentor,
-    removeMentor} = AddMentorHandler({ courses, setCourses });
+  // Kupon tidak bisa digunakan di kelas
+  const notAllowedCourse = notAllowedCourses.map((item: any) => ({
+    id: item.value
+  }));
+
+  // Kupon hanya bisa digunakan di kelas
+  const { selectedMentor, setSelectedMentor, addMentor, removeMentor } =
+    AddMentorHandler({ courses, setCourses });
+
+  // Kupon tidak bisa digunakan di kelas
+  const { selectedCourse, setSelectedCourses, addCourse, removeCourse } =
+    AddNotAllowedCourses({ notAllowedCourses, setNotAllowedCourses });
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -250,6 +292,9 @@ export const useCouponForm = () => {
               create: {
                 onlyAvailableToCourse: {
                   connect: selectedCourses,
+                },
+                notAvailableToCourse: {
+                  connect: notAllowedCourse,
                 }
               }
             }
@@ -288,7 +333,8 @@ export const useCouponForm = () => {
     selectedMentor,
     setSelectedMentor,
     addMentor,
-    removeMentor
+    removeMentor,
+    selectedCourse, setSelectedCourses, addCourse, removeCourse,
   };
 };
 
