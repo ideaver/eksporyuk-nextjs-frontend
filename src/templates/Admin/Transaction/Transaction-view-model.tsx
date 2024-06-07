@@ -267,6 +267,12 @@ const useTransactionViewModel = () => {
   ]);
 
   const [exportDataTransaction] = useExportDataTransactionMutation();
+  const [exportFilterStatus, setExportFilterStatus] = useState<
+    TransactionStatusEnum | "all"
+  >("all");
+  const [exportFilterCategory, setExportFilterCategory] = useState<
+    TransactionCategoryEnum | "all"
+  >("all");
 
   const formatWIB = (createdAt: string): string => {
     const date = new Date(createdAt);
@@ -286,6 +292,10 @@ const useTransactionViewModel = () => {
   };
 
   return {
+    exportFilterStatus,
+    setExportFilterCategory,
+    setExportFilterStatus,
+    exportFilterCategory,
     orderBy,
     setOrderBy,
     handleLoadingExportChange,
