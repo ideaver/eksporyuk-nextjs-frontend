@@ -27,7 +27,10 @@ import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { RootState } from "@/app/store/store";
-import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  AnnouncementTypeEnum,
+  UserRoleEnum,
+} from "@/app/service/graphql/gen/graphql";
 import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
 import {
   changeContentAnnouncement,
@@ -44,6 +47,9 @@ const InformationPage = () => {
   const formToogle = useSelector(
     (state: RootState) => state.article.toogleForm
   );
+  const typeAnnouncement = useSelector(
+    (state: RootState) => state.announcement.announcementType
+  );
   const courseAnnouncement = useSelector(
     (state: RootState) => state.announcement.course
   );
@@ -55,6 +61,7 @@ const InformationPage = () => {
     resetAnnouncementState,
     handleAnnouncementCreateOne,
     isLoadingAnnouncement,
+    handleAnnouncementTypeChange,
   } = useAnnouncementForm();
 
   const {
@@ -308,9 +315,27 @@ const InformationPage = () => {
                   <h5 className="text-muted mt-3">Masukan judul</h5>
                   <h5 className="required mt-5">Tipe Announcement</h5>
                   <Dropdown
-                    options={targetOptions}
+                    value={typeAnnouncement}
+                    options={[
+                      {
+                        value: AnnouncementTypeEnum.Affiliate,
+                        label: "Affiliate",
+                      },
+                      {
+                        value: AnnouncementTypeEnum.Course,
+                        label: "Course",
+                      },
+                      {
+                        value: AnnouncementTypeEnum.System,
+                        label: "System",
+                      },
+                      {
+                        value: AnnouncementTypeEnum.Other,
+                        label: "Other",
+                      },
+                    ]}
                     onValueChange={(val) => {
-                      handleTargetChange([...target, val as UserRoleEnum]);
+                      handleAnnouncementTypeChange(val as AnnouncementTypeEnum);
                     }}
                   />
                   <h5 className="text-muted mt-3">Masukan tipe announcement</h5>

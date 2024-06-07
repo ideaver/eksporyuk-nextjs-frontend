@@ -1,7 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import {
+  AnnouncementTypeEnum,
   QueryMode,
   SortOrder,
+  useAnnouncementDeleteOneMutation,
+  useAnnouncementFindManyQuery,
   useArticleCategoryFindManyQuery,
   useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
@@ -77,6 +80,44 @@ const usePagination = (
     articleLength,
   };
 };
+const usePaginationAnnouncement = (
+  articleFindTake: number,
+  articleFindSkip: number,
+  setArticleFindSkip: Dispatch<SetStateAction<number>>,
+  setArticleFindTake: Dispatch<SetStateAction<number>>,
+  articleFindSearch: string,
+  articleFindStatus: string
+) => {
+  const [currentPageAnnouncement, setCurrentPageAnnouncement] = useState(1);
+
+  const announcementLength = useAnnouncementFindManyQuery({});
+
+  const handlePageChangeAnnouncement = (page: number) => {
+    setCurrentPageAnnouncement(page);
+    setArticleFindSkip((page - 1) * articleFindTake);
+  };
+
+  const length: number | undefined =
+    announcementLength.data?.announcementFindMany?.length;
+
+  const calculateTotalPageAnnouncement = () => {
+    return Math.ceil((length as number) / articleFindTake);
+  };
+
+  useEffect(() => {
+    if (articleFindSearch.length > 0 || articleFindStatus != "all") {
+      setCurrentPageAnnouncement(1);
+      setArticleFindSkip(0);
+    }
+  }, [articleFindSearch, articleFindStatus, setArticleFindSkip]);
+  return {
+    currentPageAnnouncement,
+    setCurrentPageAnnouncement,
+    handlePageChangeAnnouncement,
+    calculateTotalPageAnnouncement,
+    announcementLength,
+  };
+};
 
 export const useCategoriesDropdown = () => {
   const getCategory = useArticleCategoryFindManyQuery({
@@ -122,9 +163,13 @@ const useArticleViewModel = () => {
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
   const [articleFindCategory, setArticleFindCategory] = useState(0);
+  const [announcementFindType, setAnnouncementFindType] = useState<
+    AnnouncementTypeEnum | "all"
+  >("all");
   const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
     SortOrder.Desc
   );
+  const [selectedTable, selectTable] = useState("article");
 
   const articleFindMany = useArticleFindManyQuery({
     variables: {
@@ -196,6 +241,49 @@ const useArticleViewModel = () => {
 
   const [articleDeleteOne] = useArticleDeleteOneMutation();
 
+  const announcementFindMany = useAnnouncementFindManyQuery({
+    variables: {
+      take: parseInt(articleFindTake.toString()),
+      skip: articleFindSkip,
+      orderBy: {
+        createdAt: articleOrderBy,
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            type: {
+              equals:
+                announcementFindType === "all" ? null : announcementFindType,
+            },
+          },
+          {
+            createdByAdmin: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: articleFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+            type: {
+              equals:
+                announcementFindType === "all" ? null : announcementFindType,
+            },
+          },
+        ],
+      },
+    },
+  });
+  const [announcementDeleteOne] = useAnnouncementDeleteOneMutation();
+
   const {
     currentPage,
     setCurrentPage,
@@ -211,6 +299,22 @@ const useArticleViewModel = () => {
     articleFindStatus,
     articleFindCategory
   );
+
+  const {
+    currentPageAnnouncement,
+    setCurrentPageAnnouncement,
+    handlePageChangeAnnouncement,
+    calculateTotalPageAnnouncement,
+    announcementLength,
+  } = usePaginationAnnouncement(
+    articleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindSearch,
+    articleFindStatus
+  );
+
   useEffect(() => {
     if (
       articleFindSearch.length !== 0 ||
@@ -239,6 +343,17 @@ const useArticleViewModel = () => {
   };
 
   return {
+    announcementFindType,
+    setAnnouncementFindType,
+    announcementDeleteOne,
+    currentPageAnnouncement,
+    setCurrentPageAnnouncement,
+    handlePageChangeAnnouncement,
+    calculateTotalPageAnnouncement,
+    announcementLength,
+    selectedTable,
+    selectTable,
+    announcementFindMany,
     formatWIB,
     articleDeleteOne,
     articleFindMany,

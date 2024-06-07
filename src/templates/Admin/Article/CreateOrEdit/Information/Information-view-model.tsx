@@ -223,6 +223,9 @@ export const useAnnouncementForm = () => {
     dispatch(changeCourse(null));
     dispatch(changeAnnouncementType(AnnouncementTypeEnum.Affiliate));
   };
+  const handleAnnouncementTypeChange = (e: AnnouncementTypeEnum) => {
+    dispatch(changeAnnouncementType(e));
+  };
 
   const [announcementCreateOne, response] = useAnnouncementCreateOneMutation({
     onCompleted: () => {},
@@ -282,6 +285,7 @@ export const useAnnouncementForm = () => {
   };
 
   return {
+    handleAnnouncementTypeChange,
     handleAnnouncementCreateOne,
     isLoadingAnnouncement,
     announcementForm,
