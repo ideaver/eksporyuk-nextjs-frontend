@@ -47,7 +47,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                 <div className="d-flex flex-column">
                   <div className="d-flex align-items-center mb-2">
                     <p className="text-gray-800 fs-2 fw-bolder me-1 mb-0">
-                      {userData?.name ?? "Ananda"}
+                      {userData?.name ?? "-"}
                     </p>
                   </div>
 
@@ -60,7 +60,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                       <KTIcon iconName="geolocation" className="fs-4 me-1" />
                       {formatAddress(
                         userData?.addresses?.find((a: any) => a.isMain === true)
-                      ) ?? "JL. Kebun Karet No. 10, Loktabat Utara, Banjarbaru Utara, Kalimantan Selatan"}
+                      ) ?? "-"}
                     </p>
                   </div>
                 </div>
@@ -78,7 +78,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
                       </div>
 
                       <div className="fw-bold fs-6 text-gray-400">
-                        Total Pembelian
+                        Total Omzet Affiliasi
                       </div>
                     </div>
 
