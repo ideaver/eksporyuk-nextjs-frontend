@@ -1,0 +1,45 @@
+query AnnouncementFindOne($where: AnnouncementWhereUniqueInput!) {
+  announcementFindOne(where: $where) {
+    course {
+      id
+      title
+      description
+      prerequisites
+      objective
+      outcome
+      startDate
+      endDate
+      maxEnrollment
+      deepLink
+      isCertificationProvided
+      basePrice
+      salePrice
+      affiliateCommissionType
+      affiliateCommission
+      createdAt
+      updatedAt
+      status
+      level
+      duration
+      categoryId
+      createdById
+      certificateTemplateId
+      videoUrlId
+    }
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    type
+    createdByAdminId
+    createdByMentorId
+    courseId
+    createdByMentor {
+      id
+      updatedAt
+      description
+      tagLine
+    }
+  }
+}
