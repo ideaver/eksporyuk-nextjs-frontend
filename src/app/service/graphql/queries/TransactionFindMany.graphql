@@ -1,0 +1,60 @@
+query TransactionFindMany($where: TransactionWhereInput, $orderBy: [TransactionOrderByWithRelationInput!], $take: Int, $skip: Int) {
+  transactionFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+    amount
+    uniqueCode
+    createdAt
+    updatedAt
+    proofImageId
+    status
+    transactionCategory
+    fromAccountId
+    toAccountId
+    paymentId
+    payment {
+      invoice {
+        order {
+          id
+          platformFee
+          createdAt
+          updatedAt
+          cartId
+          createdByUserId
+          couponId
+          referralLinkId
+          enrollment {
+            course {
+              title
+            }
+          }
+          createdByUser {
+            name
+            affiliator {
+              user {
+                name
+              }
+            }
+          }
+        }
+        paymentForGateway {
+          id
+          bill_link
+          bill_link_id
+          bill_title
+          sender_name
+          sender_bank
+          sender_email
+          sender_bank_type
+          virtual_account_number
+          amount
+          status
+          settlement_status
+          reference_id
+          payment_url
+          created_at
+          completed_at
+        }
+      }
+    }
+  }
+}
