@@ -43,7 +43,9 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
     maxClaim,
     setMaxClaim,
     connectCourse,
-    setConnectCourse
+    setConnectCourse,
+    selectedMentor, setSelectedMentor, addMentor, removeMentor,
+    selectedCourse, setSelectedCourses, addCourse, removeCourse,
   } = useEditCouponViewModel({ id, data });
 
   const { loadOptions } = useCoursesDropdown();
@@ -171,7 +173,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
                 }}
               />
             </div>
-            <div className="mb-5 mt-6">
+            {/* <div className="mb-5 mt-6">
           <h4 className="fw-bold text-gray-700">Penerapan Kupon</h4>
           <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
@@ -181,6 +183,80 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
             loadOptions={loadOptions}
             onChange={(value) => {
               setConnectCourse(value?.value);
+            }}
+          ></AsyncPaginate>
+        </div> */}
+        <div className="mb-8 mt-6">
+          <h4 className="fw-bold text-gray-700">Kupon hanya bisa digunakan di kelas</h4>
+          {/* <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6> */}
+          {selectedMentor &&
+            selectedMentor?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeMentor(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              addMentor(value);
+            }}
+          ></AsyncPaginate>
+        </div>
+        <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">Kupon tidak bisa digunakan di kelas</h4>
+          {/* <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6> */}
+          {selectedCourse &&
+            selectedCourse?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeCourse(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              addCourse(value);
             }}
           ></AsyncPaginate>
         </div>

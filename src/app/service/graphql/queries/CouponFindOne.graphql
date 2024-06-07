@@ -16,5 +16,15 @@ query CouponFindOne($where: CouponWhereUniqueInput!) {
         id
       }
     }
+    avaibilities {
+      onlyAvailableToCourse {
+        id
+        title
+      }
+      notAvailableToCourse {
+        id
+        title
+      }
+    }
   }
 }
