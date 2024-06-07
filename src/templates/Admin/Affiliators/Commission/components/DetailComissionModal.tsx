@@ -1,6 +1,11 @@
+import { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
+import { useRouter } from "next/navigation";
 
-import { useTransactionFindOneQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  useTransactionFindOneQuery,
+  useTransactionUpdateOneMutation,
+} from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { formatToIDR } from "../Comission-view-model";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -17,6 +22,8 @@ const statusMap: { [key: string]: string } = {
 };
 
 const DetailComissionModal = ({ show, onClose, id }: any) => {
+  const router = useRouter();
+
   const { data, loading, error } = useTransactionFindOneQuery({
     variables: {
       where: {
@@ -24,6 +31,34 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       },
     },
   });
+
+  const [updateTransaction] = useTransactionUpdateOneMutation();
+  const [status, setStatus] = useState<string | undefined>(
+    data?.transactionFindOne?.status
+  );
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatus(event.target.value);
+  };
+
+  useEffect(() => {
+    setStatus(data?.transactionFindOne?.status)
+  }, [data?.transactionFindOne?.status])
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await updateTransaction({
+        variables: {
+          data: { status: { set: status as TransactionStatusEnum } },
+          where: { id: id as number },
+        },
+      });
+      onClose();
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
+  };
 
   return (
     <Modal
@@ -123,6 +158,30 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               />
             </div>
           </div>
+        </div>
+        <div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="status" className="form-label">
+                Ubah Status
+              </label>
+              <select
+                id="status"
+                className="form-select"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <option value="PROCESSING">Di Proses</option>
+                <option value="PENDING">Tertunda</option>
+                <option value="FAILED">Gagal</option>
+                <option value="CANCELLED">Dibatalkan</option>
+                <option value="COMPLETED">Lunas</option>
+              </select>
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
+          </form>
         </div>
       </Modal.Body>
     </Modal>

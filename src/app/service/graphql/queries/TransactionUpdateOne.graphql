@@ -1,0 +1,5 @@
+mutation TransactionUpdateOne($data: TransactionUpdateInput!, $where: TransactionWhereUniqueInput!) {
+  transactionUpdateOne(data: $data, where: $where) {
+    status
+  }
+}
