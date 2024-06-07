@@ -51,6 +51,82 @@ export const breadcrumbs = [
   },
 ];
 
+export const useMentorsDropdown = () => {
+  const getMentors = useCourseFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      getMentors.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) => (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    await getMentors.refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+          },
+        },
+      },
+    );
+
+    return {
+      options: newOptions,
+      hasMore: true,
+    };
+  }
+
+  return { loadOptions };
+};
+
+export const AddMentorHandler = ({ courses, setCourses }: any) => {
+  const [selectedMentor, setSelectedMentor] = useState<any>([]);
+
+  const addMentor = (mentor: any) => {
+    const updatedMentors = selectedMentor
+      ? [...selectedMentor, mentor]
+      : [mentor];
+
+    setSelectedMentor(updatedMentors);
+    setCourses(updatedMentors);
+  };
+
+  const removeMentor = (index: number) => {
+    const updatedMentors = selectedMentor?.filter(
+      (_: any, mentorIndex: any) => mentorIndex !== index
+    );
+
+    setSelectedMentor(updatedMentors);
+  };
+
+  useEffect(() => {
+    setSelectedMentor(selectedMentor);
+  }, [selectedMentor]);
+
+  return {
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor,
+  };
+};
+
 export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
     variables: {
@@ -116,6 +192,16 @@ export const useCouponForm = () => {
   const [date, setDate] = useState<Date>(new Date("2025-05-01"));
   const [connectCourse, setConnectCourse] = useState<number>();
   const [maxClaim, setMaxClaim] = useState<number>();
+  const [courses, setCourses] = useState<any>([]);
+
+  const selectedCourses = courses.map((item: any) => ({
+    id: item.value
+  }));
+
+  const {selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor} = AddMentorHandler({ courses, setCourses });
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -155,9 +241,16 @@ export const useCouponForm = () => {
                 },
               },
             },
-            courseCoupon: {
-              connect: {
-                id: connectCourse,
+            // courseCoupon: {
+            //   connect: {
+            //     id: connectCourse,
+            //   }
+            // }
+            avaibilities: {
+              create: {
+                onlyAvailableToCourse: {
+                  connect: selectedCourses,
+                }
               }
             }
           },
@@ -191,7 +284,11 @@ export const useCouponForm = () => {
     connectCourse,
     setConnectCourse,
     maxClaim,
-    setMaxClaim
+    setMaxClaim,
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor
   };
 };
 

@@ -482,7 +482,11 @@ const AddCouponModal = ({
     hanldeCouponCreateOne,
     setConnectCourse,
     maxClaim,
-    setMaxClaim
+    setMaxClaim,
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -661,11 +665,36 @@ const AddCouponModal = ({
           <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6>
+          {selectedMentor &&
+            selectedMentor?.map((mentor: any, index: any) => {
+              console.log("mentor", mentor)
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeMentor(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
           <AsyncPaginate
             className="mt-5"
             loadOptions={loadOptions}
             onChange={(value) => {
-              setConnectCourse(value?.value);
+              addMentor(value);
             }}
           ></AsyncPaginate>
         </div>
