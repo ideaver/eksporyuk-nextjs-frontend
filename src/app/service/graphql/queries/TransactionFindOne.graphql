@@ -25,6 +25,10 @@ query TransactionFindOne($where: TransactionWhereUniqueInput!) {
                 name
               }
             }
+            phone {
+              phoneNumber
+            }
+            email
           }
         }
         paymentForGatewayId

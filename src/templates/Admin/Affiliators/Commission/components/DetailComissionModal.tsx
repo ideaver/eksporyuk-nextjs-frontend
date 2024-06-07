@@ -41,8 +41,8 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
   };
 
   useEffect(() => {
-    setStatus(data?.transactionFindOne?.status)
-  }, [data?.transactionFindOne?.status])
+    setStatus(data?.transactionFindOne?.status);
+  }, [data?.transactionFindOne?.status]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -59,6 +59,8 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       console.error("Failed to update status:", error);
     }
   };
+
+  console.log(data);
 
   return (
     <Modal
@@ -84,7 +86,9 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       <Modal.Body>
         <div className="p-2">
           <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted">Tanggal</label>
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Tanggal
+            </label>
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
@@ -93,7 +97,9 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
             </div>
           </div>
           <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted">Nama Pembeli</label>
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Nama Pembeli
+            </label>
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
@@ -104,8 +110,29 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
+          <div className="row mb-7 align-items-end">
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Kontak
+            </label>
+            <div className="col-lg-8 d-flex gap-2 align-items-center">
+              <span className="fw-bolder fs-6 badge rounded-pill text-bg-secondary">
+                {
+                  data?.transactionFindOne?.payment?.invoice?.order
+                    ?.createdByUser.phone?.phoneNumber
+                }
+              </span>
+              <span className="fw-bolder fs-6 badge rounded-pill text-bg-secondary">
+                {
+                  data?.transactionFindOne?.payment?.invoice?.order
+                    ?.createdByUser.email
+                }
+              </span>
+            </div>
+          </div>
           <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted">Produk</label>
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Produk
+            </label>
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
@@ -117,7 +144,9 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
             </div>
           </div>
           <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted">Total</label>
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Total
+            </label>
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
@@ -131,7 +160,9 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
             </div>
           </div>
           <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted">Affiliasi</label>
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
+              Affiliasi
+            </label>
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
@@ -140,8 +171,10 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7">
-            <label className="col-lg-2 fw-bold text-muted mb-0">Status</label>
+          <div className="row mb-7 align-items-center">
+            <label className="col-lg-2 fw-bold text-white badge text-bg-primary mb-0">
+              Status
+            </label>
 
             <div className="col-lg-8">
               <Badge
@@ -159,30 +192,30 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
             </div>
           </div>
         </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="status" className="form-label">
-                Ubah Status
-              </label>
-              <select
-                id="status"
-                className="form-select"
-                value={status}
-                onChange={handleStatusChange}
-              >
-                <option value="PROCESSING">Di Proses</option>
-                <option value="PENDING">Tertunda</option>
-                <option value="FAILED">Gagal</option>
-                <option value="CANCELLED">Dibatalkan</option>
-                <option value="COMPLETED">Lunas</option>
-              </select>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </form>
-        </div>
+        <Modal.Footer className="p-2">
+            <form onSubmit={handleSubmit} className="">
+                <label htmlFor="status" className="form-label">
+                  Ubah Status
+                </label>
+              <div className="d-flex align-items-center gap-2">
+                <select
+                  id="status"
+                  className="form-select"
+                  value={status}
+                  onChange={handleStatusChange}
+                >
+                  <option value="PROCESSING">Di Proses</option>
+                  <option value="PENDING">Tertunda</option>
+                  <option value="FAILED">Gagal</option>
+                  <option value="CANCELLED">Dibatalkan</option>
+                  <option value="COMPLETED">Lunas</option>
+                </select>
+                <button type="submit" className="btn btn-primary">
+                  Submit
+                </button>
+              </div>
+            </form>
+        </Modal.Footer>
       </Modal.Body>
     </Modal>
   );
