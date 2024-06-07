@@ -5,16 +5,17 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import {
+  changeAffiliateCommission,
+  changeAffiliateFirstCommission,
   changeBenefits,
   changeCourses,
   changeDescription,
   changeDuration,
-  changeMembershipType,
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
 import {
-  MembershipTypeEnum,
+  AffiliateCommissionTypeEnum,
   QueryMode,
   useCourseFindManyQuery,
   useMembershipCategoryCreateOneMutation,
@@ -105,8 +106,9 @@ export const useMembershipForm = () => {
     dispatch(changePrice("0"));
     dispatch(changeBenefits(""));
     dispatch(changeDuration(0));
-    dispatch(changeMembershipType(MembershipTypeEnum.ThreeMonth));
     dispatch(changeCourses([]));
+    dispatch(changeAffiliateCommission(100));
+    dispatch(changeAffiliateFirstCommission(100));
   };
 
   const membershipSchema = Yup.object().shape({
@@ -148,7 +150,12 @@ export const useMembershipForm = () => {
               description: membershipState.description,
               benefits: membershipState.benefits,
               price: parseFloat(membershipState.price),
-              membershipType: membershipState.membershipType,
+              affiliateCommission: parseFloat(
+                membershipState.affiliateCommision.toString()
+              ),
+              affiliateFirstCommission: parseFloat(
+                membershipState.affiliateFirstCommision.toString()
+              ),
               durationDay: membershipState.duration,
               benefitCourses: {
                 connect: idCourses,
@@ -181,9 +188,7 @@ const useInformationMembershipViewModel = () => {
   const coursesState = useSelector(
     (state: RootState) => state.memebrship.courses
   );
-  const handleChangeMembershipType = (type: MembershipTypeEnum) => {
-    dispatch(changeMembershipType(type));
-  };
+
   const handleChangeCourses = (course: { value: number; label: string }) => {
     dispatch(changeCourses([...coursesState, course]));
   };
@@ -191,10 +196,18 @@ const useInformationMembershipViewModel = () => {
     dispatch(changeCourses(coursesState.filter((val) => val.value !== id)));
   };
 
+  const handleChangeAffiliateFirstCommission = (val: number) => {
+    dispatch(changeAffiliateFirstCommission(val));
+  };
+  const handleChangeAffiliateCommission = (val: number) => {
+    dispatch(changeAffiliateCommission(val));
+  };
+
   return {
     handleDeleteCourses,
     handleChangeCourses,
-    handleChangeMembershipType,
+    handleChangeAffiliateCommission,
+    handleChangeAffiliateFirstCommission,
   };
 };
 

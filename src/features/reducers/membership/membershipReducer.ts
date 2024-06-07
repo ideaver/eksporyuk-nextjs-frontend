@@ -1,35 +1,31 @@
-import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { AffiliateCommissionTypeEnum } from "@/app/service/graphql/gen/graphql";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface membershipState {
   name: string;
   description: string;
   duration: number;
-  membershipType: MembershipTypeEnum;
   price: string;
   benefits: string;
   courses: { value: number; label: string }[];
+  affiliateFirstCommision: number;
+  affiliateCommision: number;
 }
 const initialState: membershipState = {
   name: "",
   description: "",
   duration: 0,
-  membershipType: MembershipTypeEnum.ThreeMonth,
   price: "0",
   benefits: "",
   courses: [],
+  affiliateFirstCommision: 100,
+  affiliateCommision: 100,
 };
 
 export const membershipSlice = createSlice({
   name: "membership",
   initialState,
   reducers: {
-    changeMembershipType: (
-      state,
-      action: PayloadAction<MembershipTypeEnum>
-    ) => {
-      state.membershipType = action.payload;
-    },
     changeName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
     },
@@ -51,17 +47,24 @@ export const membershipSlice = createSlice({
     ) => {
       state.courses = action.payload;
     },
+    changeAffiliateCommission: (state, action: PayloadAction<number>) => {
+      state.affiliateCommision = action.payload;
+    },
+    changeAffiliateFirstCommission: (state, action: PayloadAction<number>) => {
+      state.affiliateFirstCommision = action.payload;
+    },
   },
 });
 
 export const {
-  changeMembershipType,
   changeName,
   changeDescription,
   changeBenefits,
   changePrice,
   changeDuration,
   changeCourses,
+  changeAffiliateCommission,
+  changeAffiliateFirstCommission,
 } = membershipSlice.actions;
 
 export default membershipSlice.reducer;

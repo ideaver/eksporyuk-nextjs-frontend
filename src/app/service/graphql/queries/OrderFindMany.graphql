@@ -175,7 +175,7 @@ query OrderFindMany(
           id
           name
           description
-          membershipType
+
           durationDay
           benefits
           price
