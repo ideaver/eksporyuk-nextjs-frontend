@@ -85,7 +85,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       </Modal.Header>
       <Modal.Body>
         <div className="p-2">
-          <div className="row mb-7">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Tanggal
             </label>
@@ -96,7 +96,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Nama Pembeli
             </label>
@@ -110,18 +110,32 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7 align-items-end">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Kontak
             </label>
             <div className="col-lg-8 d-flex gap-2 align-items-center">
-              <span className="fw-bolder fs-6 badge rounded-pill text-bg-secondary">
+              <span
+                className="fw-bolder fs-6 badge text-white"
+                style={{ backgroundColor: "gray" }}
+              >
+                <i
+                  className="bi bi-phone-fill me-2"
+                  style={{ fontSize: "16px", color: "white" }}
+                ></i>
                 {
                   data?.transactionFindOne?.payment?.invoice?.order
                     ?.createdByUser.phone?.phoneNumber
                 }
               </span>
-              <span className="fw-bolder fs-6 badge rounded-pill text-bg-secondary">
+              <span
+                className="fw-bolder fs-6 badge text-white"
+                style={{ backgroundColor: "gray" }}
+              >
+                <i
+                  className="bi bi-envelope-fill me-2"
+                  style={{ fontSize: "16px", color: "white" }}
+                ></i>
                 {
                   data?.transactionFindOne?.payment?.invoice?.order
                     ?.createdByUser.email
@@ -129,7 +143,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Produk
             </label>
@@ -143,7 +157,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Total
             </label>
@@ -159,15 +173,41 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </span>
             </div>
           </div>
-          <div className="row mb-7">
+          <div className="row mb-7 align-items-center">
             <label className="col-lg-2 fw-bold text-white badge text-bg-primary">
               Affiliasi
             </label>
 
             <div className="col-lg-8">
-              <span className="fw-bolder fs-6 text-dark">
+              <span className="fw-bolder fs-6 text-dark me-2">
                 {data?.transactionFindOne?.payment?.invoice?.order
                   ?.createdByUser?.affiliator?.user.name ?? "-"}
+              </span>
+              <span
+                className="fw-bolder fs-6 badge text-white me-2"
+                style={{ backgroundColor: "gray" }}
+              >
+                <i
+                  className="bi bi-phone-fill me-2"
+                  style={{ fontSize: "16px", color: "white" }}
+                ></i>
+                {
+                  data?.transactionFindOne?.payment?.invoice?.order
+                    ?.createdByUser.affiliator?.user.phone?.phoneNumber ?? "-"
+                }
+              </span>
+              <span
+                className="fw-bolder fs-6 badge text-white"
+                style={{ backgroundColor: "gray" }}
+              >
+                <i
+                  className="bi bi-envelope-fill me-2"
+                  style={{ fontSize: "16px", color: "white" }}
+                ></i>
+                {
+                  data?.transactionFindOne?.payment?.invoice?.order
+                    ?.createdByUser.affiliator?.user.email ?? "-"
+                }
               </span>
             </div>
           </div>
@@ -193,28 +233,28 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
           </div>
         </div>
         <Modal.Footer className="p-2">
-            <form onSubmit={handleSubmit} className="">
-                <label htmlFor="status" className="form-label">
-                  Ubah Status
-                </label>
-              <div className="d-flex align-items-center gap-2">
-                <select
-                  id="status"
-                  className="form-select"
-                  value={status}
-                  onChange={handleStatusChange}
-                >
-                  <option value="PROCESSING">Di Proses</option>
-                  <option value="PENDING">Tertunda</option>
-                  <option value="FAILED">Gagal</option>
-                  <option value="CANCELLED">Dibatalkan</option>
-                  <option value="COMPLETED">Lunas</option>
-                </select>
-                <button type="submit" className="btn btn-primary">
-                  Submit
-                </button>
-              </div>
-            </form>
+          <form onSubmit={handleSubmit} className="">
+            <label htmlFor="status" className="form-label">
+              Ubah Status
+            </label>
+            <div className="d-flex align-items-center gap-2">
+              <select
+                id="status"
+                className="form-select"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <option value="PROCESSING">Di Proses</option>
+                <option value="PENDING">Tertunda</option>
+                <option value="FAILED">Gagal</option>
+                <option value="CANCELLED">Dibatalkan</option>
+                <option value="COMPLETED">Lunas</option>
+              </select>
+              <button type="submit" className="btn btn-primary">
+                Submit
+              </button>
+            </div>
+          </form>
         </Modal.Footer>
       </Modal.Body>
     </Modal>

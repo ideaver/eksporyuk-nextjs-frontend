@@ -23,6 +23,10 @@ query TransactionFindOne($where: TransactionWhereUniqueInput!) {
             affiliator {
               user {
                 name
+                email
+                phone {
+                  phoneNumber
+                }
               }
             }
             phone {
