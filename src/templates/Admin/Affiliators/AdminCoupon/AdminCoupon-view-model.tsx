@@ -115,6 +115,7 @@ export const useCouponForm = () => {
   const [addDate, setAddDate] = useState(false);
   const [date, setDate] = useState<Date>(new Date("2025-05-01"));
   const [connectCourse, setConnectCourse] = useState<number>();
+  const [maxClaim, setMaxClaim] = useState<number>();
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -143,6 +144,7 @@ export const useCouponForm = () => {
             type: discountType,
             endDate: addDate ? date : null,
             isActive: status == "true" ? true : false,
+            maxClaimPerUser: Number(maxClaim),
             platformCoupon: {
               create: {
                 code,
@@ -188,6 +190,8 @@ export const useCouponForm = () => {
     setDate,
     connectCourse,
     setConnectCourse,
+    maxClaim,
+    setMaxClaim
   };
 };
 

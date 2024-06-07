@@ -481,6 +481,8 @@ const AddCouponModal = ({
     setDate,
     hanldeCouponCreateOne,
     setConnectCourse,
+    maxClaim,
+    setMaxClaim
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -643,9 +645,19 @@ const AddCouponModal = ({
           null}
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="fw-bold text-gray-700">
-            Penerapan Kupon
-          </h4>
+          <h4 className="required fw-bold text-gray-700">Max Penggunaan User</h4>
+          <TextField
+            styleType="outline"
+            size="medium"
+            type="number"
+            props={{
+              value: String(maxClaim),
+              onChange: (e: any) => setMaxClaim(e.target.value),
+            }}
+          />
+        </div>
+        <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">Penerapan Kupon</h4>
           <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6>
