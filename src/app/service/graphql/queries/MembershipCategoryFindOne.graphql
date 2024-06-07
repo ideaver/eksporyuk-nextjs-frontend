@@ -3,7 +3,8 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
     id
     name
     description
-    membershipType
+    affiliateCommission
+    affiliateFirstCommission
     durationDay
     benefits
     price
