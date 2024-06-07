@@ -1,6 +1,6 @@
-mutation ExportDataTransaction($exportTransaction: ExportDataArgs!) {
+mutation ExportDataTransaction($exportTransaction: ExportDataTransactionArgs!) {
   exportTransaction(exportTransaction: $exportTransaction) {
-    fileURL
     totalDataExported
+    fileURL
   }
 }
