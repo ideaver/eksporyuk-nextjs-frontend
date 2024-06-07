@@ -31,6 +31,8 @@ export const breadcrumbs = [
   },
 ];
 
+const test = {};
+
 // Pagination
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
