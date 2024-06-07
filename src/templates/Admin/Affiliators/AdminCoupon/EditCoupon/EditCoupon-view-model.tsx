@@ -55,6 +55,9 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
   const [date, setDate] = useState(new Date(data.couponFindOne?.endDate));
   console.log(date);
 
+  const [connectCourse, setConnectCourse] = useState<number | undefined | null>(data.couponFindOne?.courseCoupon?.course?.id);
+  const [maxClaim, setMaxClaim] = useState<number | undefined | null>(data.couponFindOne?.maxClaimPerUser);
+
   const [couponUpdateOne] = usePlatformCouponUpdateOneMutation();
   const { couponFindMany } = useAdminCouponViewModel();
 
@@ -80,11 +83,25 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
                     set: discountType,
                   },
                   value: {
-                    set: discount,
+                    set: Number(discount),
                   },
                   isActive: {
                     set: status === "true" ? true : false,
                   },
+                  maxClaimPerUser: {
+                    set: Number(maxClaim),
+                  },
+                  courseCoupon: {
+                    update: {
+                      data: {
+                        course: {
+                          connect: {
+                            id: Number(connectCourse),
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
               },
             },
@@ -96,8 +113,8 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
       console.log(error);
     } finally {
       setLoading(false);
-      await router.push("/admin/affiliate/admin-coupon");
-      router.reload();
+      // await router.push("/admin/affiliate/admin-coupon");
+      // router.reload();
     }
   };
 
@@ -116,6 +133,10 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     setAddDate,
     date,
     setDate,
+    maxClaim,
+    setMaxClaim,
+    connectCourse,
+    setConnectCourse
   };
 };
 

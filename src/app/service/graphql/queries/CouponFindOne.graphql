@@ -9,5 +9,12 @@ query CouponFindOne($where: CouponWhereUniqueInput!) {
       code
       createdById
     }
+    maxClaimPerUser
+    courseCoupon {
+      course {
+        title
+        id
+      }
+    }
   }
 }

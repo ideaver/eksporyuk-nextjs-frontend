@@ -1,5 +1,5 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import { breadcrumbs } from "../AdminCoupon-view-model";
+import { breadcrumbs, useCoursesDropdown } from "../AdminCoupon-view-model";
 import useEditCouponViewModel, { IEditCoupon } from "./EditCoupon-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import Flatpickr from "react-flatpickr";
 import { useRouter } from "next/router";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const EditCoupon = ({ id, data }: IEditCoupon) => {
   const router = useRouter();
@@ -39,7 +40,14 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
     setDate,
     loading,
     handleCouponUpdateOne,
+    maxClaim,
+    setMaxClaim,
+    connectCourse,
+    setConnectCourse
   } = useEditCouponViewModel({ id, data });
+
+  const { loadOptions } = useCoursesDropdown();
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Edit Coupon</PageTitle>
@@ -149,6 +157,33 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
             //   }}
             // />
             null}
+            <div className="mb-5 mt-6">
+              <h4 className="required fw-bold text-gray-700">
+                Max Penggunaan User
+              </h4>
+              <TextField
+                styleType="outline"
+                size="medium"
+                type="number"
+                props={{
+                  value: String(maxClaim),
+                  onChange: (e: any) => setMaxClaim(e.target.value),
+                }}
+              />
+            </div>
+            <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">Penerapan Kupon</h4>
+          <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6>
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              setConnectCourse(value?.value);
+            }}
+          ></AsyncPaginate>
+        </div>
           </KTCardBody>
           <div className={"row flex-end mt-10"}>
             <Buttons
