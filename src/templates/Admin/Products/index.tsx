@@ -262,19 +262,22 @@ const Body = ({
                 defaultChildren={false}
                 onChange={handleSelectAllCheck}
               >
-                <>Nama Produk</>
+                <>Nama Layanan</>
               </CheckBoxInput>
             </th>
-            <th className="min-w-150px text-end">Tipe Produk</th>
-            <th className="text-end min-w-150px">Tipe Pembayaran</th>
+            <th className="min-w-150px text-center">Tipe Layanan</th>
             <th className="text-end min-w-150px">Harga</th>
-            <th className="text-end min-w-125px">Total Omset</th>
-            <th className="text-end min-w-200px">Total Kuantiti</th>
-            <th className="text-end min-w-200px">Total Order</th>
-            <th className="text-end min-w-150px">Status</th>
+            <th className="text-center">Total Pembelian</th>
+            <th className="text-end">Status</th>
             <th className="text-end min-w-100px">Actions</th>
           </KTTableHead>
           {data.data?.productServiceFindMany?.map((product, index) => {
+            const tipeLayananMap: { [key: string]: string } = {
+              OTHER: "Lainnya",
+              LEGALITY: "Legalitas",
+              WEBSITE: "Website",
+            };
+
             return (
               <KTTableBody key={index}>
                 <td className="align-middle">
@@ -308,26 +311,15 @@ const Body = ({
                     </Link>
                   </CheckBoxInput>
                 </td>
-                <td className="fw-bold text-muted text-end align-middle w-125px">
-                  {product?.productServiceCategory}
-                </td>
-                <td className="align-middle text-end w-250px">
-                  <span className="text-muted fs-6 fw-bold">Sekali Beli</span>
+                <td className="fw-bold text-muted text-center align-middle w-125px">
+                  {tipeLayananMap[product?.productServiceCategory || ""]}
                 </td>
                 <td className="align-middle text-end text-muted fw-bold w-125px">
                   <span className="text-muted fs-6 fw-bold">
                     {currencyFormatter(product?.basePrice)}
                   </span>
                 </td>
-                <td className="align-middle text-end text-muted fw-bold w-150px">
-                  <span className="text-muted fs-6 fw-bold">Rp 399.000</span>
-                </td>
-                <td className="align-middle text-end text-muted fw-bold w-150px">
-                  <span className="text-muted fs-6 fw-bold">
-                    {product?.purchaseCount}
-                  </span>
-                </td>
-                <td className="align-middle text-end">
+                <td className="align-middle text-center">
                   <span className="text-muted fs-6 fw-bold">
                     {product?.purchaseCount}
                   </span>
