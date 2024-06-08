@@ -61,7 +61,7 @@ const ArticlePage = () => {
               setArticleFindStatus(val);
             }}
             setCategory={(val) => {
-              setArticleFindCategory(val?.value);
+              setArticleFindCategory(parseInt(val));
             }}
             setOrder={(val) => {
               setArticleOrderBy(val);
@@ -436,7 +436,8 @@ const Head = ({
     SetStateAction<AnnouncementTypeEnum | "all">
   >;
 }) => {
-  const { loadOptions } = useCategoriesDropdown();
+  const { loadOptions, categoryArticleDropdownOption } =
+    useCategoriesDropdown();
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -454,13 +455,20 @@ const Head = ({
           <>
             {" "}
             <div className="col-lg-auto">
-              <AsyncPaginate
+              {/* <AsyncPaginate
                 className="min-w-200px"
                 loadOptions={loadOptions}
                 onChange={(id) =>
                   setCategory(id ? id : { value: 0, lebal: "semua negara" })
                 }
-              ></AsyncPaginate>
+              ></AsyncPaginate> */}
+              <Dropdown
+                styleType="solid"
+                options={categoryArticleDropdownOption || []}
+                onValueChange={(e) => {
+                  setCategory(e);
+                }}
+              />
             </div>
             <div className="col-lg-auto">
               <Dropdown
