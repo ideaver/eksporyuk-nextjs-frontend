@@ -1,0 +1,8 @@
+mutation AnnouncementUpdateOne(
+  $data: AnnouncementUpdateInput!
+  $where: AnnouncementWhereUniqueInput!
+) {
+  announcementUpdateOne(data: $data, where: $where) {
+    id
+  }
+}
