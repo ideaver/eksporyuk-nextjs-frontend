@@ -5,10 +5,13 @@ import {
   useNotificationFindManyQuery,
   QueryMode,
   NotificationFindManyQuery,
+  useInstantWithdrawalRequestFindManyQuery,
+  InstantWithdrawalRequestFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import {
   SortOrder,
   CompletionStatusEnum,
+  InstantWithdrawalRequestEnum,
 } from "@/app/service/graphql/gen/graphql";
 
 export const breadcrumbs = [
@@ -149,6 +152,35 @@ const usePagination = () => {
   };
 };
 
+const useWithdrawalPagination = () => {
+  const [currentWithdrawalPage, setCurrenWithdrawalPage] = useState(1);
+  const [findWithdrawalSkip, setFindWithdrawalSkip] = useState(0);
+  const [findWithdrawalTake, setFindWithdrawalTake] = useState(10);
+  const withdrawalLength = useInstantWithdrawalRequestFindManyQuery();
+
+  const handleWithdrawalPageChange = (page: number) => {
+    setCurrenWithdrawalPage(page);
+    setFindWithdrawalSkip((page - 1) * findWithdrawalTake);
+  };
+
+  const calculateTotalWithdrawalPage = () => {
+    return Math.ceil(
+      (withdrawalLength.data?.instantWithdrawalRequestFindMany?.length ?? 0) / findWithdrawalTake
+    );
+  };
+  return {
+    currentWithdrawalPage,
+    setCurrenWithdrawalPage,
+    findWithdrawalSkip,
+    setFindWithdrawalSkip,
+    findWithdrawalTake,
+    setFindWithdrawalTake,
+    handleWithdrawalPageChange,
+    calculateTotalWithdrawalPage,
+    withdrawalLength,
+  };
+};
+
 const useNotificationsViewModel = () => {
   const {
     currentPage,
@@ -161,12 +193,25 @@ const useNotificationsViewModel = () => {
     calculateTotalPage,
     notifLength,
   } = usePagination();
+  const {
+    currentWithdrawalPage,
+    setCurrenWithdrawalPage,
+    findWithdrawalSkip,
+    setFindWithdrawalSkip,
+    findWithdrawalTake,
+    setFindWithdrawalTake,
+    handleWithdrawalPageChange,
+    calculateTotalWithdrawalPage,
+  } = useWithdrawalPagination();
 
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [searchNotification, setSearchNotification] = useState<string>("");
   const [dateOrderBy, setDateOrderBy] = useState<string>("asc");
   const [completionStatus, setCompletionStatus] = useState<any>(null);
+  const [selectedTable, setSelectedTable] = useState<string | number>("notification");
+  const [searchWithdrawal, setSearchWithdrawal] = useState<string | null>();
+  const [withdrawalStatus, setWithdrawalStatus] = useState<any>(null);
 
   // Querying process
   const notificationFindMany = useNotificationFindManyQuery({
@@ -204,6 +249,53 @@ const useNotificationsViewModel = () => {
     },
   });
 
+  const instantWithdrawalRequestFindMany = useInstantWithdrawalRequestFindManyQuery({
+    variables: {
+      take: parseInt(findWithdrawalTake.toString()),
+      skip: findWithdrawalSkip,
+      orderBy: [
+        {
+          updatedAt: dateOrderBy === "asc" ? SortOrder.Asc : SortOrder.Desc,
+        }
+      ],
+      where: {
+        OR: [
+          {
+            createdBy: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: searchWithdrawal,
+                      mode: QueryMode.Insensitive,
+                    },
+                  }
+                }
+              }
+            }
+          },
+          {
+            createdBy: {
+              is: {
+                user: {
+                  is: {
+                    email: {
+                      contains: searchWithdrawal,
+                      mode: QueryMode.Insensitive,
+                    },
+                  }
+                }
+              }
+            }
+          }
+        ],
+        status: {
+          equals: withdrawalStatus,
+        }
+      }
+    }
+  });
+
   // Checkbox stuff
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(notificationFindMany);
@@ -227,6 +319,16 @@ const useNotificationsViewModel = () => {
     handlePageChange,
     findTake,
     setFindTake,
+    instantWithdrawalRequestFindMany,
+    selectedTable,
+    setSelectedTable,
+    setSearchWithdrawal,
+    calculateTotalWithdrawalPage,
+    currentWithdrawalPage,
+    handleWithdrawalPageChange,
+    setFindWithdrawalTake,
+    findWithdrawalTake,
+    setWithdrawalStatus,
   };
 };
 
