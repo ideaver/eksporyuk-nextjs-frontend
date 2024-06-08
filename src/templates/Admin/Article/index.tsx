@@ -19,6 +19,8 @@ import {
   AnnouncementTypeEnum,
   ArticleFindLengthQuery,
   ArticleFindManyQuery,
+  MaterialPromotionPlatformFindManyQuery,
+  MaterialPromotionPlatformTypeEnum,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import dynamic from "next/dynamic";
@@ -46,6 +48,20 @@ const ArticlePage = () => {
     announcementDeleteOne,
     announcementFindType,
     setAnnouncementFindType,
+    materialPromotionFindMany,
+    materialPromotionDeleteOne,
+    materialPromotionFindType,
+    setMaterialPromotionFindType,
+    currentPageMaterialPromotion,
+    setCurrentPageMaterialPromotion,
+    handlePageChangeMaterialPromotion,
+    calculateTotalPageMaterialPromotion,
+    materialPromotionLength,
+    currentPageAnnouncement,
+    setCurrentPageAnnouncement,
+    handlePageChangeAnnouncement,
+    calculateTotalPageAnnouncement,
+    announcementLength,
   } = useArticleViewModel();
   return (
     <>
@@ -72,6 +88,8 @@ const ArticlePage = () => {
             selectedTable={selectedTable}
             announcementFindType={announcementFindType}
             setAnnouncementFindType={setAnnouncementFindType}
+            materialPromotionFindType={materialPromotionFindType}
+            setMaterialPromotionType={setMaterialPromotionFindType}
           />
           {selectedTable === "article" ? (
             <ArticleTable
@@ -80,11 +98,17 @@ const ArticlePage = () => {
               articleDeleteOne={articleDeleteOne}
               articleLength={articleLength}
             />
-          ) : (
+          ) : selectedTable === "announcement" ? (
             <AnnouncementTable
               announcementFindMany={announcementFindMany}
               formatWIB={formatWIB}
               announcementDeleteOne={announcementDeleteOne}
+            />
+          ) : (
+            <MaterialPromotionTable
+              materialPromotionFindMany={materialPromotionFindMany}
+              materialPromotionDeleteOne={materialPromotionDeleteOne}
+              formatWIB={formatWIB}
             />
           )}
 
@@ -97,6 +121,7 @@ const ArticlePage = () => {
               setArticleFindTake(val);
             }}
             articleFindTake={articleFindTake}
+            selectedTable={selectedTable}
           />
         </KTCardBody>
       </KTCard>
@@ -415,6 +440,163 @@ const AnnouncementTable = ({
     </>
   );
 };
+const MaterialPromotionTable = ({
+  materialPromotionFindMany,
+  formatWIB,
+  materialPromotionDeleteOne,
+}: {
+  materialPromotionFindMany: QueryResult<MaterialPromotionPlatformFindManyQuery>;
+  formatWIB: (createdAt: string) => string;
+  materialPromotionDeleteOne: any;
+}) => {
+  return (
+    <>
+      {materialPromotionFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">
+            {materialPromotionFindMany.error.message}
+          </h3>
+        </div>
+      ) : materialPromotionFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">
+              <p className="mb-0">JUDUL</p>
+            </th>
+            <th className="text-end min-w-200px">PENULIS</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-200px">TIPE</th>
+            {/* <th className="text-end min-w-150px">STATUS</th> */}
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {materialPromotionFindMany?.data?.materialPromotionPlatformFindMany?.map(
+              (materialPromotion) => {
+                return (
+                  <tr key={materialPromotion.id} className="">
+                    <td className="">
+                      <Link
+                        // href={`/admin/articles/detail/${article.id}`}
+                        href={`/admin/articles/material-promotion/detail/${materialPromotion.id}`}
+                        className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                        style={{
+                          maxWidth: "200px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {materialPromotion.title}
+                      </Link>
+                    </td>
+
+                    <td className="min-w-250px text-end fw-bold text-muted">
+                      <img
+                        className="symbol-label bg-gray-600 rounded-circle mx-3"
+                        src={
+                          materialPromotion.createdByAdmin?.user
+                            .avatarImageId ?? "/media/avatars/blank.png"
+                        }
+                        width={40}
+                        height={40}
+                        alt="flag"
+                      />
+                      <span className="text-muted fw-bold">
+                        {materialPromotion.createdByAdmin?.user.name}
+                      </span>
+                    </td>
+                    <td className="min-w-200px text-end fw-bold text-muted">
+                      <div className="d-flex flex-column">
+                        <span>{formatDate(materialPromotion.createdAt)}</span>
+                        <span>{formatWIB(materialPromotion.createdAt)}</span>
+                      </div>
+                    </td>
+                    <td className="min-w-175px text-end fw-bold text-muted">
+                      {/* {materialPromotion.category?.map((val) => (
+                        <Badge
+                          key={val.id}
+                          label={val.name}
+                          badgeColor="dark"
+                          classNames="mx-1"
+                        />
+                      ))} */}
+                      {materialPromotion.type}
+                    </td>
+                    {/* <td className="min-w-100px text-end fw-bold text-muted">
+                      {materialPromotion.isActive ? (
+                        <Badge label="Published" badgeColor="success" />
+                      ) : (
+                        <Badge label="Private" badgeColor="danger" />
+                      )}
+                    </td> */}
+
+                    <td className="text-end ">
+                      <div className="dropdown ps-15 pe-0">
+                        <button
+                          className="btn btn-secondary dropdown-toggle"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Actions
+                        </button>
+                        <ul className="dropdown-menu">
+                          <li>
+                            <Link
+                              href={`/admin/articles/material-promotion/edit/${materialPromotion.id}`}
+                              className="dropdown-item"
+                            >
+                              Edit
+                            </Link>
+                          </li>
+                          <li></li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={async () => {
+                                try {
+                                  await materialPromotionDeleteOne({
+                                    variables: {
+                                      where: {
+                                        id: materialPromotion.id,
+                                      },
+                                    },
+                                  });
+                                  await materialPromotionFindMany.refetch();
+                                } catch (error) {
+                                  console.log(error);
+                                } finally {
+                                  await materialPromotionFindMany.refetch();
+                                }
+                              }}
+                            >
+                              Hapus
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
 
 const Head = ({
   onSearch,
@@ -424,6 +606,8 @@ const Head = ({
   selectTable,
   selectedTable,
   setAnnouncementFindType,
+  materialPromotionFindType,
+  setMaterialPromotionType,
 }: {
   onSearch: (val: string) => void;
   setStatus: (val: string) => void;
@@ -434,6 +618,10 @@ const Head = ({
   announcementFindType: AnnouncementTypeEnum | "all";
   setAnnouncementFindType: Dispatch<
     SetStateAction<AnnouncementTypeEnum | "all">
+  >;
+  materialPromotionFindType: MaterialPromotionPlatformTypeEnum | "all";
+  setMaterialPromotionType: Dispatch<
+    SetStateAction<MaterialPromotionPlatformTypeEnum | "all">
   >;
 }) => {
   const { loadOptions } = useCategoriesDropdown();
@@ -476,7 +664,7 @@ const Head = ({
               />
             </div>
           </>
-        ) : (
+        ) : selectedTable === "announcement" ? (
           <div className="col-lg-auto">
             <Dropdown
               styleType="solid"
@@ -492,6 +680,29 @@ const Head = ({
               }}
             />
           </div>
+        ) : (
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              value={materialPromotionFindType}
+              options={[
+                { label: "Semua Tipe", value: "all" },
+                {
+                  label: "Banner",
+                  value: MaterialPromotionPlatformTypeEnum.Banner,
+                },
+                {
+                  label: "Material",
+                  value: MaterialPromotionPlatformTypeEnum.Material,
+                },
+              ]}
+              onValueChange={(e) => {
+                setMaterialPromotionType(
+                  e as MaterialPromotionPlatformTypeEnum | "all"
+                );
+              }}
+            />
+          </div>
         )}
 
         <div className="col-lg-auto">
@@ -501,6 +712,7 @@ const Head = ({
             options={[
               { label: "Article", value: "article" },
               { label: "Announcement", value: "announcement" },
+              { label: "Material Promotion", value: "materialPromotion" },
             ]}
             onValueChange={(e) => {
               selectTable(e);
@@ -539,6 +751,7 @@ const Footer = ({
   setArticleFindSkip,
   articleFindTake,
   pageLength,
+  selectedTable,
 }: {
   setArticleFindTake: (val: number) => void;
   setArticleFindSkip: (val: number) => void;
@@ -546,16 +759,21 @@ const Footer = ({
   currentPage: number;
   setCurrentPage: (val: number) => void;
   pageLength: number;
+  selectedTable: string;
 }) => {
-  const CheckBoxInput = dynamic(
-    () =>
-      import("@/stories/molecules/Forms/Advance/CheckBox/CheckBox").then(
-        (module) => module.CheckBoxInput
-      ),
-    {
-      ssr: false,
-    }
-  );
+  const {
+    currentPageMaterialPromotion,
+    setCurrentPageMaterialPromotion,
+    handlePageChangeMaterialPromotion,
+    calculateTotalPageMaterialPromotion,
+    materialPromotionLength,
+    currentPageAnnouncement,
+    setCurrentPageAnnouncement,
+    handlePageChangeAnnouncement,
+    calculateTotalPageAnnouncement,
+    announcementLength,
+  } = useArticleViewModel();
+  // console.log(announcementLength.data?.announcementFindMany?.length);
   return (
     <div className="row justify-content-between gy-5">
       <div className="row col-lg-auto gy-3 align-middle">
@@ -609,10 +827,20 @@ const Footer = ({
       <div className="row col-lg-auto gy-3">
         <div className="col-auto">
           <Pagination
-            total={pageLength}
+            total={
+              selectedTable === "article"
+                ? pageLength
+                : selectedTable === "announcement"
+                ? calculateTotalPageAnnouncement()
+                : calculateTotalPageMaterialPromotion()
+            }
             current={currentPage}
             maxLength={5}
-            onPageChange={(val) => setCurrentPage(val)}
+            onPageChange={(val) => {
+              handlePageChangeAnnouncement(val);
+              handlePageChangeMaterialPromotion(val);
+              setCurrentPage(val);
+            }}
           ></Pagination>
         </div>
       </div>

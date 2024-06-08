@@ -1,0 +1,36 @@
+query MaterialPromotionPlatformFindMany(
+  $where: MaterialPromotionPlatformWhereInput
+  $take: Int
+  $skip: Int
+  $orderBy: [MaterialPromotionPlatformOrderByWithRelationInput!]
+) {
+  materialPromotionPlatformFindMany(
+    where: $where
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+  ) {
+    id
+    title
+    content
+    materialId
+    target
+    firstContentData
+    secondContentData
+    createdByAdminId
+    type
+    createdAt
+    updatedAt
+    material {
+      path
+    }
+    createdByAdmin {
+      user {
+        email
+        name
+        id
+        avatarImageId
+      }
+    }
+  }
+}

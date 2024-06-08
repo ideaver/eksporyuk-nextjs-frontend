@@ -1,0 +1,9 @@
+mutation MaterialPromotionPlatformUpdateOne(
+  $data: MaterialPromotionPlatformUpdateInput!
+  $where: MaterialPromotionPlatformWhereUniqueInput!
+) {
+  materialPromotionPlatformUpdateOne(data: $data, where: $where) {
+    id
+    type
+  }
+}

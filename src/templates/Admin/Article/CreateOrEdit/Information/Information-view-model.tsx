@@ -1,11 +1,15 @@
 import {
   AnnouncementTypeEnum,
+  FileTypeEnum,
+  MaterialPromotionPlatformTypeEnum,
   QueryMode,
   UserRoleEnum,
   useAnnouncementCreateOneMutation,
   useArticleCategoryCreateOneMutation,
   useArticleCategoryFindManyQuery,
   useArticleCreateOneMutation,
+  useFileCreateOneMutation,
+  useMaterialPromotionPlatformCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
@@ -31,6 +35,12 @@ import {
   changeCourse,
   changeTitleAnnouncement,
 } from "@/features/reducers/announcement/announcementReducer";
+import {
+  changeContentMaterialPromotionFirst,
+  changeContentMaterialPromotionSecond,
+  changeTitleMaterialPromotion,
+  changeVideoUrl,
+} from "@/features/reducers/materialPromotion/materialPromotion";
 
 export const breadcrumbs = [
   {
@@ -142,6 +152,7 @@ export const useArticleForm = () => {
   const articleState = useSelector((state: RootState) => state.article);
   const [file, setFile] = useState<File | null>(null);
   const { articleFindMany, articleLength } = useArticleViewModel();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //parse to { id:value }
   const categoryArticle = articleState.category.map((e) => ({ id: e.value }));
@@ -184,13 +195,59 @@ export const useArticleForm = () => {
       .required("Content diperlukan"),
   });
 
+  const handleArticleCreateOne = async () => {
+    setIsLoading(true);
+    try {
+      const response = await uploadFile();
+      console.log(response);
+      await articleCreateOne({
+        variables: {
+          data: {
+            title: articleState.title,
+            content: articleState.content,
+            target: {
+              set: articleState.target,
+            },
+            createdByAdmin: {
+              connect: {
+                id: session?.user.id,
+              },
+            },
+            isActive: articleState.status === "published" ? true : false,
+            fileUrl: {
+              connect: [
+                {
+                  path: response?.data ? `${response.data}` : null,
+                },
+              ],
+            },
+            category: {
+              connect: [...categoryArticle],
+            },
+          },
+        },
+      });
+      await articleFindMany.refetch();
+      await articleLength.refetch();
+      await router.push("/admin/articles");
+      router.reload();
+      resetArticleState();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const articleForm = useFormik({
     initialValues: {
       content: articleState.content,
       title: articleState.title,
     },
     validationSchema: articleSchema,
-    onSubmit: () => {},
+    onSubmit: () => {
+      handleArticleCreateOne();
+    },
   });
 
   return {
@@ -202,6 +259,9 @@ export const useArticleForm = () => {
     setFile,
     uploadFile,
     articleCreateOne,
+    isLoading,
+    handleArticleCreateOne,
+    setIsLoading,
   };
 };
 
@@ -242,17 +302,8 @@ export const useAnnouncementForm = () => {
       .required("Content diperlukan"),
   });
 
-  const announcementForm = useFormik({
-    initialValues: {
-      contentAnnouncement: announcementState.contentAnnouncement,
-      titleAnnouncement: announcementState.titleAnnouncement,
-    },
-    validationSchema: announcementSchema,
-    onSubmit: () => {},
-  });
-
   const handleAnnouncementCreateOne = async () => {
-    if (announcementForm.isValid.valueOf() === false) return;
+    // if (announcementForm.isValid.valueOf() === false) return;
     setIsLoadingAnnouncement(true);
     try {
       await announcementCreateOne({
@@ -284,6 +335,17 @@ export const useAnnouncementForm = () => {
     }
   };
 
+  const announcementForm = useFormik({
+    initialValues: {
+      contentAnnouncement: announcementState.contentAnnouncement,
+      titleAnnouncement: announcementState.titleAnnouncement,
+    },
+    validationSchema: announcementSchema,
+    onSubmit: () => {
+      handleAnnouncementCreateOne();
+    },
+  });
+
   return {
     handleAnnouncementTypeChange,
     handleAnnouncementCreateOne,
@@ -295,6 +357,160 @@ export const useAnnouncementForm = () => {
   };
 };
 
+export const useMaterialPromotionForm = ({
+  fileImage,
+}: {
+  fileImage: File | null;
+}) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const materialPromotionState = useSelector(
+    (state: RootState) => state.materialPromotion
+  );
+  const [isLoadingMaterialPromotion, setIsLoadingMaterialPromotion] =
+    useState(false);
+
+  const resetMaterialPromotionState = () => {
+    dispatch(changeTitleMaterialPromotion(""));
+    dispatch(changeContentMaterialPromotionFirst(""));
+    dispatch(changeContentMaterialPromotionSecond(""));
+    dispatch(changeVideoUrl(""));
+  };
+
+  const [materialPromotionCreateOne, response] =
+    useMaterialPromotionPlatformCreateOneMutation({
+      onCompleted: () => {},
+    });
+  const [fileCreateOne] = useFileCreateOneMutation();
+
+  const handleUploadVideo = async () => {
+    try {
+      const videoData = fileCreateOne({
+        variables: {
+          data: {
+            path: materialPromotionState.videoUrl,
+            fileType: FileTypeEnum.Mp4,
+          },
+        },
+      });
+      return (await videoData).data?.fileCreateOne?.path;
+    } catch (error) {
+      return materialPromotionState.videoUrl;
+    }
+  };
+
+  const uploadFile = async () => {
+    try {
+      const form = {
+        file: fileImage,
+        userId: session?.user?.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body: form,
+        isMultipartRequest: true,
+      });
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  //validation schema for article form
+  const materialPromotionSchema = Yup.object().shape({
+    titleMaterialPromotion: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("Title diperlukan"),
+  });
+
+  const handleMaterialPromotionCreateOne = async () => {
+    // if (announcementForm.isValid.valueOf() === false) return;
+    setIsLoadingMaterialPromotion(true);
+    try {
+      if (
+        materialPromotionState.materialType ===
+        MaterialPromotionPlatformTypeEnum.Banner
+      ) {
+        const response = await uploadFile();
+        console.log(response);
+        await materialPromotionCreateOne({
+          variables: {
+            data: {
+              createdByAdmin: {
+                connect: {
+                  id: session?.user.id,
+                },
+              },
+              type: materialPromotionState.materialType,
+              firstContentData:
+                materialPromotionState.contentMaterialPromotionFirst,
+              secondContentData:
+                materialPromotionState.contentMaterialPromotionSecond,
+              title: materialPromotionState.titleMaterialPromotion,
+              image: {
+                connect: [
+                  {
+                    path: response?.data,
+                  },
+                ],
+              },
+            },
+          },
+        });
+      } else {
+        console.log(response);
+        await materialPromotionCreateOne({
+          variables: {
+            data: {
+              createdByAdmin: {
+                connect: {
+                  id: session?.user.id,
+                },
+              },
+              type: materialPromotionState.materialType,
+              firstContentData:
+                materialPromotionState.contentMaterialPromotionFirst,
+              secondContentData:
+                materialPromotionState.contentMaterialPromotionSecond,
+              title: materialPromotionState.titleMaterialPromotion,
+              material: {
+                connect: {
+                  path: await handleUploadVideo(),
+                },
+              },
+            },
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      resetMaterialPromotionState();
+      setIsLoadingMaterialPromotion(false);
+      await router.push("/admin/articles");
+      router.reload();
+    }
+  };
+
+  const materialPromotionForm = useFormik({
+    initialValues: {
+      titleMaterialPromotion: materialPromotionState.titleMaterialPromotion,
+    },
+    validationSchema: materialPromotionSchema,
+    onSubmit: () => {
+      handleMaterialPromotionCreateOne();
+    },
+  });
+
+  return {
+    isLoadingMaterialPromotion,
+    materialPromotionForm,
+    resetMaterialPromotionState,
+  };
+};
+
 const useInformationViewModel = () => {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
@@ -302,7 +518,6 @@ const useInformationViewModel = () => {
   const dispatch = useDispatch();
   // article
   const [thumbnail, setThumbnail] = useState<string | null>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const status = useSelector((state: RootState) => state.article.status);
   const category = useSelector((state: RootState) => state.article.category);
@@ -319,53 +534,18 @@ const useInformationViewModel = () => {
     formik,
     articleState,
     categoryArticle,
+    isLoading,
+    setIsLoading,
+    handleArticleCreateOne,
   } = useArticleForm();
 
+  const {
+    materialPromotionForm,
+    isLoadingMaterialPromotion,
+    resetMaterialPromotionState,
+  } = useMaterialPromotionForm({ fileImage });
+
   // create article
-  const handleArticleCreateOne = async () => {
-    if (formik.isValid.valueOf() === false) return;
-    setIsLoading(true);
-    try {
-      const response = await uploadFile();
-      console.log(response);
-      await articleCreateOne({
-        variables: {
-          data: {
-            title: articleState.title,
-            content: articleState.content,
-            target: {
-              set: target,
-            },
-            createdByAdmin: {
-              connect: {
-                id: session?.user.id,
-              },
-            },
-            isActive: articleState.status === "published" ? true : false,
-            fileUrl: {
-              connect: [
-                {
-                  path: response?.data ? `${response.data}` : null,
-                },
-              ],
-            },
-            category: {
-              connect: [...categoryArticle],
-            },
-          },
-        },
-      });
-      await articleFindMany.refetch();
-      await articleLength.refetch();
-      resetArticleState();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      await router.push("/admin/articles");
-      router.reload();
-    }
-  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -410,7 +590,6 @@ const useInformationViewModel = () => {
     // article
     target,
     targetOptions,
-    isLoading,
     resetArticleState,
     category,
     handleCategoryChange,
@@ -418,12 +597,17 @@ const useInformationViewModel = () => {
     handleFileChange,
     handleStatusChange,
     handleTargetChange,
-    handleArticleCreateOne,
     thumbnail,
     fileImage,
     uploadFile,
+    isLoading,
+    handleArticleCreateOne,
     // announcement
     handleConnectCourse,
+    // material promotion
+    materialPromotionForm,
+    isLoadingMaterialPromotion,
+    resetMaterialPromotionState,
   };
 };
 
