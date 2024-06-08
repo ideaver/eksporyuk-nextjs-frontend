@@ -48,10 +48,14 @@ query UserFindOne($where: UserWhereUniqueInput!) {
         id
         name
         description
-        membershipType
         durationDay
         benefits
         price
+        affiliateFirstCommission
+        affiliateCommission
+        createdAt
+        updatedAt
+        createdById
         benefitCourses {
           id
           title
@@ -66,6 +70,7 @@ query UserFindOne($where: UserWhereUniqueInput!) {
           isCertificationProvided
           basePrice
           salePrice
+          affiliateCommissionType
           affiliateCommission
           createdAt
           updatedAt
@@ -74,13 +79,9 @@ query UserFindOne($where: UserWhereUniqueInput!) {
           duration
           categoryId
           createdById
+          certificateTemplateId
           videoUrlId
         }
-        affiliateFirstCommission
-        affiliateCommission
-        createdAt
-        updatedAt
-        createdById
       }
     }
     username

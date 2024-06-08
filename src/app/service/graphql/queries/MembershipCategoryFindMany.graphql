@@ -13,7 +13,6 @@ query MembershipCategoryFindMany(
     id
     name
     description
-    membershipType
     durationDay
     benefits
     price

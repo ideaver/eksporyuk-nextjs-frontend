@@ -21,5 +21,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/((?!public|images|media|terms).*)", "/auth"],
+  matcher: ["/((?!public|images|media|terms|account).*)", "/auth"],
 };

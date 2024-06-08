@@ -1,10 +1,15 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
   CourseSectionUpdateManyWithoutCourseNestedInput,
+  CourseSectionUpdateWithWhereUniqueWithoutCourseInput,
   // CourseDurationTypeEnum,
   CourseStatusEnum,
   FileTypeEnum,
+  LessonUpdateManyWithoutSectionNestedInput,
+  LessonUpdateWithWhereUniqueWithoutSectionInput,
   QuestionTypeEnum,
+  ResourceUpdateManyWithoutSectionNestedInput,
+  ResourceUpdateWithWhereUniqueWithoutSectionInput,
   useCourseCreateOneMutation,
   useCourseUpdateOneMutation,
   useFileCreateOneMutation,
@@ -51,19 +56,23 @@ const stringToFile = (dataUrl: string, filename: string): File | null => {
 };
 
 const convertFile = async (file: any, session: any, filename: string) => {
-  const newFile = stringToFile(file, filename);
-  const response = await postDataAPI({
-    endpoint: "upload/file",
-    body: {
-      file: newFile,
-    },
-    fields: {
-      userId: session,
-    },
-    isMultipartRequest: true,
-  });
-  const url = response?.data;
-  return url;
+  try {
+    const newFile = stringToFile(file, filename);
+    const response = await postDataAPI({
+      endpoint: "upload/file",
+      body: {
+        file: newFile,
+      },
+      fields: {
+        userId: session,
+      },
+      isMultipartRequest: true,
+    });
+    const url = response?.data;
+    return url;
+  } catch (error) {
+    return null;
+  }
 };
 
 const isBase64 = (str: string): boolean => {
@@ -95,7 +104,6 @@ const useUserAndCourseIdentify = () => {
       },
     },
   });
-
   useEffect(() => {
     setIsLoggedIn(
       !userLoading && (userError != undefined || userData?.userFindOne === null)
@@ -162,11 +170,15 @@ const useCreateCourse = () => {
           });
           material = res.data?.fileCreateOne?.path;
         } else {
-          material = await convertFile(
-            (lesson.content as ILessonPDFContent).file,
-            userData?.userFindOne?.id,
-            (lesson.content as ILessonPDFContent).fileName
-          );
+          try {
+            material = await convertFile(
+              (lesson.content as ILessonPDFContent).file,
+              userData?.userFindOne?.id,
+              (lesson.content as ILessonPDFContent).fileName
+            );
+          } catch (error) {
+            material = null;
+          }
         }
         console.log("INI MATERIAL", material);
         return {
@@ -176,11 +188,7 @@ const useCreateCourse = () => {
           accessibility: VisibilityEnum.Public,
           duration:
             (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ?? 0,
-          material: {
-            connect: {
-              path: material,
-            },
-          },
+          ...(material ? { material: { connect: { path: material } } } : {}),
         };
       });
     };
@@ -329,12 +337,17 @@ const useEditCourse = () => {
     userLoading,
     isLoggedIn,
   } = useUserAndCourseIdentify();
+  const currentDeletedCourseSelector = useSelector(
+    (state: RootState) => state.deletedCourse
+  );
   const [fileCreateOne] = useFileCreateOneMutation();
   const [updateCourseMutation, { data, error, loading }] =
     useCourseUpdateOneMutation();
 
   const editCourse = async () => {
     if (isLoggedIn) {
+      console.log(isLoggedIn);
+      console.log(userData);
       await signOut();
       return Promise.reject("User not found");
     }
@@ -384,8 +397,12 @@ const useEditCourse = () => {
 
     // console.log("INI COURSE INTRO", (await courseIntro).data?.fileCreateOne);
 
-    const courseVideosHandler = async (lessons: ILessonBasic[]) => {
-      return lessons.map(async (lesson, index) => {
+    const courseVideosHandler: (
+      lessons: ILessonBasic[]
+    ) => Promise<LessonUpdateWithWhereUniqueWithoutSectionInput[]> = async (
+      lessons: ILessonBasic[]
+    ) => {
+      const lessonsPromises = lessons.map(async (lesson, index) => {
         let material;
         if (lesson.lessonType === "Video") {
           try {
@@ -437,18 +454,19 @@ const useEditCourse = () => {
                   0
               ),
             },
-            material: {
-              connect: {
-                path: material,
-              },
-            },
+           ...(material ? { material: { connect: { path: material } } } : {}),
           },
         };
       });
+      return Promise.all(lessonsPromises);
     };
 
-    const courseResourceFileHanlder = async (resources: IResourceData[]) => {
-      return resources.map(async (resource, index) => {
+    const courseResourceFileHandler: (
+      resources: IResourceData[]
+    ) => Promise<ResourceUpdateWithWhereUniqueWithoutSectionInput[]> = async (
+      resources: IResourceData[]
+    ) => {
+      const resourcePromises = resources.map(async (resource, index) => {
         const files = await Promise.all(
           resource.files.map(async (file) => {
             console.log("INI FILE RESOURCE UPDATE", file);
@@ -500,90 +518,132 @@ const useEditCourse = () => {
           },
         };
       });
+      return Promise.all(resourcePromises);
     };
-    const sectionColumn = await Promise.all(
-      currentCourseSelector.sections.map(async (section, index) => {
-        const lessons = {
-          update: await Promise.all(await courseVideosHandler(section.lessons)),
-        };
-        const resourcesFile = {
-          update: await Promise.all(
-            await courseResourceFileHanlder(section.resources)
-          ),
-        };
-        console.log("INI LESSONS", index, lessons);
-        console.log("INI RESOURCES", index, resourcesFile);
-        return {
-          where: {
-            id: parseInt(section.id),
-          },
-          data: {
-            name: {
-              set: section.title,
+
+    const sectionColumn: CourseSectionUpdateWithWhereUniqueWithoutCourseInput[] =
+      await Promise.all(
+        currentCourseSelector.sections.map(async (section, index) => {
+          const lessons: LessonUpdateManyWithoutSectionNestedInput = {
+            update: await Promise.all(
+              await courseVideosHandler(section.lessons)
+            ),
+            deleteMany: currentDeletedCourseSelector.lessonsId.map((id) => ({
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            })),
+          };
+          const resourcesFile: ResourceUpdateManyWithoutSectionNestedInput = {
+            update: await Promise.all(
+              await courseResourceFileHandler(section.resources)
+            ),
+            deleteMany: currentDeletedCourseSelector.resourcesId.map((id) => ({
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            })),
+          };
+          console.log("INI LESSONS", index, lessons);
+          console.log("INI RESOURCES", index, resourcesFile);
+          return {
+            where: {
+              id: parseInt(section.id),
             },
-            description: {
-              set: section.description,
-            },
-            accessibility: {
-              set: VisibilityEnum.Public,
-            },
-            orderIndex: {
-              set: index,
-            },
-            lessons: lessons,
-            resources: resourcesFile,
-            quizzes: {
-              update: section.quizs.map((quiz, index) => ({
-                where: {
-                  id: parseInt(quiz.id),
-                },
-                data: {
-                  title: {
-                    set: quiz.quizBasic.quizName,
+            data: {
+              name: {
+                set: section.title,
+              },
+              description: {
+                set: section.description,
+              },
+              accessibility: {
+                set: VisibilityEnum.Public,
+              },
+              orderIndex: {
+                set: index,
+              },
+              lessons: lessons,
+              resources: resourcesFile,
+              quizzes: {
+                update: section.quizs.map((quiz, index) => ({
+                  where: {
+                    id: parseInt(quiz.id),
                   },
-                  description: {
-                    set: quiz.quizSylabus.quizDescription,
-                  },
-                  questions: {
-                    update: quiz.quizSylabus.quizs.map((question, index) => ({
-                      where: {
-                        id: parseInt(question.id),
-                      },
-                      data: {
-                        text: {
-                          set: question.quizDescription,
+                  data: {
+                    title: {
+                      set: quiz.quizBasic.quizName,
+                    },
+                    description: {
+                      set: quiz.quizSylabus.quizDescription,
+                    },
+                    questions: {
+                      update: quiz.quizSylabus.quizs.map((question, index) => ({
+                        where: {
+                          id: parseInt(question.id),
                         },
-                        type: {
-                          set:
-                            quiz.quizBasic.quizType === "Pilihan Ganda"
-                              ? QuestionTypeEnum.TrueFalse
-                              : QuestionTypeEnum.MultipleChoice,
-                        },
-                        options: {
-                          update: question.quizQuestion.map((answer) => ({
-                            where: {
-                              id: parseInt(answer.id),
-                            },
-                            data: {
-                              optionText: {
-                                set: answer.option,
+                        data: {
+                          text: {
+                            set: question.quizDescription,
+                          },
+                          type: {
+                            set:
+                              quiz.quizBasic.quizType === "Pilihan Ganda"
+                                ? QuestionTypeEnum.TrueFalse
+                                : QuestionTypeEnum.MultipleChoice,
+                          },
+                          options: {
+                            update: question.quizQuestion.map((answer) => ({
+                              where: {
+                                id: parseInt(answer.id),
                               },
-                              isCorrect: {
-                                set: answer.isCorrect,
+                              data: {
+                                optionText: {
+                                  set: answer.option,
+                                },
+                                isCorrect: {
+                                  set: answer.isCorrect,
+                                },
                               },
-                            },
-                          })),
+                            })),
+                            deleteMany:
+                              currentDeletedCourseSelector.questionsId.map(
+                                (id) => {
+                                  return {
+                                    id: {
+                                      equals: !isNaN(id as number)
+                                        ? parseInt(id as string)
+                                        : (id as number),
+                                    },
+                                  };
+                                }
+                              ),
+                          },
                         },
-                      },
-                    })),
+                      })),
+                      deleteMany: currentDeletedCourseSelector.quizsId.map(
+                        (id) => {
+                          return {
+                            id: {
+                              equals: !isNaN(id as number)
+                                ? parseInt(id as string)
+                                : (id as number),
+                            },
+                          };
+                        }
+                      ),
+                    },
                   },
-                },
-              })),
+                })),
+              },
             },
-          },
-        };
-      })
-    );
+          };
+        })
+      );
     const sectionData: CourseSectionUpdateManyWithoutCourseNestedInput = {
       update: sectionColumn,
     };
@@ -653,6 +713,13 @@ const useEditCourse = () => {
             },
             sections: {
               update: sectionColumn,
+              deleteMany: currentDeletedCourseSelector.sectionsId.map((id) => ({
+                id: {
+                  equals: !isNaN(id as number)
+                    ? parseInt(id as string)
+                    : (id as number),
+                },
+              })),
             },
           },
         },

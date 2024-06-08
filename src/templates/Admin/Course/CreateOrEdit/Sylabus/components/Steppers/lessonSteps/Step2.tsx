@@ -137,7 +137,7 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
             <></>
           )}
           <h5 className="mt-5">
-            {data.lessonType === "Video" ? "Url Video" : "Pilih File PDF"}
+            {data.lessonType === "Video" ? "Url Video" : "Pilih File"}
           </h5>
           {data.lessonType === "Video" ? (
             <>
@@ -164,7 +164,6 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
                 type="file"
                 className="form-control form-control-lg form-control-solid"
                 name="file"
-                accept=".pdf"
                 onChange={async (e) => {
                   const res = await fileToString(e.target.files![0]);
                   updateData({
@@ -217,7 +216,7 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
                     Video URL diperlukan
                   </div>
                 )}
-              {"file" in data.content &&
+              {/* {"file" in data.content &&
                 !data.content.file &&
                 data.lessonType != "Video" && (
                   <div
@@ -227,7 +226,7 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
                   >
                     File diperlukan
                   </div>
-                )}
+                )} */}
             </div>
           )}
         </div>

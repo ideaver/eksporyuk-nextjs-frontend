@@ -3,7 +3,7 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
     id
     name
     description
-    membershipType
+    
     durationDay
     benefits
     price

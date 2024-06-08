@@ -13,6 +13,7 @@ import {
   editCourse,
   resetCourse,
 } from "@/features/reducers/course/courseReducer";
+import { resetDeletedCourse } from "@/features/reducers/course/deletedCourseReducer";
 import ClassInformation from "@/templates/Admin/Course/CreateOrEdit/Information";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -146,10 +147,12 @@ const InformationPage: NextPage = () => {
     if (isEdit && (!currentCourseData || currentCourseData.id !== id)) {
       if (dispatchCourseData.id !== currentCourseData.id) {
         dispatch(editCourse(dispatchCourseData));
+        dispatch(resetDeletedCourse());
       }
     } else if (!isEdit && currentCourseData.id != "") {
       if (currentCourseData.id !== "") {
         dispatch(resetCourse());
+        dispatch(resetDeletedCourse());
       }
     }
   }, [currentCourseData, dispatch, dispatchCourseData, id, isEdit]);
