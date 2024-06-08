@@ -1,6 +1,7 @@
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
 import useNotificationsViewModel, {
   breadcrumbs,
@@ -51,12 +52,30 @@ const NotificationPage = () => {
     handleWithdrawalPageChange,
     setFindWithdrawalTake,
     findWithdrawalTake,
-    setWithdrawalStatus
+    setWithdrawalStatus,
+    loading,
   } = useNotificationsViewModel();
 
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Notifikasi</PageTitle>
+      <LoadingOverlayWrapper
+        active={loading}
+        styles={{
+          overlay: (base) => ({
+            ...base,
+            background: "rgba(255, 255, 255, 0.8)",
+          }),
+          spinner: (base) => ({
+            ...base,
+            width: "100px",
+            "& svg circle": {
+              stroke: "rgba(3, 0, 0, 1)",
+            },
+          }),
+        }}
+        spinner
+      ></LoadingOverlayWrapper>
       <KTCard className="h-100">
         <KTCardBody>
           <Head
@@ -362,6 +381,8 @@ const WithdrawalBody = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState("");
+  const [withdrawalId, setWithdrawalId] = useState<number>(0);
+  const [withdrawalStatus, setWithdrawalStatus] = useState<string>("");
 
   return (
     <>
@@ -369,7 +390,8 @@ const WithdrawalBody = ({
         show={showModal}
         handleClose={() => setShowModal(false)}
         action={modalAction}
-        affiliatorId="11"
+        withdrawalId={withdrawalId}
+        withdrawalStatus={withdrawalStatus}
       />
       {data.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
@@ -442,10 +464,14 @@ const WithdrawalBody = ({
                     <button className="btn btn-success" onClick={() => {
                       setShowModal(true);
                       setModalAction("approve");
+                      setWithdrawalId(withDrawal.id);
+                      setWithdrawalStatus("APPROVED");
                     }}>Approve</button>
                     <button className="btn btn-danger" onClick={() => {
                       setShowModal(true);
                       setModalAction("reject");
+                      setWithdrawalId(withDrawal.id);
+                      setWithdrawalStatus("REJECTED");
                     }}>Reject</button>
                   </div>
                 </td>

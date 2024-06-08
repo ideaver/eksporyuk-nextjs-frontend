@@ -9,16 +9,18 @@ interface withdrawalRequestModal {
   show: boolean;
   handleClose: () => void;
   action: string;
-  affiliatorId: string;
+  withdrawalId: number;
+  withdrawalStatus: string;
 }
 
 const WithdrawalRequestModal = ({
   show,
   handleClose,
   action,
-  affiliatorId,
+  withdrawalId,
+  withdrawalStatus,
 }: withdrawalRequestModal) => {
-  // const { onDelete, onDeleteMany } = useNotificationsViewModel();
+  const { onUpdateStatusWithdrawal } = useNotificationsViewModel();
 
   return (
     <Modal show={show} centered={true}>
@@ -40,7 +42,9 @@ const WithdrawalRequestModal = ({
       </div>
 
       <div className="modal-footer mx-auto">
-        <Buttons buttonColor={action === "approve" ? "success" : "danger"} classNames="btn-lg" onClick={() => {}}>
+        <Buttons buttonColor={action === "approve" ? "success" : "danger"} classNames="btn-lg" onClick={() => {
+          onUpdateStatusWithdrawal(withdrawalStatus, withdrawalId);
+        }}>
           Iya
         </Buttons>
         <Buttons

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { QueryResult } from "@apollo/client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import {
   useNotificationFindManyQuery,
@@ -7,6 +9,7 @@ import {
   NotificationFindManyQuery,
   useInstantWithdrawalRequestFindManyQuery,
   InstantWithdrawalRequestFindManyQuery,
+  useInstantWithdrawalRequestResponseOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import {
   SortOrder,
@@ -212,6 +215,10 @@ const useNotificationsViewModel = () => {
   const [selectedTable, setSelectedTable] = useState<string | number>("notification");
   const [searchWithdrawal, setSearchWithdrawal] = useState<string | null>();
   const [withdrawalStatus, setWithdrawalStatus] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { data: session } = useSession();
+  const router = useRouter();
 
   // Querying process
   const notificationFindMany = useNotificationFindManyQuery({
@@ -255,7 +262,7 @@ const useNotificationsViewModel = () => {
       skip: findWithdrawalSkip,
       orderBy: [
         {
-          updatedAt: dateOrderBy === "asc" ? SortOrder.Asc : SortOrder.Desc,
+          updatedAt: dateOrderBy === "desc" ? SortOrder.Asc : SortOrder.Desc,
         }
       ],
       where: {
@@ -296,6 +303,39 @@ const useNotificationsViewModel = () => {
     }
   });
 
+  // Mutation
+  const [updateStatusWithdrawalRequest] = useInstantWithdrawalRequestResponseOneMutation();
+
+  const onUpdateStatusWithdrawal = async (status: any, withdrawalId: number) => {
+    setLoading(true);
+
+    try {
+      await updateStatusWithdrawalRequest({
+        variables: {
+          data: {
+            status: {
+              set: status,
+            },
+            responseBy: {
+              connect: {
+                id: session?.user.id,
+              }
+            }
+          },
+          where: {
+            id: withdrawalId,
+          }
+        }
+      });
+      await instantWithdrawalRequestFindMany.refetch();
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update withdrawal status:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Checkbox stuff
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(notificationFindMany);
@@ -329,6 +369,8 @@ const useNotificationsViewModel = () => {
     setFindWithdrawalTake,
     findWithdrawalTake,
     setWithdrawalStatus,
+    onUpdateStatusWithdrawal,
+    loading,
   };
 };
 
