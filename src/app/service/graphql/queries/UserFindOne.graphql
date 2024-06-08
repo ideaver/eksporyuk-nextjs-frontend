@@ -48,6 +48,8 @@ query UserFindOne($where: UserWhereUniqueInput!) {
         id
         name
         description
+        affiliateCommission
+        affiliateFirstCommission
         durationDay
         benefits
         price

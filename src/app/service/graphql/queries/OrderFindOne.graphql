@@ -270,6 +270,7 @@ query OrderFindOne($where: OrderWhereUniqueInput!) {
           id
           name
           description
+
           durationDay
           benefits
           price

@@ -46,19 +46,24 @@ const useDetailMembershipViewModel = ({ id, data }: IDetailMembership) => {
   const [descriptionMembership, setDetailMembership] = useState(
     data.membershipCategoryFindOne?.description
   );
-  const [membershipType, setMembershipType] = useState(
-    data.membershipCategoryFindOne?.membershipType
-  );
+
   const [price, setPrice] = useState(data.membershipCategoryFindOne?.price);
   const [duration] = useState(data.membershipCategoryFindOne?.durationDay);
   const [benefits] = useState(data.membershipCategoryFindOne?.benefits);
   const [courses] = useState(data.membershipCategoryFindOne?.benefitCourses);
+  const [affiliateCommission] = useState(
+    data.membershipCategoryFindOne?.affiliateCommission
+  );
+  const [affiliateFirstCommission] = useState(
+    data.membershipCategoryFindOne?.affiliateCommission
+  );
 
   return {
+    affiliateCommission,
+    affiliateFirstCommission,
     courses,
     nameMembership,
     descriptionMembership,
-    membershipType,
     price,
     duration,
     benefits,

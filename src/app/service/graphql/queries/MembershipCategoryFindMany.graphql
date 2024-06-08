@@ -13,6 +13,8 @@ query MembershipCategoryFindMany(
     id
     name
     description
+    affiliateCommission
+    affiliateFirstCommission
     durationDay
     benefits
     price
