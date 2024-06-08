@@ -7,17 +7,20 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import CurrencyInput from "react-currency-input-field";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 const DetailMembership = ({ id, data }: IDetailMembership) => {
   const router = useRouter();
   const {
     nameMembership,
     descriptionMembership,
-    membershipType,
     price,
     duration,
     benefits,
     courses,
+    affiliateCommission,
+    affiliateFirstCommission,
   } = useDetailMembershipViewModel({ id, data });
   return (
     <>
@@ -29,12 +32,26 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
           <p className="mb-8 fs-5">{nameMembership}</p>
           <h4 className="">Deskripsi Membership</h4>
           <p className="mb-8 fs-5">{descriptionMembership}</p>
-          <h4 className="">Tipe Membership</h4>
-          <p className="mb-8 fs-5">{membershipType}</p>
           <h4 className="">Harga</h4>
-          <p className="mb-8 fs-5">{price}</p>
-          <h4 className="">Durasi</h4>
-          <p className="mb-8 fs-5">{duration + "Hari"}</p>
+          <div className="input-group">
+            <span className="input-group-text" id="price-field">
+              {"Rp"}
+            </span>
+            <CurrencyInput
+              className="form-control"
+              id="price-field"
+              name="price"
+              disabled
+              placeholder="Masukan Komisi (Rp)"
+              intlConfig={{ locale: "id-ID" }}
+              defaultValue={0}
+              value={price}
+              decimalsLimit={2}
+              onValueChange={(value, name, values) => {}}
+            />
+          </div>
+          <h4 className=" mt-8">Durasi</h4>
+          <p className="mb-8 fs-5">{duration + " Hari"}</p>
           <h4 className="">Benefit Kelas</h4>
           <div className="mb-8 fs-5 d-flex flex-wrap gap-5">
             {courses?.length == 0
@@ -52,7 +69,51 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
                   );
                 })}
           </div>
-          <h4 className="">Benefit</h4>
+          <div className="row">
+            <div className="col">
+              <h5 className="required mt-5">Harga Afiliasi Komisi Pertama</h5>
+              <div className="input-group">
+                <span className="input-group-text" id="price-field">
+                  {"Rp"}
+                </span>
+                <CurrencyInput
+                  className="form-control"
+                  id="price-field"
+                  disabled
+                  name="price"
+                  placeholder="Masukan Komisi (Rp)"
+                  intlConfig={{ locale: "id-ID" }}
+                  defaultValue={0}
+                  value={affiliateFirstCommission}
+                  decimalsLimit={2}
+                  onValueChange={(value, name, values) => {}}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <h5 className="required mt-10">Harga Afiliasi Komisi</h5>
+              <div className="input-group">
+                <span className="input-group-text" id="price-field">
+                  {"Rp"}
+                </span>
+                <CurrencyInput
+                  className="form-control"
+                  id="price-field"
+                  name="price"
+                  disabled
+                  placeholder="Masukan Komisi (Rp)"
+                  intlConfig={{ locale: "id-ID" }}
+                  defaultValue={0}
+                  value={affiliateCommission}
+                  decimalsLimit={2}
+                  onValueChange={(value, name, values) => {}}
+                />
+              </div>
+            </div>
+          </div>
+          <h4 className="mt-8">Benefit</h4>
           <div
             style={{
               height: "220px",

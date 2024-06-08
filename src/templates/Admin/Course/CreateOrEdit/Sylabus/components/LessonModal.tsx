@@ -80,7 +80,7 @@ const LessonModal = ({
       }
     } else {
       const pdfContent = data.content as ILessonPDFContent;
-      if (!pdfContent.content || !pdfContent.file) {
+      if (!pdfContent.content) {
         return false;
       }
     }

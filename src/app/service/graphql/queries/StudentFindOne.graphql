@@ -196,7 +196,6 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
               id
               name
               description
-              membershipType
               durationDay
               benefits
               price

@@ -92,7 +92,7 @@ const Head = ({
             }}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <button className="btn btn-secondary">View All</button>
         </div>
         <div className="col-lg-auto">
@@ -100,7 +100,7 @@ const Head = ({
         </div>
         <div className="col-lg-auto">
           <button className="btn btn-secondary">Login Issues</button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import clsx from "clsx";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
 import CurrencyInput from "react-currency-input-field";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { useRouter } from "next/router";
@@ -29,18 +28,20 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
     formik,
     isLoading,
     setIsloading,
-    membershipType,
     setName,
     setDescription,
     setPrice,
     setBenefits,
-    setMembershipType,
     setDuration,
     price,
     benefits,
     courses,
     handleChangeCourses,
     handleDeleteCourses,
+    setAffiliateCommission,
+    setAffiliateFirstCommission,
+    affiliateCommission,
+    affiliateFirstCommission,
   } = useEditMembershipViewModel({ id, data });
   const { loadOptions } = useCoursesDropdown();
   return (
@@ -122,25 +123,6 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
               <h5 className="text-muted mt-2 mb-5">
                 Masukan deskripsi membership
               </h5>
-              <h5 className="required">Tipe Membership</h5>
-              <Dropdown
-                value={membershipType}
-                options={[
-                  {
-                    value: MembershipTypeEnum.ThreeMonth,
-                    label: "THREE_MONTH",
-                  },
-                  { value: MembershipTypeEnum.SixMonth, label: "SIX_MONTH" },
-                  {
-                    value: MembershipTypeEnum.TwelveMonth,
-                    label: "TWELVE_MONTH",
-                  },
-                ]}
-                onValueChange={(value) =>
-                  setMembershipType(value as MembershipTypeEnum)
-                }
-              ></Dropdown>
-              <h5 className="text-muted mt-2 mb-8">Pilih tipe membership</h5>
               <h5 className="required">Harga</h5>
               <CurrencyInput
                 className={clsx(
@@ -232,10 +214,65 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
                   });
                 }}
               ></AsyncPaginate>
-
               <h5 className="text-muted mt-2 mb-8">
                 Masukan benefit kelas ketika berlangganan
               </h5>
+
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-5">
+                    Harga Afiliasi Komisi Pertama
+                  </h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={affiliateFirstCommission}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        setAffiliateFirstCommission(parseInt(value as string));
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2">
+                Masukan komisi affiliasi pertama
+              </h5>
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-10">Harga Afiliasi Komisi</h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={affiliateCommission}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        setAffiliateCommission(parseInt(value as string));
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2 mb-10">
+                Masukan komisi affiliasi
+              </h5>
+
               <h5 className="required">Benefit</h5>
               <div
                 style={{
