@@ -31,6 +31,8 @@ const CouponAffiliatePage = ({ data }: any) => {
   // An array of checked coupon ids
   couponIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
+  console.log(data.data);
+
   return (
     <>
       <CreateCouponModal
@@ -107,6 +109,15 @@ const CouponAffiliatePage = ({ data }: any) => {
             </KTTableHead>
             {data?.data?.affiliatorFindOne?.createdCoupons?.map(
               (coupon: any, index: any) => {
+                console.log(coupon?.extendedFrom?.coupon?.type);
+                console.log(coupon?.extendedFrom?.coupon?.value);
+                let amount = "";
+                if (coupon?.extendedFrom?.coupon?.type === "AMOUNT") {
+                  amount = formatCurrency(coupon?.extendedFrom?.coupon?.value);
+                } else {
+                  amount = coupon?.extendedFrom?.coupon?.value + " %";
+                }
+
                 return (
                   <KTTableBody key={index}>
                     <td className="align-middle">
@@ -128,9 +139,13 @@ const CouponAffiliatePage = ({ data }: any) => {
                       {coupon.createdBy.user.name}
                     </td>
                     <td className="align-middle text-end text-muted fw-bold w-150px">
-                      {coupon?.coupon?.type === DiscountTypeEnum.Amount
+                      {/* {coupon?.coupon?.type === DiscountTypeEnum.Amount
                         ? formatCurrency(coupon?.coupon?.value)
-                        : coupon?.coupon?.value + "%"}
+                        : coupon?.coupon?.value + "%"} */}
+                        {/* {coupon?.extendedFrom?.coupon?.value === DiscountTypeEnum.Amount
+                        ? formatCurrency(coupon?.extendedFrom?.coupon?.value)
+                        : coupon?.extendedFrom?.coupon?.value + "%"} */}
+                        {amount}
                     </td>
                     {/* <td className="align-middle text-end text-muted fw-bold w-150px">
                       {coupon?.extendedFrom?._count?.extendedByCourses}

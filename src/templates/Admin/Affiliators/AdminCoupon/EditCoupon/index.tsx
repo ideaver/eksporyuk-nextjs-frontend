@@ -1,5 +1,5 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import { breadcrumbs } from "../AdminCoupon-view-model";
+import { breadcrumbs, useCoursesDropdown } from "../AdminCoupon-view-model";
 import useEditCouponViewModel, { IEditCoupon } from "./EditCoupon-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import Flatpickr from "react-flatpickr";
 import { useRouter } from "next/router";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const EditCoupon = ({ id, data }: IEditCoupon) => {
   const router = useRouter();
@@ -39,7 +40,16 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
     setDate,
     loading,
     handleCouponUpdateOne,
+    maxClaim,
+    setMaxClaim,
+    connectCourse,
+    setConnectCourse,
+    selectedMentor, setSelectedMentor, addMentor, removeMentor,
+    selectedCourse, setSelectedCourses, addCourse, removeCourse,
   } = useEditCouponViewModel({ id, data });
+
+  const { loadOptions } = useCoursesDropdown();
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Edit Coupon</PageTitle>
@@ -149,6 +159,107 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
             //   }}
             // />
             null}
+            <div className="mb-5 mt-6">
+              <h4 className="required fw-bold text-gray-700">
+                Max Penggunaan User
+              </h4>
+              <TextField
+                styleType="outline"
+                size="medium"
+                type="number"
+                props={{
+                  value: String(maxClaim),
+                  onChange: (e: any) => setMaxClaim(e.target.value),
+                }}
+              />
+            </div>
+            {/* <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">Penerapan Kupon</h4>
+          <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6>
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              setConnectCourse(value?.value);
+            }}
+          ></AsyncPaginate>
+        </div> */}
+        <div className="mb-8 mt-6">
+          <h4 className="fw-bold text-gray-700">Kupon hanya bisa digunakan di kelas</h4>
+          {/* <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6> */}
+          {selectedMentor &&
+            selectedMentor?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeMentor(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              addMentor(value);
+            }}
+          ></AsyncPaginate>
+        </div>
+        <div className="mb-5 mt-6">
+          <h4 className="fw-bold text-gray-700">Kupon tidak bisa digunakan di kelas</h4>
+          {/* <h6 className="mt-4 text-muted">
+            Pilih Kelas yang Dapat Menggunakan Kupon Ini
+          </h6> */}
+          {selectedCourse &&
+            selectedCourse?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeCourse(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadOptions}
+            onChange={(value) => {
+              addCourse(value);
+            }}
+          ></AsyncPaginate>
+        </div>
           </KTCardBody>
           <div className={"row flex-end mt-10"}>
             <Buttons
