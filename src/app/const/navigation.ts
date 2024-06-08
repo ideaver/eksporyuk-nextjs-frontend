@@ -129,15 +129,21 @@ export const adminMenus: MenuSection[] = [
         icon: "basket",
         subItems: [
           {
-            title: "Produk Layanan",
+            title: "Semua Kelas",
+            to: "/admin/courses",
+            icon: "book-open",
+          },
+          {
+            title: "Semua Produk",
             to: "/admin/products",
             icon: "parcel",
           },
           {
-            title: "Pengaturan Membership",
+            title: "Pengaturan Membership Kupon",
             to: "/admin/subscriber",
             icon: "classmates",
           },
+
           // {
           //   title: "Semua Bundle",
           //   to: "/admin/products/bundle",
@@ -150,11 +156,7 @@ export const adminMenus: MenuSection[] = [
           // },
         ],
       },
-      {
-        title: "Manajemen Kelas",
-        to: "/admin/courses",
-        icon: "book-open",
-      },
+
       { title: "Manajemen Order", to: "/admin/orders", icon: "delivery-3" },
       {
         title: "Manajemen Mentor",

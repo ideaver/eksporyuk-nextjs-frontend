@@ -6,6 +6,12 @@ import {
   changeSections,
 } from "@/features/reducers/course/courseReducer";
 import {
+  deleteLesson,
+  deleteQuiz,
+  deleteResource,
+  deleteSection,
+} from "@/features/reducers/course/deletedCourseReducer";
+import {
   changeEditLesson,
   changeEditQuiz,
 } from "@/features/reducers/products/productReducer";
@@ -55,7 +61,7 @@ const CourseSylabusPage = () => {
   // End RTK
 
   // Start Lesson
-const handleSubmitSection = (val: ICourseSectionData) => {
+  const handleSubmitSection = (val: ICourseSectionData) => {
     dispatch(
       changeSections(
         currentCourseSectionSelector.some(
@@ -63,7 +69,11 @@ const handleSubmitSection = (val: ICourseSectionData) => {
         )
           ? currentCourseSectionSelector.map((courseSection) =>
               courseSection.id === val.id
-                ? { ...courseSection, title: val.title, description: val.description }
+                ? {
+                    ...courseSection,
+                    title: val.title,
+                    description: val.description,
+                  }
                 : courseSection
             )
           : currentCourseSectionSelector.concat(val)
@@ -79,6 +89,7 @@ const handleSubmitSection = (val: ICourseSectionData) => {
     const newSection = currentCourseSectionSelector.filter(
       (_, i) => i !== index
     );
+    dispatch(deleteSection(currentCourseSectionSelector[index].id));
     dispatch(changeSections(newSection));
   };
 
@@ -117,6 +128,7 @@ const handleSubmitSection = (val: ICourseSectionData) => {
       };
     });
     dispatch(changeSections(newLessons));
+    dispatch(deleteLesson(newLessons[index].id));
   };
 
   const handleEditLesson = (
@@ -214,6 +226,7 @@ const handleSubmitSection = (val: ICourseSectionData) => {
         )
       )
     );
+    dispatch(deleteQuiz(filterSelectedCourseSection.quizs[index].id));
   };
 
   const handleEditQuiz = (newQuiz: ICreateQuizData) => {
@@ -469,6 +482,9 @@ const handleSubmitSection = (val: ICourseSectionData) => {
                                                   courseSection.resources.filter(
                                                     (_, i) => i !== index
                                                   );
+                                                dispatch(
+                                                  deleteResource(resource.id)
+                                                );
                                                 dispatch(
                                                   changeSections(
                                                     currentCourseSectionSelector.map(

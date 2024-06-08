@@ -153,7 +153,15 @@ export const useCategoriesDropdown = () => {
     };
   }
 
-  return { loadOptions };
+  //manual
+  const categoryArticleDropdownOption =
+    getCategory.data?.articleCategoryFindMany?.map((category) => ({
+      value: category.id,
+      label: category.name,
+    }));
+  categoryArticleDropdownOption?.unshift({ value: 0, label: "Semua Kategori" });
+
+  return { loadOptions, categoryArticleDropdownOption };
 };
 
 const useArticleViewModel = () => {

@@ -103,9 +103,9 @@ const Step1 = ({ data, updateData, hasError }: StepProps) => {
                 </span>
 
                 <span className="d-flex flex-column">
-                  <span className="fw-bolder fs-6">PDF</span>
+                  <span className="fw-bolder fs-6">File & Teks</span>
                   <span className="fs-7 text-muted">
-                    Materi dengan konten Teks
+                    Materi dengan konten Teks atau File
                   </span>
                 </span>
               </span>

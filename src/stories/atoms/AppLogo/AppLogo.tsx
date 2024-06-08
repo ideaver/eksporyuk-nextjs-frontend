@@ -1,8 +1,5 @@
-import React from "react";
 import clsx from "clsx";
-import { KTIcon } from "../../../_metronic/helpers";
 import Link from "next/dist/client/link";
-import Image from "next/image";
 
 interface AppLogoProps {
   /**
@@ -18,6 +15,10 @@ interface AppLogoProps {
    */
   urlPath?: string;
   /**
+   * Optional click handler
+   */
+  customUrlLogo?: string;
+  /**
    * App Logo Type
    */
   type?: "default" | "white";
@@ -31,6 +32,7 @@ export const AppLogo = ({
   urlPath = "/",
   size,
   type = "default",
+  customUrlLogo,
 }: AppLogoProps) => {
   const sizeHandler = (size: string | undefined) => {
     switch (size) {
@@ -48,7 +50,7 @@ export const AppLogo = ({
     <Link href={urlPath}>
       <img
         alt="Logo"
-        src={`./images/logo/${
+        src={customUrlLogo ?? `./images/logo/${
           type === "default" ? "EksporYukLogo.png" : "logo-white.png"
         }`}
         className={clsx(sizeHandler(size), classNames)}

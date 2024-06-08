@@ -57,13 +57,13 @@ const AdminOrderLayout = ({
           >
             Kirim Follow-Up
           </Buttons>
-          <Buttons
+          {/* <Buttons
             buttonColor="primary"
             classNames="fw-bold w-100 w-lg-auto mt-5 mt-lg-0 ms-5"
             onClick={() => setShowOrderStatusModal(true)}
           >
             Ubah status order
-          </Buttons>
+          </Buttons> */}
         </div>
         <FollowUpModal
           follupValues={

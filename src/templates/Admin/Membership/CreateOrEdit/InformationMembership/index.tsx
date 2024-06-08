@@ -19,7 +19,7 @@ import {
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
-import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { AffiliateCommissionTypeEnum } from "@/app/service/graphql/gen/graphql";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -44,9 +44,10 @@ const InformationMembership = () => {
   } = useMembershipForm();
   const { loadOptions } = useCoursesDropdown();
   const {
-    handleChangeMembershipType,
     handleChangeCourses,
     handleDeleteCourses,
+    handleChangeAffiliateCommission,
+    handleChangeAffiliateFirstCommission,
   } = useInformationMembershipViewModel();
   return (
     <>
@@ -127,7 +128,7 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-5">
                 Masukan deskripsi membership
               </h5>
-              <h5 className="required">Tipe Membership</h5>
+              {/* <h5 className="required">Tipe Membership</h5>
               <Dropdown
                 value={membershipState.membershipType}
                 options={[
@@ -145,7 +146,7 @@ const InformationMembership = () => {
                   handleChangeMembershipType(value as MembershipTypeEnum)
                 }
               ></Dropdown>
-              <h5 className="text-muted mt-2 mb-8">Pilih tipe membership</h5>
+              <h5 className="text-muted mt-2 mb-8">Pilih tipe membership</h5> */}
               <h5 className="required">Harga</h5>
               <CurrencyInput
                 className={clsx(
@@ -240,9 +241,68 @@ const InformationMembership = () => {
                 }}
               ></AsyncPaginate>
 
-              <h5 className="text-muted mt-2 mb-8">
+              <h5 className="text-muted mt-2 mb-5">
                 Masukan benefit kelas ketika berlangganan
               </h5>
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-5">
+                    Harga Afiliasi Komisi Pertama
+                  </h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={membershipState.affiliateFirstCommision}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        handleChangeAffiliateFirstCommission(
+                          parseInt(value as string)
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2">
+                Masukan komisi affiliasi pertama
+              </h5>
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-10">Harga Afiliasi Komisi</h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={membershipState.affiliateCommision}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        handleChangeAffiliateCommission(
+                          parseInt(value as string)
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2 mb-10">
+                Masukan komisi affiliasi
+              </h5>
+
               <h5 className="required">Benefit</h5>
               <div
                 style={{

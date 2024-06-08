@@ -418,8 +418,7 @@ const Body = ({
                         </span>
                         <span className="fw-bold text-muted">
                           {course._count.sections} Sections, {totalLessons}{" "}
-                          Lesson, {totalQuizzes} Quiz, {totalAssignment}{" "}
-                          Assignment
+                          Lesson, {totalQuizzes} Quiz
                         </span>
                       </div>
                     </div>
