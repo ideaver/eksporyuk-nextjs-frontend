@@ -23,7 +23,7 @@ const AdminTransactionLayout = ({ urlType, id }: IAdminTransaction) => {
   return (
     <div>
       <PageTitle breadcrumbs={breadcrumbs}>Order Detail</PageTitle>
-      <div className="d-lg-flex justify-content-between mb-5">
+      {/* <div className="d-lg-flex justify-content-between mb-5">
         <TabLink className="mb-10" links={urls} />
         <div className="mb-5 mb-lg-0 d-sm-flex d-lg-block">
           <Buttons
@@ -43,20 +43,13 @@ const AdminTransactionLayout = ({ urlType, id }: IAdminTransaction) => {
           </Buttons>
         </div>
       </div>
-      {/* <div className="row gy-5 mb-5">
-    {orderTableDatas.map((data, index) => (
-      <div className="col-lg-4" key={index}>
-        <OrderCard className="h-100" data={data} />
-      </div>
-    ))}
-  </div> */}
       <ChangeStatusModal
         selectedStatus={selectedStatus}
         statuses={statuses}
         setSelectedStatus={setSelectedStatus}
         handleStatusUpdate={handleStatusUpdate}
         onClose={() => {}}
-      />
+      /> */}
     </div>
   );
 };
