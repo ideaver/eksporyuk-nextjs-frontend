@@ -7,8 +7,9 @@ import useComissionViewModel, {
   formatToIDR,
   breadcrumbs,
 } from "./Comission-view-model";
-import { InvoiceFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import { InvoiceFindManyQuery, TransactionFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import DetailComissionModal from "./components/DetailComissionModal";
+import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
 
 import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
@@ -40,7 +41,10 @@ const CommissionPage = ({}: ComissionPageProps) => {
     handlePageChange,
     setFindTake,
     findTake,
+    transactionFindMany,
   } = useComissionViewModel();
+
+  console.log(transactionFindMany.data);
 
   return (
     <>
@@ -57,7 +61,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
             />
           </div>
         </KTCardBody>
-        <Body data={invoiceFindMany} />
+        <Body data={transactionFindMany} />
         <Footer
           pageLength={calculateTotalPage()}
           currentPage={currentPage}
@@ -124,7 +128,7 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
   );
 };
 
-const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
+const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [commisionId, setComissionId] = useState(0);
 
@@ -147,7 +151,7 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
         <KTTable utilityGY={3}>
           <KTTableHead>
             <th className="fw-bold text-muted min-w-100px">ID ORDER</th>
-            <th className="fw-bold text-muted min-w-475px">Nama Kelas</th>
+            <th className="fw-bold text-muted min-w-100px">Nama Order</th>
             <th className="fw-bold text-muted text-end min-w-80px">Pembeli</th>
             <th className="fw-bold text-muted text-end min-w-150px">
               Affiliasi
@@ -158,20 +162,18 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
             <th className="fw-bold text-muted text-end min-w-100px">STATUS</th>
           </KTTableHead>
 
-          {data.data?.invoiceFindMany?.map((user, index) => {
+          {data.data?.transactionFindMany?.map((user, index) => {
             const statusMap: { [key: string]: string } = {
               PENDING: "Tertunda",
-              UNPAID: "Belum Dibayar",
-              HALFPAID: "Setengah Dibayar",
-              FULLPAID: "Lunas",
+              PROCESSING: "Di Proses",
+              COMPLETED: "Lunas",
               CANCELLED: "Dibatalkan",
               FAILED: "Gagal",
-              REFUNDED: "Di Refund",
             };
 
             return (
               <KTTableBody key={index}>
-                <td className="fw-bold">INV {user.orderId}</td>
+                <td className="fw-bold">INV {user.id}</td>
                 <td
                   className="fw-bold text-dark text-hover-primary"
                   style={{ cursor: "pointer" }}
@@ -180,40 +182,28 @@ const Body = ({ data }: { data: QueryResult<InvoiceFindManyQuery> }) => {
                     setComissionId(user.id);
                   }}
                 >
-                  {user.order?.enrollment?.[0]?.course?.title}
-                  {/* <Link
-                    className="text-dark text-hover-primary"
-                    href={
-                      "commission/" +
-                      user?.orderId?.toString().replace(" ", "") +
-                      "/detail-order/"
-                    }
-                  >
-                    {user.order?.enrollment?.[0].course?.title}
-                  </Link> */}
+                  {user.payment?.invoice?.paymentForGateway?.bill_title}
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {
-                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
-                      .user.name
+                    user.payment?.invoice?.paymentForGateway?.sender_name
                   }
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {
-                    user.order?.enrollment?.[0]?.course?.enrollments?.[0].student
-                      .user.affiliator?.user.name
+                    user.payment?.invoice?.order?.createdByUser?.affiliator?.user.name ?? "-" 
                   }
                 </td>
                 <td className="fw-bold text-muted text-end">
-                  {formatToIDR(String(user.amount))}
+                  {formatToIDR(String(user.payment?.invoice?.paymentForGateway?.amount))}
                 </td>
                 <td className="text-end">
                   <Badge
                     label={statusMap[user.status || ""]}
                     badgeColor={
-                      user.status === "FULLPAID"
+                      user.status === TransactionStatusEnum.Completed
                         ? "success"
-                        : user.status === "CANCELLED"
+                        : user.status === TransactionStatusEnum.Cancelled
                         ? "danger"
                         : "warning"
                     }

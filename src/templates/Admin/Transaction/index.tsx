@@ -52,6 +52,10 @@ const Transaction = () => {
     handleLoadingExportChange,
     orderBy,
     setOrderBy,
+    exportFilterStatus,
+    setExportFilterCategory,
+    setExportFilterStatus,
+    exportFilterCategory,
   } = useTransactionViewModel();
   return (
     <>
@@ -108,11 +112,36 @@ const Transaction = () => {
         </KTCard>
       </LoadingOverlayWrapper>
       <DownloadReportModal
+        statusDropdownOption={statusDropdownOption}
+        categoryDropdownOption={categoryDropdownOption}
         date={downloadReportDate}
         onChange={([startDate, endDate]) => {
           setDownloadReportDate([startDate, endDate]);
         }}
+        filterStatus={exportFilterStatus}
+        filterCategory={exportFilterCategory}
+        setFilterCategory={setExportFilterCategory}
+        setFilterStatus={setExportFilterStatus}
         onClick={async () => {
+          let where: {
+            status?: {
+              equals: string;
+            };
+            transactionCategory?: {
+              equals: string;
+            };
+          } = {};
+          if (exportFilterStatus !== "all") {
+            where.status = {
+              equals: exportFilterStatus,
+            };
+          }
+
+          if (exportFilterCategory !== "all") {
+            where.transactionCategory = {
+              equals: exportFilterCategory,
+            };
+          }
           handleLoadingExportChange(true);
           try {
             const response = await exportDataTransaction({
@@ -121,6 +150,7 @@ const Transaction = () => {
                   adminId: session?.user.id as string,
                   startDate: downloadReportDate[0],
                   endDate: downloadReportDate[1],
+                  where: where as any,
                 },
               },
             });
@@ -452,11 +482,29 @@ const DownloadReportModal = ({
   onChange,
   onClose,
   onClick,
+  filterCategory,
+  filterStatus,
+  setFilterCategory,
+  setFilterStatus,
+  statusDropdownOption,
+  categoryDropdownOption,
 }: {
   date: Date;
   onChange: (value: any) => void;
   onClose: () => void;
   onClick: () => Promise<void>;
+  filterCategory: TransactionCategoryEnum | "all";
+  filterStatus: TransactionStatusEnum | "all";
+  setFilterCategory: Dispatch<SetStateAction<TransactionCategoryEnum | "all">>;
+  setFilterStatus: Dispatch<SetStateAction<TransactionStatusEnum | "all">>;
+  statusDropdownOption: {
+    value: string | TransactionStatusEnum;
+    label: string;
+  }[];
+  categoryDropdownOption: {
+    value: string | TransactionCategoryEnum;
+    label: string;
+  }[];
 }) => {
   return (
     <div>
@@ -501,6 +549,28 @@ const DownloadReportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
+        <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Status</p>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={statusDropdownOption}
+            value={filterStatus}
+            onValueChange={(e) => {
+              setFilterStatus(e as TransactionStatusEnum | "all");
+            }}
+          />
+        </div>
+        <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Category</p>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={categoryDropdownOption}
+            value={filterCategory}
+            onValueChange={(e) => {
+              setFilterCategory(e as TransactionCategoryEnum | "all");
+            }}
+          />
+        </div>
       </KTModal>
     </div>
   );

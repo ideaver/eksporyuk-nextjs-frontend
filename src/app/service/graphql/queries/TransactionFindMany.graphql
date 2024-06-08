@@ -1,7 +1,16 @@
-query TransactionFindOne($where: TransactionWhereUniqueInput!) {
-  transactionFindOne(where: $where) {
+query TransactionFindMany($where: TransactionWhereInput, $orderBy: [TransactionOrderByWithRelationInput!], $take: Int, $skip: Int) {
+  transactionFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
     id
+    amount
+    uniqueCode
+    createdAt
+    updatedAt
+    proofImageId
+    status
     transactionCategory
+    fromAccountId
+    toAccountId
+    paymentId
     payment {
       invoice {
         order {
@@ -23,21 +32,11 @@ query TransactionFindOne($where: TransactionWhereUniqueInput!) {
             affiliator {
               user {
                 name
-                email
-                phone {
-                  phoneNumber
-                }
               }
             }
-            phone {
-              phoneNumber
-            }
-            email
           }
         }
-        paymentForGatewayId
         paymentForGateway {
-          status
           id
           bill_link
           bill_link_id
@@ -48,50 +47,13 @@ query TransactionFindOne($where: TransactionWhereUniqueInput!) {
           sender_bank_type
           virtual_account_number
           amount
+          status
           settlement_status
           reference_id
           payment_url
           created_at
           completed_at
         }
-        paymentId
-        amount
-        id
-        adminFee
-        uniqueCode
-        createdAt
-        updatedAt
-        status
-        orderId
-      }
-      amount
-      createdAt
-      id
-      method
-      status
-      updatedAt
-    }
-    amount
-    createdAt
-    paymentId
-    status
-    updatedAt
-    uniqueCode
-    proofImageId
-    fromAccountId
-    toAccountId
-    toAccount {
-      id
-      name
-      balance
-      updatedAt
-      userId
-      user {
-        email
-        id
-        phoneId
-        name
-        avatarImageId
       }
     }
   }

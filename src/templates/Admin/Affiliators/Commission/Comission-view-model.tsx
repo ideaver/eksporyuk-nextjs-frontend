@@ -5,6 +5,7 @@ import {
   useInvoiceFindManyQuery,
   QueryMode,
   SortOrder,
+  useTransactionFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 
 export const formatToIDR = (amount: string) => {
@@ -29,6 +30,8 @@ export const breadcrumbs = [
     isActive: true,
   },
 ];
+
+const test = {};
 
 // Pagination
 const usePagination = () => {
@@ -187,6 +190,16 @@ const useComissionViewModel = () => {
     },
   });
 
+  const transactionFindMany = useTransactionFindManyQuery({
+    variables: {
+      take: parseInt(findTake.toString()),
+      skip: findSkip,
+      orderBy: {
+        updatedAt: orderBy,
+      },
+    }
+  });
+
   return {
     isCustomTake,
     setIsCustomTake,
@@ -205,6 +218,7 @@ const useComissionViewModel = () => {
     handlePageChange,
     setFindTake,
     findTake,
+    transactionFindMany,
   };
 };
 
