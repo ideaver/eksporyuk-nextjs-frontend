@@ -53,12 +53,13 @@ function getProductName(cartItems: any[]) {
     if (item.membershipCategoryId !== null) types.push(item.membership?.name);
     if (item.productServiceId !== null) types.push(item.productService?.name);
   });
-  return types.filter(Boolean).join(', ');
+  return types.filter(Boolean).join(", ");
 }
 const orderDetail = (data: OrderFindOneQuery["orderFindOne"]) => {
   const latestInvoices = data?.invoices?.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )[0];
+  console.log(data?.cart.totalPrice);
   return [
     {
       title: `Order`,
@@ -66,13 +67,17 @@ const orderDetail = (data: OrderFindOneQuery["orderFindOne"]) => {
       rows: [
         {
           kuantiti: data?.cart.totalQuantity.toString() ?? "",
-          harga: "Biaya Admin",
-          total: latestInvoices?.adminFee ?? 0,
-          value: <div className="text-dark">{getProductName(data?.cart.cartItems ?? [])}</div>,
+          harga: "Total Harga",
+          total: data?.cart.totalPrice ?? 0,
+          value: (
+            <div className="text-dark">
+              {getProductName(data?.cart.cartItems ?? [])}
+            </div>
+          ),
         },
         {
-          harga: <p className="text-dark mt-4">Total Harga</p>,
-          total: latestInvoices?.amount ?? 0,
+          harga: <p className="text-dark mt-4">Total </p>,
+          total: data?.cart.totalPrice ?? 0,
         },
       ],
     },
