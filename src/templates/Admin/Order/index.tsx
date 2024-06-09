@@ -5,6 +5,7 @@ import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import {
   CartItemTypeEnum,
+  FollowUpFindManyQuery,
   OrderFindManyQuery,
   OrderStatusEnum,
   SortOrder,
@@ -19,11 +20,17 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Flatpickr from "react-flatpickr";
 import { breadcrumbs } from "../Products/Products-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
 import { useSession } from "next-auth/react";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import { changeFollowUpTamplate } from "@/features/reducers/followup/followupReducer";
 
 const OrderPage = ({}) => {
   const { data: session } = useSession();
@@ -50,6 +57,12 @@ const OrderPage = ({}) => {
     exportOrder,
     isLoading,
     setIsloading,
+    followUpFindMany,
+    handleFollupChange,
+    handleEditState,
+    handleDeleteFollowUp,
+    handleSendFollowUp,
+    handleChangeFollowUpState,
   } = useAdminOrderViewModel();
   return (
     <>
@@ -75,6 +88,12 @@ const OrderPage = ({}) => {
             handleSingleCheck={handleSingleCheck}
             checkedItems={checkedItems}
             selectAll={selectAll}
+            followUpFindMany={followUpFindMany}
+            handleFollupChange={handleFollupChange}
+            handleEditState={handleEditState}
+            handleDeleteFollowUp={handleDeleteFollowUp}
+            handleSendFollowUp={handleSendFollowUp}
+            handleFollowUpState={handleChangeFollowUpState}
           />
           <Footer
             pageLength={calculateTotalPage()}
@@ -399,12 +418,26 @@ const Body = ({
   handleSingleCheck,
   checkedItems,
   selectAll,
+  followUpFindMany,
+  // followUpTamplate,
+  // selectedFollupValue,
+  handleFollupChange,
+  handleEditState,
+  handleDeleteFollowUp,
+  handleSendFollowUp,
+  handleFollowUpState,
 }: {
   orderFindMany: QueryResult<OrderFindManyQuery>;
   handleSelectAllCheck: () => void;
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
+  followUpFindMany: QueryResult<FollowUpFindManyQuery>;
+  handleFollupChange: (e: any) => void;
+  handleEditState: (e: any) => void;
+  handleDeleteFollowUp: (name: string) => Promise<void>;
+  handleSendFollowUp: () => string;
+  handleFollowUpState: any;
 }) => {
   const [selectedMentor, setSelectedOrder] = useState("");
   function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
@@ -427,6 +460,8 @@ const Body = ({
         return "info";
     }
   }
+  const followUpState = useSelector((state: RootState) => state.followUp);
+  const dispatch = useDispatch();
   return (
     <>
       {orderFindMany.error ? (
@@ -457,8 +492,9 @@ const Body = ({
                   <p className="mb-0">ID ORDER</p>
                 </CheckBoxInput>
               </th>
+              <th className="min-w-200px">ID Invoice</th>
               <th className="min-w-275px">Nama Produk</th>
-              <th className="text-end min-w-275px">Pembeli</th>
+              <th className="text-start min-w-200px">Pembeli</th>
               <th className="text-end min-w-200px">Tanggal Pembelian</th>
               <th className="text-end min-w-200px">Total Harga</th>
               <th className="text-end min-w-275px">Afiliasi</th>
@@ -507,6 +543,9 @@ const Body = ({
                       <p className="fw-bold text-black mb-0">{order.id}</p>
                     </CheckBoxInput>
                   </td>
+                  <td className="align-middle text-start text-muted min-w-200px fw-bold ">
+                    {latestInvoices?.uniqueCode}
+                  </td>
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
                       <Link
@@ -520,8 +559,8 @@ const Body = ({
                     </div>
                   </td>
 
-                  <td className="align-middle text-end w-250px">
-                    <div className="d-flex align-items-center justify-content-end">
+                  <td className="align-middle text-start w-250px">
+                    <div className="d-flex align-items-center justify-content-start">
                       <div className="symbol symbol-50px symbol-circle me-5">
                         <img
                           className="symbol-label bg-gray-600"
@@ -582,7 +621,7 @@ const Body = ({
                     {order.coupon?.affiliatorCoupon?.code ?? "Tidak Tersedia"}
                   </td>
                   <td className="align-middle text-end">
-                    <p>
+                    <p className="align-middle">
                       {" "}
                       <Badge
                         label={latestStatus?.status ?? "Tidak Diketahui"}
@@ -590,8 +629,8 @@ const Body = ({
                       />{" "}
                     </p>
                   </td>
-                  <td className="align-middle text-end ">
-                    <div className="dropdown  ps-15 pe-0">
+                  <td className="align-middle text-end min-w-125px">
+                    {/* <div className="dropdown  ps-15 pe-0">
                       <button
                         className="btn btn-secondary dropdown-toggle"
                         type="button"
@@ -613,12 +652,48 @@ const Body = ({
                           <button className="dropdown-item">Hapus</button>
                         </li>
                       </ul>
-                    </div>
+                    </div> */}
+                    <button
+                      className="btn btn-secondary px-4"
+                      data-bs-toggle="modal"
+                      data-bs-target="#kt_follup_modal"
+                      onClick={() => {
+                        handleFollowUpState({
+                          name: order.createdByUser.name,
+                          date: order.createdAt,
+                          phone: order.createdByUser.phoneId,
+                          email: order.createdByUser.email,
+                          coupon: order.coupon?.affiliatorCoupon?.code,
+                        });
+                      }}
+                    >
+                      Follow Up
+                    </button>
                   </td>
                 </tr>
               );
             })}
           </KTTable>
+          <FollowUpModal
+            follupValues={
+              followUpFindMany.data?.followUpFindMany?.map(
+                (e) => e.name
+              ) as string[]
+            }
+            value={followUpState.followUpTamplate ?? ""}
+            // follupValues={follupValues}
+            selectedFollupValue={followUpState.selectedFollowUpValue}
+            handleFollupChange={handleFollupChange}
+            onChange={(e: any) => {
+              dispatch(changeFollowUpTamplate(e.target.value));
+            }}
+            handleEditState={handleEditState}
+            handleDeleteFollowUp={handleDeleteFollowUp}
+            linkAPIWhatsapp={handleSendFollowUp()}
+          />
+
+          <CreateFollowUpModal />
+          <UpdateFollowUpModal />
         </>
       )}
     </>

@@ -97,7 +97,7 @@ const CreateNewRewardContent = () => {
             </div>
 
             {/* Input 2 */}
-            <div className="mb-5">
+            {/* <div className="mb-5">
               <h5 className="required">Foto Produk</h5>
               <div
                 className="border-dashed border-primary rounded p-3"
@@ -140,7 +140,7 @@ const CreateNewRewardContent = () => {
                   )}
                 </label>
               </div>
-            </div>
+            </div> */}
 
             {/* Input 3 */}
             <div className="mb-5">

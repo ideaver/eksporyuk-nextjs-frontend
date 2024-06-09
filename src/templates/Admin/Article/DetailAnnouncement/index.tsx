@@ -1,6 +1,7 @@
 import { PageTitle } from "@/_metronic/layout/core";
 import useDetailAnnouncement, {
   IDetailAnnouncement,
+  breadcrumbs,
 } from "./DetailAnnouncement-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
@@ -13,7 +14,7 @@ const DetailAnnouncement = ({ id, data }: IDetailAnnouncement) => {
   const { content, title, type, course } = useDetailAnnouncement({ id, data });
   return (
     <>
-      <PageTitle>Detail Announcement</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Detail Announcement</PageTitle>
       <KTCard className="">
         <KTCardBody>
           <h3 className="mb-5">Detail Announcement</h3>

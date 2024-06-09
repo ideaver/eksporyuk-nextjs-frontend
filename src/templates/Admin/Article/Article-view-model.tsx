@@ -1,14 +1,19 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import {
   AnnouncementTypeEnum,
+  MaterialPromotionPlatformTypeEnum,
   QueryMode,
   SortOrder,
   useAnnouncementDeleteOneMutation,
+  useAnnouncementFindLengthQuery,
   useAnnouncementFindManyQuery,
   useArticleCategoryFindManyQuery,
   useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
   useArticleFindManyQuery,
+  useMaterialPromotionPlatformDeleteOneMutation,
+  useMaterialPromotionPlatformFindLengthQuery,
+  useMaterialPromotionPlatformFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { GroupBase, OptionsOrGroups } from "react-select";
 import { format } from "date-fns";
@@ -28,94 +33,206 @@ export const breadcrumbs = [
   },
 ];
 
-const usePagination = (
-  articleFindTake: number,
-  articleFindSkip: number,
-  setArticleFindSkip: Dispatch<SetStateAction<number>>,
-  setArticleFindTake: Dispatch<SetStateAction<number>>,
-  articleFindSearch: string,
-  articleFindStatus: string,
-  articleFindCategory: number
-) => {
+const usePagination = ({
+  articleFindTake,
+  articleFindSkip,
+  articleFindSearch,
+  articleFindStatus,
+  setArticleFindSkip,
+  setArticleFindTake,
+  articleFindCategory,
+}: {
+  articleFindTake: number;
+  articleFindSkip: number;
+  articleFindSearch: string;
+  articleFindStatus: string;
+  articleFindCategory: number;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  setArticleFindTake: Dispatch<SetStateAction<number>>;
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const articleLength = useArticleFindLengthQuery({});
+  const articleLength = useArticleFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
+            },
+          },
+          {
+            createdByAdmin: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: articleFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+            isActive: {
+              equals:
+                articleFindStatus === "true"
+                  ? true
+                  : articleFindStatus === "false"
+                  ? false
+                  : null,
+            },
+            category: {
+              some: {
+                id: {
+                  equals:
+                    articleFindCategory === 0 ? null : articleFindCategory,
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setArticleFindSkip((page - 1) * articleFindTake);
   };
 
-  const length: number | undefined =
-    articleLength.data?.articleFindMany?.length;
-
   const calculateTotalPage = () => {
-    return Math.ceil((length as number) / articleFindTake);
+    return Math.ceil(
+      (articleLength.data?.articleFindMany?.length ?? 0) / articleFindTake
+    );
   };
 
-  useEffect(() => {
-    if (
-      articleFindCategory != 0 ||
-      articleFindSearch.length > 0 ||
-      articleFindStatus != "all"
-    ) {
-      setCurrentPage(1);
-      setArticleFindSkip(0);
-    }
-  }, [
-    articleFindCategory,
-    articleFindSearch,
-    articleFindStatus,
-    setArticleFindSkip,
-  ]);
   return {
     currentPage,
-    setCurrentPage,
-    articleFindSkip,
-    setArticleFindSkip,
-    articleFindTake,
-    setArticleFindTake,
-    handlePageChange,
     calculateTotalPage,
     articleLength,
+    handlePageChange,
+    setCurrentPage,
   };
 };
-const usePaginationAnnouncement = (
-  articleFindTake: number,
-  articleFindSkip: number,
-  setArticleFindSkip: Dispatch<SetStateAction<number>>,
-  setArticleFindTake: Dispatch<SetStateAction<number>>,
-  articleFindSearch: string,
-  articleFindStatus: string
-) => {
+
+const usePaginationAnnouncement = ({
+  articleFindTake,
+  articleFindSkip,
+  articleFindSearch,
+  setArticleFindSkip,
+  setArticleFindTake,
+}: {
+  articleFindTake: number;
+  articleFindSkip: number;
+  articleFindSearch: string;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  setArticleFindTake: Dispatch<SetStateAction<number>>;
+}) => {
   const [currentPageAnnouncement, setCurrentPageAnnouncement] = useState(1);
 
-  const announcementLength = useAnnouncementFindManyQuery({});
+  const announcementLength = useAnnouncementFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+        ],
+      },
+    },
+  });
 
   const handlePageChangeAnnouncement = (page: number) => {
     setCurrentPageAnnouncement(page);
     setArticleFindSkip((page - 1) * articleFindTake);
   };
 
-  const length: number | undefined =
-    announcementLength.data?.announcementFindMany?.length;
-
   const calculateTotalPageAnnouncement = () => {
-    return Math.ceil((length as number) / articleFindTake);
+    return Math.ceil(
+      (announcementLength.data?.announcementFindMany?.length ?? 0) /
+        articleFindTake
+    );
   };
 
-  useEffect(() => {
-    if (articleFindSearch.length > 0 || articleFindStatus != "all") {
-      setCurrentPageAnnouncement(1);
-      setArticleFindSkip(0);
-    }
-  }, [articleFindSearch, articleFindStatus, setArticleFindSkip]);
   return {
     currentPageAnnouncement,
-    setCurrentPageAnnouncement,
-    handlePageChangeAnnouncement,
     calculateTotalPageAnnouncement,
     announcementLength,
+    handlePageChangeAnnouncement,
+    setCurrentPageAnnouncement,
+  };
+};
+
+const usePaginationMaterialPromotion = ({
+  articleFindTake,
+  articleFindSkip,
+  articleFindSearch,
+  setArticleFindSkip,
+  setArticleFindTake,
+}: {
+  articleFindTake: number;
+  articleFindSkip: number;
+  articleFindSearch: string;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  setArticleFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPageMaterialPromotion, setCurrentPageMaterialPromotion] =
+    useState(1);
+
+  const materialPromotionLength = useMaterialPromotionPlatformFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const handlePageChangeMaterialPromotion = (page: number) => {
+    setCurrentPageMaterialPromotion(page);
+    setArticleFindSkip((page - 1) * articleFindTake);
+  };
+
+  const calculateTotalPageMaterialPromotion = () => {
+    return Math.ceil(
+      (materialPromotionLength?.data?.materialPromotionPlatformFindMany
+        ?.length ?? 0) / articleFindTake
+    );
+  };
+
+  return {
+    currentPageMaterialPromotion,
+    calculateTotalPageMaterialPromotion,
+    materialPromotionLength,
+    handlePageChangeMaterialPromotion,
+    setCurrentPageMaterialPromotion,
   };
 };
 
@@ -153,7 +270,15 @@ export const useCategoriesDropdown = () => {
     };
   }
 
-  return { loadOptions };
+  //manual
+  const categoryArticleDropdownOption =
+    getCategory.data?.articleCategoryFindMany?.map((category) => ({
+      value: category.id,
+      label: category.name,
+    }));
+  categoryArticleDropdownOption?.unshift({ value: 0, label: "Semua Kategori" });
+
+  return { loadOptions, categoryArticleDropdownOption };
 };
 
 const useArticleViewModel = () => {
@@ -169,6 +294,9 @@ const useArticleViewModel = () => {
   const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
     SortOrder.Desc
   );
+  const [materialPromotionFindType, setMaterialPromotionFindType] = useState<
+    MaterialPromotionPlatformTypeEnum | "all"
+  >("all");
   const [selectedTable, selectTable] = useState("article");
 
   const articleFindMany = useArticleFindManyQuery({
@@ -284,21 +412,70 @@ const useArticleViewModel = () => {
   });
   const [announcementDeleteOne] = useAnnouncementDeleteOneMutation();
 
+  const materialPromotionFindMany = useMaterialPromotionPlatformFindManyQuery({
+    variables: {
+      take: parseInt(articleFindTake.toString()),
+      skip: articleFindSkip,
+      orderBy: {
+        createdAt: articleOrderBy,
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            type: {
+              equals:
+                materialPromotionFindType === "all"
+                  ? null
+                  : materialPromotionFindType,
+            },
+          },
+          {
+            createdByAdmin: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: articleFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
+              },
+            },
+
+            type: {
+              equals:
+                materialPromotionFindType === "all"
+                  ? null
+                  : materialPromotionFindType,
+            },
+          },
+        ],
+      },
+    },
+  });
+  const [materialPromotionDeleteOne] =
+    useMaterialPromotionPlatformDeleteOneMutation();
+
   const {
     currentPage,
     setCurrentPage,
     handlePageChange,
     calculateTotalPage,
     articleLength,
-  } = usePagination(
+  } = usePagination({
     articleFindTake,
     articleFindSkip,
-    setArticleFindSkip,
-    setArticleFindTake,
     articleFindSearch,
     articleFindStatus,
-    articleFindCategory
-  );
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindCategory,
+  });
 
   const {
     currentPageAnnouncement,
@@ -306,14 +483,27 @@ const useArticleViewModel = () => {
     handlePageChangeAnnouncement,
     calculateTotalPageAnnouncement,
     announcementLength,
-  } = usePaginationAnnouncement(
+  } = usePaginationAnnouncement({
     articleFindTake,
     articleFindSkip,
     setArticleFindSkip,
     setArticleFindTake,
     articleFindSearch,
-    articleFindStatus
-  );
+  });
+
+  const {
+    currentPageMaterialPromotion,
+    setCurrentPageMaterialPromotion,
+    handlePageChangeMaterialPromotion,
+    calculateTotalPageMaterialPromotion,
+    materialPromotionLength,
+  } = usePaginationMaterialPromotion({
+    articleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindSearch,
+  });
 
   useEffect(() => {
     if (
@@ -323,7 +513,7 @@ const useArticleViewModel = () => {
     ) {
       setCurrentPage(1);
       setArticleFindSkip(0);
-      articleFindMany.refetch();
+      // articleFindMany.refetch();
     }
   }, [
     articleFindSearch,
@@ -343,6 +533,13 @@ const useArticleViewModel = () => {
   };
 
   return {
+    currentPageMaterialPromotion,
+    setCurrentPageMaterialPromotion,
+    handlePageChangeMaterialPromotion,
+    calculateTotalPageMaterialPromotion,
+    materialPromotionLength,
+    materialPromotionFindMany,
+    materialPromotionDeleteOne,
     announcementFindType,
     setAnnouncementFindType,
     announcementDeleteOne,
@@ -371,6 +568,8 @@ const useArticleViewModel = () => {
     setArticleFindStatus,
     setArticleFindCategory,
     setArticleOrderBy,
+    materialPromotionFindType,
+    setMaterialPromotionFindType,
   };
 };
 export default useArticleViewModel;

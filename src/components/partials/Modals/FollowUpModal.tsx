@@ -25,7 +25,7 @@ export const FollowUpModal = ({
   onChange?: any;
   handleEditState?: any;
   handleDeleteFollowUp?: any;
-  linkAPIWhatsapp: () => string;
+  linkAPIWhatsapp?: string;
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -52,7 +52,7 @@ export const FollowUpModal = ({
         <Link
           // data-bs-dismiss="modal"
           target="_blank"
-          href={`${linkAPIWhatsapp()}`}
+          href={`${linkAPIWhatsapp ?? ""}`}
           className="fw-bold btn btn-primary"
         >
           Kirim Follow-Up

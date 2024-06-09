@@ -51,6 +51,114 @@ export const breadcrumbs = [
   },
 ];
 
+export const useMentorsDropdown = () => {
+  const getMentors = useCourseFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      getMentors.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) => (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    await getMentors.refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+          },
+        },
+      },
+    );
+
+    return {
+      options: newOptions,
+      hasMore: true,
+    };
+  }
+
+  return { loadOptions };
+};
+
+export const AddMentorHandler = ({ courses, setCourses }: any) => {
+  const [selectedMentor, setSelectedMentor] = useState<any>([]);
+
+  const addMentor = (mentor: any) => {
+    const updatedMentors = selectedMentor
+      ? [...selectedMentor, mentor]
+      : [mentor];
+
+    setSelectedMentor(updatedMentors);
+    setCourses(updatedMentors);
+  };
+
+  const removeMentor = (index: number) => {
+    const updatedMentors = selectedMentor?.filter(
+      (_: any, mentorIndex: any) => mentorIndex !== index
+    );
+
+    setSelectedMentor(updatedMentors);
+  };
+
+  useEffect(() => {
+    setSelectedMentor(selectedMentor);
+  }, [selectedMentor]);
+
+  return {
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor,
+  };
+};
+
+export const AddNotAllowedCourses = ({ courses, setNotAllowedCourses }: any) => {
+  const [selectedCourse, setSelectedCourses] = useState<any>([]);
+
+  const addCourse = (mentor: any) => {
+    const updatedMentors = selectedCourse
+      ? [...selectedCourse, mentor]
+      : [mentor];
+
+    setSelectedCourses(updatedMentors);
+    setNotAllowedCourses(updatedMentors);
+  };
+
+  const removeCourse = (index: number) => {
+    const updatedMentors = selectedCourse?.filter(
+      (_: any, mentorIndex: any) => mentorIndex !== index
+    );
+
+    setSelectedCourses(updatedMentors);
+  };
+
+  useEffect(() => {
+    setSelectedCourses(selectedCourse);
+  }, [selectedCourse]);
+
+  return {
+    selectedCourse,
+    setSelectedCourses,
+    addCourse,
+    removeCourse,
+  };
+};
+
 export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
     variables: {
@@ -115,6 +223,27 @@ export const useCouponForm = () => {
   const [addDate, setAddDate] = useState(false);
   const [date, setDate] = useState<Date>(new Date("2025-05-01"));
   const [connectCourse, setConnectCourse] = useState<number>();
+  const [maxClaim, setMaxClaim] = useState<number>();
+  const [courses, setCourses] = useState<any>([]);
+  const [notAllowedCourses, setNotAllowedCourses] = useState<any>([]);
+
+  // Kupon hanya bisa digunakan di kelas
+  const selectedCourses = courses.map((item: any) => ({
+    id: item.value
+  }));
+
+  // Kupon tidak bisa digunakan di kelas
+  const notAllowedCourse = notAllowedCourses.map((item: any) => ({
+    id: item.value
+  }));
+
+  // Kupon hanya bisa digunakan di kelas
+  const { selectedMentor, setSelectedMentor, addMentor, removeMentor } =
+    AddMentorHandler({ courses, setCourses });
+
+  // Kupon tidak bisa digunakan di kelas
+  const { selectedCourse, setSelectedCourses, addCourse, removeCourse } =
+    AddNotAllowedCourses({ notAllowedCourses, setNotAllowedCourses });
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -143,6 +272,7 @@ export const useCouponForm = () => {
             type: discountType,
             endDate: addDate ? date : null,
             isActive: status == "true" ? true : false,
+            maxClaimPerUser: Number(maxClaim),
             platformCoupon: {
               create: {
                 code,
@@ -153,9 +283,19 @@ export const useCouponForm = () => {
                 },
               },
             },
-            courseCoupon: {
-              connect: {
-                id: connectCourse,
+            // courseCoupon: {
+            //   connect: {
+            //     id: connectCourse,
+            //   }
+            // }
+            avaibilities: {
+              create: {
+                onlyAvailableToCourse: {
+                  connect: selectedCourses,
+                },
+                notAvailableToCourse: {
+                  connect: notAllowedCourse,
+                }
               }
             }
           },
@@ -188,6 +328,13 @@ export const useCouponForm = () => {
     setDate,
     connectCourse,
     setConnectCourse,
+    maxClaim,
+    setMaxClaim,
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor,
+    selectedCourse, setSelectedCourses, addCourse, removeCourse,
   };
 };
 

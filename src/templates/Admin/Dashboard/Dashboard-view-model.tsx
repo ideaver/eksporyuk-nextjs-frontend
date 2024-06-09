@@ -37,7 +37,7 @@ export const useTotalSales = () => {
   const handleChangeSalesPeriod = (e: number) => {
     dispatch(changeSalesPeriod(e));
   };
-  const timeReductionMap: any = { 1: 7, 2: 7, 3: 30 };
+  const timeReductionMap: any = { 1: 1, 2: 7, 3: 30 };
   const timeReduction = timeReductionMap[period] || 3;
 
   const pastDate = useMemo(() => {
@@ -609,42 +609,59 @@ export const dashboardTableMocks: DashboardTableRow[] = [
 ];
 
 const usePackages = () => {
-  const BigChart = dynamic(
+  const BigChart = useMemo(
     () =>
-      import("@/stories/organism/Charts/BigCharts/BigCharts").then(
-        (module) => module.BigChart
+      dynamic(
+        () =>
+          import("@/stories/organism/Charts/BigCharts/BigCharts").then(
+            (module) => module.BigChart
+          ),
+        {
+          ssr: false,
+        }
       ),
-    {
-      ssr: false,
-    }
+    []
   );
 
-  const Charts = dynamic(
+  const Charts = useMemo(
     () =>
-      import("@/stories/organism/Charts/Charts").then(
-        (module) => module.Charts
+      dynamic(
+        () =>
+          import("@/stories/organism/Charts/Charts").then(
+            (module) => module.Charts
+          ),
+        {
+          ssr: false,
+        }
       ),
-    {
-      ssr: false,
-    }
+    []
   );
-  const OrderAffiliateChart = dynamic(
+  const OrderAffiliateChart = useMemo(
     () =>
-      import(
-        "@/stories/organism/Charts/OrderAfiliasiChart/OrderAfiliasiChart"
-      ).then((module) => module.OrderAfiliasiChart),
-    {
-      ssr: false,
-    }
-  );
-  const TopSalesChart = dynamic(
-    () =>
-      import("@/stories/organism/Charts/TopSalesChart/TopSales").then(
-        (module) => module.TopSales
+      dynamic(
+        () =>
+          import(
+            "@/stories/organism/Charts/OrderAfiliasiChart/OrderAfiliasiChart"
+          ).then((module) => module.OrderAfiliasiChart),
+        {
+          ssr: false,
+        }
       ),
-    {
-      ssr: false,
-    }
+    []
+  );
+  const TopSalesChart = useMemo(
+    () =>
+      dynamic(
+        () =>
+          import("@/stories/organism/Charts/TopSalesChart/TopSales").then(
+            (module) => module.TopSales
+          ),
+        {
+          ssr: false,
+        }
+      ),
+
+    []
   );
 
   return {

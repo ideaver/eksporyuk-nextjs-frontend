@@ -136,6 +136,17 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
         createdByUserId
         couponId
         referralLinkId
+        createdByUser {
+          email
+          username
+          phoneId
+          name
+        }
+        coupon {
+          affiliatorCoupon {
+            code
+          }
+        }
         cart {
           id
           adminFee
