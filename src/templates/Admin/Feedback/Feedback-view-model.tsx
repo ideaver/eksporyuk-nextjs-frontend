@@ -9,6 +9,8 @@ import { RootState } from "@/app/store/store";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+export type TFilter = "ALL" | "UNSOLVED" | "SOLVED" | "UNREADED" | "READED";
+
 export const breadcrumbs = [
   {
     title: "Manajemen Feedback",
@@ -58,6 +60,8 @@ interface PaginationProps {
   feedbackFindSearch: string | undefined;
   setFeedbackTake: Dispatch<SetStateAction<number>>;
   setFeedbackSkip: Dispatch<SetStateAction<number>>;
+  filter: TFilter;
+  feedbackCategory: "ALL" | FeedbackCategoryTypeEnum;
 }
 
 const usePagination = ({
@@ -66,16 +70,60 @@ const usePagination = ({
   feedbackFindSearch,
   setFeedbackSkip,
   setFeedbackTake,
+  filter,
+  feedbackCategory,
 }: PaginationProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const feedbackLength = useFeedbackFindLengthQuery({
     variables: {
       where: {
-        content: {
-          contains: feedbackFindSearch,
-          mode: QueryMode.Insensitive,
-        },
+        OR: [
+          {
+            content: {
+              contains: feedbackFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            feedbackCategory: {
+              equals:
+                feedbackCategory == "ALL"
+                  ? null
+                  : (feedbackCategory as FeedbackCategoryTypeEnum),
+            },
+            isCleared: {
+              equals:
+                filter == "SOLVED" ? true : filter == "UNSOLVED" ? false : null,
+            },
+            isRead: {
+              equals:
+                filter == "READED" ? true : filter == "UNREADED" ? false : null,
+            },
+          },
+          {
+            user: {
+              is: {
+                name: {
+                  contains: feedbackFindSearch,
+                  mode: QueryMode.Insensitive,
+                },
+              },
+            },
+            feedbackCategory: {
+              equals:
+                feedbackCategory == "ALL"
+                  ? null
+                  : (feedbackCategory as FeedbackCategoryTypeEnum),
+            },
+            isCleared: {
+              equals:
+                filter == "SOLVED" ? true : filter == "UNSOLVED" ? false : null,
+            },
+            isRead: {
+              equals:
+                filter == "READED" ? true : filter == "UNREADED" ? false : null,
+            },
+          },
+        ],
       },
     },
   });
@@ -87,10 +135,12 @@ const usePagination = ({
     // }
   };
 
-  const length: any = feedbackLength.data?.feedbackFindMany?.length;
+  // const length: any = feedbackLength.data?.feedbackFindMany?.length;
 
   const calculateTotalPage = () => {
-    return Math.ceil(length / feedbackTake);
+    return Math.ceil(
+      (feedbackLength.data?.feedbackFindMany?.length ?? 0) / feedbackTake
+    );
   };
   return {
     currentPage,
@@ -99,8 +149,6 @@ const usePagination = ({
     calculateTotalPage,
   };
 };
-
-export type TFilter = "ALL" | "UNSOLVED" | "SOLVED" | "UNREADED" | "READED";
 
 const useFeedbackViewModel = () => {
   const [feedbackTake, setFeedbackTake] = useState<number>(10);
@@ -179,15 +227,17 @@ const useFeedbackViewModel = () => {
       feedbackFindSearch,
       setFeedbackSkip,
       setFeedbackTake,
+      filter,
+      feedbackCategory: feedbackCategoryState,
     });
 
-  useEffect(() => {
-    if (feedbackFindSearch?.length !== 0) {
-      setCurrentPage(1);
-      setFeedbackSkip(0);
-      feedbackFindMany.refetch();
-    }
-  }, [feedbackFindSearch, setCurrentPage, feedbackFindMany]);
+  // useEffect(() => {
+  //   if (feedbackFindSearch?.length !== 0 || filter != "ALL") {
+  //     setCurrentPage(1);
+  //     setFeedbackSkip(0);
+  //     feedbackFindMany.refetch();
+  //   }
+  // }, [feedbackFindSearch, setCurrentPage, feedbackFindMany, filter]);
 
   const {
     categoryAll,
