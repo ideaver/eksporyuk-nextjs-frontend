@@ -35,8 +35,12 @@ const useDetailArticleViewModel = ({ id, data }: IDetailArticle) => {
     }))
   );
   const [target, setTarget] = useState(data?.articleFindOne?.target);
+  const [urlVideo, setUrlVideo] = useState(
+    data?.articleFindOne?.material?.path
+  );
 
   return {
+    urlVideo,
     thumbnail,
     content,
     title,

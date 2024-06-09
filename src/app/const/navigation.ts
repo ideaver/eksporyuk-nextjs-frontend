@@ -169,7 +169,7 @@ export const adminMenus: MenuSection[] = [
         icon: "people",
       },
       {
-        title: "Manajemen Artikel",
+        title: "Manajemen Artikel & Pengumuman",
         to: "/admin/articles",
         icon: "tablet-text-up",
       },

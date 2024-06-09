@@ -1,8 +1,10 @@
 import {
   ArticleFindOneQuery,
+  FileTypeEnum,
   FileWhereInput,
   UserRoleEnum,
   useArticleUpdateOneMutation,
+  useFileCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
@@ -18,7 +20,7 @@ export interface IEditArticle {
 }
 
 interface dataProps {
-  content: string | undefined;
+  content: string | undefined | null;
   status: string | undefined;
   title: string | undefined;
   category:
@@ -35,6 +37,7 @@ interface dataProps {
     | null
     | undefined;
   createdByAdminId: string | undefined;
+  urlVideo: string | undefined | null;
 }
 
 export const breadcrumbs = [
@@ -61,6 +64,7 @@ const useArticleForm = ({
   id,
   createdByAdminId,
   fileUrl,
+  urlVideo,
 }: IEditArticle & dataProps) => {
   const articleData = data?.articleFindOne;
 
@@ -123,6 +127,7 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     }))
   );
   const [target, setTarget] = useState(articleData?.target);
+  const [urlVideo, setUrlVideo] = useState(articleData?.material?.path);
 
   const {
     articleForm: formik,
@@ -140,6 +145,7 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
     category,
     fileUrl: articleData?.fileUrl,
     createdByAdminId: articleData?.createdByAdminId,
+    urlVideo,
   });
 
   const handleUpdateFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +181,24 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
       return response;
     } catch (error) {
       return null;
+    }
+  };
+
+  const [fileCreateOne] = useFileCreateOneMutation();
+
+  const handleUploadVideo = async () => {
+    try {
+      const videoData = fileCreateOne({
+        variables: {
+          data: {
+            path: urlVideo as string,
+            fileType: FileTypeEnum.Mp4,
+          },
+        },
+      });
+      return (await videoData).data?.fileCreateOne?.path;
+    } catch (error) {
+      return urlVideo;
     }
   };
 
@@ -217,6 +241,11 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
                 },
               ],
             },
+            material: {
+              connect: {
+                path: await handleUploadVideo(),
+              },
+            },
           },
         },
       });
@@ -241,6 +270,8 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
   ];
 
   return {
+    urlVideo,
+    setUrlVideo,
     targetOptions,
     target,
     setTarget,
