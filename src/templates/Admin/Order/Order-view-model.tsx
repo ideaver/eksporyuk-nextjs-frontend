@@ -327,7 +327,7 @@ const useAdminOrderViewModel = () => {
       .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`);
     const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
-    return `https://web.whatsapp.com/send?phone=+6281390621386&text=${encodedMessage}`;
+    return `https://web.whatsapp.com/send?phone=${followUpState.phone}&text=${encodedMessage}`;
   };
   const handleChangeFollowUpState = (data: {
     name: string;
@@ -339,10 +339,8 @@ const useAdminOrderViewModel = () => {
     dispatch(changeFollowUpName(data.name));
     dispatch(changeFollowUpEmail(data.email));
     dispatch(changeFollowUpDate(data.date));
-    dispatch(changeFollowUpDate(data.date));
     dispatch(changeFollowUpCoupon(data.coupon));
     dispatch(changeFollowUpPhone(data.phone));
-    console.log(followUpState);
   };
 
   const handleDeleteFollowUp = async (name: string) => {
