@@ -8,6 +8,7 @@ import deletedCourseReducer from "@/features/reducers/course/deletedCourseReduce
 import dashboardReducer from "@/features/reducers/dashboard/dashboardReducer";
 import feedbackReducer from "@/features/reducers/feedback/feedbackReducer";
 import followupReducer from "@/features/reducers/followup/followupReducer";
+import materialPromotion from "@/features/reducers/materialPromotion/materialPromotion";
 import membershipReducer from "@/features/reducers/membership/membershipReducer";
 import navigationReducer from "@/features/reducers/navigation/navigationReducer";
 import productReducer from "@/features/reducers/products/productReducer";
@@ -89,6 +90,11 @@ const announcementPersistConfig = {
   storage,
 };
 
+const materialPromotionConfig = {
+  key: "materialPromotion",
+  storage,
+};
+
 const persistedNavigationReducer = persistReducer(
   navigationPersistConfig,
   navigationReducer
@@ -157,6 +163,11 @@ const persistedAnnouncementReducer = persistReducer(
   announcementReducer
 );
 
+const persistedMaterialPromotionReducer = persistReducer(
+  materialPromotionConfig,
+  materialPromotion
+);
+
 // rest of the code...
 export const store = configureStore({
   reducer: {
@@ -175,6 +186,7 @@ export const store = configureStore({
     memebrship: persistedMembershipReducer,
     followUp: persistedFollowUpReducer,
     announcement: persistedAnnouncementReducer,
+    materialPromotion: persistedMaterialPromotionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
