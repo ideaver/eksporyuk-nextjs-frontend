@@ -188,12 +188,12 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
   const [notAllowedCourses, setNotAllowedCourses] = useState<any>(transformedNotAllowedCourses);
 
   // Kupon hanya bisa digunakan di kelas
-  const selectedCourses = courses.map((item: any) => ({
+  const selectedCourses = courses?.map((item: any) => ({
     id: item.value
   }));
 
   // Kupon tidak bisa digunakan di kelas
-  const notAllowedCourse = notAllowedCourses.map((item: any) => ({
+  const notAllowedCourse = notAllowedCourses?.map((item: any) => ({
     id: item.value
   }));
 
