@@ -7,7 +7,7 @@ import useComissionViewModel, {
   formatToIDR,
   breadcrumbs,
 } from "./Comission-view-model";
-import { InvoiceFindManyQuery, TransactionFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import { InvoiceFindManyQuery, TransactionFindManyQuery, PendingCommissionFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import DetailComissionModal from "./components/DetailComissionModal";
 import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
 
@@ -42,9 +42,16 @@ const CommissionPage = ({}: ComissionPageProps) => {
     setFindTake,
     findTake,
     transactionFindMany,
+    pendingComissionFindMany,
+    selectedTable,
+    setSelectedTable,
+    setSearchPendingComission,
+    calculateTotalPendingCommPage,
+    currentPendingCommPage,
+    handlePendingCommPageChange,
+    setFindPendingCommTake,
+    findPendingCommTake
   } = useComissionViewModel();
-
-  console.log(transactionFindMany.data);
 
   return (
     <>
@@ -54,24 +61,44 @@ const CommissionPage = ({}: ComissionPageProps) => {
           <div className="mb-10">
             <Head
               setStatus={setStatus}
-              onSearch={setSearchComission}
+              onSearch={selectedTable === "commission" ? setSearchComission : setSearchPendingComission}
               setOrderBy={(e: any) => {
                 setOrderBy(e);
               }}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
             />
           </div>
         </KTCardBody>
-        <Body data={transactionFindMany} />
-        <Footer
-          pageLength={calculateTotalPage()}
-          currentPage={currentPage}
-          setCurrentPage={(val) => handlePageChange(val)}
-          findSkip={(val) => {}}
-          findTake={(val) => {
-            setFindTake(val);
-          }}
-          takeValue={findTake}
-        />
+        {selectedTable === "commission" ? (
+
+          <Body data={transactionFindMany} />
+        ): (
+          <PendingCommissionBody data={pendingComissionFindMany} />
+        )}
+        {selectedTable === "commission" ? (
+          <Footer
+            pageLength={calculateTotalPage()}
+            currentPage={currentPage}
+            setCurrentPage={(val) => handlePageChange(val)}
+            findSkip={(val) => {}}
+            findTake={(val) => {
+              setFindTake(val);
+            }}
+            takeValue={findTake}
+          />
+        ): (
+          <Footer
+            pageLength={calculateTotalPendingCommPage()}
+            currentPage={currentPendingCommPage}
+            setCurrentPage={(val) => handlePendingCommPageChange(val)}
+            findSkip={(val) => {}}
+            findTake={(val) => {
+              setFindPendingCommTake(val);
+            }}
+            takeValue={findPendingCommTake}
+          />
+        )}
       </KTCard>
     </>
   );
@@ -79,7 +106,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
 
 export default CommissionPage;
 
-const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
+const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable }: any) => {
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -93,6 +120,18 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
         ></TextField>
       </div>
       <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Komisi", value: "commission" },
+              { label: "Komisi Pending", value: "pending-commission" },
+            ]}
+            onValueChange={(e) => {
+              setSelectedTable(e);
+            }}
+          />
+        </div>
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -216,6 +255,71 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
       )}
     </div>
   );
+};
+
+const PendingCommissionBody = ({ data }: { data: any}) => {
+  return (
+    <div className="table-responsive mb-10 p-10">
+      {data.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{data.error.message}</h3>
+        </div>
+      ) : data.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable utilityGY={3}>
+          <KTTableHead>
+            <th className="fw-bold text-muted min-w-100px">ID ORDER</th>
+            <th className="fw-bold text-muted min-w-100px">Nama Order</th>
+            <th className="fw-bold text-muted text-end min-w-80px">Pembeli</th>
+            {/* <th className="fw-bold text-muted text-end min-w-150px">
+              Affiliasi
+            </th> */}
+            <th className="fw-bold text-muted text-end min-w-150px">
+              Total Komisi
+            </th>
+            <th className="fw-bold text-muted text-end min-w-100px">STATUS</th>
+          </KTTableHead>
+
+          {data.data?.pendingCommissionFindMany?.map((user: any, index: any) => {
+            return (
+              <KTTableBody key={index}>
+                <td className="fw-bold">INV {user.order?.id}</td>
+                <td
+                  className="fw-bold text-dark text-hover-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {}}
+                >
+                  {user.productName}
+                </td>
+                <td className="fw-bold text-muted text-end">
+                  {
+                    user.orderBy?.name
+                  }
+                </td>
+                {/* <td className="fw-bold text-muted text-end">
+                  {
+                    "-" 
+                  }
+                </td> */}
+                <td className="fw-bold text-muted text-end">
+                  {formatToIDR(String(user.amountCommission))}
+                </td>
+                <td className="text-end">
+                  <Badge
+                    label="Pending"
+                    badgeColor="warning"
+                  />
+                </td>
+              </KTTableBody>
+            );
+          })}
+        </KTTable>
+      )}
+    </div>
+  )
 };
 
 const Footer = ({
