@@ -1,0 +1,27 @@
+query InstantWithdrawalRequestFindMany($where: InstantWithdrawalRequestWhereInput, $orderBy: [InstantWithdrawalRequestOrderByWithRelationInput!], $take: Int, $skip: Int) {
+  instantWithdrawalRequestFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    status
+    updatedAt
+    responseById
+    responseBy {
+      id
+      user {
+        name
+        email
+      }
+    }
+    id
+    rejectedAt
+    createdById
+    createdBy {
+      id
+      user {
+        name
+        email
+      }
+    }
+    approvedAt
+    createdAt
+    amount
+  }
+}
