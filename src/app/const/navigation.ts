@@ -121,6 +121,11 @@ export const adminMenus: MenuSection[] = [
             to: "/admin/affiliate/reward",
             icon: "cube-2",
           },
+          {
+            title: "Leaderboard",
+            to: "/admin/affiliate/leaderboard",
+            icon: "people",
+          },
         ],
       },
       {
