@@ -1,0 +1,5 @@
+mutation InstantWithdrawalRequestResponseOne($data: InstantWithdrawalRequestUpdateInput!, $where: InstantWithdrawalRequestWhereUniqueInput!) {
+  instantWithdrawalRequestResponseOne(data: $data, where: $where) {
+    id
+  }
+}
