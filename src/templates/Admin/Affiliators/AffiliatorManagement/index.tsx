@@ -165,7 +165,7 @@ const Body = ({
             className="text-uppercase align-middle"
           >
             <th className="w-150px">
-              <CheckBoxInput
+              {/* <CheckBoxInput
                 className="w-150px"
                 checked={selectAll}
                 name="check-all"
@@ -174,7 +174,8 @@ const Body = ({
                 onChange={handleSelectAllCheck}
               >
                 <>Username</>
-              </CheckBoxInput>
+              </CheckBoxInput> */}
+              Username
             </th>
             <th className="min-w-200px">Nama Lengkap</th>
             <th className="text-start min-w-200px">Email</th>
@@ -187,7 +188,7 @@ const Body = ({
               return (
                 <KTTableBody key={index}>
                   <td className="align-middle">
-                    <CheckBoxInput
+                    {/* <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
                       name={"check-" + affiliator.id}
@@ -205,7 +206,17 @@ const Body = ({
                       >
                         {affiliator.user.username}
                       </Link>
-                    </CheckBoxInput>
+                    </CheckBoxInput> */}
+                    <Link
+                        href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
+                        className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                        style={{
+                          maxWidth: "150px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {affiliator.user.username}
+                      </Link>
                   </td>
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
