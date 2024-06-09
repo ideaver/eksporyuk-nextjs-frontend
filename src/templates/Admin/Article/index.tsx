@@ -21,6 +21,8 @@ import {
   ArticleFindManyQuery,
   MaterialPromotionPlatformFindManyQuery,
   MaterialPromotionPlatformTypeEnum,
+  NewsFindManyQuery,
+  NewsTypeEnum,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import dynamic from "next/dynamic";
@@ -32,6 +34,7 @@ const ArticlePage = () => {
     articleFindMany,
     setArticleFindTake,
     setArticleFindSearch,
+    setArticleFindSkip,
     articleLength,
     currentPage,
     handlePageChange,
@@ -62,7 +65,16 @@ const ArticlePage = () => {
     handlePageChangeAnnouncement,
     calculateTotalPageAnnouncement,
     announcementLength,
+    newsFindMany,
+    newsDeleteOne,
+    calculateTotalPageNews,
+    setNewsFindType,
+    newsFindType,
   } = useArticleViewModel();
+  console.log("Article", calculateTotalPage());
+  console.log("announcement", calculateTotalPageAnnouncement());
+  console.log("Material", calculateTotalPageMaterialPromotion());
+  console.log("news", calculateTotalPageNews());
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Artikel</PageTitle>
@@ -85,11 +97,15 @@ const ArticlePage = () => {
             selectTable={(val) => {
               selectTable(val);
             }}
+            handlePageChange={handlePageChange}
+            setArticleFindSkip={setArticleFindSkip}
             selectedTable={selectedTable}
             announcementFindType={announcementFindType}
             setAnnouncementFindType={setAnnouncementFindType}
             materialPromotionFindType={materialPromotionFindType}
             setMaterialPromotionType={setMaterialPromotionFindType}
+            newsFindType={newsFindType}
+            setNewsFindType={setNewsFindType}
           />
           {selectedTable === "article" ? (
             <ArticleTable
@@ -104,6 +120,12 @@ const ArticlePage = () => {
               formatWIB={formatWIB}
               announcementDeleteOne={announcementDeleteOne}
             />
+          ) : selectedTable === "news" ? (
+            <NewsTable
+              newsDeleteOne={newsDeleteOne}
+              newsFindMany={newsFindMany}
+              formatWIB={formatWIB}
+            />
           ) : (
             <MaterialPromotionTable
               materialPromotionFindMany={materialPromotionFindMany}
@@ -113,7 +135,15 @@ const ArticlePage = () => {
           )}
 
           <Footer
-            pageLength={calculateTotalPage()}
+            pageLength={
+              selectedTable === "article"
+                ? calculateTotalPage()
+                : selectedTable === "announcement"
+                ? calculateTotalPageAnnouncement()
+                : selectedTable === "news"
+                ? calculateTotalPageNews()
+                : calculateTotalPageMaterialPromotion()
+            }
             currentPage={currentPage}
             setCurrentPage={(val) => handlePageChange(val)}
             setArticleFindSkip={(val) => {}}
@@ -440,6 +470,7 @@ const AnnouncementTable = ({
     </>
   );
 };
+
 const MaterialPromotionTable = ({
   materialPromotionFindMany,
   formatWIB,
@@ -598,6 +629,161 @@ const MaterialPromotionTable = ({
   );
 };
 
+const NewsTable = ({
+  newsFindMany,
+  formatWIB,
+  newsDeleteOne,
+}: {
+  newsFindMany: QueryResult<NewsFindManyQuery>;
+  formatWIB: (createdAt: string) => string;
+  newsDeleteOne: any;
+}) => {
+  return (
+    <>
+      {newsFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{newsFindMany.error.message}</h3>
+        </div>
+      ) : newsFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">
+              <p className="mb-0">JUDUL</p>
+            </th>
+            <th className="text-end min-w-200px">PENULIS</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-200px">TIPE</th>
+            <th className="text-end min-w-100px">LIKES</th>
+            <th className="text-end min-w-100px">COMMENTS</th>
+            {/* <th className="text-end min-w-150px">STATUS</th> */}
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {newsFindMany?.data?.newsFindMany?.map((news) => {
+              return (
+                <tr key={news.id} className="">
+                  <td className="">
+                    <Link
+                      // href={`/admin/articles/detail/${article.id}`}
+                      href={`/admin/articles/news/detail/${news.id}`}
+                      className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {news.title}
+                    </Link>
+                  </td>
+
+                  <td className="min-w-250px text-end fw-bold text-muted">
+                    <img
+                      className="symbol-label bg-gray-600 rounded-circle mx-3"
+                      src={
+                        news.createdByAdmin?.user.avatarImageId ??
+                        "/media/avatars/blank.png"
+                      }
+                      width={40}
+                      height={40}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">
+                      {news.createdByAdmin?.user.name}
+                    </span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{formatDate(news.createdAt)}</span>
+                      <span>{formatWIB(news.createdAt)}</span>
+                    </div>
+                  </td>
+                  <td className="min-w-175px text-end fw-bold text-muted">
+                    {/* {news.category?.map((val) => (
+                        <Badge
+                          key={val.id}
+                          label={val.name}
+                          badgeColor="dark"
+                          classNames="mx-1"
+                        />
+                      ))} */}
+                    {news.type}
+                  </td>
+                  <td className="min-w-100px text-end fw-bold text-muted">
+                    {news._count.userLikes}
+                  </td>
+                  <td className="min-w-100px text-end fw-bold text-muted">
+                    {news._count.comments}
+                  </td>
+
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link
+                            href={`/admin/articles/news/edit/${news.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li>
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await newsDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: news.id,
+                                    },
+                                  },
+                                });
+                                await newsFindMany.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              } finally {
+                                await newsFindMany.refetch();
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+
 const Head = ({
   onSearch,
   setStatus,
@@ -608,6 +794,10 @@ const Head = ({
   setAnnouncementFindType,
   materialPromotionFindType,
   setMaterialPromotionType,
+  setArticleFindSkip,
+  handlePageChange,
+  newsFindType,
+  setNewsFindType,
 }: {
   onSearch: (val: string) => void;
   setStatus: (val: string) => void;
@@ -623,6 +813,10 @@ const Head = ({
   setMaterialPromotionType: Dispatch<
     SetStateAction<MaterialPromotionPlatformTypeEnum | "all">
   >;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  handlePageChange: (page: number) => void;
+  setNewsFindType: Dispatch<SetStateAction<NewsTypeEnum | "all">>;
+  newsFindType: NewsTypeEnum | "all";
 }) => {
   const { loadOptions, categoryArticleDropdownOption } =
     useCategoriesDropdown();
@@ -688,6 +882,31 @@ const Head = ({
               }}
             />
           </div>
+        ) : selectedTable === "news" ? (
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              value={newsFindType}
+              options={[
+                { label: "Semua Tipe", value: "all" },
+                {
+                  label: "Headline",
+                  value: NewsTypeEnum.Headline,
+                },
+                {
+                  label: "Opinion",
+                  value: NewsTypeEnum.Opinion,
+                },
+                {
+                  label: "Feature",
+                  value: NewsTypeEnum.Feature,
+                },
+              ]}
+              onValueChange={(e) => {
+                setNewsFindType(e as NewsTypeEnum | "all");
+              }}
+            />
+          </div>
         ) : (
           <div className="col-lg-auto">
             <Dropdown
@@ -721,9 +940,12 @@ const Head = ({
               { label: "Article", value: "article" },
               { label: "Announcement", value: "announcement" },
               { label: "Material Promotion", value: "materialPromotion" },
+              { label: "News", value: "news" },
             ]}
             onValueChange={(e) => {
               selectTable(e);
+              setArticleFindSkip(0);
+              handlePageChange(1);
             }}
           />
         </div>
@@ -743,7 +965,7 @@ const Head = ({
         <div className="col-lg-auto">
           <Buttons>
             <Link href={"/admin/articles/information"} className="text-white">
-              Add New Article
+              Add New Article & Pengumuman
             </Link>
           </Buttons>
         </div>
@@ -770,18 +992,14 @@ const Footer = ({
   selectedTable: string;
 }) => {
   const {
-    currentPageMaterialPromotion,
-    setCurrentPageMaterialPromotion,
     handlePageChangeMaterialPromotion,
     calculateTotalPageMaterialPromotion,
-    materialPromotionLength,
-    currentPageAnnouncement,
-    setCurrentPageAnnouncement,
     handlePageChangeAnnouncement,
     calculateTotalPageAnnouncement,
-    announcementLength,
+    handlePageChangeNews,
+    calculateTotalPageNews,
   } = useArticleViewModel();
-  // console.log(announcementLength.data?.announcementFindMany?.length);
+
   return (
     <div className="row justify-content-between gy-5">
       <div className="row col-lg-auto gy-3 align-middle">
@@ -835,18 +1053,20 @@ const Footer = ({
       <div className="row col-lg-auto gy-3">
         <div className="col-auto">
           <Pagination
-            total={
-              selectedTable === "article"
-                ? pageLength
-                : selectedTable === "announcement"
-                ? calculateTotalPageAnnouncement()
-                : calculateTotalPageMaterialPromotion()
-            }
+            total={pageLength}
+            // selectedTable === "article"
+            //   ? pageLength
+            //   : selectedTable === "announcement"
+            //   ? calculateTotalPageAnnouncement()
+            //   : selectedTable === "news"
+            //   ? calculateTotalPageNews()
+            //   : calculateTotalPageMaterialPromotion()
             current={currentPage}
             maxLength={5}
             onPageChange={(val) => {
               handlePageChangeAnnouncement(val);
               handlePageChangeMaterialPromotion(val);
+              handlePageChangeNews(val);
               setCurrentPage(val);
             }}
           ></Pagination>
