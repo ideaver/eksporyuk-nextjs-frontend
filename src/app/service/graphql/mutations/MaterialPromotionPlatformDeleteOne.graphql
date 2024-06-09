@@ -1,0 +1,5 @@
+mutation MaterialPromotionPlatformDeleteOne(
+  $where: MaterialPromotionPlatformWhereUniqueInput!
+) {
+  materialPromotionPlatformDeleteOne(where: $where)
+}

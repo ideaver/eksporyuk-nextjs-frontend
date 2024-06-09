@@ -60,7 +60,7 @@ export const UpdateFollowUpModal = ({}: {}) => {
       fade
       modalSize="lg"
       modalCentered
-      title="Buat Tamplate FollowUp"
+      title="Edit Tamplate FollowUp"
       buttonClose={
         <Buttons
           buttonColor="secondary"

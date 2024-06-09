@@ -1,5 +1,20 @@
 import { AnnouncementFindOneQuery } from "@/app/service/graphql/gen/graphql";
 
+export const breadcrumbs = [
+  {
+    title: "Menejemen Artikel",
+    path: "/admin/articles",
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: "",
+    path: "",
+    isSeparator: true,
+    isActive: false,
+  },
+];
+
 export interface IDetailAnnouncement {
   id: string | string[] | undefined;
   data: AnnouncementFindOneQuery;

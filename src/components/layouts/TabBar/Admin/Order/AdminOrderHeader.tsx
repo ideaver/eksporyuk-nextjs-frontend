@@ -80,7 +80,7 @@ const AdminOrderLayout = ({
           }}
           handleEditState={handleEditState}
           handleDeleteFollowUp={handleDeleteFollowUp}
-          linkAPIWhatsapp={handleSendFollowUp}
+          linkAPIWhatsapp={handleSendFollowUp()}
         />
         <ChangeOrderModal
           show={showOrderStatusModal}

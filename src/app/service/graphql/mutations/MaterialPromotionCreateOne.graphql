@@ -1,0 +1,7 @@
+mutation MaterialPromotionPlatformCreateOne(
+  $data: MaterialPromotionPlatformCreateInput!
+) {
+  materialPromotionPlatformCreateOne(data: $data) {
+    id
+  }
+}

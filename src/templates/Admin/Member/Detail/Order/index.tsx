@@ -5,18 +5,108 @@ import currencyFormatter from "@/_metronic/helpers/Formatter";
 import {
   OrderStatusEnum,
   StudentFindOneQuery,
+  useFollowUpDeleteOneMutation,
+  useFollowUpFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import { RootState } from "@/app/store/store";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
+import {
+  changeContent,
+  changeFollowUpCoupon,
+  changeFollowUpDate,
+  changeFollowUpEmail,
+  changeFollowUpName,
+  changeFollowUpPhone,
+  changeFollowUpTamplate,
+  changeId,
+  changeName,
+  changeSelectedFollwUpValue,
+} from "@/features/reducers/followup/followupReducer";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
 
 const OrderPage = ({
   data,
 }: {
   data: StudentFindOneQuery["studentFindOne"];
 }) => {
+  const dispatch = useDispatch();
+  const followUpState = useSelector((state: RootState) => state.followUp);
+
+  const followUpFindMany = useFollowUpFindManyQuery();
+
+  const handleFollupChange = (
+    event: React.ChangeEvent<HTMLInputElement> | any
+  ) => {
+    dispatch(changeSelectedFollwUpValue(event.target.value));
+
+    const filterContent = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name == event.target.value
+    )[0];
+    dispatch(changeFollowUpTamplate(filterContent?.content));
+  };
+
+  const [followUpDeleteOne] = useFollowUpDeleteOneMutation();
+  const handleSendFollowUp = () => {
+    const contentReplaced = followUpState.followUpTamplate
+      ?.replace(/\[\[nama\]\]/g, `${followUpState.name}`)
+      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(followUpState.date))
+      .replace(/\[\[email\]\]/g, `${followUpState.email}`)
+      .replace(/\[\[nomor-telepon\]\]/g, `${followUpState.phone}`)
+      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`);
+    const encodedMessage = encodeURIComponent(`${contentReplaced}`);
+
+    return `https://web.whatsapp.com/send?phone=${followUpState.phone}&text=${encodedMessage}`;
+  };
+  const handleChangeFollowUpState = (data: {
+    name: string;
+    date: string;
+    email: string;
+    phone: string;
+    coupon: string;
+  }) => {
+    dispatch(changeFollowUpName(data.name));
+    dispatch(changeFollowUpEmail(data.email));
+    dispatch(changeFollowUpDate(data.date));
+    dispatch(changeFollowUpCoupon(data.coupon));
+    dispatch(changeFollowUpPhone(data.phone));
+  };
+
+  const handleDeleteFollowUp = async (name: string) => {
+    const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name === name
+    )[0];
+
+    try {
+      await followUpDeleteOne({
+        variables: {
+          where: {
+            id: editFolup?.id,
+          },
+        },
+      });
+      await followUpFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditState = (name: any) => {
+    const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name === name
+    )[0];
+    console.log(editFolup);
+    dispatch(changeName(`${editFolup?.name}`));
+    dispatch(changeContent(`${editFolup?.content}`));
+    dispatch(changeId(editFolup?.id as number));
+  };
+
   function getProductName(cartItems: any[]) {
     const types: any = [];
     cartItems.forEach((item, index) => {
@@ -113,34 +203,49 @@ const OrderPage = ({
                     </p>
                   </td>
                   <td className="align-middle text-end ">
-                    <div className="dropdown  ps-15 pe-0">
-                      <button
-                        className="btn btn-secondary dropdown-toggle"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        Actions
-                      </button>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <button className="dropdown-item">
-                            Kirim Pengaturan ulang kata sandi
-                          </button>
-                        </li>
-                        <li>
-                          <button className="dropdown-item">Edit</button>
-                        </li>
-                        <li>
-                          <button className="dropdown-item">Hapus</button>
-                        </li>
-                      </ul>
-                    </div>
+                    <button
+                      className="btn btn-secondary px-4"
+                      data-bs-toggle="modal"
+                      data-bs-target="#kt_follup_modal"
+                      onClick={() => {
+                        handleChangeFollowUpState({
+                          name: order?.createdByUser.name,
+                          date: order.createdAt,
+                          phone:
+                            order.createdByUser.phoneId?.toString() as string,
+                          email: order.createdByUser.email,
+                          coupon: order.coupon?.affiliatorCoupon
+                            ?.code as string,
+                        });
+                      }}
+                    >
+                      Follow Up
+                    </button>
                   </td>
                 </tr>
               );
             })}
           </KTTable>
+          <FollowUpModal
+            follupValues={
+              followUpFindMany.data?.followUpFindMany?.map(
+                (e) => e.name
+              ) as string[]
+            }
+            value={followUpState.followUpTamplate ?? ""}
+            // follupValues={follupValues}
+            selectedFollupValue={followUpState.selectedFollowUpValue}
+            handleFollupChange={handleFollupChange}
+            onChange={(e: any) => {
+              dispatch(changeFollowUpTamplate(e.target.value));
+            }}
+            handleEditState={handleEditState}
+            handleDeleteFollowUp={handleDeleteFollowUp}
+            linkAPIWhatsapp={handleSendFollowUp()}
+          />
+
+          <CreateFollowUpModal />
+          <UpdateFollowUpModal />
           {/* <Footer /> */}
         </div>
       </div>
