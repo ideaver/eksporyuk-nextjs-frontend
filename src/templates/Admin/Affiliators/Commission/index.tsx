@@ -100,11 +100,11 @@ const Head = ({ setStatus, onSearch, setOrderBy }: any) => {
               { label: "Semua Status", value: "all" },
               { label: "Tertunda", value: "PENDING" },
               { label: "Belum Dibayar", value: "UNPAID" },
-              { label: "Setengah Dibayar", value: "HALFPAID" },
-              { label: "Lunas", value: "FULLPAID" },
+              // { label: "Setengah Dibayar", value: "HALFPAID" },
+              // { label: "Lunas", value: "FULLPAID" },
               { label: "Dibatalkan", value: "CANCELLED" },
               { label: "Gagal", value: "FAILED" },
-              { label: "Di Refund", value: "REFUNDED" },
+              // { label: "Di Refund", value: "REFUNDED" },
             ]}
             onValueChange={(e) => {
               setStatus(e);
