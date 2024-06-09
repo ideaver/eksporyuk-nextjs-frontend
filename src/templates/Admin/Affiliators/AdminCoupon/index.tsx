@@ -495,6 +495,10 @@ const AddCouponModal = ({
     swalProps,
     setSwalProps,
     resetForm,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -630,18 +634,38 @@ const AddCouponModal = ({
             {`Berikan batas waktu untuk kupon ini`}
           </CheckBoxInput>
           {addDate ? (
-            <Flatpickr
-              value={date}
-              onChange={([date]) => {
-                setDate(date);
-              }}
-              options={{
-                enableTime: false,
-                dateFormat: "Y-m-d",
-              }}
-              className="form-control form-control-solid"
-              placeholder="Pick date"
-            />
+            <>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Awal</h4>
+                <Flatpickr
+                  value={startDate}
+                  onChange={([date]) => {
+                    setStartDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Akhir</h4>
+                <Flatpickr
+                  value={endDate}
+                  onChange={([date]) => {
+                    setEndDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+            </>
           ) : // <TextField
           //   styleType="outline"
           //   size="medium"

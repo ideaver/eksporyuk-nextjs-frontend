@@ -5,6 +5,7 @@ query CouponFindOne($where: CouponWhereUniqueInput!) {
     value
     type
     endDate
+    startDate
     platformCoupon {
       code
       createdById

@@ -181,12 +181,14 @@ export const useCouponForm = () => {
   const [discountType, setDiscountType] = useState(DiscountTypeEnum.Amount);
   const [discount, setDiscount] = useState<string>("0");
   const [addDate, setAddDate] = useState(false);
-  const [date, setDate] = useState<Date>(new Date("2025-05-01"));
+  const [date, setDate] = useState<Date>(new Date());
   const [connectCourse, setConnectCourse] = useState<number>();
   const [maxClaim, setMaxClaim] = useState<number>();
   const [allowedCourses, setAllowedCourses] = useState<any>([]);
   const [notAllowedCourses, setNotAllowedCourses] = useState<any>([]);
   const [swalProps, setSwalProps] = useState({});
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = allowedCourses.map((item: any) => ({
@@ -242,10 +244,10 @@ export const useCouponForm = () => {
       const res = await couponCreateOne({
         variables: {
           data: {
-            startDate: new Date(),
+            startDate: addDate ? startDate : new Date(),
             value: parseInt(discount as string),
             type: discountType,
-            endDate: addDate ? date : null,
+            endDate: addDate ? endDate : null,
             isActive: status == "true" ? true : false,
             maxClaimPerUser: Number(maxClaim),
             platformCoupon: {
@@ -333,6 +335,10 @@ export const useCouponForm = () => {
     swalProps,
     setSwalProps,
     resetForm,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   };
 };
 
