@@ -1,23 +1,16 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import usePixelViewModel, {
-  TableProps,
-  TableRow,
-  tableData,
-} from "./Pixel-view-model";
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import Link from "next/link";
-import Flatpickr from "react-flatpickr";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
+import { PageTitle } from "@/_metronic/layout/core";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import { gql, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import usePixelViewModel, { TableRow } from "./Pixel-view-model";
 
 interface PixelPageProps {}
 
@@ -54,7 +47,7 @@ const PixelPage = ({}: PixelPageProps) => {
         follupValues={follupValues}
         selectedFollupValue={selectedFollupValue}
         handleFollupChange={handleFollupChange}
-        linkAPIWhatsapp={() => ""}
+        linkAPIWhatsapp=""
       />
       <SaveAdjustId />
       <IdPixelModal
