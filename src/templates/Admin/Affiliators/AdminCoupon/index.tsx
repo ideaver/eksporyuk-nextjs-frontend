@@ -32,6 +32,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import Flatpickr from "react-flatpickr";
 import { AsyncPaginate } from "react-select-async-paginate";
+import SweetAlert2 from "react-sweetalert2";
 
 const AdminCoupon = () => {
   const {
@@ -483,11 +484,21 @@ const AddCouponModal = ({
     setConnectCourse,
     maxClaim,
     setMaxClaim,
-    selectedMentor,
-    setSelectedMentor,
-    addMentor,
-    removeMentor,
-    selectedCourse, setSelectedCourses, addCourse, removeCourse
+    allowCourses,
+    setAllowCourses,
+    addAllowedCourse,
+    removeAllowedCourse,
+    notAllowCourses,
+    setNotAllowCourses,
+    addNotAllowedCourse,
+    removeNotAllowedCourse,
+    swalProps,
+    setSwalProps,
+    resetForm,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -608,7 +619,7 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="required fw-bold text-gray-700">
+          <h4 className="fw-bold text-gray-700">
             Batas Waktu Penggunaan
           </h4>
           <CheckBoxInput
@@ -623,18 +634,38 @@ const AddCouponModal = ({
             {`Berikan batas waktu untuk kupon ini`}
           </CheckBoxInput>
           {addDate ? (
-            <Flatpickr
-              value={date}
-              onChange={([date]) => {
-                setDate(date);
-              }}
-              options={{
-                enableTime: false,
-                dateFormat: "Y-m-d",
-              }}
-              className="form-control form-control-solid"
-              placeholder="Pick date"
-            />
+            <>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Awal</h4>
+                <Flatpickr
+                  value={startDate}
+                  onChange={([date]) => {
+                    setStartDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Akhir</h4>
+                <Flatpickr
+                  value={endDate}
+                  onChange={([date]) => {
+                    setEndDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+            </>
           ) : // <TextField
           //   styleType="outline"
           //   size="medium"
@@ -666,8 +697,8 @@ const AddCouponModal = ({
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
-          {selectedMentor &&
-            selectedMentor?.map((mentor: any, index: any) => {
+          {allowCourses &&
+            allowCourses?.map((mentor: any, index: any) => {
               return (
                 <div className="d-flex mt-5" key={index}>
                   <div className="w-100">
@@ -684,7 +715,7 @@ const AddCouponModal = ({
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeMentor(index)}
+                      onClick={() => removeAllowedCourse(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -694,7 +725,7 @@ const AddCouponModal = ({
             className="mt-5"
             loadOptions={loadOptions}
             onChange={(value) => {
-              addMentor(value);
+              addAllowedCourse(value);
             }}
           ></AsyncPaginate>
         </div>
@@ -703,8 +734,8 @@ const AddCouponModal = ({
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
-          {selectedCourse &&
-            selectedCourse?.map((mentor: any, index: any) => {
+          {notAllowCourses &&
+            notAllowCourses?.map((mentor: any, index: any) => {
               return (
                 <div className="d-flex mt-5" key={index}>
                   <div className="w-100">
@@ -721,7 +752,7 @@ const AddCouponModal = ({
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeCourse(index)}
+                      onClick={() => removeNotAllowedCourse(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -731,10 +762,21 @@ const AddCouponModal = ({
             className="mt-5"
             loadOptions={loadOptions}
             onChange={(value) => {
-              addCourse(value);
+              addNotAllowedCourse(value);
             }}
           ></AsyncPaginate>
         </div>
+        <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+          resetForm();
+        }}
+      />
       </KTModal>
     </div>
   );

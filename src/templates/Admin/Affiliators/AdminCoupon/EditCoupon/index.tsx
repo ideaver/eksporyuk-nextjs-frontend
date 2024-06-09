@@ -46,6 +46,10 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
     setConnectCourse,
     selectedMentor, setSelectedMentor, addMentor, removeMentor,
     selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   } = useEditCouponViewModel({ id, data });
 
   const { loadOptions } = useCoursesDropdown();
@@ -119,7 +123,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               }}
             />
             <h5 className="text-muted mt-2 mb-8">Atur Diskon</h5>
-            <h4 className="required fw-bold text-gray-700">
+            <h4 className="fw-bold text-gray-700">
               Batas Waktu Penggunaan
             </h4>
             <CheckBoxInput
@@ -134,18 +138,38 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               {`Berikan batas waktu untuk kupon ini`}
             </CheckBoxInput>
             {addDate ? (
-              <Flatpickr
-                value={date}
-                onChange={([date]) => {
-                  setDate(date);
-                }}
-                options={{
-                  enableTime: false,
-                  dateFormat: "Y-m-d",
-                }}
-                className="form-control form-control-solid"
-                placeholder="Pick date"
-              />
+            <>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Awal</h4>
+                <Flatpickr
+                  value={startDate}
+                  onChange={([date]) => {
+                    setStartDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+              <div className="mb-5 mt-6">
+                <h4 className="required fw-bold text-gray-700">Batas Akhir</h4>
+                <Flatpickr
+                  value={endDate}
+                  onChange={([date]) => {
+                    setEndDate(date);
+                  }}
+                  options={{
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                  }}
+                  className="form-control form-control-solid"
+                  placeholder="Pick date"
+                />
+              </div>
+            </>
             ) : // <TextField
             //   styleType="outline"
             //   size="medium"

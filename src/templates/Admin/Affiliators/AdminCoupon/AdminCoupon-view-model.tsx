@@ -30,6 +30,7 @@ import {
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { OptionsOrGroups, GroupBase } from "react-select";
+import { ApolloError } from "@apollo/client";
 
 type CourseOptionType = {
   value: number;
@@ -51,114 +52,73 @@ export const breadcrumbs = [
   },
 ];
 
-export const useMentorsDropdown = () => {
-  const getMentors = useCourseFindManyQuery({
-    variables: {
-      take: 10,
-    },
-  });
+// Kupon hanya bisa digunakan di kelas 
+export const AddAllowedCourses = (courses: any, setCourses: any) => {
+  const [allowCourses, setAllowCourses] = useState<any>([]);
 
-  async function loadOptions(
-    search: string,
-    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
-  ) {
-    const result =
-      getMentors.data?.courseFindMany?.map((course) => ({
-        value: course.id,
-        label: course.title,
-      })) ?? [];
+  const addAllowedCourse = (course: any) => {
+    const updatedCourses = allowCourses
+      ? [...allowCourses, course]
+      : [course];
 
-    const newOptions = result.filter(
-      (option) =>
-        !prevOptions.some(
-          (prevOption) => (prevOption as CourseOptionType).value === option.value
-        )
-    );
-
-    await getMentors.refetch({
-      skip: prevOptions.length,
-      where: {
-        title: {
-          contains: search,
-          mode: QueryMode.Insensitive,
-          },
-        },
-      },
-    );
-
-    return {
-      options: newOptions,
-      hasMore: true,
-    };
-  }
-
-  return { loadOptions };
-};
-
-export const AddMentorHandler = ({ courses, setCourses }: any) => {
-  const [selectedMentor, setSelectedMentor] = useState<any>([]);
-
-  const addMentor = (mentor: any) => {
-    const updatedMentors = selectedMentor
-      ? [...selectedMentor, mentor]
-      : [mentor];
-
-    setSelectedMentor(updatedMentors);
-    setCourses(updatedMentors);
+      setAllowCourses(updatedCourses);
+    setCourses(updatedCourses);
   };
 
-  const removeMentor = (index: number) => {
-    const updatedMentors = selectedMentor?.filter(
-      (_: any, mentorIndex: any) => mentorIndex !== index
+  const removeAllowedCourse = (index: number) => {
+    const updatedCourses = allowCourses?.filter(
+      (_: any, courseIndex: any) => courseIndex !== index
     );
 
-    setSelectedMentor(updatedMentors);
+    setAllowCourses(updatedCourses);
   };
 
   useEffect(() => {
-    setSelectedMentor(selectedMentor);
-  }, [selectedMentor]);
+    setAllowCourses(allowCourses);
+  }, [allowCourses]);
 
   return {
-    selectedMentor,
-    setSelectedMentor,
-    addMentor,
-    removeMentor,
+    allowCourses,
+    setAllowCourses,
+    addAllowedCourse,
+    removeAllowedCourse,
   };
 };
 
-export const AddNotAllowedCourses = ({ courses, setNotAllowedCourses }: any) => {
-  const [selectedCourse, setSelectedCourses] = useState<any>([]);
+// Kupon tidak bisa digunakan di kelas 
+export const AddNotAllowedCourses = (courses: any, setCourses: any) => {
+  const [notAllowCourses, setNotAllowCourses] = useState<any>([]);
 
-  const addCourse = (mentor: any) => {
-    const updatedMentors = selectedCourse
-      ? [...selectedCourse, mentor]
-      : [mentor];
+  const addNotAllowedCourse = (course: any) => {
+    const updatedCourses = notAllowCourses
+      ? [...notAllowCourses, course]
+      : [course];
 
-    setSelectedCourses(updatedMentors);
-    setNotAllowedCourses(updatedMentors);
+    setNotAllowCourses(updatedCourses);
+    setCourses(updatedCourses);
   };
 
-  const removeCourse = (index: number) => {
-    const updatedMentors = selectedCourse?.filter(
-      (_: any, mentorIndex: any) => mentorIndex !== index
+  const removeNotAllowedCourse = (index: number) => {
+    const updatedCourses = notAllowCourses?.filter(
+      (_: any, courseIndex: any) => courseIndex !== index
     );
 
-    setSelectedCourses(updatedMentors);
+    setNotAllowCourses(updatedCourses);
   };
 
   useEffect(() => {
-    setSelectedCourses(selectedCourse);
-  }, [selectedCourse]);
+    setNotAllowCourses(notAllowCourses);
+  }, [notAllowCourses]);
 
   return {
-    selectedCourse,
-    setSelectedCourses,
-    addCourse,
-    removeCourse,
+    notAllowCourses,
+    setNotAllowCourses,
+    addNotAllowedCourse,
+    removeNotAllowedCourse,
   };
 };
 
+// Dropdown list of courses
 export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
     variables: {
@@ -201,7 +161,7 @@ export const useCoursesDropdown = () => {
       })) ?? [];
 
     return {
-      options: [...prevOptions, ...fetchedOptions],
+      options: newOptions,
       hasMore: fetchedOptions.length > 0,
     };
   }
@@ -221,14 +181,17 @@ export const useCouponForm = () => {
   const [discountType, setDiscountType] = useState(DiscountTypeEnum.Amount);
   const [discount, setDiscount] = useState<string>("0");
   const [addDate, setAddDate] = useState(false);
-  const [date, setDate] = useState<Date>(new Date("2025-05-01"));
+  const [date, setDate] = useState<Date>(new Date());
   const [connectCourse, setConnectCourse] = useState<number>();
   const [maxClaim, setMaxClaim] = useState<number>();
-  const [courses, setCourses] = useState<any>([]);
+  const [allowedCourses, setAllowedCourses] = useState<any>([]);
   const [notAllowedCourses, setNotAllowedCourses] = useState<any>([]);
+  const [swalProps, setSwalProps] = useState({});
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
 
   // Kupon hanya bisa digunakan di kelas
-  const selectedCourses = courses.map((item: any) => ({
+  const selectedCourses = allowedCourses.map((item: any) => ({
     id: item.value
   }));
 
@@ -238,12 +201,15 @@ export const useCouponForm = () => {
   }));
 
   // Kupon hanya bisa digunakan di kelas
-  const { selectedMentor, setSelectedMentor, addMentor, removeMentor } =
-    AddMentorHandler({ courses, setCourses });
+  const { allowCourses, setAllowCourses, addAllowedCourse, removeAllowedCourse } =
+    AddAllowedCourses(allowedCourses, setAllowedCourses);
 
   // Kupon tidak bisa digunakan di kelas
-  const { selectedCourse, setSelectedCourses, addCourse, removeCourse } =
-    AddNotAllowedCourses({ notAllowedCourses, setNotAllowedCourses });
+  const { notAllowCourses, setNotAllowCourses, addNotAllowedCourse, removeNotAllowedCourse } =
+    AddNotAllowedCourses(notAllowedCourses, setNotAllowedCourses);
+
+  const selectedAllowedCoursesIds = allowedCourses.map((item: any) => item.value);
+  const selectedNotAllowedCoursesIds = notAllowedCourses.map((item: any) => item.value);
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -259,18 +225,29 @@ export const useCouponForm = () => {
     onSubmit: () => {},
   });
 
+  const resetForm = () => {
+    setMaxClaim(0);
+    setDiscount("0");
+    setStatus("true");
+    setCode("");
+    setAllowedCourses([]);
+    setNotAllowedCourses([]);
+  };
+
+  console.log(addDate);
+
   const [couponCreateOne] = useCouponCreateOneMutation();
 
   const hanldeCouponCreateOne = async () => {
     dispatch(changeCouponLoading(true));
     try {
-      await couponCreateOne({
+      const res = await couponCreateOne({
         variables: {
           data: {
-            startDate: new Date(),
+            startDate: addDate ? startDate : new Date(),
             value: parseInt(discount as string),
             type: discountType,
-            endDate: addDate ? date : null,
+            endDate: addDate ? endDate : null,
             isActive: status == "true" ? true : false,
             maxClaimPerUser: Number(maxClaim),
             platformCoupon: {
@@ -301,9 +278,26 @@ export const useCouponForm = () => {
           },
         },
       });
+
+      if (res.data?.couponCreateOne) {
+        setSwalProps({
+          show: true,
+          title: "Berhasil",
+          text: "Kupon berhasil ditambahkan",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
       await couponFindMany.refetch();
     } catch (error) {
       console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan saat menambahkan kupon",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       dispatch(changeCouponLoading(false));
     }
@@ -330,11 +324,21 @@ export const useCouponForm = () => {
     setConnectCourse,
     maxClaim,
     setMaxClaim,
-    selectedMentor,
-    setSelectedMentor,
-    addMentor,
-    removeMentor,
-    selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    allowCourses,
+    setAllowCourses,
+    addAllowedCourse,
+    removeAllowedCourse,
+    notAllowCourses,
+    setNotAllowCourses,
+    addNotAllowedCourse,
+    removeNotAllowedCourse,
+    swalProps,
+    setSwalProps,
+    resetForm,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   };
 };
 

@@ -169,6 +169,8 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     data.couponFindOne?.endDate ? true : false
   );
   const [date, setDate] = useState(new Date(data.couponFindOne?.endDate));
+  const [startDate, setStartDate] = useState<Date>(new Date(data.couponFindOne?.startDate));
+  const [endDate, setEndDate] = useState<Date>(new Date(data.couponFindOne?.endDate));
   console.log(date);
 
   const [connectCourse, setConnectCourse] = useState<number | undefined | null>(data.couponFindOne?.courseCoupon?.course?.id);
@@ -188,12 +190,12 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
   const [notAllowedCourses, setNotAllowedCourses] = useState<any>(transformedNotAllowedCourses);
 
   // Kupon hanya bisa digunakan di kelas
-  const selectedCourses = courses.map((item: any) => ({
+  const selectedCourses = courses?.map((item: any) => ({
     id: item.value
   }));
 
   // Kupon tidak bisa digunakan di kelas
-  const notAllowedCourse = notAllowedCourses.map((item: any) => ({
+  const notAllowedCourse = notAllowedCourses?.map((item: any) => ({
     id: item.value
   }));
 
@@ -223,8 +225,11 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
             coupon: {
               update: {
                 data: {
+                  startDate: {
+                    set: addDate ? startDate : new Date(),
+                  },
                   endDate: {
-                    set: addDate ? date : null,
+                    set: addDate ? endDate : null,
                   },
                   type: {
                     set: discountType,
@@ -299,6 +304,10 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     selectedMentor, setSelectedMentor, addMentor, removeMentor,
     selectedCourse, setSelectedCourses, addCourse, removeCourse,
     courses,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   };
 };
 

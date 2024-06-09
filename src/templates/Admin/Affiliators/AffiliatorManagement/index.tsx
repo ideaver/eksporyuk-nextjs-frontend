@@ -25,6 +25,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { formatDate } from "@/app/service/utils/dateFormatter";
 
 const AffiliatorPage = () => {
   const {
@@ -176,8 +177,8 @@ const Body = ({
               </CheckBoxInput>
             </th>
             <th className="min-w-200px">Nama Lengkap</th>
-            <th className="text-end min-w-200px">Email</th>
-            <th className="text-end min-w-200px">Affiliator</th>
+            <th className="text-start min-w-200px">Email</th>
+            {/* <th className="text-end min-w-200px">Affiliator</th> */}
             <th className="text-end min-w-200px">Tanggal Terdaftar</th>
             <th className="text-end min-w-100px">Actions</th>
           </KTTableHead>
@@ -236,14 +237,14 @@ const Body = ({
                       </div>
                     </div>
                   </td>
-                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                  <td className="align-middle text-start text-muted fw-bold w-150px">
                     {affiliator.user.email}
                   </td>
-                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                  {/* <td className="align-middle text-end text-muted fw-bold w-150px">
                     {affiliator.user.affiliator?.user.name}
-                  </td>
+                  </td> */}
                   <td className="align-middle text-end text-muted fw-bold w-150px">
-                    {dateFormatter(affiliator.user.createdAt)}
+                    {formatDate(affiliator.user.createdAt)}
                   </td>
                   {/* <td className="align-middle text-end w-150px">
                     <Dropdown
