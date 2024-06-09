@@ -32,6 +32,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import Flatpickr from "react-flatpickr";
 import { AsyncPaginate } from "react-select-async-paginate";
+import SweetAlert2 from "react-sweetalert2";
 
 const AdminCoupon = () => {
   const {
@@ -487,7 +488,10 @@ const AddCouponModal = ({
     setSelectedMentor,
     addMentor,
     removeMentor,
-    selectedCourse, setSelectedCourses, addCourse, removeCourse
+    selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    swalProps,
+    setSwalProps,
+    resetForm,
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -735,6 +739,17 @@ const AddCouponModal = ({
             }}
           ></AsyncPaginate>
         </div>
+        <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+          resetForm();
+        }}
+      />
       </KTModal>
     </div>
   );

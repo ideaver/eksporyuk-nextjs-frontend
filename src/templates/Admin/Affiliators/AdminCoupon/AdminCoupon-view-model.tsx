@@ -30,6 +30,7 @@ import {
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { OptionsOrGroups, GroupBase } from "react-select";
+import { ApolloError } from "@apollo/client";
 
 type CourseOptionType = {
   value: number;
@@ -226,6 +227,7 @@ export const useCouponForm = () => {
   const [maxClaim, setMaxClaim] = useState<number>();
   const [courses, setCourses] = useState<any>([]);
   const [notAllowedCourses, setNotAllowedCourses] = useState<any>([]);
+  const [swalProps, setSwalProps] = useState({});
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = courses.map((item: any) => ({
@@ -259,12 +261,21 @@ export const useCouponForm = () => {
     onSubmit: () => {},
   });
 
+  const resetForm = () => {
+    setMaxClaim(0);
+    setDiscount("0");
+    setStatus("true");
+    setCode("");
+    setCourses([]);
+    setNotAllowedCourses([]);
+  };
+
   const [couponCreateOne] = useCouponCreateOneMutation();
 
   const hanldeCouponCreateOne = async () => {
     dispatch(changeCouponLoading(true));
     try {
-      await couponCreateOne({
+      const res = await couponCreateOne({
         variables: {
           data: {
             startDate: new Date(),
@@ -301,9 +312,26 @@ export const useCouponForm = () => {
           },
         },
       });
+
+      if (res.data?.couponCreateOne) {
+        setSwalProps({
+          show: true,
+          title: "Berhasil",
+          text: "Kupon berhasil ditambahkan",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
       await couponFindMany.refetch();
     } catch (error) {
       console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan saat menambahkan kupon",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       dispatch(changeCouponLoading(false));
     }
@@ -335,6 +363,9 @@ export const useCouponForm = () => {
     addMentor,
     removeMentor,
     selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    swalProps,
+    setSwalProps,
+    resetForm,
   };
 };
 
