@@ -413,9 +413,14 @@ const Body = ({
                         />
                       </div>
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                        <Link
+                          href={
+                            "/admin/courses/detail/information?id=" + course.id
+                          }
+                          className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold"
+                        >
                           {course.title}
-                        </span>
+                        </Link>
                         <span className="fw-bold text-muted">
                           {course._count.sections} Sections, {totalLessons}{" "}
                           Lesson, {totalQuizzes} Quiz

@@ -3,6 +3,7 @@ import { useCertificateTemplateFindManyQuery } from "@/app/service/graphql/gen/g
 import { RootState } from "@/app/store/store";
 import { changeCertificateTemplateId } from "@/features/reducers/course/courseReducer";
 import { Alert } from "@/stories/molecules/Alert/Alert";
+import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 
 const CertificatePage = ({}) => {
@@ -10,6 +11,8 @@ const CertificatePage = ({}) => {
   const dispatch = useDispatch();
   const currentCourseSelector = useSelector((state: RootState) => state.course);
   const { data, loading, error } = useCertificateTemplateFindManyQuery();
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   return (
     <>
       {currentCourseSelector.errorMessage && (
@@ -45,9 +48,12 @@ const CertificatePage = ({}) => {
                           checked={
                             currentCourseSelector.certificateTemplateId === 0
                           }
-                          onClick={() =>
-                            dispatch(changeCertificateTemplateId(0))
-                          }
+                          onClick={() => {
+                            if (isDetail) {
+                              return;
+                            }
+                            dispatch(changeCertificateTemplateId(0));
+                          }}
                         />
                       </div>
                       <div className="flex-grow-1">
@@ -81,11 +87,12 @@ const CertificatePage = ({}) => {
                                 currentCourseSelector.certificateTemplateId ===
                                 certificate?.id
                               }
-                              onClick={() =>
-                                dispatch(
-                                  changeCertificateTemplateId(certificate?.id)
-                                )
-                              }
+                              onClick={() => {
+                                if (isDetail) {
+                                  return;
+                                }
+                                dispatch(changeCertificateTemplateId(0));
+                              }}
                             />
                           </div>
                         </div>

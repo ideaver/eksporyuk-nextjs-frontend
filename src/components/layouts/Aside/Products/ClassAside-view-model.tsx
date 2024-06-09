@@ -454,7 +454,7 @@ const useEditCourse = () => {
                   0
               ),
             },
-           ...(material ? { material: { connect: { path: material } } } : {}),
+            ...(material ? { material: { connect: { path: material } } } : {}),
           },
         };
       });
@@ -894,6 +894,8 @@ const useNavigation = () => {
 
 const useClassViewModel = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const thumbnail = useSelector((state: RootState) => state.course.thumbnail);
   const status = useSelector((state: RootState) => state.course.status);
   const duration = useSelector(
@@ -904,6 +906,7 @@ const useClassViewModel = () => {
     useNavigation();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isDetail) return;
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -915,12 +918,15 @@ const useClassViewModel = () => {
   };
 
   const handleStatusChange = (status: CourseStatusEnum) => {
+    if (isDetail) return;
     dispatch(changeStatus(status));
   };
   const handleDurationChange = (duration: number) => {
+    if (isDetail) return;
     dispatch(changeCourseDuration(duration));
   };
   const handleCourseTypeChange = (courseType: "subscription" | "one-time") => {
+    if (isDetail) return;
     dispatch(changeCourseType(courseType));
     if (courseType === "one-time") {
       dispatch(changeCourseDuration(9999999));
