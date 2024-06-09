@@ -481,7 +481,7 @@ const Body = ({
               className="text-uppercase align-middle"
             >
               <th className="min-w-150px">
-                <CheckBoxInput
+                {/* <CheckBoxInput
                   className="w-150px"
                   checked={selectAll}
                   name="check-all"
@@ -490,7 +490,8 @@ const Body = ({
                   onChange={handleSelectAllCheck}
                 >
                   <p className="mb-0">ID ORDER</p>
-                </CheckBoxInput>
+                </CheckBoxInput> */}
+                <p className="mb-0">ID ORDER</p>
               </th>
               <th className="min-w-200px">ID Invoice</th>
               <th className="min-w-275px">Nama Produk</th>
@@ -532,7 +533,7 @@ const Body = ({
               return (
                 <tr key={index}>
                   <td className="align-middle">
-                    <CheckBoxInput
+                    {/* <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
                       name={"check-" + order.id}
@@ -541,7 +542,8 @@ const Body = ({
                       onChange={() => handleSingleCheck(index)}
                     >
                       <p className="fw-bold text-black mb-0">{order.id}</p>
-                    </CheckBoxInput>
+                    </CheckBoxInput> */}
+                    <p className="fw-bold text-black mb-0">{order.id}</p>
                   </td>
                   <td className="align-middle text-start text-muted min-w-200px fw-bold ">
                     {latestInvoices?.uniqueCode}
