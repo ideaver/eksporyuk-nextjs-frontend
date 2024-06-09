@@ -484,11 +484,14 @@ const AddCouponModal = ({
     setConnectCourse,
     maxClaim,
     setMaxClaim,
-    selectedMentor,
-    setSelectedMentor,
-    addMentor,
-    removeMentor,
-    selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    allowCourses,
+    setAllowCourses,
+    addAllowedCourse,
+    removeAllowedCourse,
+    notAllowCourses,
+    setNotAllowCourses,
+    addNotAllowedCourse,
+    removeNotAllowedCourse,
     swalProps,
     setSwalProps,
     resetForm,
@@ -612,7 +615,7 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="required fw-bold text-gray-700">
+          <h4 className="fw-bold text-gray-700">
             Batas Waktu Penggunaan
           </h4>
           <CheckBoxInput
@@ -670,8 +673,8 @@ const AddCouponModal = ({
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
-          {selectedMentor &&
-            selectedMentor?.map((mentor: any, index: any) => {
+          {allowCourses &&
+            allowCourses?.map((mentor: any, index: any) => {
               return (
                 <div className="d-flex mt-5" key={index}>
                   <div className="w-100">
@@ -688,7 +691,7 @@ const AddCouponModal = ({
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeMentor(index)}
+                      onClick={() => removeAllowedCourse(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -698,7 +701,7 @@ const AddCouponModal = ({
             className="mt-5"
             loadOptions={loadOptions}
             onChange={(value) => {
-              addMentor(value);
+              addAllowedCourse(value);
             }}
           ></AsyncPaginate>
         </div>
@@ -707,8 +710,8 @@ const AddCouponModal = ({
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
-          {selectedCourse &&
-            selectedCourse?.map((mentor: any, index: any) => {
+          {notAllowCourses &&
+            notAllowCourses?.map((mentor: any, index: any) => {
               return (
                 <div className="d-flex mt-5" key={index}>
                   <div className="w-100">
@@ -725,7 +728,7 @@ const AddCouponModal = ({
                       icon="cross"
                       buttonColor="danger"
                       showIcon={true}
-                      onClick={() => removeCourse(index)}
+                      onClick={() => removeNotAllowedCourse(index)}
                     ></Buttons>
                   </div>
                 </div>
@@ -735,7 +738,7 @@ const AddCouponModal = ({
             className="mt-5"
             loadOptions={loadOptions}
             onChange={(value) => {
-              addCourse(value);
+              addNotAllowedCourse(value);
             }}
           ></AsyncPaginate>
         </div>
