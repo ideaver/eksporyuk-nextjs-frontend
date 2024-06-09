@@ -1,0 +1,97 @@
+query AdminFindTransactionMany(
+  $where: TransactionWhereInput
+  $take: Int
+  $skip: Int
+  $orderBy: [TransactionOrderByWithRelationInput!]
+) {
+  adminFindManyTransaction(
+    where: $where
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+  ) {
+    transaction {
+      id
+      amount
+      uniqueCode
+      createdAt
+      updatedAt
+      proofImageId
+      status
+      transactionCategory
+      fromAccountId
+      toAccountId
+      paymentId
+      payment {
+        invoice {
+          paymentId
+          paymentForGateway {
+            id
+            bill_link
+            bill_link_id
+            bill_title
+            sender_name
+            sender_bank
+            sender_email
+            sender_bank_type
+            virtual_account_number
+            amount
+            status
+            settlement_status
+            reference_id
+            payment_url
+            created_at
+            completed_at
+          }
+          id
+          adminFee
+          amount
+          uniqueCode
+          createdAt
+          updatedAt
+          status
+          orderId
+          paymentForGatewayId
+          topupId
+        }
+      }
+      toAccount {
+        id
+        accountNumber
+        name
+        balance
+        createdAt
+        updatedAt
+        accountCategory
+        userId
+        accountInquiryId
+        user {
+          email
+          id
+          name
+          phoneId
+          username
+        }
+      }
+      fromAccount {
+        id
+        accountNumber
+        name
+        balance
+        createdAt
+        updatedAt
+        accountCategory
+        userId
+        accountInquiryId
+      }
+    }
+    type
+    user {
+      email
+      id
+      name
+      phoneId
+      avatarImageId
+    }
+  }
+}

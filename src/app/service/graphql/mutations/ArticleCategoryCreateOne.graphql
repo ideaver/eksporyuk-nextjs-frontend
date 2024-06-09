@@ -1,0 +1,6 @@
+mutation ArticleCategoryCreateOne($data: ArticleCategoryCreateInput!) {
+  articleCategoryCreateOne(data: $data) {
+    id
+    name
+  }
+}

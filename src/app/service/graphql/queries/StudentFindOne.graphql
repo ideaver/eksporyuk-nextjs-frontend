@@ -1,0 +1,358 @@
+query StudentFindOne($where: StudentWhereUniqueInput!) {
+  studentFindOne(where: $where) {
+    id
+    updatedAt
+    creditCards {
+      cardNumber
+      cardHolderName
+      createdAt
+      customerId
+      id
+      isAccepted
+    }
+    user {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      accounts {
+        accountInquiryId
+        accountInquiry {
+          bank {
+            bankLogo {
+              path
+            }
+            bankLogoPath
+            name
+          }
+          accountNumber
+          accountHolder
+          bankCode
+          id
+          inquiryKey
+          inquiryStatus
+        }
+        accountNumber
+        name
+        userId
+      }
+      addresses {
+        id
+        name
+        latitude
+        longitude
+        label
+        isMain
+        createdAt
+        updatedAt
+        userId
+        subdistrict {
+          id
+          name
+          postalCode
+          updatedAt
+          district {
+            id
+            name
+            updatedAt
+            city {
+              id
+              name
+              updatedAt
+              province {
+                id
+                name
+                stateCode
+                latitude
+                longitude
+                updatedAt
+                country {
+                  id
+                  name
+                  iso3
+                  iso2
+                  numericCode
+                  phoneCode
+                  capital
+                  currency
+                  currencyName
+                  currencySymbol
+                  tld
+                  native
+                  latitude
+                  longitude
+                  flagEmoji
+                  emojiU
+                  updatedAt
+                  region
+                  region_id
+                  subregion
+                  subregion_id
+                  nationality
+                }
+              }
+            }
+          }
+        }
+      }
+      role
+      gender
+      avatarImageId
+      referralLinkId
+      socialMedia {
+        id
+        instagramUrl
+        facebookUrl
+        twitterUrl
+        linkedinUrl
+        youtubeUrl
+        tiktokUrl
+        websiteUrl
+        githubUrl
+      }
+      _count {
+        orders
+      }
+      orders {
+        id
+        platformFee
+        createdAt
+        updatedAt
+        cartId
+        createdByUserId
+        couponId
+        referralLinkId
+        createdByUser {
+          email
+          username
+          phoneId
+          name
+        }
+        coupon {
+          affiliatorCoupon {
+            code
+          }
+        }
+        cart {
+          id
+          adminFee
+          totalQuantity
+          totalPrice
+          totalCost
+          createdAt
+          updatedAt
+          cartItems {
+            bundle {
+              id
+              name
+              cost
+              basePrice
+              salePrice
+              description
+              isActive
+              createdAt
+              updatedAt
+            }
+            cost
+            course {
+              id
+              title
+              description
+              prerequisites
+              objective
+              outcome
+              startDate
+              endDate
+              maxEnrollment
+              deepLink
+              isCertificationProvided
+              basePrice
+              salePrice
+              createdAt
+              updatedAt
+              status
+              level
+              duration
+              categoryId
+              createdById
+              videoUrlId
+            }
+            courseEnrollment {
+              id
+              createdAt
+              updatedAt
+              completedAt
+              progress
+              completionStatus
+              courseId
+              studentId
+              orderId
+              certificateId
+            }
+            membership {
+              id
+              name
+              description
+              durationDay
+              benefits
+              price
+              benefitCourses {
+                id
+                title
+                description
+                prerequisites
+                objective
+                outcome
+                startDate
+                endDate
+                maxEnrollment
+                deepLink
+                isCertificationProvided
+                basePrice
+                salePrice
+                affiliateCommission
+                createdAt
+                updatedAt
+                status
+                level
+                duration
+                categoryId
+                createdById
+                videoUrlId
+              }
+              affiliateFirstCommission
+              affiliateCommission
+              createdAt
+              updatedAt
+              createdById
+            }
+            id
+            product {
+              id
+              name
+              cost
+              basePrice
+              salePrice
+              description
+              isActive
+              isOnSale
+              isBundle
+              platformFee
+              industryId
+              factoryId
+              supplierId
+              agentId
+              unitOfMeasureId
+              hsCodeId
+            }
+            productService {
+              id
+              name
+              basePrice
+              salePrice
+              description
+              benefits
+              purchaseCount
+              isActive
+              isOnSale
+              isBundle
+              portofolio
+              productServiceCategory
+            }
+            quantity
+            price
+            totalPrice
+            type
+            courseEnrollmentId
+          }
+        }
+        invoices {
+          id
+          adminFee
+          amount
+          uniqueCode
+          createdAt
+          updatedAt
+          status
+          orderId
+          paymentForGatewayId
+          paymentId
+        }
+        statuses {
+          id
+          createdAt
+          status
+          changedById
+          orderId
+        }
+      }
+    }
+    enrollments {
+      id
+      createdAt
+      updatedAt
+      completedAt
+      progress
+      completionStatus
+      courseId
+      studentId
+      orderId
+      certificateId
+      _count {
+        lessonProgresses
+        quizAttempts
+        assignmentResponses
+        cartItems
+      }
+      lessonProgresses {
+        id
+        isCompleted
+        lessonId
+        enrollmentId
+      }
+      course {
+        id
+        title
+        description
+        prerequisites
+        objective
+        outcome
+        startDate
+        endDate
+        maxEnrollment
+        deepLink
+        isCertificationProvided
+        basePrice
+        salePrice
+        createdAt
+        updatedAt
+        status
+        level
+        duration
+        categoryId
+        createdById
+        videoUrlId
+      }
+    }
+    _count {
+      reviewedCourses
+      enrollments
+      certificates
+      creditCards
+    }
+  }
+}

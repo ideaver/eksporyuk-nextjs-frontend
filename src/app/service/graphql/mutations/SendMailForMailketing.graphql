@@ -1,0 +1,3 @@
+mutation SendMailForMailketing($sendMailForMailketing: MailketingArgs!) {
+  sendMailForMailketing(sendMailForMailketing: $sendMailForMailketing)
+}

@@ -1,0 +1,21 @@
+query RewardsCatalogFindOne($where: RewardsCatalogWhereUniqueInput!) {
+  rewardsCatalogFindOne(where: $where) {
+    id
+    title
+    description
+    pointsRequired
+    course {
+      id
+      title
+    }
+    createdAt
+    createdBy {
+      user {
+        name
+        emailVerifiedAt
+      }
+    }
+    endSales
+    rewardsType
+  }
+}

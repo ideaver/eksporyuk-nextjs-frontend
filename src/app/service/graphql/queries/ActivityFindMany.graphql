@@ -1,0 +1,17 @@
+query ActivityFindMany(
+  $skip: Int
+  $take: Int
+  $where: ActivityWhereInput
+  $orderBy: [ActivityOrderByWithRelationInput!]
+) {
+  activityFindMany(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    title
+    type
+    updatedAt
+    userId
+    user {
+      name
+      role
+    }
+  }
+}

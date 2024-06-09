@@ -1,0 +1,28 @@
+mutation CourseUpdateOne(
+  $data: CourseUpdateInput!
+  $where: CourseWhereUniqueInput!
+) {
+  courseUpdateOne(data: $data, where: $where) {
+    id
+    title
+    description
+    prerequisites
+    objective
+    outcome
+    startDate
+    endDate
+    maxEnrollment
+    deepLink
+    isCertificationProvided
+    basePrice
+    salePrice
+    createdAt
+    updatedAt
+    status
+    level
+    duration
+    categoryId
+    createdById
+    videoUrlId
+  }
+}

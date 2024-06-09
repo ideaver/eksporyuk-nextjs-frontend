@@ -1,0 +1,8 @@
+mutation BuyerUpdateOne(
+  $data: BuyerUpdateInput!
+  $where: BuyerWhereUniqueInput!
+) {
+  buyerUpdateOne(data: $data, where: $where) {
+    id
+  }
+}

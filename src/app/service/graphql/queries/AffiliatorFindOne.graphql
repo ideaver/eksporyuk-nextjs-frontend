@@ -1,0 +1,126 @@
+query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
+  affiliatorFindOne(where: $where) {
+    _count {
+      creditCards
+    }
+    user {
+      id
+      avatarImageId
+      role
+      name
+      username
+      email
+      addresses {
+        name
+      }
+      accounts {
+        id
+        accountNumber
+        name
+        balance
+        createdAt
+        updatedAt
+        accountCategory
+        userId
+        accountInquiryId
+        accountInquiry {
+          id
+          accountNumber
+          accountHolder
+          inquiryStatus
+          inquiryKey
+          createdAt
+          updatedAt
+          bankCode
+          bank {
+            bankLogo {
+              path
+            }
+            bankLogoPath
+            code
+            name
+          }
+        }
+      }
+      orders {
+        _count {
+          enrollment
+        }
+        invoices {
+          amount
+        }
+        cart {
+          cartItems {
+            quantity
+          }
+        }
+      }
+      Withdrawal {
+        amount
+        transaction {
+          amount
+        }
+      }
+      phone {
+        phoneNumber
+      }
+      createdAt
+    }
+    createdCoupons {
+      code
+      id
+      createdBy {
+        user {
+          email
+          name
+          username
+        }
+      }
+      extendedFrom {
+        code
+        _count {
+          extendedByCourses
+        }
+        coupon {
+          value # Diskon value
+          type # AMOUNT/PERCENT
+        }
+        createdBy {
+          
+          id
+          user {
+            name # Si admin
+          }
+        }
+        createdById
+        extendedByCourses {
+          course {
+            id
+          }
+        }
+      }
+      coupon {
+        claimerQuota
+        createdAt
+        description
+        endDate
+        imageId
+        isActive
+        maxClaimPerUser
+        maxOrderQuantityValue
+        maxOrderTotalAmountValue
+        minOrderQuantityValue
+        minOrderTotalAmountValue
+        startDate
+        updatedAt
+        type
+        value
+      }
+    }
+    creditCards {
+      cardNumber
+      cardHolderName
+      cvv
+    }
+  }
+}

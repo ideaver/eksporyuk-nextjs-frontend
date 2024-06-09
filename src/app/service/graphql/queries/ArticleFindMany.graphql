@@ -1,0 +1,25 @@
+query ArticleFindMany(
+  $orderBy: [ArticleOrderByWithRelationInput!]
+  $where: ArticleWhereInput
+  $take: Int
+  $skip: Int
+) {
+  articleFindMany(orderBy: $orderBy, where: $where, take: $take, skip: $skip) {
+    id
+    createdByAdmin {
+      id
+      user {
+        id
+        name
+        avatarImageId
+      }
+    }
+    category {
+      name
+      id
+    }
+    isActive
+    title
+    updatedAt
+  }
+}

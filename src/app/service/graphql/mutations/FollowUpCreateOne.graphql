@@ -1,0 +1,10 @@
+mutation FollowUpCreateOne($data: FollowUpCreateInput!) {
+  followUpCreateOne(data: $data) {
+    id
+    name
+    content
+    createdAt
+    updatedAt
+    adminId
+  }
+}

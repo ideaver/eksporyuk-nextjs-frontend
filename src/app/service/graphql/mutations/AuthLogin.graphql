@@ -1,0 +1,34 @@
+mutation AuthLogin($loginArgs: LoginArgs!) {
+  authLogin(loginArgs: $loginArgs) {
+    accessToken
+    user {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+      admin {
+        id
+        createdAt
+        modifyPlatformSettingId
+      }
+    }
+  }
+}

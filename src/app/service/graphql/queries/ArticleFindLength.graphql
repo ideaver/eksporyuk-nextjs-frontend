@@ -1,0 +1,5 @@
+query ArticleFindLength($where: ArticleWhereInput, $take: Int, $skip: Int) {
+  articleFindMany(where: $where, take: $take, skip: $skip) {
+    id
+  }
+}

@@ -1,0 +1,5 @@
+mutation ImportDataBuyers($importBuyers: ImportDataArgs!) {
+  importBuyers(importBuyers: $importBuyers) {
+    totalDataImported
+  }
+}

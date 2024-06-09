@@ -1,0 +1,33 @@
+query BuyerFindMany(
+  $skip: Int
+  $take: Int
+  $where: BuyerWhereInput
+  $orderBy: [BuyerOrderByWithRelationInput!]
+) {
+  buyerFindMany(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    abbreviation
+    address
+    buyerName
+    companyName
+    counterContacted
+    country {
+      name
+      flagEmoji
+      id
+    }
+    createdAt
+    deliveryType
+    email
+    phone
+    price
+    productName
+    quantity
+    updatedAt
+    hsCodeSection {
+      name
+    }
+    hsCodeSectionId
+    id
+    countryId
+  }
+}

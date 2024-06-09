@@ -1,0 +1,23 @@
+query FeedbackFindMany(
+  $skip: Int
+  $take: Int
+  $where: FeedbackWhereInput
+  $orderBy: [FeedbackOrderByWithRelationInput!]
+) {
+  feedbackFindMany(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    id
+    content
+    feedbackCategory
+    createdAt
+    updatedAt
+    userId
+    isCleared
+    isRead
+    resolvedById
+    user {
+      id
+      name
+      avatarImageId
+    }
+  }
+}

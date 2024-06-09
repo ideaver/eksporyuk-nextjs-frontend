@@ -1,0 +1,18 @@
+query NotificationFindMany($where: NotificationWhereInput, $take: Int, $skip: Int, $orderBy: [NotificationOrderByWithRelationInput!]) {
+  notificationFindMany(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+    id
+    userId
+    user {
+      id
+      username
+      name
+      avatarImageId
+    }
+    title
+    subTitle
+    topic
+    onCompletionStatus
+    onOperationType
+    createdAt
+  }
+}

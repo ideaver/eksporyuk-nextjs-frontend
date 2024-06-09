@@ -1,0 +1,24 @@
+mutation CouponCreateOne($data: CouponCreateInput!) {
+  couponCreateOne(data: $data) {
+    id
+    description
+    startDate
+    endDate
+    isHighlight
+    isActive
+    value
+    minOrderTotalAmountValue
+    maxOrderTotalAmountValue
+    minOrderQuantityValue
+    maxOrderQuantityValue
+    maxClaimPerUser
+    claimerQuota
+    freeDelivery
+    lastClaimAt
+    createdAt
+    updatedAt
+    imageId
+    type
+    source
+  }
+}

@@ -1,0 +1,11 @@
+query OrderCountsByCustomPeriod(
+  $orderCountByCustomPeriod: OrderCountByCustomPeriodArgs
+) {
+  orderCountByCustomPeriod(
+    orderCountByCustomPeriod: $orderCountByCustomPeriod
+  ) {
+    period
+    totalOmzet
+    totalOrder
+  }
+}

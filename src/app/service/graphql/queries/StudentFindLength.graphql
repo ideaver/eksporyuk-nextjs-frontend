@@ -1,0 +1,10 @@
+query StudentFindLength(
+  $where: StudentWhereInput
+  $orderBy: [StudentOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  studentFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+  }
+}

@@ -1,0 +1,21 @@
+query CertificateTemplateFindMany(
+  $skip: Int
+  $take: Int
+  $orderBy: [CertificateTemplateOrderByWithRelationInput!]
+  $where: CertificateTemplateWhereInput
+) {
+  certificateTemplateFindMany(
+    skip: $skip
+    take: $take
+    orderBy: $orderBy
+    where: $where
+  ) {
+    id
+    name
+    exampleTemplateCertificatePath
+    filePath
+    _count {
+      certificates
+    }
+  }
+}

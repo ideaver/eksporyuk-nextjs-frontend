@@ -1,0 +1,86 @@
+query AffiliatorCouponFindMany(
+  $where: AffiliatorCouponWhereInput
+  $orderBy: [AffiliatorCouponOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  affiliatorCouponFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    code
+    extendedFromId
+    createdById
+    createdBy {
+      id
+      updatedAt
+      totalAffiliatedItems
+      user {
+        email
+        id
+        avatarImageId
+        phoneId
+        name
+      }
+    }
+    coupon {
+      id
+      description
+      startDate
+      endDate
+      isHighlight
+      isActive
+      value
+      minOrderTotalAmountValue
+      maxOrderTotalAmountValue
+      minOrderQuantityValue
+      maxOrderQuantityValue
+      maxClaimPerUser
+      claimerQuota
+      freeDelivery
+      lastClaimAt
+      createdAt
+      updatedAt
+      imageId
+      type
+      source
+      _count {
+        termsOrFaqs
+        claimedByOrders
+        ReferralLink
+        Channel
+      }
+    }
+    extendedFrom {
+      id
+      code
+      createdById
+      extendableToUserRoles
+      coupon {
+        id
+        description
+        startDate
+        endDate
+        isHighlight
+        isActive
+        value
+        minOrderTotalAmountValue
+        maxOrderTotalAmountValue
+        minOrderQuantityValue
+        maxOrderQuantityValue
+        maxClaimPerUser
+        claimerQuota
+        freeDelivery
+        lastClaimAt
+        createdAt
+        updatedAt
+        imageId
+        type
+        source
+      }
+    }
+  }
+}
