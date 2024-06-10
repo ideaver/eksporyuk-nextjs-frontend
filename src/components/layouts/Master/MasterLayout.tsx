@@ -24,6 +24,7 @@ const MasterLayout = ({ children }: MasterLayoutProps) => {
     if (
       router.pathname === "/auth" ||
       router.pathname === "/terms/privacy-policy" ||
+      router.pathname === "/terms/affiliator/privacy-policy" ||
       router.pathname === "/account/account-deletion"
     ) {
       return (
