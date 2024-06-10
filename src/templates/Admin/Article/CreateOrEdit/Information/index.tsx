@@ -384,12 +384,12 @@ const InformationPage = () => {
                     value={typeAnnouncement}
                     options={[
                       {
-                        value: AnnouncementTypeEnum.Affiliate,
-                        label: "Affiliate",
-                      },
-                      {
                         value: AnnouncementTypeEnum.Course,
                         label: "Course",
+                      },
+                      {
+                        value: AnnouncementTypeEnum.Affiliate,
+                        label: "Affiliate",
                       },
                       {
                         value: AnnouncementTypeEnum.System,
