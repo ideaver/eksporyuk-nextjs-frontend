@@ -13,6 +13,7 @@ import {
   useCouponUpdateOneMutation,
   usePlatformCouponFindManyQuery,
   useCourseFindManyQuery,
+  useSoftDeletePlatformCouponLazyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { changeCouponLoading } from "@/features/reducers/affiliators/couponReducer";
 import { QueryResult } from "@apollo/client";
@@ -52,16 +53,14 @@ export const breadcrumbs = [
   },
 ];
 
-// Kupon hanya bisa digunakan di kelas 
+// Kupon hanya bisa digunakan di kelas
 export const AddAllowedCourses = (courses: any, setCourses: any) => {
   const [allowCourses, setAllowCourses] = useState<any>([]);
 
   const addAllowedCourse = (course: any) => {
-    const updatedCourses = allowCourses
-      ? [...allowCourses, course]
-      : [course];
+    const updatedCourses = allowCourses ? [...allowCourses, course] : [course];
 
-      setAllowCourses(updatedCourses);
+    setAllowCourses(updatedCourses);
     setCourses(updatedCourses);
   };
 
@@ -85,7 +84,7 @@ export const AddAllowedCourses = (courses: any, setCourses: any) => {
   };
 };
 
-// Kupon tidak bisa digunakan di kelas 
+// Kupon tidak bisa digunakan di kelas
 export const AddNotAllowedCourses = (courses: any, setCourses: any) => {
   const [notAllowCourses, setNotAllowCourses] = useState<any>([]);
 
@@ -123,7 +122,7 @@ export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
     variables: {
       take: 10,
-    }
+    },
   });
 
   async function loadOptions(
@@ -192,24 +191,36 @@ export const useCouponForm = () => {
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = allowedCourses.map((item: any) => ({
-    id: item.value
+    id: item.value,
   }));
 
   // Kupon tidak bisa digunakan di kelas
   const notAllowedCourse = notAllowedCourses.map((item: any) => ({
-    id: item.value
+    id: item.value,
   }));
 
   // Kupon hanya bisa digunakan di kelas
-  const { allowCourses, setAllowCourses, addAllowedCourse, removeAllowedCourse } =
-    AddAllowedCourses(allowedCourses, setAllowedCourses);
+  const {
+    allowCourses,
+    setAllowCourses,
+    addAllowedCourse,
+    removeAllowedCourse,
+  } = AddAllowedCourses(allowedCourses, setAllowedCourses);
 
   // Kupon tidak bisa digunakan di kelas
-  const { notAllowCourses, setNotAllowCourses, addNotAllowedCourse, removeNotAllowedCourse } =
-    AddNotAllowedCourses(notAllowedCourses, setNotAllowedCourses);
+  const {
+    notAllowCourses,
+    setNotAllowCourses,
+    addNotAllowedCourse,
+    removeNotAllowedCourse,
+  } = AddNotAllowedCourses(notAllowedCourses, setNotAllowedCourses);
 
-  const selectedAllowedCoursesIds = allowedCourses.map((item: any) => item.value);
-  const selectedNotAllowedCoursesIds = notAllowedCourses.map((item: any) => item.value);
+  const selectedAllowedCoursesIds = allowedCourses.map(
+    (item: any) => item.value
+  );
+  const selectedNotAllowedCoursesIds = notAllowedCourses.map(
+    (item: any) => item.value
+  );
 
   const couponSchema = Yup.object().shape({
     code: Yup.string()
@@ -272,9 +283,9 @@ export const useCouponForm = () => {
                 },
                 notAvailableToCourse: {
                   connect: notAllowedCourse,
-                }
-              }
-            }
+                },
+              },
+            },
           },
         },
       });
@@ -572,9 +583,28 @@ const useAdminCouponViewModel = () => {
     },
   });
 
-  const [couponDeleteMany] = useCouponDeleteManyMutation();
-  const [couponDeleteOne] = useCouponDeleteOneMutation();
+  const couponData = couponFindMany.data?.platformCouponFindMany?.filter(
+    (coupon) => !coupon.code.includes("DELETED")
+  );
+  console.log(couponData);
+
   const [couponUpdateOne] = useCouponUpdateOneMutation();
+  const [softDeleteCoupon, response] = useSoftDeletePlatformCouponLazyQuery();
+
+  const handleDeleteCoupon = async (id: number) => {
+    try {
+      await softDeleteCoupon({
+        variables: {
+          where: {
+            id: id,
+          },
+        },
+      });
+      await couponFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const { currentPage, calculateTotalPage, couponLength, handlePageChange } =
     usePagination({
@@ -586,44 +616,16 @@ const useAdminCouponViewModel = () => {
       setCouponTake,
     });
 
-  const {
-    selectAll,
-    checkedItems,
-    handleSingleCheck,
-    handleSelectAllCheck,
-    checked,
-  } = useCheckbox(couponFindMany);
-
-  const handleDeleteMany = async () => {
-    try {
-      await couponDeleteMany({
-        variables: {
-          where: {
-            id: {
-              in: checked,
-            },
-          },
-        },
-      });
-      await couponFindMany.refetch();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      router.reload();
-    }
-  };
-
   useEffect(() => {
     dispatch(changeCouponLoading(false));
   }, [dispatch]);
 
   return {
+    couponData,
+    handleDeleteCoupon,
     couponTake,
     setOrderBy,
-    couponDeleteOne,
     couponUpdateOne,
-    handleDeleteMany,
-    couponDeleteMany,
     setCouponSkip,
     setCouponTake,
     currentPage,
@@ -634,11 +636,6 @@ const useAdminCouponViewModel = () => {
     setCouponSearch,
     couponStatus,
     setCouponStatus,
-    selectAll,
-    checkedItems,
-    handleSingleCheck,
-    handleSelectAllCheck,
-    checked,
     couponFindMany,
   };
 };
