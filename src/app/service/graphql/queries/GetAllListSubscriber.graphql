@@ -1,0 +1,7 @@
+query GetAllListSubscribers {
+  getAllListSubscriber {
+    list_id
+    list_name
+    contacts
+  }
+}

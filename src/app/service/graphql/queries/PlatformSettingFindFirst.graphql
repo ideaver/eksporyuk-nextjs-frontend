@@ -1,0 +1,22 @@
+query PlatformSettingFindFirst {
+  platformSettingFindFirst {
+    id
+    platformFee
+    lastAutomateTransferCommissionDate
+    automateTransferCommissionDate
+    starSenderApiKey
+    senderEmail
+    senderName
+    senderEmailApiToken
+    listIdMailketingSubscriber
+    facebookCommunities
+    instagramCommunities
+    telegramCommunities
+    whatsappCommunities
+    orderExpirationTime
+    language
+    theme
+    createdAt
+    updatedAt
+  }
+}
