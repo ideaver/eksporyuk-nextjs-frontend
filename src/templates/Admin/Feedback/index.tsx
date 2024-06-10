@@ -45,6 +45,7 @@ const Feedback = () => {
     setOrderBy,
     feedbackTake,
   } = useFeedbackViewModel();
+  console.log(calculateTotalPage());
   const data: FeedbackFindManyQuery | undefined = feedbackFindMany?.data;
   return (
     <>
@@ -89,7 +90,7 @@ const Feedback = () => {
                   setFeedbackTake(val);
                 }}
                 setCurrentPage={(val) => {
-                  setCurrentPage(val);
+                  handlePageChange(val);
                 }}
                 feedbackTake={feedbackTake}
               />

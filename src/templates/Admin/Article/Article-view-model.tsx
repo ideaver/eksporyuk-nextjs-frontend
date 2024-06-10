@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import {
   AnnouncementTypeEnum,
   MaterialPromotionPlatformTypeEnum,
+  NewsTypeEnum,
   QueryMode,
   SortOrder,
   useAnnouncementDeleteOneMutation,
@@ -14,6 +15,9 @@ import {
   useMaterialPromotionPlatformDeleteOneMutation,
   useMaterialPromotionPlatformFindLengthQuery,
   useMaterialPromotionPlatformFindManyQuery,
+  useNewsDeleteOneMutation,
+  useNewsFindLengthQuery,
+  useNewsFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { GroupBase, OptionsOrGroups } from "react-select";
 import { format } from "date-fns";
@@ -236,6 +240,56 @@ const usePaginationMaterialPromotion = ({
   };
 };
 
+const usePaginationNews = ({
+  articleFindTake,
+  articleFindSkip,
+  articleFindSearch,
+  setArticleFindSkip,
+  setArticleFindTake,
+}: {
+  articleFindTake: number;
+  articleFindSkip: number;
+  articleFindSearch: string;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  setArticleFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPageNews, setCurrentPageNews] = useState(1);
+
+  const newsLength = useNewsFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const handlePageChangeNews = (page: number) => {
+    setCurrentPageNews(page);
+    setArticleFindSkip((page - 1) * articleFindTake);
+  };
+
+  const calculateTotalPageNews = () => {
+    return Math.ceil(
+      (newsLength?.data?.newsFindMany?.length ?? 0) / articleFindTake
+    );
+  };
+
+  return {
+    currentPageNews,
+    calculateTotalPageNews,
+    newsLength,
+    handlePageChangeNews,
+    setCurrentPageNews,
+  };
+};
+
 export const useCategoriesDropdown = () => {
   const getCategory = useArticleCategoryFindManyQuery({
     variables: {
@@ -288,15 +342,20 @@ const useArticleViewModel = () => {
   const [articleFindSearch, setArticleFindSearch] = useState("");
   const [articleFindStatus, setArticleFindStatus] = useState("all");
   const [articleFindCategory, setArticleFindCategory] = useState(0);
+
   const [announcementFindType, setAnnouncementFindType] = useState<
     AnnouncementTypeEnum | "all"
   >("all");
   const [articleOrderBy, setArticleOrderBy] = useState<SortOrder>(
     SortOrder.Desc
   );
+
   const [materialPromotionFindType, setMaterialPromotionFindType] = useState<
     MaterialPromotionPlatformTypeEnum | "all"
   >("all");
+
+  const [newsFindType, setNewsFindType] = useState<NewsTypeEnum | "all">("all");
+
   const [selectedTable, selectTable] = useState("article");
 
   const articleFindMany = useArticleFindManyQuery({
@@ -461,6 +520,30 @@ const useArticleViewModel = () => {
   const [materialPromotionDeleteOne] =
     useMaterialPromotionPlatformDeleteOneMutation();
 
+  const newsFindMany = useNewsFindManyQuery({
+    variables: {
+      take: parseInt(articleFindTake.toString()),
+      skip: articleFindSkip,
+      orderBy: {
+        createdAt: articleOrderBy,
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+            type: {
+              equals: newsFindType === "all" ? null : newsFindType,
+            },
+          },
+        ],
+      },
+    },
+  });
+  const [newsDeleteOne] = useNewsDeleteOneMutation();
+
   const {
     currentPage,
     setCurrentPage,
@@ -505,6 +588,20 @@ const useArticleViewModel = () => {
     articleFindSearch,
   });
 
+  const {
+    currentPageNews,
+    setCurrentPageNews,
+    handlePageChangeNews,
+    calculateTotalPageNews,
+    newsLength,
+  } = usePaginationNews({
+    articleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindSearch,
+  });
+
   useEffect(() => {
     if (
       articleFindSearch.length !== 0 ||
@@ -533,6 +630,15 @@ const useArticleViewModel = () => {
   };
 
   return {
+    setNewsFindType,
+    newsFindType,
+    currentPageNews,
+    setCurrentPageNews,
+    handlePageChangeNews,
+    calculateTotalPageNews,
+    newsLength,
+    newsDeleteOne,
+    newsFindMany,
     currentPageMaterialPromotion,
     setCurrentPageMaterialPromotion,
     handlePageChangeMaterialPromotion,

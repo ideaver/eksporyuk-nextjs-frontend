@@ -20,6 +20,7 @@ import {
   changeContent,
   changeTitle,
   changeToogleForm,
+  changeUrlVideo,
 } from "@/features/reducers/articles/articlesReducer";
 import clsx from "clsx";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -30,6 +31,7 @@ import { RootState } from "@/app/store/store";
 import {
   AnnouncementTypeEnum,
   MaterialPromotionPlatformTypeEnum,
+  NewsTypeEnum,
   UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
@@ -44,6 +46,11 @@ import {
   changeTitleMaterialPromotion,
   changeVideoUrl,
 } from "@/features/reducers/materialPromotion/materialPromotion";
+import {
+  changeContentNews,
+  changeNewsType,
+  changeTitleNews,
+} from "@/features/reducers/news/newsReducer";
 
 const InformationPage = () => {
   const ReactQuill = useMemo(
@@ -55,6 +62,7 @@ const InformationPage = () => {
   const formToogle = useSelector(
     (state: RootState) => state.article.toogleForm
   );
+  const urlVideo = useSelector((state: RootState) => state.article.urlVideo);
   const typeAnnouncement = useSelector(
     (state: RootState) => state.announcement.announcementType
   );
@@ -64,6 +72,7 @@ const InformationPage = () => {
   const materialPromotionState = useSelector(
     (state: RootState) => state.materialPromotion
   );
+  const newsState = useSelector((state: RootState) => state.news);
 
   const {
     announcementForm,
@@ -92,6 +101,9 @@ const InformationPage = () => {
     materialPromotionForm,
     isLoadingMaterialPromotion,
     resetMaterialPromotionState,
+    newsForm,
+    isLoadingNews,
+    resetNewsState,
   } = useInformationViewModel();
 
   const { loadOptions } = useCoursesDropdown();
@@ -116,7 +128,10 @@ const InformationPage = () => {
           }),
         }}
         active={
-          isLoading || isLoadingAnnouncement || isLoadingMaterialPromotion
+          isLoading ||
+          isLoadingAnnouncement ||
+          isLoadingMaterialPromotion ||
+          isLoadingNews
         }
         spinner
       >
@@ -158,6 +173,16 @@ const InformationPage = () => {
                 }}
               >
                 Material Promotion
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  dispatch(changeToogleForm("News"));
+                }}
+              >
+                News
               </button>
             </li>
           </ul>
@@ -206,6 +231,18 @@ const InformationPage = () => {
                       </div>
                     )}
                     <h5 className="text-muted mt-3">Masukan judul artikel</h5>
+                    <h5 className="">URL Video</h5>
+                    <TextField
+                      placeholder="Masukan url video"
+                      props={{
+                        value: urlVideo,
+                        onChange: (e: any) => {
+                          dispatch(changeUrlVideo(e.target.value));
+                        },
+                      }}
+                    />
+
+                    <h5 className="text-muted mt-3">Masukan url video</h5>
                     <h5 className="required mt-5">Target Artikel</h5>
                     <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                       {target.map((e: any, index) => (
@@ -459,6 +496,134 @@ const InformationPage = () => {
               </div>
             </form>
           </>
+        ) : formToogle === "News" ? (
+          <form onSubmit={newsForm.handleSubmit}>
+            <div className="row gx-8">
+              <Aside
+                formToggle={formToogle}
+                handleCategoryChange={handleCategoryChange}
+                category={category}
+                thumbnail={thumbnail}
+                handleFileChange={handleFileChange}
+                handleStatusChange={handleStatusChange}
+                status={status}
+              />
+              <div className={"col-lg-8"}>
+                <KTCard className="">
+                  <KTCardBody>
+                    <h3 className="mb-5">Tulis News</h3>
+
+                    <h5 className="required">Judul</h5>
+                    <TextField
+                      placeholder="Masukan judul"
+                      classNames={clsx(
+                        {
+                          "is-invalid":
+                            newsForm.touched.titleNews &&
+                            newsForm.errors.titleNews,
+                        },
+                        {
+                          "is-valid":
+                            newsForm.touched.titleNews &&
+                            !newsForm.errors.titleNews,
+                        }
+                      )}
+                      props={{
+                        ...newsForm.getFieldProps("titleNews"),
+                        value: newsForm.values.titleNews,
+                        onChange: (e: any) => {
+                          newsForm.setFieldValue("titleNews", e.target.value);
+                          dispatch(changeTitleNews(e.target.value));
+                        },
+                      }}
+                    />
+                    {newsForm.touched.titleNews &&
+                      newsForm.errors.titleNews && (
+                        <div className="fv-plugins-message-container">
+                          <span role="alert">{newsForm.errors.titleNews}</span>
+                        </div>
+                      )}
+                    <h5 className="text-muted mt-3">Masukan judul</h5>
+
+                    <h5>Tipe</h5>
+                    <Dropdown
+                      value={newsState.newsType}
+                      options={[
+                        {
+                          value: NewsTypeEnum.Headline,
+                          label: "Headline",
+                        },
+                        {
+                          value: NewsTypeEnum.Feature,
+                          label: "Feature",
+                        },
+                        {
+                          value: NewsTypeEnum.Opinion,
+                          label: "Opinion",
+                        },
+                      ]}
+                      onValueChange={(val) => {
+                        dispatch(changeNewsType(val as NewsTypeEnum));
+                      }}
+                    />
+                    <h5 className="text-muted mt-3 mb-5">Pilih Tipe</h5>
+
+                    <h5 className=" mt-5">Konten</h5>
+                    <div
+                      style={{
+                        height: "220px",
+                      }}
+                    >
+                      <ReactQuill
+                        modules={{
+                          toolbar: [
+                            [{ header: [1, 2, false] }],
+                            [
+                              "link",
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strike",
+                              "blockquote",
+                            ],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                            [{ align: [] }],
+                            ["clean"],
+                          ],
+                        }}
+                        theme="snow"
+                        value={newsState.contentNews}
+                        style={{ height: "70%" }}
+                        onChange={(e) => {
+                          dispatch(changeContentNews(e));
+                        }}
+                      />
+                    </div>
+
+                    <h5 className="text-muted mt-3">Masukan konten</h5>
+                  </KTCardBody>
+                </KTCard>
+
+                <div className="d-flex flex-end mt-6 gap-4">
+                  <Buttons
+                    buttonColor="secondary"
+                    onClick={() => {
+                      resetNewsState();
+                      router.back();
+                    }}
+                  >
+                    Batal
+                  </Buttons>
+                  <Buttons
+                    type="submit"
+                    disabled={!materialPromotionForm.isValid.valueOf()}
+                  >
+                    Simpan
+                  </Buttons>
+                </div>
+              </div>
+            </div>
+          </form>
         ) : (
           <form onSubmit={materialPromotionForm.handleSubmit}>
             <div className="row gx-8">

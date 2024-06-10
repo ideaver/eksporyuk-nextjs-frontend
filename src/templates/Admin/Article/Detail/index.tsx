@@ -9,9 +9,10 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { useRouter } from "next/router";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Badge } from "@/stories/atoms/Badge/Badge";
+import Link from "next/link";
 
 const DetailArticle = ({ id, data }: IDetailArticle) => {
-  const { thumbnail, content, title, status, category, target } =
+  const { thumbnail, content, title, status, category, target, urlVideo } =
     useDetailArticleViewModel({
       id,
       data,
@@ -32,6 +33,10 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
               <h3 className="mb-5">Detail Artikel</h3>
               <h4 className="">Judul Artikel</h4>
               <h5 className="my-4 mx-4">{title}</h5>
+              <h4 className="">URL Video</h4>
+              <Link href={urlVideo as string} className="m-4">
+                {urlVideo}
+              </Link>
               <h4 className="mt-5">Target Artikel</h4>
               <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                 {target?.map((e: any, index) => (

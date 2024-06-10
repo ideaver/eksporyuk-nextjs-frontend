@@ -1,0 +1,10 @@
+query NewsFindLength(
+  $where: NewsWhereInput
+  $orderBy: [NewsOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  newsFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+  }
+}

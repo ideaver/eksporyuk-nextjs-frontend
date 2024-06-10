@@ -1,7 +1,9 @@
 import {
   AnnouncementTypeEnum,
+  ArticleTypeEnum,
   FileTypeEnum,
   MaterialPromotionPlatformTypeEnum,
+  NewsTypeEnum,
   QueryMode,
   UserRoleEnum,
   useAnnouncementCreateOneMutation,
@@ -10,6 +12,7 @@ import {
   useArticleCreateOneMutation,
   useFileCreateOneMutation,
   useMaterialPromotionPlatformCreateOneMutation,
+  useNewsCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
@@ -19,6 +22,7 @@ import {
   changeStatus,
   changeTarget,
   changeTitle,
+  changeUrlVideo,
 } from "@/features/reducers/articles/articlesReducer";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
@@ -41,6 +45,11 @@ import {
   changeTitleMaterialPromotion,
   changeVideoUrl,
 } from "@/features/reducers/materialPromotion/materialPromotion";
+import {
+  changeContentNews,
+  changeNewsType,
+  changeTitleNews,
+} from "@/features/reducers/news/newsReducer";
 
 export const breadcrumbs = [
   {
@@ -99,6 +108,7 @@ const useResetArticleState = () => {
     dispatch(changeTitle(""));
     dispatch(changeStatus("published"));
     dispatch(changeTarget([]));
+    dispatch(changeUrlVideo(""));
     router.push("/admin/articles");
   };
 
@@ -166,6 +176,23 @@ export const useArticleForm = () => {
       articleFindMany.refetch();
     },
   });
+  const [fileCreateOne] = useFileCreateOneMutation();
+
+  const handleUploadVideo = async () => {
+    try {
+      const videoData = fileCreateOne({
+        variables: {
+          data: {
+            path: articleState.urlVideo,
+            fileType: FileTypeEnum.Mp4,
+          },
+        },
+      });
+      return (await videoData).data?.fileCreateOne?.path;
+    } catch (error) {
+      return articleState.urlVideo;
+    }
+  };
 
   const uploadFile = async () => {
     try {
@@ -223,6 +250,12 @@ export const useArticleForm = () => {
             },
             category: {
               connect: [...categoryArticle],
+            },
+            articleType: ArticleTypeEnum.Article,
+            material: {
+              connect: {
+                path: await handleUploadVideo(),
+              },
             },
           },
         },
@@ -510,6 +543,100 @@ export const useMaterialPromotionForm = ({
     resetMaterialPromotionState,
   };
 };
+export const useNewsForm = ({ fileImage }: { fileImage: File | null }) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const newsState = useSelector((state: RootState) => state.news);
+  const [isLoadingNews, setIsLoadingNews] = useState(false);
+
+  const resetNewsState = () => {
+    dispatch(changeTitleNews(""));
+    dispatch(changeContentNews(""));
+    dispatch(changeNewsType(NewsTypeEnum.Headline));
+  };
+
+  const [newsCreateOne, response] = useNewsCreateOneMutation({
+    onCompleted: () => {},
+  });
+
+  const uploadFile = async () => {
+    try {
+      const form = {
+        file: fileImage,
+        userId: session?.user?.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body: form,
+        isMultipartRequest: true,
+      });
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  //validation schema for article form
+  const newsSchema = Yup.object().shape({
+    titleNews: Yup.string()
+      .min(3, "Minimal 3 simbol")
+      .max(50, "Maksimal 50 simbol")
+      .required("Title diperlukan"),
+  });
+
+  const handleNewsCreateOne = async () => {
+    setIsLoadingNews(true);
+    try {
+      const response = await uploadFile();
+      console.log(response);
+      await newsCreateOne({
+        variables: {
+          data: {
+            createdByAdmin: {
+              connect: {
+                id: session?.user.id,
+              },
+            },
+            type: newsState.newsType,
+            content: newsState.contentNews,
+            title: newsState.titleNews,
+            fileUrl: {
+              connect: [
+                {
+                  path: response?.data,
+                },
+              ],
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      resetNewsState();
+      setIsLoadingNews(false);
+      await router.push("/admin/articles");
+      router.reload();
+    }
+  };
+
+  const newsForm = useFormik({
+    initialValues: {
+      titleNews: newsState.titleNews,
+    },
+    validationSchema: newsSchema,
+    onSubmit: () => {
+      handleNewsCreateOne();
+    },
+  });
+
+  return {
+    isLoadingNews,
+    newsForm,
+    resetNewsState,
+  };
+};
 
 const useInformationViewModel = () => {
   const { data: session, status: sessionStatus } = useSession();
@@ -544,6 +671,10 @@ const useInformationViewModel = () => {
     isLoadingMaterialPromotion,
     resetMaterialPromotionState,
   } = useMaterialPromotionForm({ fileImage });
+
+  const { resetNewsState, newsForm, isLoadingNews } = useNewsForm({
+    fileImage,
+  });
 
   // create article
 
@@ -608,6 +739,10 @@ const useInformationViewModel = () => {
     materialPromotionForm,
     isLoadingMaterialPromotion,
     resetMaterialPromotionState,
+    // news
+    newsForm,
+    isLoadingNews,
+    resetNewsState,
   };
 };
 

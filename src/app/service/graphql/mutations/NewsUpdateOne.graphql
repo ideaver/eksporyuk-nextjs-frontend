@@ -1,0 +1,5 @@
+mutation NewsUpdateOne($data: NewsUpdateInput!, $where: NewsWhereUniqueInput!) {
+  newsUpdateOne(data: $data, where: $where) {
+    id
+  }
+}

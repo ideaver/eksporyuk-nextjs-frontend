@@ -25,6 +25,8 @@ const InformationPage: NextPage = () => {
   const router = useRouter();
   const { action, id } = router.query;
   const isEdit = action === "edit";
+  const isDetail = action === "detail";
+  const isCreate = action === "create";
   const { data, loading, error } = useCourseFindOneQuery({
     variables: {
       where: {
@@ -144,26 +146,37 @@ const InformationPage: NextPage = () => {
   );
 
   useEffect(() => {
-    if (isEdit && (!currentCourseData || currentCourseData.id !== id)) {
+    if (
+      (isEdit || isDetail) &&
+      (!currentCourseData || currentCourseData.id !== id)
+    ) {
       if (dispatchCourseData.id !== currentCourseData.id) {
         dispatch(editCourse(dispatchCourseData));
         dispatch(resetDeletedCourse());
       }
-    } else if (!isEdit && currentCourseData.id != "") {
+    } else if (isCreate && currentCourseData.id != "") {
       if (currentCourseData.id !== "") {
         dispatch(resetCourse());
         dispatch(resetDeletedCourse());
       }
     }
-  }, [currentCourseData, dispatch, dispatchCourseData, id, isEdit]);
+  }, [
+    currentCourseData,
+    dispatch,
+    dispatchCourseData,
+    id,
+    isCreate,
+    isDetail,
+    isEdit,
+  ]);
 
   return (
     <>
-      {isEdit ? (
+      {isEdit || isDetail ? (
         <>
           {loading && (
             <LoadingUI
-              error={isEdit ? error?.message : undefined}
+              error={isEdit || isDetail ? error?.message : undefined}
               loading={loading}
             />
           )}

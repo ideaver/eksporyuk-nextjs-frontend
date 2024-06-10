@@ -1,0 +1,6 @@
+mutation NewsCreateOne($data: NewsCreateInput!) {
+  newsCreateOne(data: $data) {
+    id
+    title
+  }
+}
