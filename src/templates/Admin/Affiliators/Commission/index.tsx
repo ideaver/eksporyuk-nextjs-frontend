@@ -209,7 +209,7 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
             }}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -226,7 +226,7 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
               setStatus(e);
             }}
           />
-        </div>
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
