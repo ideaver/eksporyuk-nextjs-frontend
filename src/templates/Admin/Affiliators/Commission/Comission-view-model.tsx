@@ -10,6 +10,7 @@ import {
   useAffiliatorFindManyQuery,
   useCourseFindManyQuery,
   useMembershipCategoryFindManyQuery,
+  useExportDataTransactionMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { GroupBase, OptionsOrGroups } from "react-select";
 
@@ -369,7 +370,7 @@ const useComissionViewModel = () => {
     },
   });
 
-  console.log(searchCommission);
+  // console.log(searchCommission);
 
   const transactionFindMany = useTransactionFindManyQuery({
     variables: {
@@ -436,7 +437,7 @@ const useComissionViewModel = () => {
                                     name: {
                                       contains: searchFilter,
                                       mode: QueryMode.Insensitive,
-                                    }
+                                    },
                                   },
                                 },
                               },
@@ -470,15 +471,15 @@ const useComissionViewModel = () => {
                                     name: {
                                       contains: searchCommission,
                                       mode: QueryMode.Insensitive,
-                                    }
+                                    },
                                   },
                                 },
                               },
                             },
                           },
                         },
-                      }
-                    }
+                      },
+                    },
                   },
                   // Nama pembeli
                   {
@@ -501,7 +502,7 @@ const useComissionViewModel = () => {
                         },
                       },
                     },
-                  }
+                  },
                 ],
               },
             },
@@ -515,7 +516,22 @@ const useComissionViewModel = () => {
     variables: { pendingCommissionArgs: {} },
   });
 
+  const [exportData] = useExportDataTransactionMutation();
+  // export commision
+  const [isLoading, setIsLoading] = useState(false);
+  const [exportModalState, setExportModalState] = useState<any>([
+    new Date(),
+    new Date(),
+  ]);
+
   return {
+    searchFilter,
+    searchCommission,
+    exportData,
+    isLoading,
+    setIsLoading,
+    exportModalState,
+    setExportModalState,
     isCustomTake,
     setIsCustomTake,
     orderBy,
