@@ -16,6 +16,7 @@ interface RewardState {
   akhirMasaBerlaku: string;
   status: string;
   connectCourse: CourseOptionType[] | undefined;
+  cash: string;
 }
 
 const initialState: RewardState = {
@@ -25,7 +26,8 @@ const initialState: RewardState = {
   hargaPoint: "",
   akhirMasaBerlaku: "2024-06-01",
   status: "published",
-  connectCourse: []
+  connectCourse: [],
+  cash: "",
 }
 
 export const rewardSlice = createSlice({
@@ -52,7 +54,10 @@ export const rewardSlice = createSlice({
     },
     changeConnectCourse: (state, action: PayloadAction<CourseOptionType[] | undefined>) => {
       state.connectCourse = action.payload;
-    }
+    },
+    changeCash: (state, action: PayloadAction<string>) => {
+      state.cash = action.payload;
+    },
   }
 });
 
@@ -64,6 +69,7 @@ export const {
   changeAkhirMasaBerlaku,
   changeStatus,
   changeConnectCourse,
+  changeCash,
 } = rewardSlice.actions;
 
 export default rewardSlice.reducer;

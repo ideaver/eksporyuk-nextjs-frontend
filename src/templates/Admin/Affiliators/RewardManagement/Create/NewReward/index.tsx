@@ -6,9 +6,14 @@ import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { PageTitle } from "@/_metronic/layout/core";
-import useNewRewardViewModel, { breadcrumbs, AddCourseHandler, useCoursesDropdown } from "./NewReward-view-model";
+import useNewRewardViewModel, {
+  breadcrumbs,
+  AddCourseHandler,
+  useCoursesDropdown,
+} from "./NewReward-view-model";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 
 import { CourseOptionType } from "./NewReward-view-model";
 
@@ -43,10 +48,13 @@ const CreateNewRewardContent = () => {
     router,
     date,
     setDate,
+    rewardType,
+    setRewardType,
+    handleChangeCash,
+    cash,
   } = useNewRewardViewModel();
   const { loadOptions } = useCoursesDropdown();
-  const { addCourse, selectedCourse, removeCourse } =
-    AddCourseHandler();
+  const { addCourse, selectedCourse, removeCourse } = AddCourseHandler();
 
   return (
     <div className="row">
@@ -80,20 +88,96 @@ const CreateNewRewardContent = () => {
             )}
 
             {/* Input 1 */}
+            <h3 className="mb-5">Informasi Reward</h3>
             <div className="mb-5">
-              <h3 className="mb-5">Informasi Reward</h3>
-              <h5 className="required">Nama Reward</h5>
-              <TextField
-                onClickPreffixIcon={function noRefCheck() {}}
-                onClickSuffixIcon={function noRefCheck() {}}
-                props={{
-                  value: namaReward,
-                  onChange: setNamaReward,
-                }}
-              />
-              <p className="fw-bold fs-5 text-muted pt-2">
-                Masukan nama produk reward
-              </p>
+              <h4 className="required fw-bold text-gray-700">Tipe Reward</h4>
+              <div
+                className="d-flex justify-content-between gap-5 flex-wrap flex-lg-nowrap"
+                data-kt-buttons="true"
+              >
+                <RadioInput
+                  name="reward-type"
+                  onChange={(e: any) => setRewardType(e.target.value)}
+                  checked={rewardType === "CASH"}
+                  value="CASH"
+                >
+                  Saldo
+                </RadioInput>
+                <RadioInput
+                  name="reward-type"
+                  onChange={(e: any) => setRewardType(e.target.value)}
+                  checked={rewardType === "COURSE"}
+                  value="COURSE"
+                >
+                  Kelas
+                </RadioInput>
+              </div>
+              {rewardType === "CASH" && (
+                <>
+                  <h5 className="required">Nominal Saldo</h5>
+                  {/* <TextField
+                    onClickPreffixIcon={function noRefCheck() {}}
+                    onClickSuffixIcon={function noRefCheck() {}}
+                    props={{
+                      value: namaReward,
+                      onChange: setNamaReward,
+                    }}
+                  /> */}
+                  <CurrencyInput
+                    className="form-control"
+                    id="price-field"
+                    name="price"
+                    placeholder="Masukan Jumlah Saldo"
+                    intlConfig={{ locale: "id-ID" }}
+                    defaultValue={0}
+                    value={cash}
+                    decimalsLimit={2}
+                    onValueChange={(value, name, values) =>
+                      handleChangeCash(value ?? "")
+                    }
+                  />
+                  <p className="fw-bold fs-5 text-muted pt-2">
+                    Masukan jumlah saldo untuk reward ini
+                  </p>
+                </>
+              )}
+              {rewardType === "COURSE" && (
+                <>
+                  <h5 className="required">Kelas</h5>
+                  {selectedCourse ? (
+                    <div className="d-flex mt-5">
+                      <div className="w-100">
+                        <TextField
+                          props={{
+                            enabled: false,
+                            value: selectedCourse.label,
+                          }}
+                        ></TextField>
+                      </div>
+                      <div className="ms-5">
+                        <Buttons
+                          icon="cross"
+                          buttonColor="danger"
+                          showIcon={true}
+                          onClick={removeCourse}
+                        ></Buttons>
+                      </div>
+                    </div>
+                  ) : (
+                    <AsyncPaginate
+                      className="mt-5"
+                      isSearchable={true}
+                      loadOptions={loadOptions}
+                      onChange={(value) => {
+                        addCourse(value as CourseOptionType);
+                      }}
+                    ></AsyncPaginate>
+                  )}
+                  <p className="fw-bold fs-5 text-muted pt-2">
+                    Masukan Course yang Didapat dari Reward Ini
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Input 2 */}
@@ -203,10 +287,10 @@ const CreateNewRewardContent = () => {
 
             {/* Input 6 */}
             <div className="mb-5">
-              <h5 className="required">Hubungkan Course</h5>
+              {/* <h5 className="required">Hubungkan Course</h5>
               <h6 className="mt-4 text-muted">
                 Tambahkan Course yang Didapat dari Reward Ini
-              </h6>
+              </h6> */}
               {/* {selectedCourse &&
                 selectedCourse?.map((course, index) => {
                   return (
@@ -238,7 +322,7 @@ const CreateNewRewardContent = () => {
                   addCourse(value as CourseOptionType);
                 }}
               ></AsyncPaginate> */}
-              {selectedCourse ? (
+              {/* {selectedCourse ? (
                 <div className="d-flex mt-5">
                   <div className="w-100">
                     <TextField
@@ -266,7 +350,7 @@ const CreateNewRewardContent = () => {
                     addCourse(value as CourseOptionType);
                   }}
                 ></AsyncPaginate>
-              )}
+              )} */}
             </div>
           </KTCardBody>
         </KTCard>
