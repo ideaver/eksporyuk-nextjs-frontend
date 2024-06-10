@@ -1,14 +1,13 @@
 import {
   CouponFindOneQuery,
-  DiscountTypeEnum,
-  usePlatformCouponUpdateOneMutation,
-  useCourseFindManyQuery,
   QueryMode,
+  useCourseFindManyQuery,
+  usePlatformCouponUpdateOneMutation
 } from "@/app/service/graphql/gen/graphql";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { GroupBase, OptionsOrGroups } from "react-select";
 import useAdminCouponViewModel from "../AdminCoupon-view-model";
-import { OptionsOrGroups, GroupBase } from "react-select";
 
 type CourseOptionType = {
   value: number;
@@ -93,7 +92,6 @@ export const useMentorsDropdown = () => {
 
 export const AddMentorHandler = ({ courses, setCourses }: any) => {
   const [selectedMentor, setSelectedMentor] = useState<any>(courses);
-
   const addMentor = (mentor: any) => {
     const updatedMentors = selectedMentor
       ? [...selectedMentor, mentor]

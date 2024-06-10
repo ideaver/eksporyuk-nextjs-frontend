@@ -1,38 +1,31 @@
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
+import { DiscountTypeEnum, SortOrder } from "@/app/service/graphql/gen/graphql";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { RootState } from "@/app/store/store";
+import { Badge } from "@/stories/atoms/Badge/Badge";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import clsx from "clsx";
+import Link from "next/link";
+import { Dispatch, SetStateAction } from "react";
+import CurrencyInput from "react-currency-input-field";
+import Flatpickr from "react-flatpickr";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { useSelector } from "react-redux";
+import { AsyncPaginate } from "react-select-async-paginate";
+import SweetAlert2 from "react-sweetalert2";
 import useAdminCouponViewModel, {
   breadcrumbs,
   useCouponForm,
   useCoursesDropdown,
 } from "./AdminCoupon-view-model";
-import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import {
-  AffiliatorCouponFindManyQuery,
-  CouponDeleteManyMutation,
-  DiscountTypeEnum,
-  SortOrder,
-} from "@/app/service/graphql/gen/graphql";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import Link from "next/link";
-import { MutationFunctionOptions, QueryResult } from "@apollo/client";
-import { KTTable } from "@/_metronic/helpers/components/KTTable";
-import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { formatCurrency } from "@/app/service/utils/currencyFormatter";
-import { valueFromAST } from "graphql";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { Dispatch, SetStateAction } from "react";
-import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import CurrencyInput from "react-currency-input-field";
-import clsx from "clsx";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/store/store";
-import Flatpickr from "react-flatpickr";
-import { AsyncPaginate } from "react-select-async-paginate";
-import SweetAlert2 from "react-sweetalert2";
 
 const AdminCoupon = () => {
   const {
@@ -619,9 +612,7 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="fw-bold text-gray-700">
-            Batas Waktu Penggunaan
-          </h4>
+          <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
           <CheckBoxInput
             className="active my-2"
             name="follup"
@@ -681,7 +672,9 @@ const AddCouponModal = ({
           null}
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="required fw-bold text-gray-700">Max Penggunaan User</h4>
+          <h4 className="required fw-bold text-gray-700">
+            Max Penggunaan User
+          </h4>
           <TextField
             styleType="outline"
             size="medium"
@@ -692,91 +685,101 @@ const AddCouponModal = ({
             }}
           />
         </div>
-        <div className="mb-8 mt-6">
-          <h4 className="fw-bold text-gray-700">Kupon hanya bisa digunakan di kelas</h4>
-          {/* <h6 className="mt-4 text-muted">
+        {notAllowCourses.length === 0 && (
+          <div className="mb-8 mt-6">
+            <h4 className="fw-bold text-gray-700">
+              Kupon hanya bisa digunakan di kelas
+            </h4>
+            {/* <h6 className="mt-4 text-muted">
+          Pilih Kelas yang Dapat Menggunakan Kupon Ini
+        </h6> */}
+            {allowCourses &&
+              allowCourses?.map((mentor: any, index: any) => {
+                return (
+                  <div className="d-flex mt-5" key={index}>
+                    <div className="w-100">
+                      <TextField
+                        props={{
+                          enabled: "false",
+                          value: mentor.label,
+                          onChange: () => {},
+                        }}
+                      ></TextField>
+                    </div>
+                    <div className="ms-5">
+                      <Buttons
+                        icon="cross"
+                        buttonColor="danger"
+                        showIcon={true}
+                        onClick={() => removeAllowedCourse(index)}
+                      ></Buttons>
+                    </div>
+                  </div>
+                );
+              })}
+            <AsyncPaginate
+              className="mt-5"
+              loadOptions={loadOptions}
+              onChange={(value) => {
+                setNotAllowCourses([]);
+                addAllowedCourse(value);
+              }}
+            ></AsyncPaginate>
+          </div>
+        )}
+        {allowCourses.length === 0 && (
+          <div className="mb-5 mt-6">
+            <h4 className="fw-bold text-gray-700">
+              Kupon tidak bisa digunakan di kelas
+            </h4>
+            {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
-          {allowCourses &&
-            allowCourses?.map((mentor: any, index: any) => {
-              return (
-                <div className="d-flex mt-5" key={index}>
-                  <div className="w-100">
-                    <TextField
-                      props={{
-                        enabled: "false",
-                        value: mentor.label,
-                        onChange: () => {},
-                      }}
-                    ></TextField>
+            {notAllowCourses &&
+              notAllowCourses?.map((mentor: any, index: any) => {
+                return (
+                  <div className="d-flex mt-5" key={index}>
+                    <div className="w-100">
+                      <TextField
+                        props={{
+                          enabled: "false",
+                          value: mentor.label,
+                          onChange: () => {},
+                        }}
+                      ></TextField>
+                    </div>
+                    <div className="ms-5">
+                      <Buttons
+                        icon="cross"
+                        buttonColor="danger"
+                        showIcon={true}
+                        onClick={() => removeNotAllowedCourse(index)}
+                      ></Buttons>
+                    </div>
                   </div>
-                  <div className="ms-5">
-                    <Buttons
-                      icon="cross"
-                      buttonColor="danger"
-                      showIcon={true}
-                      onClick={() => removeAllowedCourse(index)}
-                    ></Buttons>
-                  </div>
-                </div>
-              );
-            })}
-          <AsyncPaginate
-            className="mt-5"
-            loadOptions={loadOptions}
-            onChange={(value) => {
-              addAllowedCourse(value);
-            }}
-          ></AsyncPaginate>
-        </div>
-        <div className="mb-5 mt-6">
-          <h4 className="fw-bold text-gray-700">Kupon tidak bisa digunakan di kelas</h4>
-          {/* <h6 className="mt-4 text-muted">
-            Pilih Kelas yang Dapat Menggunakan Kupon Ini
-          </h6> */}
-          {notAllowCourses &&
-            notAllowCourses?.map((mentor: any, index: any) => {
-              return (
-                <div className="d-flex mt-5" key={index}>
-                  <div className="w-100">
-                    <TextField
-                      props={{
-                        enabled: "false",
-                        value: mentor.label,
-                        onChange: () => {},
-                      }}
-                    ></TextField>
-                  </div>
-                  <div className="ms-5">
-                    <Buttons
-                      icon="cross"
-                      buttonColor="danger"
-                      showIcon={true}
-                      onClick={() => removeNotAllowedCourse(index)}
-                    ></Buttons>
-                  </div>
-                </div>
-              );
-            })}
-          <AsyncPaginate
-            className="mt-5"
-            loadOptions={loadOptions}
-            onChange={(value) => {
-              addNotAllowedCourse(value);
-            }}
-          ></AsyncPaginate>
-        </div>
+                );
+              })}
+            <AsyncPaginate
+              className="mt-5"
+              loadOptions={loadOptions}
+              onChange={(value) => {
+                setAllowCourses([]);
+                addNotAllowedCourse(value);
+              }}
+            ></AsyncPaginate>
+          </div>
+        )}
         <SweetAlert2
-        {...swalProps}
-        didOpen={() => {
-          // run when swal is opened...
-        }}
-        didClose={async () => {
-          console.log("closed");
-          setSwalProps({});
-          resetForm();
-        }}
-      />
+          {...swalProps}
+          didOpen={() => {
+            // run when swal is opened...
+          }}
+          didClose={async () => {
+            console.log("closed");
+            setSwalProps({});
+            resetForm();
+          }}
+        />
       </KTModal>
     </div>
   );
