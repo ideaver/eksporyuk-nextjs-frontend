@@ -233,7 +233,7 @@ export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
             title: articleState.title,
             content: articleState.content,
             target: {
-              set: articleState.target,
+              set: [UserRoleEnum.Affiliator],
             },
             createdByAdmin: {
               connect: {

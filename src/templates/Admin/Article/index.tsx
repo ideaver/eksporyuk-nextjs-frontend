@@ -937,10 +937,10 @@ const Head = ({
             styleType="solid"
             value={selectedTable}
             options={[
-              { label: "Article", value: "article" },
+              { label: "Article (Affiliator)", value: "article" },
               { label: "Announcement", value: "announcement" },
               { label: "Material Promotion", value: "materialPromotion" },
-              { label: "News", value: "news" },
+              { label: "News (Student)", value: "news" },
             ]}
             onValueChange={(e) => {
               selectTable(e);

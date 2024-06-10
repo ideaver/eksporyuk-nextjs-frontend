@@ -121,7 +121,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                     }}
                   />
                   <h5 className="text-muted mt-3">Edit judul artikel</h5>
-                  <h5 className="required mt-5">Target Artikel</h5>
+                  {/* <h5 className="required mt-5">Target Artikel</h5>
                   <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                     {target?.map((e: any, index) => (
                       <Buttons
@@ -147,7 +147,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                       });
                     }}
                   />
-                  <h5 className="text-muted mt-3">Masukan target artikel</h5>
+                  <h5 className="text-muted mt-3">Masukan target artikel</h5> */}
                   <h5 className="required mt-5">Konten Artikel</h5>
                   <div>
                     <ReactQuill

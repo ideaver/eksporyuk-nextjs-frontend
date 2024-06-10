@@ -37,7 +37,7 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
               <Link href={urlVideo as string} className="m-4">
                 {urlVideo}
               </Link>
-              <h4 className="mt-5">Target Artikel</h4>
+              {/* <h4 className="mt-5">Target Artikel</h4>
               <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                 {target?.map((e: any, index) => (
                   <Buttons
@@ -48,7 +48,7 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
                     <span>{e}</span>
                   </Buttons>
                 ))}
-              </div>
+              </div> */}
               <h4 className="mt-5">Konten Artikel</h4>
               <div className="my-2 mx-4">
                 <div dangerouslySetInnerHTML={{ __html: content as string }} />
