@@ -14,10 +14,12 @@ import {
   changeCourseMentor,
   changeCourseName,
   changeDiscountPrice,
+  changeErrorMessage,
   changeIntroVideo,
   changePrice,
 } from "@/features/reducers/course/courseReducer";
 import { UnknownAction } from "@reduxjs/toolkit";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GroupBase, OptionsOrGroups } from "react-select";
@@ -82,6 +84,8 @@ export const useMentorsDropdown = () => {
  * @returns selectedMentor, setSelectedMentor, currentMentorSelector, addMentor, removeMentor
  */
 export const AddMentorHandler = () => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const dispatch = useDispatch();
   const currentMentorSelector = useSelector(
     (state: RootState) => state.course.courseMentor
@@ -91,6 +95,9 @@ export const AddMentorHandler = () => {
   >(currentMentorSelector);
 
   const addMentor = (mentor: OptionType) => {
+    if (isDetail) {
+      return;
+    }
     const updatedMentors = selectedMentor
       ? [...selectedMentor, mentor]
       : [mentor];
@@ -101,6 +108,9 @@ export const AddMentorHandler = () => {
   };
 
   const removeMentor = (index: number) => {
+    if (isDetail) {
+      return;
+    }
     const updatedMentors = selectedMentor?.filter(
       (_, mentorIndex) => mentorIndex !== index
     );
@@ -131,12 +141,18 @@ const useField = (
   selector: (state: RootState) => string | number,
   action: (value: string) => UnknownAction
 ) => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const dispatch = useDispatch();
   const value = useSelector(selector);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement> | string
   ) => {
+    if (isDetail) {
+      return;
+    }
+
     let newValue: string;
 
     if (typeof event === "string") {
@@ -147,6 +163,7 @@ const useField = (
 
     dispatch(action(newValue));
   };
+
   return [value, handleChange];
 };
 
@@ -155,12 +172,17 @@ const useField = (
  * @returns
  */
 const ClassDescriptionHandler = () => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const dispatch = useDispatch();
   const inputClassDescription = useSelector(
     (state: RootState) => state.course.classDescription
   );
 
   const setInputClassDescription = (value: string) => {
+    if (isDetail) {
+      return;
+    }
     dispatch(changeClassDescription(value));
   };
 
@@ -174,6 +196,10 @@ const ClassDescriptionHandler = () => {
 const useInformationViewModel = () => {
   const { inputClassDescription, setInputClassDescription } =
     ClassDescriptionHandler();
+  const [inputErrorMessage, setErrorMessage] = useField(
+    (state: RootState) => state.course.errorMessage ?? "",
+    (value) => changeErrorMessage(value)
+  );
   const [inputClassName, setInputClassName] = useField(
     (state: RootState) => state.course.courseName,
     (value) => changeCourseName(value)
@@ -228,6 +254,8 @@ const useInformationViewModel = () => {
     inputClassDiscountPrice,
     inputAffilaiteCommissionType,
     setInputAffilaiteCommissionType,
+    inputErrorMessage,
+    setErrorMessage,
   };
 };
 

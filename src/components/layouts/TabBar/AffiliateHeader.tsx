@@ -15,7 +15,7 @@ const AffiliateLayout = ({ urlType, id }: IAffiliateHeaderViewModel) => {
     selectedFollupValue,
     follupValues,
     orderTableDatas,
-    breadcrumbs
+    breadcrumbs,
   } = useAffiliateHeaderViewModel({ urlType, id });
   const router = useRouter();
 
@@ -45,6 +45,7 @@ const AffiliateLayout = ({ urlType, id }: IAffiliateHeaderViewModel) => {
           follupValues={follupValues}
           selectedFollupValue={selectedFollupValue}
           handleFollupChange={handleFollupChange}
+          linkAPIWhatsapp={""}
         />
       </div>
       <div className="row gy-5 mb-5">

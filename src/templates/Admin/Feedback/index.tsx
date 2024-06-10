@@ -45,6 +45,7 @@ const Feedback = () => {
     setOrderBy,
     feedbackTake,
   } = useFeedbackViewModel();
+  console.log(calculateTotalPage());
   const data: FeedbackFindManyQuery | undefined = feedbackFindMany?.data;
   return (
     <>
@@ -58,7 +59,7 @@ const Feedback = () => {
           categoryPayment={categoryPayment}
           categorySuggestion={categorySuggestion}
         />
-        <div className="col-lg-9">
+        <div className="col-lg-8">
           <KTCard>
             <KTCardBody className="d-flex flex-column p-0">
               <Head
@@ -89,7 +90,7 @@ const Feedback = () => {
                   setFeedbackTake(val);
                 }}
                 setCurrentPage={(val) => {
-                  setCurrentPage(val);
+                  handlePageChange(val);
                 }}
                 feedbackTake={feedbackTake}
               />
@@ -121,7 +122,7 @@ const Aside = ({
     (state: RootState) => state.feedback.feedbackCategoryType
   );
   return (
-    <div className="col-lg-3">
+    <div className="col-lg-4">
       <KTCard>
         <KTCardBody className="d-flex flex-column p-2 justify-content-center">
           <button
@@ -137,10 +138,10 @@ const Aside = ({
               dispatch(changeFeedbackCategoryType("ALL"));
             }}
           >
-            <KTIcon iconName="burger-menu-2" className="align-middle fs-1" />
-            <span className="d-flex justify-content-center align-content-center">
-              Semua Report
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="burger-menu-2" className="align-middle fs-1" />
+              <span className="d-flex ">Semua Report</span>
+            </div>
 
             <Badge
               label={(categoryAll?.toString() as string) ?? 0}
@@ -168,10 +169,12 @@ const Aside = ({
               );
             }}
           >
-            <KTIcon iconName="basket" className="align-middle fs-1" />
-            <span className="d-flex justify-content-center align-content-center">
-              Tidak Bisa Order
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="basket" className="align-middle fs-1" />
+              <span className="d-flex justify-content-center align-content-center">
+                Tidak Bisa Order
+              </span>
+            </div>
 
             <Badge
               label={(categoryOrder?.toString() as string) ?? 0}
@@ -198,10 +201,12 @@ const Aside = ({
               );
             }}
           >
-            <KTIcon iconName="book" className="align-middle fs-1" />
-            <span className="d-flex justify-content-start align-content-">
-              Masalah Terkait Course
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="book" className="align-middle fs-1" />
+              <span className="d-flex justify-content-start align-content-">
+                Masalah Course
+              </span>
+            </div>
 
             <Badge
               label={(categoryCourse?.toString() as string) ?? 0}
@@ -229,10 +234,12 @@ const Aside = ({
               );
             }}
           >
-            <KTIcon iconName="dollar" className="align-middle fs-1" />
-            <span className="d-flex justify-content-start align-content-">
-              Masalah Terkait Pembayaran
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="dollar" className="align-middle fs-1" />
+              <span className="d-flex justify-content-start align-content-">
+                Masalah Pembayaran
+              </span>
+            </div>
 
             <Badge
               label={(categoryPayment?.toString() as string) ?? 0}
@@ -259,10 +266,12 @@ const Aside = ({
               );
             }}
           >
-            <KTIcon iconName="burger-menu-5" className="align-middle fs-1" />
-            <span className="d-flex justify-content-start align-content-">
-              Permasalahan Lain
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="burger-menu-5" className="align-middle fs-1" />
+              <span className="d-flex justify-content-center align-content-center">
+                Permasalahan Lain
+              </span>
+            </div>
 
             <Badge
               label={(categoryOther?.toString() as string) ?? 0}
@@ -287,10 +296,12 @@ const Aside = ({
               );
             }}
           >
-            <KTIcon iconName="lovely" className="align-middle fs-1" />
-            <span className="d-flex justify-content-start align-content-">
-              Saran
-            </span>
+            <div className="d-flex gap-2">
+              <KTIcon iconName="lovely" className="align-middle fs-1" />
+              <span className="d-flex justify-content-start align-content-">
+                Saran
+              </span>
+            </div>
 
             <Badge
               label={(categorySuggestion?.toString() as string) ?? 0}

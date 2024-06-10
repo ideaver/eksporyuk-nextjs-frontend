@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export interface IClassTabBarViewModel {
-  urlType: "create" | "edit";
+  urlType: "create" | "edit" | "detail";
   id?: string | string[] | undefined;
 }
 const useClassTabBarViewModel = ({ urlType, id }: IClassTabBarViewModel) => {
@@ -26,11 +26,10 @@ const useClassTabBarViewModel = ({ urlType, id }: IClassTabBarViewModel) => {
       label: "Section",
       to: `/admin/courses/${urlType}/sylabus?id=${id}`,
     },
-    // TODO [Certificate Course] Later
-    // {
-    //   label: "Sertifikat",
-    //   to: `/admin/courses/${urlType}/certificate?id=${courseId}`,
-    // },
+    {
+      label: "Sertifikat",
+      to: `/admin/courses/${urlType}/certificate?id=${id}`,
+    },
   ];
 
   const breadcrumbs = [

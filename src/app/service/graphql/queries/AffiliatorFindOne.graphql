@@ -81,6 +81,18 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
         _count {
           extendedByCourses
         }
+        coupon {
+          value # Diskon value
+          type # AMOUNT/PERCENT
+        }
+        createdBy {
+          
+          id
+          user {
+            name # Si admin
+          }
+        }
+        createdById
         extendedByCourses {
           course {
             id

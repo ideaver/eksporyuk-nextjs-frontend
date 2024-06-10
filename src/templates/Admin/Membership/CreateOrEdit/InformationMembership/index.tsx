@@ -1,6 +1,7 @@
 import { PageTitle } from "@/_metronic/layout/core";
 import useInformationMembershipViewModel, {
   breadcrumbs,
+  useCoursesDropdown,
   useMembershipForm,
 } from "./InformationMembership-view-model";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
@@ -10,7 +11,7 @@ import clsx from "clsx";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import CurrencyInput from "react-currency-input-field";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   changeBenefits,
   changeDescription,
@@ -18,12 +19,14 @@ import {
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
-import { MembershipTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { AffiliateCommissionTypeEnum } from "@/app/service/graphql/gen/graphql";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { RootState } from "@/app/store/store";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const InformationMembership = () => {
   const ReactQuill = useMemo(
@@ -39,7 +42,13 @@ const InformationMembership = () => {
     isLoading,
     setIsloading,
   } = useMembershipForm();
-  const { handleChangeMembershipType } = useInformationMembershipViewModel();
+  const { loadOptions } = useCoursesDropdown();
+  const {
+    handleChangeCourses,
+    handleDeleteCourses,
+    handleChangeAffiliateCommission,
+    handleChangeAffiliateFirstCommission,
+  } = useInformationMembershipViewModel();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Membership</PageTitle>
@@ -119,7 +128,7 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-5">
                 Masukan deskripsi membership
               </h5>
-              <h5 className="required">Tipe Membership</h5>
+              {/* <h5 className="required">Tipe Membership</h5>
               <Dropdown
                 value={membershipState.membershipType}
                 options={[
@@ -137,7 +146,7 @@ const InformationMembership = () => {
                   handleChangeMembershipType(value as MembershipTypeEnum)
                 }
               ></Dropdown>
-              <h5 className="text-muted mt-2 mb-8">Pilih tipe membership</h5>
+              <h5 className="text-muted mt-2 mb-8">Pilih tipe membership</h5> */}
               <h5 className="required">Harga</h5>
               <CurrencyInput
                 className={clsx(
@@ -197,6 +206,103 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
               </h5>
+              <h5 className="">Benefit Kelas</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {useSelector(
+                  (state: RootState) => state.memebrship.courses
+                )?.map((e, index) => {
+                  return (
+                    <div key={e.value}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          handleDeleteCourses(e.value);
+                        }}
+                        key={index}
+                      >
+                        {e.label}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <AsyncPaginate
+                className="mt-5"
+                isSearchable={true}
+                loadOptions={loadOptions}
+                onChange={(val) => {
+                  handleChangeCourses({
+                    value: val?.value as number,
+                    label: val?.label as string,
+                  });
+                }}
+              ></AsyncPaginate>
+
+              <h5 className="text-muted mt-2 mb-5">
+                Masukan benefit kelas ketika berlangganan
+              </h5>
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-5">
+                    Harga Afiliasi Komisi Pertama
+                  </h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={membershipState.affiliateFirstCommision}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        handleChangeAffiliateFirstCommission(
+                          parseInt(value as string)
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2">
+                Masukan komisi affiliasi pertama
+              </h5>
+              <div className="row">
+                <div className="col">
+                  <h5 className="required mt-10">Harga Afiliasi Komisi</h5>
+                  <div className="input-group">
+                    <span className="input-group-text" id="price-field">
+                      {"Rp"}
+                    </span>
+                    <CurrencyInput
+                      className="form-control"
+                      id="price-field"
+                      name="price"
+                      placeholder="Masukan Komisi (Rp)"
+                      intlConfig={{ locale: "id-ID" }}
+                      defaultValue={0}
+                      value={membershipState.affiliateCommision}
+                      decimalsLimit={2}
+                      onValueChange={(value, name, values) => {
+                        handleChangeAffiliateCommission(
+                          parseInt(value as string)
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h5 className="text-muted mt-2 mb-10">
+                Masukan komisi affiliasi
+              </h5>
+
               <h5 className="required">Benefit</h5>
               <div
                 style={{

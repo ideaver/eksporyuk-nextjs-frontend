@@ -3,11 +3,20 @@ import { useState } from "react";
 import {
   OrderFindOneQuery,
   OrderStatusEnum,
+  useFollowUpDeleteOneMutation,
+  useFollowUpFindManyQuery,
   useOrderStatusUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { useSession } from "next-auth/react";
+import { useDispatch } from "react-redux";
+import {
+  changeContent,
+  changeId,
+  changeName,
+} from "@/features/reducers/followup/followupReducer";
+import { useRouter } from "next/router";
 function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
   switch (status) {
     case OrderStatusEnum.Pending:
@@ -41,9 +50,12 @@ function getProductType(cartItems: any[]) {
   return types.join(", ");
 }
 const orderCard = (data: OrderFindOneQuery["orderFindOne"]) => {
-  const latestStatus = data?.statuses?.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )[0];
+  const latestStatus = data?.statuses
+    ?.slice()
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )[0];
   return [
     {
       title: `Order Detail (${data?.id})`,
@@ -174,22 +186,40 @@ const useAdminOrderHeaderViewModel = ({
   id,
   data,
 }: IAdminOrderHeaderViewModel) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const [showOrderStatusModal, setShowOrderStatusModal] = useState(false);
   const follupValues = ["follup-1", "follup-2", "follup-3"];
 
   const [selectedFollupValue, setSelecteFollupValue] = useState("");
+  const [followUpTamplate, setFollowUpTamplate] = useState<string | undefined>(
+    ""
+  );
 
-  const handleFollupChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // followup find many
+  const followUpFindMany = useFollowUpFindManyQuery();
+
+  const handleFollupChange = (
+    event: React.ChangeEvent<HTMLInputElement> | any
+  ) => {
     setSelecteFollupValue(event.target.value);
+
+    const filterContent = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name == event.target.value
+    )[0];
+
+    setFollowUpTamplate(filterContent?.content);
   };
 
   // Status Update
   const [orderStatusUpdateOneMutation, orderStatusUpdateResult] =
     useOrderStatusUpdateOneMutation();
   const { data: session } = useSession();
+
   const updateOrderStatusHandler = async (status: OrderStatusEnum) => {
     try {
-     await orderStatusUpdateOneMutation({
+      await orderStatusUpdateOneMutation({
         variables: {
           data: {
             order: {
@@ -210,11 +240,52 @@ const useAdminOrderHeaderViewModel = ({
             id: data?.id,
           },
         },
-      })
-      return orderStatusUpdateResult
+      });
+      return orderStatusUpdateResult;
     } catch (error) {
-      return error
+      return error;
     }
+  };
+  const [followUpDeleteOne] = useFollowUpDeleteOneMutation();
+  const handleSendFollowUp = () => {
+    const contentReplaced = followUpTamplate
+      ?.replace(/\[\[nama\]\]/g, `${data?.createdByUser.name}`)
+      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(data?.createdAt))
+      .replace(/\[\[email\]\]/g, `${data?.createdByUser.email}`)
+      .replace(/\[\[nomor-telepon\]\]/g, `${data?.createdByUser.phoneId}`)
+      .replace(/\[\[kupon\]\]/g, `${data?.coupon?.affiliatorCoupon?.code}`);
+    const encodedMessage = encodeURIComponent(`${contentReplaced}`);
+
+    return `https://api.whatsapp.com/send?phone=${data?.createdByUser.phoneId}&text=${encodedMessage}`;
+  };
+
+  const handleDeleteFollowUp = async (name: string) => {
+    const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name === name
+    )[0];
+
+    try {
+      await followUpDeleteOne({
+        variables: {
+          where: {
+            id: editFolup?.id,
+          },
+        },
+      });
+      await followUpFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditState = (name: any) => {
+    const editFolup = followUpFindMany.data?.followUpFindMany?.filter(
+      (e) => e.name === name
+    )[0];
+    console.log(editFolup);
+    dispatch(changeName(`${editFolup?.name}`));
+    dispatch(changeContent(`${editFolup?.content}`));
+    dispatch(changeId(editFolup?.id as number));
   };
 
   const urls = [
@@ -272,6 +343,12 @@ const useAdminOrderHeaderViewModel = ({
   ];
 
   return {
+    handleSendFollowUp,
+    handleDeleteFollowUp,
+    handleEditState,
+    followUpTamplate,
+    setFollowUpTamplate,
+    followUpFindMany,
     urls,
     selectedFollupValue,
     handleFollupChange,

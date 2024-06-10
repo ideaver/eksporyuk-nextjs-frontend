@@ -1,0 +1,34 @@
+query MaterialPromotionPlatformFindOne(
+  $where: MaterialPromotionPlatformWhereUniqueInput!
+) {
+  materialPromotionPlatformFindOne(where: $where) {
+    id
+    title
+    content
+    materialId
+    target
+    firstContentData
+    secondContentData
+    createdByAdminId
+    type
+    createdAt
+    updatedAt
+    material {
+      path
+    }
+    image {
+      path
+    }
+    createdByAdmin {
+      id
+      user {
+        id
+        email
+        avatarImageId
+        phoneId
+        username
+        name
+      }
+    }
+  }
+}

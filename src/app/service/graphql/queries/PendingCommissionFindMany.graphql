@@ -1,0 +1,16 @@
+query PendingCommissionFindMany($pendingCommissionArgs: PendingCommissionArgs!) {
+  pendingCommissionFindMany(pendingCommissionArgs: $pendingCommissionArgs) {
+    amountCommission # Total Komisi
+    productName #Nama order
+    orderBy {
+      name # Pembeli
+    }
+    order {
+      id # ID Order
+      statuses {
+        status
+      }
+    }
+
+  }
+}

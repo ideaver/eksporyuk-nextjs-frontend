@@ -4,6 +4,37 @@ query TransactionFindOne($where: TransactionWhereUniqueInput!) {
     transactionCategory
     payment {
       invoice {
+        order {
+          id
+          platformFee
+          createdAt
+          updatedAt
+          cartId
+          createdByUserId
+          couponId
+          referralLinkId
+          enrollment {
+            course {
+              title
+            }
+          }
+          createdByUser {
+            name
+            affiliator {
+              user {
+                name
+                email
+                phone {
+                  phoneNumber
+                }
+              }
+            }
+            phone {
+              phoneNumber
+            }
+            email
+          }
+        }
         paymentForGatewayId
         paymentForGateway {
           status

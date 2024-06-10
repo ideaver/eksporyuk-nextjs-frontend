@@ -1,0 +1,30 @@
+query NewsFindMany(
+  $where: NewsWhereInput
+  $orderBy: [NewsOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  newsFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+    id
+    title
+    type
+    content
+    createdByAdminId
+    createdAt
+    updatedAt
+    createdByAdmin {
+      user {
+        email
+        avatarImageId
+        id
+        name
+        phoneId
+      }
+    }
+    _count {
+      comments
+      userLikes
+      fileUrl
+    }
+  }
+}

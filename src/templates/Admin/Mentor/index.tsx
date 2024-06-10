@@ -14,13 +14,13 @@ import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal"
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
+import { dateFormatter } from "../Affiliators/AffiliatorManagement/Affiliator-view-model";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
 
@@ -258,7 +258,7 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th className="w-200px">
+              {/* <th className="w-200px">
                 <CheckBoxInput
                   className="w-200px"
                   checked={selectAll}
@@ -269,7 +269,7 @@ const Body = ({
                 >
                   <>Username</>
                 </CheckBoxInput>
-              </th>
+              </th> */}
               <th className="min-w-300px">Nama Lengkap</th>
               {/* <th className="text-end min-w-275px">Username</th> */}
               <th className="text-end min-w-200px">Tanggal Pendaftaran</th>
@@ -281,7 +281,7 @@ const Body = ({
             {mentorFindMany.data?.mentorFindMany?.map((mentor, index) => {
               return (
                 <tr key={index}>
-                  <td className="align-middle">
+                  {/* <td className="align-middle">
                     <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
@@ -301,7 +301,7 @@ const Body = ({
                         {mentor.user.username}
                       </Link>
                     </CheckBoxInput>
-                  </td>
+                  </td> */}
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
                       <div className="symbol symbol-50px me-5 symbol-circle">
@@ -336,7 +336,7 @@ const Body = ({
                     {mentor.user.username}
                   </td> */}
                   <td className="align-middle text-end text-muted fw-bold w-150px">
-                    {mentor.user.createdAt}
+                    {dateFormatter(mentor.user.createdAt)}
                   </td>
                   <td className="align-middle text-end text-muted fw-bold w-150px">
                     {mentor._count.courses}

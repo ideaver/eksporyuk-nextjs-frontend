@@ -1,77 +1,148 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
+  CourseSectionUpdateManyWithoutCourseNestedInput,
+  CourseSectionUpdateWithWhereUniqueWithoutCourseInput,
   // CourseDurationTypeEnum,
   CourseStatusEnum,
   FileTypeEnum,
+  LessonUpdateManyWithoutSectionNestedInput,
+  LessonUpdateWithWhereUniqueWithoutSectionInput,
   QuestionTypeEnum,
+  ResourceUpdateManyWithoutSectionNestedInput,
+  ResourceUpdateWithWhereUniqueWithoutSectionInput,
   useCourseCreateOneMutation,
+  useCourseUpdateOneMutation,
   useFileCreateOneMutation,
+  useUserFindOneQuery,
   VisibilityEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
   changeCourseDuration,
   changeCourseType,
+  changeErrorMessage,
   changeStatus,
   changeThumbnail,
+  resetCourse,
 } from "@/features/reducers/course/courseReducer";
 import { IResourceData } from "@/types/contents/course/IResourceData";
 import {
   ILessonBasic,
+  ILessonPDFContent,
   ILessonVideoContent,
 } from "@/types/contents/products/ILessonData";
 import { ApolloError } from "@apollo/client";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-const stringToFile = (dataUrl: string, filename: string): File => {
-  const arr = dataUrl.split(",");
-  const mime = arr?.[0].match(/:(.*?);/)?.[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
+const stringToFile = (dataUrl: string, filename: string): File | null => {
+  try {
+    const arr = dataUrl.split(",");
+    const mime = arr?.[0].match(/:(.*?);/)?.[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
 
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  } catch (error) {
+    console.error("Error converting string to file: ", error);
+    return null;
   }
-
-  return new File([u8arr], filename, { type: mime });
 };
 
 const convertFile = async (file: any, session: any, filename: string) => {
-  const newFile = stringToFile(file, filename);
-  const response = await postDataAPI({
-    endpoint: "upload/file",
-    body: {
-      file: newFile,
-    },
-    fields: {
-      userId: session.user.id,
-    },
-    isMultipartRequest: true,
-  });
-  if (response?.status === 404) {
-    await signOut();
+  try {
+    const newFile = stringToFile(file, filename);
+    const response = await postDataAPI({
+      endpoint: "upload/file",
+      body: {
+        file: newFile,
+      },
+      fields: {
+        userId: session,
+      },
+      isMultipartRequest: true,
+    });
+    const url = response?.data;
+    return url;
+  } catch (error) {
+    return null;
   }
-  const url = response?.data;
-  return url;
+};
+
+const isBase64 = (str: string): boolean => {
+  try {
+    new URL(str);
+    return false;
+  } catch (_) {
+    try {
+      const decoded = atob(str);
+      return decoded.startsWith("data:image");
+    } catch (_) {
+      return false;
+    }
+  }
+};
+
+const useUserAndCourseIdentify = () => {
+  const currentCourseSelector = useSelector((state: RootState) => state.course);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: session, status } = useSession();
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useUserFindOneQuery({
+    variables: {
+      where: {
+        id: session?.user.id,
+      },
+    },
+  });
+  useEffect(() => {
+    setIsLoggedIn(
+      !userLoading && (userError != undefined || userData?.userFindOne === null)
+    );
+  }, [userLoading, userError, userData]);
+
+  return {
+    currentCourseSelector,
+    userData,
+    userLoading,
+    userError,
+    isLoggedIn,
+  };
 };
 
 const useCreateCourse = () => {
-  const currentCourseSelector = useSelector((state: RootState) => state.course);
-  const { data: session, status } = useSession();
+  const {
+    currentCourseSelector,
+    userData,
+    userError,
+    userLoading,
+    isLoggedIn,
+  } = useUserAndCourseIdentify();
   const [createCourseMutation, { data, error, loading }] =
     useCourseCreateOneMutation();
   const [fileCreateOne] = useFileCreateOneMutation();
   const createCourse = async () => {
+    if (isLoggedIn) {
+      await signOut();
+      return Promise.reject("User not found");
+    }
+    console.log(userData?.userFindOne?.id);
     const randomName =
       Math.random().toString(36).substring(2) +
       Date.now().toString(36) +
       ".png";
     const thumbnail = await convertFile(
       currentCourseSelector.thumbnail,
-      session,
+      userData?.userFindOne?.id,
       randomName
     );
     const courseIntro = fileCreateOne({
@@ -87,25 +158,37 @@ const useCreateCourse = () => {
 
     const courseVideosHandle = async (lessons: ILessonBasic[]) => {
       return lessons.map(async (lesson, index) => {
-        const material = await fileCreateOne({
-          variables: {
-            data: {
-              path: (lesson.content as ILessonVideoContent).videoUrl,
-              fileType: FileTypeEnum.Mp4,
+        let material;
+        if (lesson.lessonType === "Video") {
+          const res = await fileCreateOne({
+            variables: {
+              data: {
+                path: (lesson.content as ILessonVideoContent).videoUrl,
+                fileType: FileTypeEnum.Mp4,
+              },
             },
-          },
-        });
-        console.log("INI MATERIAL", material.data?.fileCreateOne);
+          });
+          material = res.data?.fileCreateOne?.path;
+        } else {
+          try {
+            material = await convertFile(
+              (lesson.content as ILessonPDFContent).file,
+              userData?.userFindOne?.id,
+              (lesson.content as ILessonPDFContent).fileName
+            );
+          } catch (error) {
+            material = null;
+          }
+        }
+        console.log("INI MATERIAL", material);
         return {
           title: lesson.title,
-          description: (lesson.content as ILessonVideoContent).content,
+          description: lesson.content.content,
           orderIndex: index,
           accessibility: VisibilityEnum.Public,
-          material: {
-            connect: {
-              path: material.data?.fileCreateOne?.path,
-            },
-          },
+          duration:
+            (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ?? 0,
+          ...(material ? { material: { connect: { path: material } } } : {}),
         };
       });
     };
@@ -117,7 +200,7 @@ const useCreateCourse = () => {
             console.log("INI FILE RESOURCE", file);
             const uploadedPath = await convertFile(
               file.fileUrl,
-              session,
+              userData?.userFindOne?.id,
               file.fileName
             );
             return {
@@ -192,7 +275,7 @@ const useCreateCourse = () => {
         status: currentCourseSelector.status as CourseStatusEnum,
         createdBy: {
           connect: {
-            id: session?.user.id,
+            id: userData?.userFindOne?.id,
           },
         },
         duration: currentCourseSelector.courseDuration,
@@ -211,6 +294,15 @@ const useCreateCourse = () => {
         level: currentCourseSelector.courseLevel,
         affiliateCommission: currentCourseSelector.affiliateCommission,
         affiliateCommissionType: currentCourseSelector.affiliateCommissionType,
+        ...(currentCourseSelector.certificateTemplateId !== 0
+          ? {
+              certificateTemplate: {
+                connect: {
+                  id: currentCourseSelector.certificateTemplateId,
+                },
+              },
+            }
+          : {}),
         objective: {
           set: currentCourseSelector.objective,
         },
@@ -220,22 +312,445 @@ const useCreateCourse = () => {
       },
     };
     console.log("DATA COURSE", courseVariable);
-    createCourseMutation({
-      variables: courseVariable,
-    });
-    if (data !== undefined) {
-      Promise.resolve(data);
-    } else if (error !== undefined || data === undefined) {
-      Promise.reject(error);
+    try {
+      const result = await createCourseMutation({
+        variables: courseVariable,
+      });
+      console.log("DATA FROM CREATE DATA", result.data);
+      if (result.data) {
+        return Promise.resolve(result.data);
+      } else {
+        return Promise.reject(new Error("Mutation did not return a result"));
+      }
+    } catch (error) {
+      return Promise.reject(error);
     }
   };
-  return { currentCourseSelector, createCourse, loading, error, data };
+  return { createCourse, loading, error, data, currentCourseSelector };
+};
+
+const useEditCourse = () => {
+  const {
+    currentCourseSelector,
+    userData,
+    userError,
+    userLoading,
+    isLoggedIn,
+  } = useUserAndCourseIdentify();
+  const currentDeletedCourseSelector = useSelector(
+    (state: RootState) => state.deletedCourse
+  );
+  const [fileCreateOne] = useFileCreateOneMutation();
+  const [updateCourseMutation, { data, error, loading }] =
+    useCourseUpdateOneMutation();
+
+  const editCourse = async () => {
+    if (isLoggedIn) {
+      console.log(isLoggedIn);
+      console.log(userData);
+      await signOut();
+      return Promise.reject("User not found");
+    }
+
+    const randomName =
+      Math.random().toString(36).substring(2) +
+      Date.now().toString(36) +
+      ".png";
+
+    const thumbnailHandler = async () => {
+      try {
+        const thumbnail = await convertFile(
+          currentCourseSelector.thumbnail,
+          userData?.userFindOne?.id,
+          randomName
+        );
+        return thumbnail as string;
+      } catch (error) {
+        return currentCourseSelector.thumbnail;
+      }
+    };
+
+    const courseIntroHandler = async () => {
+      try {
+        const courseIntro = fileCreateOne({
+          variables: {
+            data: {
+              path: currentCourseSelector.introVideo,
+              fileType: FileTypeEnum.Mp4,
+            },
+          },
+        });
+        return (await courseIntro).data?.fileCreateOne?.path;
+      } catch (error) {
+        return currentCourseSelector.introVideo;
+      }
+    };
+
+    // const courseIntro = fileCreateOne({
+    //   variables: {
+    //     data: {
+    //       path: currentCourseSelector.introVideo,
+    //       fileType: FileTypeEnum.Mp4,
+    //     },
+    //   },
+    // });
+
+    // console.log("INI COURSE INTRO", (await courseIntro).data?.fileCreateOne);
+
+    const courseVideosHandler: (
+      lessons: ILessonBasic[]
+    ) => Promise<LessonUpdateWithWhereUniqueWithoutSectionInput[]> = async (
+      lessons: ILessonBasic[]
+    ) => {
+      const lessonsPromises = lessons.map(async (lesson, index) => {
+        let material;
+        if (lesson.lessonType === "Video") {
+          try {
+            const res = await fileCreateOne({
+              variables: {
+                data: {
+                  path: (lesson.content as ILessonVideoContent).videoUrl,
+                  fileType: FileTypeEnum.Mp4,
+                },
+              },
+            });
+            material = res.data?.fileCreateOne?.path;
+          } catch (error) {
+            console.log("BAGAIMANA BISA INI ERROR", error);
+            material = (lesson.content as ILessonVideoContent).videoUrl;
+          }
+        } else {
+          try {
+            material = await convertFile(
+              (lesson.content as ILessonPDFContent).file,
+              userData?.userFindOne?.id,
+              (lesson.content as ILessonPDFContent).fileName
+            );
+          } catch (error) {
+            material = (lesson.content as ILessonPDFContent).file;
+          }
+        }
+        console.log("INI MATERIAL", material);
+        return {
+          where: {
+            id: parseInt(lesson.id),
+          },
+          data: {
+            title: {
+              set: lesson.title,
+            },
+            description: {
+              set: lesson.content.content,
+            },
+            orderIndex: {
+              set: index,
+            },
+            accessibility: {
+              set: VisibilityEnum.Public,
+            },
+            duration: {
+              set: Math.round(
+                (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ??
+                  0
+              ),
+            },
+            ...(material ? { material: { connect: { path: material } } } : {}),
+          },
+        };
+      });
+      return Promise.all(lessonsPromises);
+    };
+
+    const courseResourceFileHandler: (
+      resources: IResourceData[]
+    ) => Promise<ResourceUpdateWithWhereUniqueWithoutSectionInput[]> = async (
+      resources: IResourceData[]
+    ) => {
+      const resourcePromises = resources.map(async (resource, index) => {
+        const files = await Promise.all(
+          resource.files.map(async (file) => {
+            console.log("INI FILE RESOURCE UPDATE", file);
+            try {
+              const uploadedPath = await convertFile(
+                file.fileUrl,
+                userData?.userFindOne?.id,
+                file.fileName
+              );
+              return {
+                where: {
+                  path: file.fileUrl,
+                },
+                data: {
+                  path: {
+                    set: uploadedPath,
+                  },
+                },
+              };
+            } catch (error) {
+              return {
+                where: {
+                  path: file.fileUrl,
+                },
+                data: {
+                  path: {
+                    set: file.fileUrl,
+                  },
+                },
+              };
+            }
+          })
+        );
+        console.log("INI FILES RESOURCE  UPDATE", files);
+        return {
+          where: {
+            id: parseInt(resource.id),
+          },
+          data: {
+            name: {
+              set: resource.title,
+            },
+            description: {
+              set: resource.description,
+            },
+            files: {
+              update: files,
+            },
+          },
+        };
+      });
+      return Promise.all(resourcePromises);
+    };
+
+    const sectionColumn: CourseSectionUpdateWithWhereUniqueWithoutCourseInput[] =
+      await Promise.all(
+        currentCourseSelector.sections.map(async (section, index) => {
+          const lessons: LessonUpdateManyWithoutSectionNestedInput = {
+            update: await Promise.all(
+              await courseVideosHandler(section.lessons)
+            ),
+            deleteMany: currentDeletedCourseSelector.lessonsId.map((id) => ({
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            })),
+          };
+          const resourcesFile: ResourceUpdateManyWithoutSectionNestedInput = {
+            update: await Promise.all(
+              await courseResourceFileHandler(section.resources)
+            ),
+            deleteMany: currentDeletedCourseSelector.resourcesId.map((id) => ({
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            })),
+          };
+          console.log("INI LESSONS", index, lessons);
+          console.log("INI RESOURCES", index, resourcesFile);
+          return {
+            where: {
+              id: parseInt(section.id),
+            },
+            data: {
+              name: {
+                set: section.title,
+              },
+              description: {
+                set: section.description,
+              },
+              accessibility: {
+                set: VisibilityEnum.Public,
+              },
+              orderIndex: {
+                set: index,
+              },
+              lessons: lessons,
+              resources: resourcesFile,
+              quizzes: {
+                update: section.quizs.map((quiz, index) => ({
+                  where: {
+                    id: parseInt(quiz.id),
+                  },
+                  data: {
+                    title: {
+                      set: quiz.quizBasic.quizName,
+                    },
+                    description: {
+                      set: quiz.quizSylabus.quizDescription,
+                    },
+                    questions: {
+                      update: quiz.quizSylabus.quizs.map((question, index) => ({
+                        where: {
+                          id: parseInt(question.id),
+                        },
+                        data: {
+                          text: {
+                            set: question.quizDescription,
+                          },
+                          type: {
+                            set:
+                              quiz.quizBasic.quizType === "Pilihan Ganda"
+                                ? QuestionTypeEnum.TrueFalse
+                                : QuestionTypeEnum.MultipleChoice,
+                          },
+                          options: {
+                            update: question.quizQuestion.map((answer) => ({
+                              where: {
+                                id: parseInt(answer.id),
+                              },
+                              data: {
+                                optionText: {
+                                  set: answer.option,
+                                },
+                                isCorrect: {
+                                  set: answer.isCorrect,
+                                },
+                              },
+                            })),
+                            deleteMany:
+                              currentDeletedCourseSelector.questionsId.map(
+                                (id) => {
+                                  return {
+                                    id: {
+                                      equals: !isNaN(id as number)
+                                        ? parseInt(id as string)
+                                        : (id as number),
+                                    },
+                                  };
+                                }
+                              ),
+                          },
+                        },
+                      })),
+                      deleteMany: currentDeletedCourseSelector.quizsId.map(
+                        (id) => {
+                          return {
+                            id: {
+                              equals: !isNaN(id as number)
+                                ? parseInt(id as string)
+                                : (id as number),
+                            },
+                          };
+                        }
+                      ),
+                    },
+                  },
+                })),
+              },
+            },
+          };
+        })
+      );
+    const sectionData: CourseSectionUpdateManyWithoutCourseNestedInput = {
+      update: sectionColumn,
+    };
+
+    try {
+      const result = await updateCourseMutation({
+        variables: {
+          where: {
+            id: parseInt(currentCourseSelector.id ?? ""),
+          },
+          data: {
+            title: {
+              set: currentCourseSelector.courseName,
+            },
+            basePrice: {
+              set: parseInt(currentCourseSelector.price),
+            },
+            salePrice: {
+              set: parseInt(currentCourseSelector.discountPrice ?? "0"),
+            },
+            description: {
+              set: currentCourseSelector.classDescription,
+            },
+            mentors: {
+              set: currentCourseSelector.courseMentor?.map((mentor) => ({
+                id: mentor.value,
+              })),
+            },
+            level: {
+              set: currentCourseSelector.courseLevel,
+            },
+            affiliateCommission: {
+              set: currentCourseSelector.affiliateCommission,
+            },
+            affiliateCommissionType: {
+              set: currentCourseSelector.affiliateCommissionType,
+            },
+            status: {
+              set: currentCourseSelector.status,
+            },
+            duration: {
+              set: currentCourseSelector.courseDuration,
+            },
+            objective: {
+              set: currentCourseSelector.objective,
+            },
+            ...(currentCourseSelector.certificateTemplateId !== 0
+              ? {
+                  certificateTemplate: {
+                    connect: {
+                      id: currentCourseSelector.certificateTemplateId,
+                    },
+                  },
+                }
+              : {}),
+            images: {
+              set: [
+                {
+                  path: await thumbnailHandler(),
+                },
+              ],
+            },
+            videoUrl: {
+              connect: {
+                path: await courseIntroHandler(),
+              },
+            },
+            sections: {
+              update: sectionColumn,
+              deleteMany: currentDeletedCourseSelector.sectionsId.map((id) => ({
+                id: {
+                  equals: !isNaN(id as number)
+                    ? parseInt(id as string)
+                    : (id as number),
+                },
+              })),
+            },
+          },
+        },
+      });
+      console.log("DATA FROM UPDATE COURSE DATA", result.data);
+      if (result.data) {
+        return Promise.resolve(result.data);
+      } else {
+        return Promise.reject(new Error("Mutation did not return a result"));
+      }
+    } catch (error) {
+      console.log("ERROR FROM UPDATE COURSE DATA", error);
+      return Promise.reject(error);
+    }
+  };
+
+  return {
+    editCourse,
+    loading,
+    error,
+    data,
+    currentCourseSelector,
+  };
 };
 
 const useNavigation = () => {
   const router = useRouter();
+  const action = router.query.action;
   const dispatch = useDispatch();
   const createCourse = useCreateCourse();
+  const updateCourse = useEditCourse();
   const [isLoading, setIsLoading] = useState(false);
   const [createCourseError, setCreateCourseError] = useState<
     string | undefined
@@ -243,41 +758,132 @@ const useNavigation = () => {
 
   const pageMap: { [key: string]: string } = {
     "/information": "/sylabus",
+    "/sylabus": "/certificate",
   };
 
   const previousPageMap: { [key: string]: string } = Object.entries(
     pageMap
   ).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
-
   const navigate = (pageMap: { [key: string]: string }) => {
     const pathEnd = router.pathname.split("/").pop();
     const page = pageMap[`/${pathEnd}`];
-    const action = router.query.id ? "edit" : "create";
+
     if (page) {
-      router.push(`/admin/courses/${action}${page}`);
+      router.push(
+        {
+          pathname: `/admin/courses/${action}${page}`,
+          query: router.query,
+        },
+        undefined,
+        { shallow: true }
+      );
     }
   };
-
   const handleNext = async () => {
     const pathEnd = router.pathname.split("/").pop();
     const lastPage = Object.values(pageMap).pop();
+    const courseData = createCourse.currentCourseSelector;
     if (`/${pathEnd}` === lastPage) {
-      setIsLoading(true);
-      setCreateCourseError(undefined);
-      try {
-        await createCourse.createCourse();
-        setIsLoading(false);
-        // dispatch(resetCourse());
-        console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
-        console.log("SUCCESS CREATED COURSE", createCourse.data);
-        router.push(`/admin/courses`);
-      } catch (error: any) {
-        console.log("TERJADI ERROR DI:", (error as ApolloError).message);
-        setCreateCourseError(error.toString());
-        setIsLoading(false);
+      if (
+        courseData.sections === undefined ||
+        courseData.sections.length === 0
+      ) {
+        dispatch(changeErrorMessage("Section Kosong"));
+      } else if (courseData.objective.length === 0) {
+        dispatch(changeErrorMessage("Objective Kosong"));
+      } else {
+        if (action == "create") {
+          dispatch(changeErrorMessage(""));
+          setIsLoading(true);
+          setCreateCourseError(undefined);
+          try {
+            const res = await createCourse.createCourse();
+            if (res !== undefined) {
+              setIsLoading(false);
+              dispatch(resetCourse());
+              console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
+              console.log("SUCCESS CREATED COURSE", createCourse.data);
+              window.location.href = "/admin/courses";
+            } else {
+              setIsLoading(false);
+              console.log("TERJADI ERROR DI:", res);
+            }
+          } catch (error: any | undefined | null) {
+            dispatch(
+              changeErrorMessage(
+                (error as ApolloError)?.message ?? error.toString()
+              )
+            );
+            console.log(
+              "TERJADI ERROR DI CREATE:",
+              (error as ApolloError)?.message ?? "NO MESSAGE FOUND"
+            );
+            setCreateCourseError(error?.toString());
+            setIsLoading(false);
+          }
+        } else {
+          dispatch(changeErrorMessage(""));
+          setIsLoading(true);
+          try {
+            const res = await updateCourse.editCourse();
+            if (res !== undefined) {
+              setIsLoading(false);
+              dispatch(resetCourse());
+              console.log("SUCCSS UPDATED WITH ERROR", updateCourse.error);
+              console.log("SUCCESS UPDATED COURSE", updateCourse.data);
+              window.location.href = "/admin/courses";
+            } else {
+              setIsLoading(false);
+              console.log("TERJADI ERROR DI:", res);
+            }
+          } catch (error: any) {
+            dispatch(
+              changeErrorMessage(
+                (error as ApolloError)?.message ?? error.toString()
+              )
+            );
+            console.log(
+              "TERJADI ERROR DI EDIT:",
+              (error as ApolloError)?.message ?? "NO MESSAGE FOUND"
+            );
+            setCreateCourseError(error?.toString());
+            setIsLoading(false);
+          }
+        }
       }
     } else {
-      navigate(pageMap);
+      const isEmptyHTML = (str: string) => {
+        const strippedString = str.replace(/<[^>]*>/g, "").trim();
+        return strippedString.length === 0;
+      };
+      if (courseData.courseName === "") {
+        dispatch(changeErrorMessage("Nama Kelas Kosong"));
+      } else if (isEmptyHTML(courseData.classDescription)) {
+        dispatch(changeErrorMessage("Deskripsi Kelas Kosong"));
+      } else if (courseData.introVideo === "") {
+        dispatch(changeErrorMessage("Intro Video Kosong"));
+      } else if (courseData.price === "" || parseInt(courseData.price) === 0) {
+        dispatch(changeErrorMessage("Harga kelas kosong"));
+      } else if (
+        courseData.thumbnail === "" ||
+        courseData.thumbnail === "/media/avatars/blank.png"
+      ) {
+        dispatch(changeErrorMessage("Gambar kelas kosong"));
+      } else if (courseData.affiliateCommission == 0) {
+        dispatch(changeErrorMessage("Affiliasi Komisi kosong"));
+      } else if (
+        courseData.courseType === "subscription" &&
+        courseData.courseDuration < 1
+      ) {
+        dispatch(
+          changeErrorMessage("Durasi Kelas langganan kurang dari satu hari!")
+        );
+      } else {
+        dispatch(changeErrorMessage(""));
+        navigate(pageMap);
+      }
+
+      window.scrollTo(0, 0);
     }
   };
 
@@ -288,6 +894,8 @@ const useNavigation = () => {
 
 const useClassViewModel = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const thumbnail = useSelector((state: RootState) => state.course.thumbnail);
   const status = useSelector((state: RootState) => state.course.status);
   const duration = useSelector(
@@ -298,6 +906,7 @@ const useClassViewModel = () => {
     useNavigation();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isDetail) return;
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -309,15 +918,18 @@ const useClassViewModel = () => {
   };
 
   const handleStatusChange = (status: CourseStatusEnum) => {
+    if (isDetail) return;
     dispatch(changeStatus(status));
   };
   const handleDurationChange = (duration: number) => {
+    if (isDetail) return;
     dispatch(changeCourseDuration(duration));
   };
   const handleCourseTypeChange = (courseType: "subscription" | "one-time") => {
+    if (isDetail) return;
     dispatch(changeCourseType(courseType));
     if (courseType === "one-time") {
-      dispatch(changeCourseDuration(999999999999999));
+      dispatch(changeCourseDuration(9999999));
     } else {
       dispatch(changeCourseDuration(2));
     }

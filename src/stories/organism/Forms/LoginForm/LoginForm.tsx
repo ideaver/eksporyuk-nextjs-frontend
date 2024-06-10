@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import clsx from "clsx";
 import { AppLogo } from "@/stories/atoms/AppLogo/AppLogo";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import Link from "next/link";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import * as Yup from "yup";
-import { useFormik } from "formik";
 import { Alert } from "@/stories/molecules/Alert/Alert";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import clsx from "clsx";
+import { useFormik } from "formik";
+import { useState } from "react";
+import * as Yup from "yup";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -151,7 +150,8 @@ export const LoginForm = ({
           Login
         </Buttons>
       </div>
-      <div className="text-gray-500 text-center fw-semibold fs-6">
+      {/* Deleted might be future use */}
+      {/* <div className="text-gray-500 text-center fw-semibold fs-6">
         Belum punya akun?{" "}
         <Buttons
           mode="link"
@@ -160,7 +160,7 @@ export const LoginForm = ({
         >
           Daftar Sekarang
         </Buttons>
-      </div>
+      </div> */}
       {/* end::Form group */}
     </form>
   );

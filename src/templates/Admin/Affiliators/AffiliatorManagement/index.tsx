@@ -25,6 +25,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { formatDate } from "@/app/service/utils/dateFormatter";
 
 const AffiliatorPage = () => {
   const {
@@ -164,7 +165,7 @@ const Body = ({
             className="text-uppercase align-middle"
           >
             <th className="w-150px">
-              <CheckBoxInput
+              {/* <CheckBoxInput
                 className="w-150px"
                 checked={selectAll}
                 name="check-all"
@@ -173,11 +174,12 @@ const Body = ({
                 onChange={handleSelectAllCheck}
               >
                 <>Username</>
-              </CheckBoxInput>
+              </CheckBoxInput> */}
+              Username
             </th>
             <th className="min-w-200px">Nama Lengkap</th>
-            <th className="text-end min-w-200px">Email</th>
-            <th className="text-end min-w-200px">Affiliator</th>
+            <th className="text-start min-w-200px">Email</th>
+            {/* <th className="text-end min-w-200px">Affiliator</th> */}
             <th className="text-end min-w-200px">Tanggal Terdaftar</th>
             <th className="text-end min-w-100px">Actions</th>
           </KTTableHead>
@@ -186,7 +188,7 @@ const Body = ({
               return (
                 <KTTableBody key={index}>
                   <td className="align-middle">
-                    <CheckBoxInput
+                    {/* <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
                       name={"check-" + affiliator.id}
@@ -204,7 +206,17 @@ const Body = ({
                       >
                         {affiliator.user.username}
                       </Link>
-                    </CheckBoxInput>
+                    </CheckBoxInput> */}
+                    <Link
+                        href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
+                        className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                        style={{
+                          maxWidth: "150px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {affiliator.user.username}
+                      </Link>
                   </td>
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
@@ -236,14 +248,14 @@ const Body = ({
                       </div>
                     </div>
                   </td>
-                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                  <td className="align-middle text-start text-muted fw-bold w-150px">
                     {affiliator.user.email}
                   </td>
-                  <td className="align-middle text-end text-muted fw-bold w-150px">
+                  {/* <td className="align-middle text-end text-muted fw-bold w-150px">
                     {affiliator.user.affiliator?.user.name}
-                  </td>
+                  </td> */}
                   <td className="align-middle text-end text-muted fw-bold w-150px">
-                    {dateFormatter(affiliator.user.createdAt)}
+                    {formatDate(affiliator.user.createdAt)}
                   </td>
                   {/* <td className="align-middle text-end w-150px">
                     <Dropdown

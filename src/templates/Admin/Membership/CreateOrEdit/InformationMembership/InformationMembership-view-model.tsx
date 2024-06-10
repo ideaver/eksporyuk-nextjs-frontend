@@ -5,18 +5,24 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import {
+  changeAffiliateCommission,
+  changeAffiliateFirstCommission,
   changeBenefits,
+  changeCourses,
   changeDescription,
   changeDuration,
-  changeMembershipType,
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
 import {
-  MembershipTypeEnum,
+  AffiliateCommissionTypeEnum,
+  QueryMode,
+  useCourseFindManyQuery,
   useMembershipCategoryCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useSession } from "next-auth/react";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import { CourseOptionType } from "@/templates/Admin/Affiliators/RewardManagement/Create/NewReward/NewReward-view-model";
 
 export const breadcrumbs = [
   {
@@ -33,6 +39,56 @@ export const breadcrumbs = [
   },
 ];
 
+export const useCoursesDropdown = () => {
+  const { data, refetch } = useCourseFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const fetchedOptions =
+      response.data?.courseFindMany?.map((course) => ({
+        value: course.id,
+        label: course.title,
+      })) ?? [];
+
+    return {
+      options: [...prevOptions, ...fetchedOptions],
+      hasMore: fetchedOptions.length > 0,
+    };
+  }
+
+  return { loadOptions };
+};
+
 export const useMembershipForm = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -40,6 +96,7 @@ export const useMembershipForm = () => {
 
   const membershipState = useSelector((state: RootState) => state.memebrship);
   const dispatch = useDispatch();
+  const idCourses = membershipState.courses.map((e) => ({ id: e.value }));
 
   const [membershipCeateOne] = useMembershipCategoryCreateOneMutation();
 
@@ -49,7 +106,9 @@ export const useMembershipForm = () => {
     dispatch(changePrice("0"));
     dispatch(changeBenefits(""));
     dispatch(changeDuration(0));
-    dispatch(changeMembershipType(MembershipTypeEnum.ThreeMonth));
+    dispatch(changeCourses([]));
+    dispatch(changeAffiliateCommission(100));
+    dispatch(changeAffiliateFirstCommission(100));
   };
 
   const membershipSchema = Yup.object().shape({
@@ -82,16 +141,24 @@ export const useMembershipForm = () => {
         await membershipCeateOne({
           variables: {
             data: {
-              name: membershipState.name,
-              description: membershipState.description,
-              benefits: membershipState.benefits,
-              price: parseFloat(membershipState.price),
-              membershipType: membershipState.membershipType,
-              durationDay: membershipState.duration,
               createdBy: {
                 connect: {
                   id: session?.user.id,
                 },
+              },
+              name: membershipState.name,
+              description: membershipState.description,
+              benefits: membershipState.benefits,
+              price: parseFloat(membershipState.price),
+              affiliateCommission: parseFloat(
+                membershipState.affiliateCommision.toString()
+              ),
+              affiliateFirstCommission: parseFloat(
+                membershipState.affiliateFirstCommision.toString()
+              ),
+              durationDay: membershipState.duration,
+              benefitCourses: {
+                connect: idCourses,
               },
             },
           },
@@ -118,11 +185,29 @@ export const useMembershipForm = () => {
 
 const useInformationMembershipViewModel = () => {
   const dispatch = useDispatch();
-  const handleChangeMembershipType = (type: MembershipTypeEnum) => {
-    dispatch(changeMembershipType(type));
+  const coursesState = useSelector(
+    (state: RootState) => state.memebrship.courses
+  );
+
+  const handleChangeCourses = (course: { value: number; label: string }) => {
+    dispatch(changeCourses([...coursesState, course]));
   };
+  const handleDeleteCourses = (id: number) => {
+    dispatch(changeCourses(coursesState.filter((val) => val.value !== id)));
+  };
+
+  const handleChangeAffiliateFirstCommission = (val: number) => {
+    dispatch(changeAffiliateFirstCommission(val));
+  };
+  const handleChangeAffiliateCommission = (val: number) => {
+    dispatch(changeAffiliateCommission(val));
+  };
+
   return {
-    handleChangeMembershipType,
+    handleDeleteCourses,
+    handleChangeCourses,
+    handleChangeAffiliateCommission,
+    handleChangeAffiliateFirstCommission,
   };
 };
 

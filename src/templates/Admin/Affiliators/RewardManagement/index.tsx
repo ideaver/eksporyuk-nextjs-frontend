@@ -15,6 +15,8 @@ import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import DeleteRewardModal from "./components/DeleteRewardModal";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 import useRewardManagementViewModel, {
   dateFormatter,
@@ -172,6 +174,8 @@ const Body = ({
 
   rewardIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
+  // console.log(rewardsCatalogFindMany.data)
+
   return (
     <>
       <DeleteRewardModal
@@ -234,13 +238,19 @@ const Body = ({
                         href={`/admin/affiliate/reward/detail/${reward.id}`}
                       >
                         <div className="d-flex align-items-center gap-5">
-                          <img
+                          {/* <img
                             src="/media/avatars/300-2.jpg"
                             width={50}
                             height={50}
                             alt=""
-                          />
-                          <p className="min-w-200px mb-0">{reward.title}</p>
+                          /> */}
+                          {reward?.title && (
+                            <p className="min-w-200px mb-0">Saldo {formatCurrency(Number(reward.title))}</p>
+                          )}
+                          {reward?.course?.title && (
+                            <p className="min-w-200px mb-0">{reward.course?.title}</p>
+                          )}
+                          {/* <p className="min-w-200px mb-0">{reward.title || reward.course?.title}</p> */}
                         </div>
                       </Link>
                     </CheckBoxInput>
@@ -249,10 +259,10 @@ const Body = ({
                     {reward.pointsRequired}
                   </td>
                   <td className="align-middle text-end text-muted fw-bold">
-                    {dateFormatter(reward.createdAt)}
+                    {formatDate(reward.createdAt)}
                   </td>
                   <td className="align-middle text-end text-muted fw-bold">
-                    0
+                    {reward._count.rewardsRedeem}
                   </td>
                   <td className="align-middle text-end">
                     <Badge

@@ -1,15 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import { KTIcon } from "@/_metronic/helpers";
+import { deleteQuestion } from "@/features/reducers/course/deletedCourseReducer";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { StepProps } from "@/types/contents/products/IQuizData";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { ChangeEvent, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const Step2 = ({ data, updateData, hasError }: StepProps) => {
   const [openItemId, setOpenItemId] = useState("");
+  const dispatch = useDispatch();
 
   const onDragEnd = (result: any) => {
     if (!result.destination) {
@@ -38,6 +41,7 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
         quizs: filteredItems,
       },
     });
+    dispatch(deleteQuestion(id));
   };
   return (
     <>
@@ -305,7 +309,6 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
             classNames="mt-5"
             onClick={() => {
               updateData({
-                
                 quizSylabus: {
                   quizDescription: data.quizSylabus.quizDescription,
                   quizs: [
@@ -361,4 +364,3 @@ const Step2 = ({ data, updateData, hasError }: StepProps) => {
 };
 
 export { Step2 };
-

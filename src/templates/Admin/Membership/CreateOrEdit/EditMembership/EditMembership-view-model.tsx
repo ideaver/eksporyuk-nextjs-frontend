@@ -1,6 +1,5 @@
 import {
   MembershipCategoryFindOneQuery,
-  MembershipTypeEnum,
   useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useState } from "react";
@@ -46,9 +45,11 @@ interface EditMembershipForm {
   description: string | undefined;
   price: number | undefined;
   benefits: string | undefined;
-  membershipType: MembershipTypeEnum | undefined;
   duration: number | undefined;
   id: string | string[] | undefined;
+  courses: { value: number; label: string }[] | undefined;
+  affiliateCommission: number | undefined;
+  affiliateFirstCommission: number | undefined;
 }
 
 const useEditMembershipForm = ({
@@ -56,9 +57,11 @@ const useEditMembershipForm = ({
   description,
   price,
   benefits,
-  membershipType,
   duration,
   id,
+  courses,
+  affiliateCommission,
+  affiliateFirstCommission,
 }: EditMembershipForm) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -79,6 +82,11 @@ const useEditMembershipForm = ({
       .required("Benefit diperlukan"),
     duration: Yup.number().required("Content diperlukan"),
   });
+
+  const idCourses = courses?.map((e) => ({
+    id: e.value,
+  }));
+  console.log(idCourses);
 
   const editMembershipForm = useFormik({
     initialValues: {
@@ -113,8 +121,14 @@ const useEditMembershipForm = ({
               durationDay: {
                 set: duration,
               },
-              membershipType: {
-                set: membershipType,
+              benefitCourses: {
+                set: idCourses,
+              },
+              affiliateCommission: {
+                set: affiliateCommission,
+              },
+              affiliateFirstCommission: {
+                set: affiliateFirstCommission,
               },
             },
           },
@@ -140,12 +154,29 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
   const [benefits, setBenefits] = useState(
     data.membershipCategoryFindOne?.benefits
   );
-  const [membershipType, setMembershipType] = useState(
-    data.membershipCategoryFindOne?.membershipType
-  );
   const [duration, setDuration] = useState(
     data.membershipCategoryFindOne?.durationDay
   );
+  const [courses, setCourses] = useState(
+    data.membershipCategoryFindOne?.benefitCourses?.map((e) => ({
+      value: e.id,
+      label: e.title,
+    }))
+  );
+  const [affiliateCommission, setAffiliateCommission] = useState(
+    data.membershipCategoryFindOne?.affiliateCommission
+  );
+  const [affiliateFirstCommission, setAffiliateFirstCommission] = useState(
+    data.membershipCategoryFindOne?.affiliateFirstCommission
+  );
+
+  const handleChangeCourses = (course: { value: number; label: string }) => {
+    setCourses((prev: any) => [...prev, course]);
+  };
+
+  const handleDeleteCourses = (id: number) => {
+    setCourses((prev) => prev?.filter((val) => val.value !== id));
+  };
 
   const { formik, isLoading, setIsloading } = useEditMembershipForm({
     id,
@@ -153,11 +184,20 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     description,
     price,
     benefits,
-    membershipType,
     duration,
+    courses,
+    affiliateCommission,
+    affiliateFirstCommission,
   });
 
   return {
+    affiliateCommission,
+    affiliateFirstCommission,
+    setAffiliateCommission,
+    setAffiliateFirstCommission,
+    handleChangeCourses,
+    handleDeleteCourses,
+    courses,
     benefits,
     formik,
     isLoading,
@@ -166,9 +206,7 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     setDescription,
     setPrice,
     setBenefits,
-    setMembershipType,
     setDuration,
-    membershipType,
     price,
   };
 };

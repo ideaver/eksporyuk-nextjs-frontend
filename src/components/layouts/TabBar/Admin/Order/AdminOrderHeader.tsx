@@ -8,6 +8,8 @@ import useAdminOrderHeaderViewModel, {
   IAdminOrderHeaderViewModel,
 } from "./AdminOrderHeader-view-model";
 import ChangeOrderModal from "./components/ChangeOrderModal";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
 
 const AdminOrderLayout = ({
   urlType,
@@ -24,7 +26,14 @@ const AdminOrderLayout = ({
     orderTableDatas,
     breadcrumbs,
     updateOrderStatusHandler,
+    followUpFindMany,
+    followUpTamplate,
+    setFollowUpTamplate,
+    handleEditState,
+    handleDeleteFollowUp,
+    handleSendFollowUp,
   } = useAdminOrderHeaderViewModel({ urlType, id, data });
+
   const router = useRouter();
 
   return (
@@ -48,18 +57,30 @@ const AdminOrderLayout = ({
           >
             Kirim Follow-Up
           </Buttons>
-          <Buttons
+          {/* <Buttons
             buttonColor="primary"
             classNames="fw-bold w-100 w-lg-auto mt-5 mt-lg-0 ms-5"
             onClick={() => setShowOrderStatusModal(true)}
           >
             Ubah status order
-          </Buttons>
+          </Buttons> */}
         </div>
         <FollowUpModal
-          follupValues={follupValues}
+          follupValues={
+            followUpFindMany.data?.followUpFindMany?.map(
+              (e) => e.name
+            ) as string[]
+          }
+          value={followUpTamplate ?? ""}
+          // follupValues={follupValues}
           selectedFollupValue={selectedFollupValue}
           handleFollupChange={handleFollupChange}
+          onChange={(e: any) => {
+            setFollowUpTamplate(e.target.value);
+          }}
+          handleEditState={handleEditState}
+          handleDeleteFollowUp={handleDeleteFollowUp}
+          linkAPIWhatsapp={handleSendFollowUp()}
         />
         <ChangeOrderModal
           show={showOrderStatusModal}
@@ -69,6 +90,8 @@ const AdminOrderLayout = ({
             setShowOrderStatusModal(false);
           }}
         ></ChangeOrderModal>
+        <CreateFollowUpModal />
+        <UpdateFollowUpModal />
       </div>
       <div className="row gy-5 mb-5">
         {orderTableDatas.map((data, index) => (

@@ -6,10 +6,16 @@ import {
   changeSections,
 } from "@/features/reducers/course/courseReducer";
 import {
+  deleteLesson,
+  deleteQuiz,
+  deleteResource,
+  deleteSection,
+} from "@/features/reducers/course/deletedCourseReducer";
+import {
   changeEditLesson,
   changeEditQuiz,
-  changeLessons,
 } from "@/features/reducers/products/productReducer";
+import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { ICourseSectionData } from "@/types/contents/course/ICourseData";
@@ -21,6 +27,7 @@ import {
 import { ICreateQuizData } from "@/types/contents/products/IQuizData";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import clsx from "clsx";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LessonModal } from "./components/LessonModal";
@@ -29,6 +36,8 @@ import ResourceModal from "./components/ResourceModal";
 import SectionModal from "./components/SectionModal";
 
 const CourseSylabusPage = () => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [lessonId, setLessonId] = useState("");
   const [showLessonModal, setShowLessonModal] = useState(false);
@@ -56,6 +65,9 @@ const CourseSylabusPage = () => {
 
   // Start Lesson
   const handleSubmitSection = (val: ICourseSectionData) => {
+    if (isDetail) {
+      return;
+    }
     dispatch(
       changeSections(
         currentCourseSectionSelector.some(
@@ -63,7 +75,11 @@ const CourseSylabusPage = () => {
         )
           ? currentCourseSectionSelector.map((courseSection) =>
               courseSection.id === val.id
-                ? { ...courseSection, ...val }
+                ? {
+                    ...courseSection,
+                    title: val.title,
+                    description: val.description,
+                  }
                 : courseSection
             )
           : currentCourseSectionSelector.concat(val)
@@ -76,9 +92,13 @@ const CourseSylabusPage = () => {
     }
   };
   const handleRemoveSection = (index: number) => {
+    if (isDetail) {
+      return;
+    }
     const newSection = currentCourseSectionSelector.filter(
       (_, i) => i !== index
     );
+    dispatch(deleteSection(currentCourseSectionSelector[index].id));
     dispatch(changeSections(newSection));
   };
 
@@ -89,6 +109,9 @@ const CourseSylabusPage = () => {
   };
 
   const handleLessonSubmit = (val: ILessonBasic, parentId: string) => {
+    if (isDetail) {
+      return;
+    }
     const newLessons = currentCourseSectionSelector.map((courseSection) => {
       if (courseSection.id === parentId) {
         return {
@@ -110,6 +133,9 @@ const CourseSylabusPage = () => {
   };
 
   const handleRemoveLesson = (index: number) => {
+    if (isDetail) {
+      return;
+    }
     const newLessons = currentCourseSectionSelector.map((courseSection) => {
       return {
         ...courseSection,
@@ -117,12 +143,16 @@ const CourseSylabusPage = () => {
       };
     });
     dispatch(changeSections(newLessons));
+    dispatch(deleteLesson(newLessons[index].id));
   };
 
   const handleEditLesson = (
     newLesson: ILessonBasic,
     parentLesson: ILessonTopic
   ) => {
+    if (isDetail) {
+      return;
+    }
     setLessonId(parentLesson.id);
     dispatch(changeEditLesson(newLesson));
     setIsEdit(newLesson);
@@ -130,6 +160,9 @@ const CourseSylabusPage = () => {
   };
 
   const handleOnDragEnd = (result: any) => {
+    if (isDetail) {
+      return;
+    }
     const { source, destination } = result;
 
     // dropped outside the list
@@ -173,6 +206,9 @@ const CourseSylabusPage = () => {
   const [showQuizModal, setShowQuizModal] = useState(false);
 
   const handleSubmitQuiz = (val: ICreateQuizData) => {
+    if (isDetail) {
+      return;
+    }
     const filterSelectedCourseSection = currentCourseSectionSelector.filter(
       (section) => section.id === selectedCourseSectionId
     )[0];
@@ -198,6 +234,9 @@ const CourseSylabusPage = () => {
     window.location.reload();
   };
   const handleRemoveQuiz = (index: number) => {
+    if (isDetail) {
+      return;
+    }
     const filterSelectedCourseSection = currentCourseSectionSelector.filter(
       (section) => section.id === selectedCourseSectionId
     )[0];
@@ -214,9 +253,13 @@ const CourseSylabusPage = () => {
         )
       )
     );
+    dispatch(deleteQuiz(filterSelectedCourseSection.quizs[index].id));
   };
 
   const handleEditQuiz = (newQuiz: ICreateQuizData) => {
+    if (isDetail) {
+      return;
+    }
     dispatch(changeEditQuiz(newQuiz));
     setIsEdit(true);
     setShowQuizModal(true);
@@ -227,6 +270,9 @@ const CourseSylabusPage = () => {
   // Start Resource
 
   const handleSubmitResource = (data: IResourceData) => {
+    if (isDetail) {
+      return;
+    }
     const filterSelectedCourseSection = currentCourseSectionSelector.filter(
       (section) => section.id === selectedCourseSectionId
     )[0];
@@ -260,27 +306,45 @@ const CourseSylabusPage = () => {
   );
 
   const addObjectives = () => {
+    if (isDetail) {
+      return;
+    }
     setObjectives((prevItems) => [...prevItems, ""]);
   };
 
   const removeObjectives = (index: number) => {
+    if (isDetail) {
+      return;
+    }
     setObjectives((prevItems) => prevItems.filter((item, i) => i !== index));
   };
 
   const handleObjectiveInputChange = (index: number, newValue: string) => {
+    if (isDetail) {
+      return;
+    }
     setObjectives((prevItems) =>
       prevItems.map((item, i) => (i === index ? newValue : item))
     );
   };
 
   useEffect(() => {
-    dispatch(changeObjective(objectives));
-  }, [dispatch, objectives]);
+    if (isDetail) {
+      dispatch(changeObjective(objectives));
+    }
+  }, [dispatch, isDetail, objectives]);
 
   // End Objective
 
   return (
     <>
+      {currentCourseSelector.errorMessage && (
+        <Alert
+          label={currentCourseSelector.errorMessage as string}
+          title="Terjadi Masalah"
+          alertColor="danger"
+        ></Alert>
+      )}
       <KTCard className="">
         <KTCardBody>
           <h3 className="mb-5">Susun Silabus</h3>
@@ -327,18 +391,20 @@ const CourseSylabusPage = () => {
                                   <KTCardBody>
                                     <div className="d-flex justify-content-between align-items-center">
                                       <h5 className="mb-0">Susun Materi</h5>
-                                      <button
-                                        className="btn btn-primary"
-                                        onClick={() => {
-                                          setIsEdit(undefined);
-                                          setSelectedCourseSectionId(
-                                            courseSection.id
-                                          );
-                                          setShowLessonModal(true);
-                                        }}
-                                      >
-                                        Tambah Materi
-                                      </button>
+                                      {!isDetail && (
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() => {
+                                            setIsEdit(undefined);
+                                            setSelectedCourseSectionId(
+                                              courseSection.id
+                                            );
+                                            setShowLessonModal(true);
+                                          }}
+                                        >
+                                          Tambah Materi
+                                        </button>
+                                      )}
                                     </div>
                                     <div className="mt-5">
                                       <Droppable
@@ -398,18 +464,20 @@ const CourseSylabusPage = () => {
                                   <KTCardBody>
                                     <div className="d-flex justify-content-between align-items-center">
                                       <h5 className="mb-0">Susun Quiz</h5>
-                                      <button
-                                        className="btn btn-primary"
-                                        onClick={() => {
-                                          setIsEdit(undefined);
-                                          setSelectedCourseSectionId(
-                                            courseSection.id
-                                          );
-                                          setShowQuizModal(true);
-                                        }}
-                                      >
-                                        Tambah Quiz
-                                      </button>
+                                      {!isDetail && (
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() => {
+                                            setIsEdit(undefined);
+                                            setSelectedCourseSectionId(
+                                              courseSection.id
+                                            );
+                                            setShowQuizModal(true);
+                                          }}
+                                        >
+                                          Tambah Quiz
+                                        </button>
+                                      )}
                                     </div>
                                     <div className="mt-5">
                                       {courseSection.quizs.map(
@@ -434,18 +502,20 @@ const CourseSylabusPage = () => {
                                   <KTCardBody>
                                     <div className="d-flex justify-content-between align-items-center">
                                       <h5 className="mb-0">Susun Resource</h5>
-                                      <button
-                                        className="btn btn-primary"
-                                        onClick={() => {
-                                          setIsEdit(undefined);
-                                          setSelectedCourseSectionId(
-                                            courseSection.id
-                                          );
-                                          setShowResourceModal(true);
-                                        }}
-                                      >
-                                        Tambah Resource
-                                      </button>
+                                      {!isDetail && (
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() => {
+                                            setIsEdit(undefined);
+                                            setSelectedCourseSectionId(
+                                              courseSection.id
+                                            );
+                                            setShowResourceModal(true);
+                                          }}
+                                        >
+                                          Tambah Resource
+                                        </button>
+                                      )}
                                     </div>
                                     <div className="mt-5">
                                       {courseSection.resources.map(
@@ -462,6 +532,9 @@ const CourseSylabusPage = () => {
                                                   courseSection.resources.filter(
                                                     (_, i) => i !== index
                                                   );
+                                                dispatch(
+                                                  deleteResource(resource.id)
+                                                );
                                                 dispatch(
                                                   changeSections(
                                                     currentCourseSectionSelector.map(
@@ -497,17 +570,19 @@ const CourseSylabusPage = () => {
               )}
             </Droppable>
           </DragDropContext>
-          <Buttons
-            showIcon={true}
-            mode="light"
-            classNames="mt-5"
-            onClick={() => {
-              setIsEdit(undefined);
-              setShowSectionModal(true);
-            }}
-          >
-            Tambahkan Section
-          </Buttons>
+          {!isDetail && (
+            <Buttons
+              showIcon={true}
+              mode="light"
+              classNames="mt-5"
+              onClick={() => {
+                setIsEdit(undefined);
+                setShowSectionModal(true);
+              }}
+            >
+              Tambahkan Section
+            </Buttons>
+          )}
         </KTCardBody>
       </KTCard>
       <KTCard className="mt-5">
@@ -610,6 +685,8 @@ const LessonCard = ({
   onChildrenClick?: () => void;
   draggableProps?: any;
 }) => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   function isLessonTopic(object: any): object is ILessonTopic {
     return "description" in object && "title" in object; // Add other necessary properties
   }
@@ -643,22 +720,30 @@ const LessonCard = ({
             </p>
           </div>
         </div>
-        <div className="btns">
-          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
-            <KTIcon iconName="trash" className="fs-1"></KTIcon>
-          </button>
-          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
-            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-          </button>
-          {isParent && (
-            <button className="btn btn-icon ">
-              <KTIcon
-                iconName={isActive ? "down" : "up"}
-                className="fs-1"
-              ></KTIcon>
+        {!isDetail && (
+          <div className="btns">
+            <button
+              className="btn btn-icon btn-active-danger"
+              onClick={onRemove}
+            >
+              <KTIcon iconName="trash" className="fs-1"></KTIcon>
             </button>
-          )}
-        </div>
+            <button
+              className="btn btn-icon btn-active-success"
+              onClick={onEdit}
+            >
+              <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+            </button>
+            {isParent && (
+              <button className="btn btn-icon ">
+                <KTIcon
+                  iconName={isActive ? "down" : "up"}
+                  className="fs-1"
+                ></KTIcon>
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="contens">{children}</div>
     </div>
@@ -674,6 +759,8 @@ const QuizItem = ({
   onRemove: () => void;
   onEdit: () => void;
 }) => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   return (
     <div className="d-flex justify-content-between bg-light-primary p-5 align-items-center rounded border border-primary border-dashed mt-5">
       <div className="title">
@@ -683,14 +770,16 @@ const QuizItem = ({
           {data.quizBasic.quizType}
         </p>
       </div>
-      <div className="btns">
-        <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
-          <KTIcon iconName="trash" className="fs-1"></KTIcon>
-        </button>
-        <button className="btn btn-icon btn-active-success" onClick={onEdit}>
-          <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-        </button>
-      </div>
+      {!isDetail && (
+        <div className="btns">
+          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
+            <KTIcon iconName="trash" className="fs-1"></KTIcon>
+          </button>
+          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
+            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -703,6 +792,8 @@ const ResourceItem = ({
   onRemove: () => void;
   onEdit: () => void;
 }) => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   return (
     <div className="d-flex justify-content-between bg-light-primary p-5 align-items-center rounded border border-primary border-dashed mt-5">
       <div className="title">
@@ -711,14 +802,16 @@ const ResourceItem = ({
           {data.description}, Jumlah File: {data.files.length}
         </p>
       </div>
-      <div className="btns">
-        <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
-          <KTIcon iconName="trash" className="fs-1"></KTIcon>
-        </button>
-        <button className="btn btn-icon btn-active-success" onClick={onEdit}>
-          <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-        </button>
-      </div>
+      {!isDetail && (
+        <div className="btns">
+          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
+            <KTIcon iconName="trash" className="fs-1"></KTIcon>
+          </button>
+          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
+            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

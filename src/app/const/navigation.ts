@@ -121,6 +121,11 @@ export const adminMenus: MenuSection[] = [
             to: "/admin/affiliate/reward",
             icon: "cube-2",
           },
+          {
+            title: "Leaderboard",
+            to: "/admin/affiliate/leaderboard",
+            icon: "people",
+          },
         ],
       },
       {
@@ -129,10 +134,21 @@ export const adminMenus: MenuSection[] = [
         icon: "basket",
         subItems: [
           {
+            title: "Semua Kelas",
+            to: "/admin/courses",
+            icon: "book-open",
+          },
+          {
             title: "Semua Produk",
             to: "/admin/products",
             icon: "parcel",
           },
+          {
+            title: "Pengaturan Membership Platform",
+            to: "/admin/subscriber",
+            icon: "classmates",
+          },
+
           // {
           //   title: "Semua Bundle",
           //   to: "/admin/products/bundle",
@@ -145,11 +161,7 @@ export const adminMenus: MenuSection[] = [
           // },
         ],
       },
-      {
-        title: "Manajemen Kelas",
-        to: "/admin/courses",
-        icon: "book-open",
-      },
+
       { title: "Manajemen Order", to: "/admin/orders", icon: "delivery-3" },
       {
         title: "Manajemen Mentor",
@@ -162,7 +174,7 @@ export const adminMenus: MenuSection[] = [
         icon: "people",
       },
       {
-        title: "Manajemen Artikel",
+        title: "Manajemen Artikel & Pengumuman",
         to: "/admin/articles",
         icon: "tablet-text-up",
       },
@@ -188,11 +200,6 @@ export const adminMenus: MenuSection[] = [
         title: "Manajemen Aktifitas",
         to: "/admin/activity",
         icon: "people",
-      },
-      {
-        title: "Manajemen Membership",
-        to: "/admin/subscriber",
-        icon: "classmates",
       },
     ],
     section: "Menu Admin",

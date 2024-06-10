@@ -3,11 +3,13 @@ import {
   CourseStatusEnum,
   QueryMode,
   SortOrder,
+  useCourseDeleteManyMutation,
   useCourseFindLengthQuery,
   useCourseFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export const breadcrumbs = [
   {
@@ -68,48 +70,106 @@ const usePagination = () => {
 // Checkbox related functions
 const useCheckbox = (courseFindMany: QueryResult<CourseFindManyQuery>) => {
   const [selectAll, setSelectAll] = useState(false);
-  const [checkedItems, setCheckedItems] = useState(
-    (courseFindMany.data?.courseFindMany ?? []).map((item) => ({
-      id: item.id,
-      value: false,
-    }))
-  );
+  const [checkedItems, setCheckedItems] = useState<
+    { id: number; value: boolean }[]
+  >([]);
+
+  const getCheckedItems = useMemo(() => {
+    return checkedItems.filter((item) => item.value).map((e) => e.id);
+  }, [checkedItems]);
+
+  const [checked, setChecked] = useState(getCheckedItems);
 
   useEffect(() => {
-    setCheckedItems(
-      (courseFindMany.data?.courseFindMany ?? []).map((item) => ({
-        id: item.id,
-        value: false,
-      }))
-    );
+    setChecked(getCheckedItems);
+  }, [getCheckedItems]);
+
+  useEffect(() => {
+    if (courseFindMany.data?.courseFindMany) {
+      setCheckedItems(
+        courseFindMany.data.courseFindMany.map((item) => ({
+          id: item.id,
+          value: false,
+        }))
+      );
+    }
   }, [courseFindMany.data?.courseFindMany]);
 
-  const handleSingleCheck = (index: number) => {
-    const newCheckedItems = [...checkedItems];
-    newCheckedItems[index].value = !newCheckedItems[index].value;
-    setCheckedItems(newCheckedItems);
-    setSelectAll(newCheckedItems.every((item) => item.value));
-  };
+  const handleSingleCheck = useCallback((index: number) => {
+    setCheckedItems((prevCheckedItems) => {
+      const newCheckedItems = [...prevCheckedItems];
+      newCheckedItems[index].value = !newCheckedItems[index].value;
+      const allChecked = newCheckedItems.every((item) => item.value);
+      setSelectAll(allChecked);
+      return newCheckedItems;
+    });
+  }, []);
 
-  const handleSelectAllCheck = () => {
-    setSelectAll(!selectAll);
-    setCheckedItems(
-      Array.isArray(courseFindMany.data?.courseFindMany)
-        ? courseFindMany.data?.courseFindMany?.map((item) => ({
-            id: item.id,
-            value: !selectAll,
-          }))
-        : []
-    );
-  };
+  const handleSelectAllCheck = useCallback(() => {
+    setCheckedItems((prevCheckedItems) => {
+      const newSelectAll = !selectAll;
+      const newCheckedItems = prevCheckedItems.map((item) => ({
+        ...item,
+        value: newSelectAll,
+      }));
+      setSelectAll(newSelectAll);
+      return newCheckedItems;
+    });
+  }, [selectAll]);
 
   return {
     selectAll,
     checkedItems,
     handleSingleCheck,
     handleSelectAllCheck,
+    checked,
   };
 };
+
+// const useCheckbox = (courseFindMany: QueryResult<CourseFindManyQuery>) => {
+//   const [selectAll, setSelectAll] = useState(false);
+//   const [checkedItems, setCheckedItems] = useState(
+//     (courseFindMany.data?.courseFindMany ?? []).map((item) => ({
+//       id: item.id,
+//       value: false,
+//     }))
+//   );
+
+//   useEffect(() => {
+//     setCheckedItems(
+//       (courseFindMany.data?.courseFindMany ?? []).map((item) => ({
+//         id: item.id,
+//         value: false,
+//       }))
+//     );
+//   }, [courseFindMany.data?.courseFindMany]);
+
+//   const handleSingleCheck = (index: number) => {
+//     const newCheckedItems = [...checkedItems];
+//     newCheckedItems[index].value = !newCheckedItems[index].value;
+//     setCheckedItems(newCheckedItems);
+//     setSelectAll(newCheckedItems.every((item) => item.value));
+//   };
+
+//   const handleSelectAllCheck = () => {
+//     setSelectAll(!selectAll);
+//     setCheckedItems(
+//       Array.isArray(courseFindMany.data?.courseFindMany)
+//         ? courseFindMany.data?.courseFindMany?.map((item) => ({
+//             id: item.id,
+//             value: !selectAll,
+//           }))
+//         : []
+//     );
+//   };
+
+//   return {
+//     selectAll,
+//     checkedItems,
+//     handleSingleCheck,
+//     handleSelectAllCheck,
+//   };
+// };
 
 const useCoursesViewModel = () => {
   // Query and Modal
@@ -126,7 +186,11 @@ const useCoursesViewModel = () => {
   } = usePagination();
   // const [showMentorSelectModal, setShowMentorSelectModal] = useState(false);
   const [courseFindSearch, setCourseFindSearch] = useState("");
+  const [statusFindSearch, setStatusFindSearch] = useState<
+    CourseStatusEnum | "all"
+  >("all");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+  const router = useRouter();
 
   const courseFindMany = useCourseFindManyQuery({
     variables: {
@@ -144,6 +208,9 @@ const useCoursesViewModel = () => {
               contains: courseFindSearch,
               mode: QueryMode.Insensitive,
             },
+            status: {
+              equals: statusFindSearch == "all" ? null : statusFindSearch,
+            },
           },
           {
             createdBy: {
@@ -158,6 +225,9 @@ const useCoursesViewModel = () => {
                 },
               },
             },
+            status: {
+              equals: statusFindSearch == "all" ? null : statusFindSearch,
+            },
           },
           {
             id: {
@@ -165,15 +235,47 @@ const useCoursesViewModel = () => {
                 ? 0
                 : parseInt(courseFindSearch.toString()),
             },
+            status: {
+              equals: statusFindSearch == "all" ? null : statusFindSearch,
+            },
           },
         ],
       },
     },
   });
+  const {
+    selectAll,
+    checkedItems,
+    handleSingleCheck,
+    handleSelectAllCheck,
+    checked,
+  } = useCheckbox(courseFindMany);
 
-  const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
-    useCheckbox(courseFindMany);
+  const [courseDeleteMany] = useCourseDeleteManyMutation();
+
+  const handleCourseDeleteMany = async () => {
+    try {
+      await courseDeleteMany({
+        variables: {
+          where: {
+            id: {
+              in: checked,
+            },
+          },
+        },
+      });
+      await courseFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      router;
+    }
+  };
   return {
+    handleCourseDeleteMany,
+    checked,
+    statusFindSearch,
+    setStatusFindSearch,
     setOrderBy,
     orderBy,
     courseFindMany,

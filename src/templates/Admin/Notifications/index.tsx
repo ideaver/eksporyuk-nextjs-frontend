@@ -1,12 +1,16 @@
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
+import { useState } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
 import useNotificationsViewModel, {
   breadcrumbs,
-  formatDate,
+  // formatDate,
   formatTime,
 } from "./Notifications-view-model";
-import { NotificationFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import { NotificationFindManyQuery, InstantWithdrawalRequestFindManyQuery } from "@/app/service/graphql/gen/graphql";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { formatDate } from "@/app/service/utils/dateFormatter";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
@@ -18,6 +22,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import WithdrawalRequestModal from "./components/WithdrawalRequestModal";
 
 const NotificationPage = () => {
   const {
@@ -38,35 +43,86 @@ const NotificationPage = () => {
     handlePageChange,
     setFindTake,
     findTake,
+    instantWithdrawalRequestFindMany,
+    selectedTable,
+    setSelectedTable,
+    setSearchWithdrawal,
+    calculateTotalWithdrawalPage,
+    currentWithdrawalPage,
+    handleWithdrawalPageChange,
+    setFindWithdrawalTake,
+    findWithdrawalTake,
+    setWithdrawalStatus,
+    loading,
   } = useNotificationsViewModel();
 
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Notifikasi</PageTitle>
+      <LoadingOverlayWrapper
+        active={loading}
+        styles={{
+          overlay: (base) => ({
+            ...base,
+            background: "rgba(255, 255, 255, 0.8)",
+          }),
+          spinner: (base) => ({
+            ...base,
+            width: "100px",
+            "& svg circle": {
+              stroke: "rgba(3, 0, 0, 1)",
+            },
+          }),
+        }}
+        spinner
+      ></LoadingOverlayWrapper>
       <KTCard className="h-100">
         <KTCardBody>
           <Head
-            onSearch={setSearchNotification}
+            onSearch={
+              selectedTable === "notification"
+                ? setSearchNotification
+                : setSearchWithdrawal
+            }
             orderBy={setDateOrderBy}
-            completionStatus={setCompletionStatus}
+            completionStatus={selectedTable === "notification" ? setCompletionStatus : setWithdrawalStatus}
+            selectedTable={String(selectedTable)}
+            setSelectedTable={(val: string | number) => setSelectedTable(val)}
           />
-          <Body
-            data={notificationFindMany}
-            handleSelectAllCheck={handleSelectAllCheck}
-            handleSingleCheck={handleSingleCheck}
-            checkedItems={checkedItems}
-            selectAll={selectAll}
-          />
-          <Footer
-            pageLength={calculateTotalPage()}
-            currentPage={currentPage}
-            setCurrentPage={(val) => handlePageChange(val)}
-            findSkip={(val) => {}}
-            findTake={(val) => {
-              setFindTake(val);
-            }}
-            takeValue={findTake}
-          />
+          {selectedTable === "notification" ? (
+            <Body
+              data={notificationFindMany}
+              handleSelectAllCheck={handleSelectAllCheck}
+              handleSingleCheck={handleSingleCheck}
+              checkedItems={checkedItems}
+              selectAll={selectAll}
+            />
+          ) : (
+            <WithdrawalBody data={instantWithdrawalRequestFindMany} />
+          )}
+          {selectedTable === "notification" ? (
+            <Footer
+              pageLength={calculateTotalPage()}
+              currentPage={currentPage}
+              setCurrentPage={(val) => handlePageChange(val)}
+              findSkip={(val) => {}}
+              findTake={(val) => {
+                setFindTake(val);
+              }}
+              takeValue={findTake}
+            />
+          ) : (
+            <Footer
+              pageLength={calculateTotalWithdrawalPage()}
+              currentPage={currentWithdrawalPage}
+              setCurrentPage={(val) => handleWithdrawalPageChange(val)}
+              findSkip={(val) => {}}
+              findTake={(val) => {
+                setFindWithdrawalTake(val);
+              }}
+              takeValue={findWithdrawalTake}
+            />
+          )}
         </KTCardBody>
       </KTCard>
     </>
@@ -79,10 +135,14 @@ const Head = ({
   onSearch,
   orderBy,
   completionStatus,
+  selectedTable,
+  setSelectedTable,
 }: {
   onSearch: (val: string) => void;
   orderBy: any;
   completionStatus: any;
+  selectedTable: string;
+  setSelectedTable: (val: string | number) => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -124,7 +184,20 @@ const Head = ({
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
+            value={selectedTable}
             options={[
+              { label: "Notifikasi", value: "notification" },
+              { label: "Withdrawal Request", value: "withdrawal" },
+            ]}
+            onValueChange={(e) => {
+              setSelectedTable(e);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={selectedTable === "notification" ? [
               { label: "Semua Status", value: "" },
               { label: "Belum Diproses", value: "NOT_STARTED" },
               { label: "Dalam Proses", value: "IN_PROGRESS" },
@@ -132,6 +205,11 @@ const Head = ({
               { label: "Gagal", value: "FAILED" },
               { label: "Selesai", value: "RESOLVED" },
               { label: "Ditutup", value: "CLOSED" },
+            ]: [
+              { label: "Semua Status", value: "" },
+              { label: "Di Diproses", value: "PROCESSING" },
+              { label: "Ditolak", value: "REJECTED" },
+              { label: "Di Terima", value: "APPROVED" },
             ]}
             onValueChange={(e: any) => {
               completionStatus(e);
@@ -157,8 +235,6 @@ const Body = ({
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
 }) => {
-  console.log(data.data?.notificationFindMany);
-
   return (
     <>
       {data.error ? (
@@ -214,23 +290,25 @@ const Body = ({
                     defaultChildren={false}
                     onChange={() => handleSingleCheck(index)}
                   >
-                    <div className="d-flex justify-content-start align-items-center gap-3">
-                      <div
-                        className="bg-gray p-2"
-                        style={{
-                          backgroundColor: "#E1E3EA",
-                          borderRadius: "5px",
-                        }}
-                      >
-                        <i
-                          className="bi bi-envelope"
-                          style={{ fontSize: "30px" }}
-                        ></i>
+                    <Link href={`/admin/notifications/detail/${notif.id}`}>
+                      <div className="d-flex justify-content-start align-items-center gap-3">
+                        <div
+                          className="bg-gray p-2"
+                          style={{
+                            backgroundColor: "#E1E3EA",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          <i
+                            className="bi bi-envelope"
+                            style={{ fontSize: "30px" }}
+                          ></i>
+                        </div>
+                        <p className="fw-bold text-truncate m-0">
+                          {notif.title}
+                        </p>
                       </div>
-                      <p className="text-muted fw-bold text-truncate m-0">
-                        {notif.title}
-                      </p>
-                    </div>
+                    </Link>
                   </CheckBoxInput>
                 </td>
                 <td className="text-end min-w-200px">
@@ -285,6 +363,116 @@ const Body = ({
                     >
                       Lihat Detail
                     </Link>
+                  </div>
+                </td>
+              </KTTableBody>
+            );
+          })}
+        </KTTable>
+      )}
+    </>
+  );
+};
+
+const WithdrawalBody = ({
+  data,
+}: {
+  data: QueryResult<InstantWithdrawalRequestFindManyQuery>;
+}) => {
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState("");
+  const [withdrawalId, setWithdrawalId] = useState<number>(0);
+  const [withdrawalStatus, setWithdrawalStatus] = useState<string>("");
+
+  return (
+    <>
+      <WithdrawalRequestModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        action={modalAction}
+        withdrawalId={withdrawalId}
+        withdrawalStatus={withdrawalStatus}
+      />
+      {data.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{data?.error.message}</h3>
+        </div>
+      ) : data?.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable utilityGY={5} responsive="table-responsive my-10">
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="text-center">
+              Pengguna
+            </th>
+            <th className="text-center">Email</th>
+            <th className="text-end">Tanggal</th>
+            <th className="text-end">Amount</th>
+            <th className="text-end">Status</th>
+            <th className="text-center">Actions</th>
+          </KTTableHead>
+          {data.data?.instantWithdrawalRequestFindMany?.map((withDrawal, index) => {
+            const statusMap: { [key: string]: string } = {
+              PROCESSING: "Di Diproses",
+              REJECTED: "Ditolak",
+              APPROVED: "Di Terima",
+            };
+
+            return (
+              <KTTableBody key={index}>
+                <td className="text-center">
+                  <Link href={`affiliate/affiliator/detail/${withDrawal.createdById}/profile`}>
+                    {withDrawal.createdBy.user.name}
+                  </Link>
+                </td>
+                <td className="text-center">
+                  {withDrawal.createdBy.user.email}
+                </td>
+                <td className="text-end text-muted fw-bold">
+                  {/* <p className="m-0">
+                    {formatDate(notif.createdAt) ?? "-"}
+                  </p>
+                  <p className="m-0">
+                    {formatTime(notif.createdAt) ?? "-"}
+                  </p> */}
+                  {formatDate(withDrawal.createdAt)}
+                </td>
+                <td className="text-end text-muted fw-bold">
+                  {formatCurrency(withDrawal.amount)}
+                </td>
+                <td className="text-end text-muted fw-bold">
+                  <Badge
+                    badgeColor={
+                      withDrawal.status === "REJECTED"
+                        ? "danger"
+                        : withDrawal.status === "PROCESSING"
+                        ? "warning"
+                        : "success"
+                    }
+                    label={statusMap[withDrawal.status || ""]}
+                    onClick={function noRefCheck() {}}
+                  />
+                </td>
+                <td className="text-center min-w-200px">
+                  <div className="d-flex gap-2 justify-content-center">
+                    <button className="btn btn-success" onClick={() => {
+                      setShowModal(true);
+                      setModalAction("approve");
+                      setWithdrawalId(withDrawal.id);
+                      setWithdrawalStatus("APPROVED");
+                    }}>Approve</button>
+                    <button className="btn btn-danger" onClick={() => {
+                      setShowModal(true);
+                      setModalAction("reject");
+                      setWithdrawalId(withDrawal.id);
+                      setWithdrawalStatus("REJECTED");
+                    }}>Reject</button>
                   </div>
                 </td>
               </KTTableBody>

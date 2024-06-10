@@ -72,7 +72,7 @@ const Membership = () => {
                 </th>
                 <th className="text-end min-w-150px">DURASI</th>
                 <th className="text-end min-w-250px">TANGGAL</th>
-                <th className="text-end min-w-200px">TIPE MEMBERSHIP</th>
+                {/* <th className="text-end min-w-200px">TIPE MEMBERSHIP</th> */}
                 <th className="text-end min-w-150px">HARGA</th>
                 <th className="text-end min-w-125px">ACTION</th>
               </KTTableHead>
@@ -83,7 +83,7 @@ const Membership = () => {
                       <tr key={membership.id} className="">
                         <td className="">
                           <Link
-                            href={``}
+                            href={`/admin/subscriber/detail/${membership.id}`}
                             className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                             style={{
                               maxWidth: "150px",
@@ -102,9 +102,9 @@ const Membership = () => {
                             <span>{formatDate(membership.updatedAt)}</span>
                           </div>
                         </td>
-                        <td className="min-w-175px text-end fw-bold text-muted">
+                        {/* <td className="min-w-175px text-end fw-bold text-muted">
                           {membership.membershipType}
-                        </td>
+                        </td> */}
                         <td className="min-w-150px text-end fw-bold text-muted">
                           {formatCurrency(membership.price)}
                         </td>

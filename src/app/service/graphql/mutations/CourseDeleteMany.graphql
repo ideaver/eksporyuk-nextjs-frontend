@@ -1,0 +1,3 @@
+mutation CourseDeleteMany($where: CourseWhereInput) {
+  courseDeleteMany(where: $where)
+}
