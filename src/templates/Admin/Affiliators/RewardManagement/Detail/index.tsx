@@ -4,6 +4,8 @@ import { breadcrumbs } from "./DetailReward-view-model";
 import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { dateFormatter } from "../../AffiliatorManagement/Affiliator-view-model";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 const DetailReward = ({
   data,
@@ -20,9 +22,19 @@ const DetailReward = ({
           <h2 className="mb-5">Detail Reward</h2>
           <div className="mb-5">
             <h4 className="">Reward</h4>
-            <p className="fw-bold fs-5 pt-2">
-              {data?.rewardsCatalogFindOne?.title}
+            {data?.rewardsCatalogFindOne?.title && (
+              <p className="fw-bold fs-5 pt-2">
+              Saldo {formatCurrency(Number(data?.rewardsCatalogFindOne?.title))}
             </p>
+            )}
+            {data?.rewardsCatalogFindOne?.course?.title && (
+              <p className="fw-bold fs-5 pt-2">
+              {data?.rewardsCatalogFindOne?.course?.title}
+            </p>
+            )}
+            {/* <p className="fw-bold fs-5 pt-2">
+              {data?.rewardsCatalogFindOne?.title || data?.rewardsCatalogFindOne?.course?.title}
+            </p> */}
           </div>
           <div className="mb-5">
             <h4 className="">Deskripsi Reward</h4>
@@ -41,7 +53,7 @@ const DetailReward = ({
           <div className="mb-5">
             <h4 className="">Waktu berakhir</h4>
             <p className="fw-bold fs-5 pt-2">
-              {dateFormatter(data?.rewardsCatalogFindOne?.endSales) ?? "20 Juni 2024"}
+              {formatDate(data?.rewardsCatalogFindOne?.endSales) ?? "-"}
             </p>
           </div>
           <div className="mb-5">
@@ -50,12 +62,12 @@ const DetailReward = ({
               {data?.rewardsCatalogFindOne?.createdBy.user.name ?? "Unknown User"}
             </p>
           </div>
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <h4 className="">Course yang terhubung</h4>
             <p className="fw-bold fs-5 pt-2">
               {data?.rewardsCatalogFindOne?.course?.title ?? "Tidak ada course"}
             </p>
-          </div>
+          </div> */}
         </KTCardBody>
       </KTCard>
     </>

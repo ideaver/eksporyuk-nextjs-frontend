@@ -18,6 +18,7 @@ import {
   changeNamaReward,
   changeStatus,
   changeConnectCourse,
+  changeCash,
 } from "@/features/reducers/affiliators/rewardReducer";
 
 export type CourseOptionType = {
@@ -259,6 +260,8 @@ const useNewRewardViewModel = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [rewardType, setRewardType] = useState<any>("");
 
   // Redux states
   const status = useSelector((state: RootState) => state.reward.status);
@@ -288,12 +291,21 @@ const useNewRewardViewModel = () => {
     (value) => changeAkhirMasaBerlaku(value),
   );
 
+  const [cash, setCash] = useField(
+    (state: RootState) => state.reward.cash,
+    (value) => changeHargaPoint(value),
+  );
+
   const handleStatusChange = (status: string) => {
     dispatch(changeStatus(status));
   };
 
   const handleChangeHargaPoint = (price: string) => {
     dispatch(changeHargaPoint(price));
+  };
+
+  const handleChangeCash = (price: string) => {
+    dispatch(changeCash(price));
   };
 
   // Modify soon
@@ -319,15 +331,17 @@ const useNewRewardViewModel = () => {
   const [rewardsCatalogCreateMutation] = useRewardsCatalogCreateOneMutation();
 
   const handleRewardsCatalogCreateOneMutation = async ({
-    namaReward,
     deskripsiReward,
     hargaPoint,
+    cash,
+    firstSelectedCourse,
+    rewardType
   }: any) => {
     const data = await rewardsCatalogCreateMutation({
       variables: {
         data: {
-          title: namaReward,
-          rewardsType: RewardsTypeEnum.Cash,
+          title: rewardType === "CASH" ? cash : null,
+          rewardsType: rewardType,
           pointsRequired: Number(hargaPoint),
           endSales: date,
           description: deskripsiReward,
@@ -338,7 +352,7 @@ const useNewRewardViewModel = () => {
           },
           course: {
             connect: {
-              id: firstSelectedCourse,
+              id: rewardType === "COURSE" ? firstSelectedCourse : null,
             }
           }
         },
@@ -356,11 +370,12 @@ const useNewRewardViewModel = () => {
     dispatch(changeStatus("published"));
     dispatch(changeFotoProduk(""));
     dispatch(changeConnectCourse([]));
+    dispatch(changeCash(""));
   }
 
   const onSubmit = async () => {
     // Check if any required field is empty
-    if (!namaReward || !deskripsiReward || !hargaPoint || !date || !firstSelectedCourse) {
+    if (!deskripsiReward || !hargaPoint || !date) {
       setErrorMessage("All fields are required.");
       return;
     }
@@ -368,9 +383,11 @@ const useNewRewardViewModel = () => {
     setLoading(true);
     try {
       const data = await handleRewardsCatalogCreateOneMutation({
-        namaReward,
         deskripsiReward,
         hargaPoint,
+        cash,
+        firstSelectedCourse,
+        rewardType,
       });
       const result = data.data;
       console.log(result);
@@ -416,6 +433,12 @@ const useNewRewardViewModel = () => {
     router,
     date,
     setDate,
+    endDate,
+    setEndDate,
+    rewardType,
+    setRewardType,
+    handleChangeCash,
+    cash,
   };
 };
 

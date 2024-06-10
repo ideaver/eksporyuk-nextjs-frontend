@@ -181,11 +181,25 @@ const useRewardManagementViewModel = () => {
         },
       ],
       where: {
-        title: {
-          contains: searchRewards,
-          mode: QueryMode.Insensitive,
-        },
-      },
+        OR: [
+          {
+            title: {
+              contains: searchRewards,
+              mode: QueryMode.Insensitive
+            }
+          },
+          {
+            course: {
+              is: {
+                title: {
+                  contains: searchRewards,
+                  mode: QueryMode.Insensitive
+                }
+              }
+            }
+          }
+        ]
+      }
     },
   });
 
