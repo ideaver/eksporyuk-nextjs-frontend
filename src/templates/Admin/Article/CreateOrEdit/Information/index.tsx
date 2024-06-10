@@ -108,7 +108,7 @@ const InformationPage = () => {
 
   const { loadOptions } = useCoursesDropdown();
 
-  const { formik } = useArticleForm();
+  const { formik } = useArticleForm({});
 
   return (
     <>
@@ -322,8 +322,10 @@ const InformationPage = () => {
                   </Buttons>
                   <Buttons
                     type="submit"
-                    // disabled={!formik.isValid.valueOf()}
-                    onClick={() => {}}
+                    disabled={!formik.isValid.valueOf()}
+                    onClick={() => {
+                      handleArticleCreateOne();
+                    }}
                   >
                     Simpan
                   </Buttons>
