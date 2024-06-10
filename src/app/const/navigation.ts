@@ -144,7 +144,7 @@ export const adminMenus: MenuSection[] = [
             icon: "parcel",
           },
           {
-            title: "Pengaturan Membership Kupon",
+            title: "Pengaturan Membership Platform",
             to: "/admin/subscriber",
             icon: "classmates",
           },
