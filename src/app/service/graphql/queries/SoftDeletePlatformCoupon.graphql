@@ -1,0 +1,5 @@
+query SoftDeletePlatformCoupon($where: PlatformCouponWhereUniqueInput!) {
+  softDeletePlatformCoupon(where: $where) {
+    id
+  }
+}

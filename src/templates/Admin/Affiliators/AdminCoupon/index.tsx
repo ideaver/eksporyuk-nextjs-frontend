@@ -23,7 +23,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 import { valueFromAST } from "graphql";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import CurrencyInput from "react-currency-input-field";
 import clsx from "clsx";
@@ -45,20 +45,16 @@ const AdminCoupon = () => {
     couponStatus,
     setCouponStatus,
     couponFindMany,
-    selectAll,
-    checkedItems,
-    handleSingleCheck,
-    handleSelectAllCheck,
-    checked,
     setCouponSkip,
     setCouponTake,
-    handleDeleteMany,
     couponUpdateOne,
-    couponDeleteOne,
     setOrderBy,
     couponTake,
+    handleDeleteCoupon,
+    couponData,
   } = useAdminCouponViewModel();
-
+  const [code, setCode] = useState("");
+  const [couponId, setCouponId] = useState<number>(0);
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Kupon</PageTitle>
@@ -90,8 +86,6 @@ const AdminCoupon = () => {
             setCouponStatus={(value) => {
               setCouponStatus(value);
             }}
-            checked={checked}
-            handleDeleteMany={handleDeleteMany}
             setOrderBy={(e) => {
               setOrderBy(e);
             }}
@@ -118,17 +112,7 @@ const AdminCoupon = () => {
                   className="text-uppercase align-middle"
                 >
                   <th className="min-w-250px">
-                    <CheckBoxInput
-                      checked={selectAll}
-                      name="check-all"
-                      value="all"
-                      defaultChildren={false}
-                      onChange={() => {
-                        handleSelectAllCheck();
-                      }}
-                    >
-                      <p className="mb-0">KODE KUPON</p>
-                    </CheckBoxInput>
+                    <p className="mb-0">KODE KUPON</p>
                   </th>
                   {/* <th className="text-end min-w-200px">KUPON UTAMA</th> */}
                   <th className="text-end min-w-200px">PEMILIK</th>
@@ -140,148 +124,125 @@ const AdminCoupon = () => {
                 </KTTableHead>
 
                 <tbody className="align-middle">
-                  {couponFindMany.data?.platformCouponFindMany?.map(
-                    (coupon, index) => {
-                      return (
-                        <tr key={coupon.id} className="">
-                          <td className="min-w-200px">
-                            <CheckBoxInput
-                              className="ps-0"
-                              checked={checkedItems[index]?.value ?? false}
-                              name="check-all"
-                              value="all"
-                              defaultChildren={false}
-                              onChange={() => {
-                                handleSingleCheck(index);
-                              }}
-                            >
-                              <p className="fw-bold text-black mb-0">
-                                {coupon.code}
-                              </p>
-                            </CheckBoxInput>
-                          </td>
-                          {/* <td className="min-w-200px text-end fw-bold text-muted">
+                  {couponData?.map((coupon, index) => {
+                    return (
+                      <tr key={coupon.id} className="">
+                        <td className="min-w-200px">
+                          <p className="fw-bold text-black mb-0">
+                            {coupon.code}
+                          </p>
+                        </td>
+                        {/* <td className="min-w-200px text-end fw-bold text-muted">
                             {coupon.extendedFrom?.code}
                           </td> */}
-                          <td className="min-w-200px text-end fw-bold text-muted">
-                            <img
-                              className="symbol-label bg-gray-600 rounded-circle mx-3"
-                              src={
-                                coupon.createdBy.user.avatarImageId ??
-                                "/media/avatars/300-2.jpg"
-                              }
-                              width={40}
-                              height={40}
-                              alt="flag"
-                            />
-                            <span className="text-muted fw-bold">
-                              {coupon.createdBy.user.name}
-                            </span>
-                          </td>
-                          <td className="min-w-200px text-end fw-bold text-muted">
-                            {coupon.coupon.type === DiscountTypeEnum.Amount
-                              ? formatCurrency(coupon.coupon.value)
-                              : `${coupon.coupon.value}%`}
-                          </td>
-                          {/* <td className="min-w-200px text-end fw-bold text-muted">
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          <img
+                            className="symbol-label bg-gray-600 rounded-circle mx-3"
+                            src={
+                              coupon.createdBy.user.avatarImageId ??
+                              "/media/avatars/300-2.jpg"
+                            }
+                            width={40}
+                            height={40}
+                            alt="flag"
+                          />
+                          <span className="text-muted fw-bold">
+                            {coupon.createdBy.user.name}
+                          </span>
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {coupon.coupon.type === DiscountTypeEnum.Amount
+                            ? formatCurrency(coupon.coupon.value)
+                            : `${coupon.coupon.value}%`}
+                        </td>
+                        {/* <td className="min-w-200px text-end fw-bold text-muted">
                             {coupon.coupon.claimerQuota ?? "0"}
                           </td> */}
-                          <td className="min-w-200px text-end fw-bold text-muted">
-                            {coupon.coupon.isActive ? (
-                              <Badge
-                                size="large"
-                                label="Active"
-                                badgeColor="success"
-                              />
-                            ) : (
-                              <Badge
-                                size="large"
-                                label="Non Active"
-                                badgeColor="danger"
-                              />
-                            )}
-                          </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {coupon.coupon.isActive ? (
+                            <Badge
+                              size="large"
+                              label="Active"
+                              badgeColor="success"
+                            />
+                          ) : (
+                            <Badge
+                              size="large"
+                              label="Non Active"
+                              badgeColor="danger"
+                            />
+                          )}
+                        </td>
 
-                          <td className="text-end ">
-                            <div className="dropdown  ps-15 pe-0">
-                              <button
-                                className="btn btn-secondary dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Actions
-                              </button>
-                              <ul className="dropdown-menu">
-                                <li>
-                                  <Link
-                                    className="btn"
-                                    href={
-                                      "/admin/affiliate/admin-coupon/edit/" +
-                                      coupon.id
+                        <td className="text-end ">
+                          <div className="dropdown  ps-15 pe-0">
+                            <button
+                              className="btn btn-secondary dropdown-toggle"
+                              type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              Actions
+                            </button>
+                            <ul className="dropdown-menu">
+                              <li>
+                                <Link
+                                  className="btn"
+                                  href={
+                                    "/admin/affiliate/admin-coupon/edit/" +
+                                    coupon.id
+                                  }
+                                >
+                                  Edit
+                                </Link>
+                              </li>
+                              <li>
+                                <button
+                                  className="btn"
+                                  onClick={async () => {
+                                    try {
+                                      await couponUpdateOne({
+                                        variables: {
+                                          where: {
+                                            id: coupon.id,
+                                          },
+                                          data: {
+                                            isActive: {
+                                              set: !coupon.coupon.isActive,
+                                            },
+                                          },
+                                        },
+                                      });
+                                      await couponFindMany.refetch();
+                                    } catch (error) {
+                                      console.log(error);
+                                    } finally {
+                                      await couponFindMany.refetch();
                                     }
-                                  >
-                                    Edit
-                                  </Link>
-                                </li>
-                                <li>
-                                  <button
-                                    className="btn"
-                                    onClick={async () => {
-                                      try {
-                                        await couponUpdateOne({
-                                          variables: {
-                                            where: {
-                                              id: coupon.id,
-                                            },
-                                            data: {
-                                              isActive: {
-                                                set: !coupon.coupon.isActive,
-                                              },
-                                            },
-                                          },
-                                        });
-                                        await couponFindMany.refetch();
-                                      } catch (error) {
-                                        console.log(error);
-                                      } finally {
-                                        await couponFindMany.refetch();
-                                      }
-                                    }}
-                                  >
-                                    Ubah Status
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="btn"
-                                    onClick={async () => {
-                                      try {
-                                        await couponDeleteOne({
-                                          variables: {
-                                            where: {
-                                              id: coupon.id,
-                                            },
-                                          },
-                                        });
-                                        await couponFindMany.refetch();
-                                      } catch (error) {
-                                        console.log(error);
-                                      } finally {
-                                        await couponFindMany.refetch();
-                                      }
-                                    }}
-                                  >
-                                    Hapus kupon
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  )}
+                                  }}
+                                >
+                                  Ubah Status
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="btn"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#kt_delete_coupon_modal"
+                                  onClick={() => {
+                                    setCode(coupon.code);
+                                    setCouponId(coupon.id);
+                                  }}
+                                >
+                                  Hapus kupon
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </KTTable>
             )}
@@ -299,6 +260,14 @@ const AdminCoupon = () => {
         </KTCardBody>
       </KTCard>
       <AddCouponModal onChange={() => {}} onClose={() => {}} />
+      <DeleteCouponModal
+        code={code}
+        onChange={() => {}}
+        onClose={() => {}}
+        handleSubmit={() => {
+          handleDeleteCoupon(couponId);
+        }}
+      />
     </>
   );
 };
@@ -308,16 +277,12 @@ const Head = ({
   couponStatus,
   setCouponSearch,
   setCouponStatus,
-  checked,
-  handleDeleteMany,
   setOrderBy,
 }: {
-  checked: number[];
   couponSearch: string;
   couponStatus: string;
   setCouponStatus: (value: string) => void;
   setCouponSearch: (value: string) => void;
-  handleDeleteMany: () => Promise<void>;
   setOrderBy: (e: SortOrder) => void;
 }) => {
   return (
@@ -361,18 +326,9 @@ const Head = ({
           />
         </div>
         <div className="col-lg-auto">
-          {checked.length > 0 ? (
-            <Buttons buttonColor="danger" onClick={handleDeleteMany}>
-              Deleted Selected
-            </Buttons>
-          ) : (
-            <Buttons
-              data-bs-toggle="modal"
-              data-bs-target="#kt_add_coupon_modal"
-            >
-              Add New Coupon
-            </Buttons>
-          )}
+          <Buttons data-bs-toggle="modal" data-bs-target="#kt_add_coupon_modal">
+            Add New Coupon
+          </Buttons>
         </div>
       </div>
     </div>
@@ -619,9 +575,7 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="fw-bold text-gray-700">
-            Batas Waktu Penggunaan
-          </h4>
+          <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
           <CheckBoxInput
             className="active my-2"
             name="follup"
@@ -681,7 +635,9 @@ const AddCouponModal = ({
           null}
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="required fw-bold text-gray-700">Max Penggunaan User</h4>
+          <h4 className="required fw-bold text-gray-700">
+            Max Penggunaan User
+          </h4>
           <TextField
             styleType="outline"
             size="medium"
@@ -693,7 +649,9 @@ const AddCouponModal = ({
           />
         </div>
         <div className="mb-8 mt-6">
-          <h4 className="fw-bold text-gray-700">Kupon hanya bisa digunakan di kelas</h4>
+          <h4 className="fw-bold text-gray-700">
+            Kupon hanya bisa digunakan di kelas
+          </h4>
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
@@ -730,7 +688,9 @@ const AddCouponModal = ({
           ></AsyncPaginate>
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="fw-bold text-gray-700">Kupon tidak bisa digunakan di kelas</h4>
+          <h4 className="fw-bold text-gray-700">
+            Kupon tidak bisa digunakan di kelas
+          </h4>
           {/* <h6 className="mt-4 text-muted">
             Pilih Kelas yang Dapat Menggunakan Kupon Ini
           </h6> */}
@@ -767,16 +727,68 @@ const AddCouponModal = ({
           ></AsyncPaginate>
         </div>
         <SweetAlert2
-        {...swalProps}
-        didOpen={() => {
-          // run when swal is opened...
-        }}
-        didClose={async () => {
-          console.log("closed");
-          setSwalProps({});
-          resetForm();
-        }}
-      />
+          {...swalProps}
+          didOpen={() => {
+            // run when swal is opened...
+          }}
+          didClose={async () => {
+            console.log("closed");
+            setSwalProps({});
+            resetForm();
+          }}
+        />
+      </KTModal>
+    </div>
+  );
+};
+
+const DeleteCouponModal = ({
+  // date,
+  onChange,
+  handleSubmit,
+  onClose,
+  code,
+}: {
+  // date: Date;
+  handleSubmit: () => void;
+  onChange: (value: any) => void;
+  onClose: () => void;
+  code: string;
+}) => {
+  return (
+    <div>
+      <KTModal
+        dataBsTarget="kt_delete_coupon_modal"
+        title="Hapus Kupon"
+        fade
+        modalCentered
+        onClose={onClose}
+        buttonClose={
+          <Buttons
+            buttonColor="secondary"
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+          >
+            Batal
+          </Buttons>
+        }
+        buttonSubmit={
+          <Buttons
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+            buttonColor="danger"
+            onClick={handleSubmit}
+          >
+            Hapus Kupon
+          </Buttons>
+        }
+        footerContentCentered
+        modalSize="lg"
+      >
+        <p className="text-dark fs-3 text-center">
+          Apakah anda yakin ingin menghapus kupon{" "}
+          <span className="text-primary fs-2">{code}</span>?
+        </p>
       </KTModal>
     </div>
   );
