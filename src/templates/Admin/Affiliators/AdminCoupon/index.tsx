@@ -26,6 +26,7 @@ import useAdminCouponViewModel, {
   useCouponForm,
   useCoursesDropdown,
 } from "./AdminCoupon-view-model";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 
 const AdminCoupon = () => {
   const {
@@ -448,6 +449,8 @@ const AddCouponModal = ({
     setStartDate,
     endDate,
     setEndDate,
+    setDesc,
+    desc,
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
@@ -568,9 +571,18 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="fw-bold text-gray-700">
-            Batas Waktu Penggunaan
-          </h4>
+          <h4 className="required fw-bold text-gray-700">Deskripsi Kupon</h4>
+          <Textarea
+            rows={9}
+            props={{
+              desc,
+              onChange: (e: any) => setDesc(e.target.value),
+            }}
+          ></Textarea>
+          <p className="fw-bold fs-6 text-muted">Masukan Deskripsi Kupon</p>
+        </div>
+        <div>
+          <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
           <CheckBoxInput
             className="active my-2"
             name="follup"
@@ -630,7 +642,9 @@ const AddCouponModal = ({
           null}
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="required fw-bold text-gray-700">Max Penggunaan User</h4>
+          <h4 className="required fw-bold text-gray-700">
+            Max Penggunaan User
+          </h4>
           <TextField
             styleType="outline"
             size="medium"
