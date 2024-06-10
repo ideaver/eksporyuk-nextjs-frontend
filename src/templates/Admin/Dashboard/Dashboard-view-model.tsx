@@ -689,16 +689,18 @@ const useDashboardViewModel = () => {
   ];
 
   // simplefy number
-  function simplifyNumber(n: string): string {
+function simplifyNumber(n: string): string {
     const number = parseInt(n);
-    if (number >= 1000000) {
-      return (number / 1000000).toFixed(0) + "M";
+    if (number >= 1000000000) {
+      return (number / 1000000000).toFixed(0) + "M";
+    } else if (number >= 1000000) {
+      return (number / 1000000).toFixed(0) + "JT";
     } else if (number >= 1000) {
-      return (number / 1000).toFixed(0) + "k";
+      return (number / 1000).toFixed(0) + "RB";
     } else {
       return number.toString();
     }
-  }
+}
 
   return {
     breadcrumbs,
