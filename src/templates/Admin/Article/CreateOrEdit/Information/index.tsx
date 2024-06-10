@@ -152,7 +152,7 @@ const InformationPage = () => {
                   dispatch(changeToogleForm("Article"));
                 }}
               >
-                Article
+                Article {"(Affiliator)"}
               </button>
             </li>
             <li>
@@ -182,7 +182,7 @@ const InformationPage = () => {
                   dispatch(changeToogleForm("News"));
                 }}
               >
-                News
+                News {"(Student)"}
               </button>
             </li>
           </ul>
@@ -202,7 +202,7 @@ const InformationPage = () => {
               <div className="col-lg-8">
                 <KTCard className="">
                   <KTCardBody>
-                    <h3 className="mb-5">Tulis Artikel</h3>
+                    <h3 className="mb-5">Tulis Artikel {"(Affiliator)"}</h3>
                     <h5 className="required">Judul Artikel</h5>
                     <TextField
                       placeholder="Masukan judul artikel"
@@ -243,7 +243,7 @@ const InformationPage = () => {
                     />
 
                     <h5 className="text-muted mt-3">Masukan url video</h5>
-                    <h5 className="required mt-5">Target Artikel</h5>
+                    {/* <h5 className="required mt-5">Target Artikel</h5>
                     <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                       {target.map((e: any, index) => (
                         <Buttons
@@ -267,7 +267,7 @@ const InformationPage = () => {
                         handleTargetChange([...target, val as UserRoleEnum]);
                       }}
                     />
-                    <h5 className="text-muted mt-3">Masukan target artikel</h5>
+                    <h5 className="text-muted mt-3">Masukan target artikel</h5> */}
 
                     <h5 className="required mt-5">Konten Artikel</h5>
                     <div
@@ -513,7 +513,7 @@ const InformationPage = () => {
               <div className={"col-lg-8"}>
                 <KTCard className="">
                   <KTCardBody>
-                    <h3 className="mb-5">Tulis News</h3>
+                    <h3 className="mb-5">Tulis News {"(Student)"}</h3>
 
                     <h5 className="required">Judul</h5>
                     <TextField
