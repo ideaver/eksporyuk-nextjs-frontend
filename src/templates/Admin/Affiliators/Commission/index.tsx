@@ -2,10 +2,14 @@ import Link from "next/link";
 import { QueryResult } from "@apollo/client";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 import useComissionViewModel, {
   formatToIDR,
   breadcrumbs,
+  useFilterDropdown,
+  // useCoursesDropdown,
+  // useMembershipsDropdown,
 } from "./Comission-view-model";
 import { InvoiceFindManyQuery, TransactionFindManyQuery, PendingCommissionFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import DetailComissionModal from "./components/DetailComissionModal";
@@ -23,6 +27,21 @@ import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
 
 interface ComissionPageProps {}
+
+const customStyles = {
+  // provide correct types here
+  control: (provided: any, state: { isFocused: boolean }) => ({
+      ...provided,
+      borderRadius: '5px',
+      border: '2px solid #ccc',
+      boxShadow: state.isFocused ? '0 0 0 2px #3699FF' : null,
+  }),
+  option: (provided: any, state: { isFocused: boolean }) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? '#3699FF' : null,
+      color: state.isFocused ? 'white' : null,
+  }),
+}
 
 const CommissionPage = ({}: ComissionPageProps) => {
   const {
@@ -50,7 +69,8 @@ const CommissionPage = ({}: ComissionPageProps) => {
     currentPendingCommPage,
     handlePendingCommPageChange,
     setFindPendingCommTake,
-    findPendingCommTake
+    findPendingCommTake,
+    setSearchFilter,
   } = useComissionViewModel();
 
   return (
@@ -67,6 +87,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
               }}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
+              setSearchFilter={setSearchFilter}
             />
           </div>
         </KTCardBody>
@@ -106,7 +127,11 @@ const CommissionPage = ({}: ComissionPageProps) => {
 
 export default CommissionPage;
 
-const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable }: any) => {
+const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable, setSearchFilter }: any) => {
+  const { loadOptions: loadAffiliator } = useFilterDropdown();
+  // const { loadOptions: loadCourses } = useCoursesDropdown();
+  // const { loadOptions: loadMemberships } = useMembershipsDropdown();
+
   return (
     <div className="row justify-content-between gy-5">
       <div className="col-lg-auto">
@@ -115,11 +140,63 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
           preffixIcon="magnifier"
           placeholder="Search"
           props={{
-            onChange: (e: any) => onSearch(e.target.value),
+            onChange: (e: any) =>{
+              if (e.target.value === "") {
+                onSearch(null);
+              } else {
+                onSearch(e.target.value)
+              }
+            },
           }}
         ></TextField>
       </div>
       <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <AsyncPaginate
+            className="min-w-200px"
+            loadOptions={loadAffiliator}
+            onChange={(e) => {
+              console.log(e);
+              if (e?.label === "Semua Affiliator" || e?.label === "Semua Kelas" || e?.label === "Semua Membership") {
+                setSearchFilter(null);
+                // onSearch(null);
+                } else {
+                setSearchFilter(e?.label);
+              }
+            }}
+            styles={customStyles}
+          />
+        </div>
+        {/* <div className="col-lg-auto">
+          <AsyncPaginate
+            className="min-w-200px"
+            loadOptions={loadCourses}
+            onChange={(e) => {
+              console.log(e);
+              if (e?.label === "Semua Kelas") {
+                setSearchFilter(null);
+                // onSearch(null);
+                } else {
+                setSearchFilter(e?.label);
+              }
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <AsyncPaginate
+            className="min-w-200px"
+            loadOptions={loadMemberships}
+            onChange={(e) => {
+              console.log(e);
+              if (e?.label === "Semua Memberships") {
+                setSearchFilter(null);
+                // onSearch(null);
+                } else {
+                setSearchFilter(e?.label);
+              }
+            }}
+          />
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -170,6 +247,8 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
 const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [commisionId, setComissionId] = useState(0);
+
+  console.log(data);
 
   return (
     <div className="table-responsive mb-10 p-10">
