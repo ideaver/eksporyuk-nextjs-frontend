@@ -7,21 +7,16 @@ const PrivacyPolicy: React.FC = () => {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <title>Privacy Policy</title>
-        <style>
-          {/* body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        padding: 1em;
-      } */}
-        </style>
       </head>
       <body>
         <strong>Privacy Policy</strong>
         <p>
-          This privacy policy applies to the EksporYuk app (hereby referred to
-          as "Application") for mobile devices that was created by EksporYuk
-          (hereby referred to as "Service Provider") as a Free service. This
-          service is intended for use "AS IS".
+          This privacy policy applies to the EksporYuk Affiliator app (hereby
+          referred to as "Application") for mobile devices that was created by
+          EksporYuk Affiliator (hereby referred to as "Service Provider") as a
+          Free service. This service is intended for use "AS IS".
         </p>
+        <br />
         <strong>Information Collection and Use</strong>
         <p>
           The Application collects information when you download and use it.
