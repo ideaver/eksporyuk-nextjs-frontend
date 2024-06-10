@@ -8,6 +8,10 @@ query ArticleFindOne($where: ArticleWhereUniqueInput!) {
     createdAt
     updatedAt
     target
+    articleType
+    material {
+      path
+    }
     category {
       id
       name

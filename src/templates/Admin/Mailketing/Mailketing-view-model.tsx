@@ -1,9 +1,15 @@
 import {
+  QueryMode,
   UserRoleEnum,
+  useGetAllListSubscribersQuery,
+  usePlatformSettingFindFirstQuery,
+  usePlatformSettingUpdateOneMutation,
   useSendMailForMailketingMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { GroupBase, OptionsOrGroups } from "react-select";
 
 export const breadcrumbs = [
   {
@@ -20,9 +26,43 @@ export const breadcrumbs = [
   },
 ];
 
+type OptionType = {
+  value: string;
+  label: string;
+};
+
+export const useAllListSubscriberDropdown = () => {
+  const getAllListSubscriber = useGetAllListSubscribersQuery();
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
+  return { loadOptions, getAllListSubscriber };
+};
+
 const useMailketingViewModel = () => {
-  const [emailName, setEmailName] = useState("Admin EksporYuk");
-  const [emailAddress, setEmailAddress] = useState("admin@eksporyuk.com");
+  const router = useRouter();
+
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  const [emailName, setEmailName] = useState<string | undefined>("");
+  const [emailAddress, setEmailAddress] = useState<string | undefined>("");
+  const [listValue, setListValue] = useState<any>("");
+  const [tokenAPI, setTokenAPI] = useState<string | undefined>("");
 
   const [sendEmail, setSendEmail] = useState<string[]>([""]);
   const [sendSubject, setSendSubject] = useState("");
@@ -31,10 +71,65 @@ const useMailketingViewModel = () => {
   const [sendOption, setSendOption] = useState("email");
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [swalProps, setSwalProps] = useState({});
 
+  const platformSetting = usePlatformSettingFindFirstQuery({
+    onCompleted: (value) => {
+      setEmailName(value.platformSettingFindFirst?.senderName);
+      setEmailAddress(value.platformSettingFindFirst?.senderEmail);
+      setListValue(value.platformSettingFindFirst?.listIdMailketingSubscriber);
+      setTokenAPI(value.platformSettingFindFirst?.senderEmailApiToken);
+    },
+  });
+  const [paltformSettingUpdateOne, response] =
+    usePlatformSettingUpdateOneMutation();
+
   const [sendMailForMailketing] = useSendMailForMailketingMutation();
+
+  const handlePlatformSettingUpdateOne = async () => {
+    try {
+      await paltformSettingUpdateOne({
+        variables: {
+          where: {
+            id: 1,
+          },
+          data: {
+            senderEmail: {
+              set: emailAddress,
+            },
+            senderName: {
+              set: emailName,
+            },
+            listIdMailketingSubscriber: {
+              set: listValue?.value,
+            },
+          },
+        },
+      });
+      router.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAPITokenUpdate = async () => {
+    try {
+      await paltformSettingUpdateOne({
+        variables: {
+          where: {
+            id: 1,
+          },
+          data: {
+            senderEmailApiToken: {
+              set: tokenAPI,
+            },
+          },
+        },
+      });
+      router.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleMailketingSend = async () => {
     setIsLoading(true);
@@ -42,8 +137,10 @@ const useMailketingViewModel = () => {
       await sendMailForMailketing({
         variables: {
           sendMailForMailketing: {
-            senderEmail: emailAddress,
-            senderName: emailName,
+            senderEmail: platformSetting.data?.platformSettingFindFirst
+              ?.senderEmail as string,
+            senderName: platformSetting.data?.platformSettingFindFirst
+              ?.senderName as string,
             receiverEmail: sendOption === "email" ? sendEmail : [],
             subject: sendSubject,
             userRole: sendOption === "role" ? userRole : null,
@@ -68,8 +165,8 @@ const useMailketingViewModel = () => {
         confirmButtonText: "OK",
       });
     } finally {
-      setEmailName("Admin EksporYuk");
-      setEmailAddress("admin@eksporyuk.com");
+      // setEmailName("Admin EksporYuk");
+      // setEmailAddress("admin@eksporyuk.com");
       setSendEmail([""]);
       setSendSubject("");
       setSendMessage("");
@@ -78,7 +175,34 @@ const useMailketingViewModel = () => {
     }
   };
 
+  useEffect(() => {
+    if (
+      emailName !==
+        platformSetting.data?.platformSettingFindFirst?.senderName ||
+      emailAddress !==
+        platformSetting.data?.platformSettingFindFirst?.senderEmail
+    ) {
+      setSyncMessage(`press "Simpan Pengaturan" to sync`);
+    } else {
+      setSyncMessage(null);
+    }
+  }, [
+    emailName,
+    emailAddress,
+    platformSetting.data?.platformSettingFindFirst?.senderName,
+    platformSetting.data?.platformSettingFindFirst?.senderEmail,
+  ]);
+
   return {
+    handleAPITokenUpdate,
+    tokenAPI,
+    setTokenAPI,
+    syncMessage,
+    handlePlatformSettingUpdateOne,
+    listValue,
+    setListValue,
+    paltformSettingUpdateOne,
+    platformSetting,
     setSwalProps,
     swalProps,
     sendOption,

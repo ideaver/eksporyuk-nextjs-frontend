@@ -41,6 +41,8 @@ const EditArticle = ({ id, data }: IEditArticle) => {
     target,
     setTarget,
     targetOptions,
+    urlVideo,
+    setUrlVideo,
   } = useEditArticleViewModel({ data, id });
 
   const router = useRouter();
@@ -79,7 +81,7 @@ const EditArticle = ({ id, data }: IEditArticle) => {
             <div className="col-lg-8">
               <KTCard className="">
                 <KTCardBody>
-                  <h3 className="mb-5">Tulis Artikel</h3>
+                  <h3 className="mb-5">Edit Artikel</h3>
                   <h5 className="required">Judul Artikel</h5>
                   <TextField
                     placeholder="Masukan judul artikel"
@@ -107,6 +109,17 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                       <span role="alert">{formik.errors.title}</span>
                     </div>
                   )}
+                  <h5 className="text-muted mt-3">Edit judul artikel</h5>
+                  <h5 className="">URL Video</h5>
+                  <TextField
+                    placeholder="Masukan judul artikel"
+                    props={{
+                      value: urlVideo,
+                      onChange: (e: any) => {
+                        setUrlVideo(e.target.value);
+                      },
+                    }}
+                  />
                   <h5 className="text-muted mt-3">Edit judul artikel</h5>
                   <h5 className="required mt-5">Target Artikel</h5>
                   <div className="d-flex flex-wrap gap-1 mx-2 mb-2">

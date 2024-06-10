@@ -46,7 +46,7 @@ const EditMaterialPromotion = ({ id, data }: IEditMaterialPromotion) => {
 
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Edit Article</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Edit Material Promotion</PageTitle>
       <LoadingOverlayWrapper
         active={isLoadingMaterialPromotion}
         styles={{
@@ -108,7 +108,7 @@ const EditMaterialPromotion = ({ id, data }: IEditMaterialPromotion) => {
 
                   <h5 className="required">Judul</h5>
                   <TextField
-                    placeholder="Masukan judul artikel"
+                    placeholder="Masukan judul"
                     classNames={clsx(
                       {
                         "is-invalid":
@@ -152,7 +152,7 @@ const EditMaterialPromotion = ({ id, data }: IEditMaterialPromotion) => {
                     <>
                       <h5 className="">Url Video</h5>
                       <TextField
-                        placeholder="Masukan judul artikel"
+                        placeholder="Masukan url"
                         props={{
                           value: video,
                           onChange: (e: any) => {

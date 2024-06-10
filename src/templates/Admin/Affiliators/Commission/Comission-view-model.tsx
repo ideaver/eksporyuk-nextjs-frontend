@@ -6,7 +6,12 @@ import {
   QueryMode,
   SortOrder,
   useTransactionFindManyQuery,
+  usePendingCommissionFindManyQuery,
+  useAffiliatorFindManyQuery,
+  useCourseFindManyQuery,
+  useMembershipCategoryFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
+import { GroupBase, OptionsOrGroups } from "react-select";
 
 export const formatToIDR = (amount: string) => {
   return parseInt(amount).toLocaleString("id-ID", {
@@ -63,13 +68,179 @@ const usePagination = () => {
   };
 };
 
+const usePendingComissionPagination = () => {
+  const [currentPendingCommPage, setCurrentPendingCommPage] = useState(1);
+  const [findPendingCommSkip, setFindPendingCommSkip] = useState(0);
+  const [findPendingCommTake, setFindPendingCommTake] = useState(10);
+  const pendingCommissionLength = usePendingCommissionFindManyQuery({
+    variables: {
+      pendingCommissionArgs: {},
+    },
+  });
+
+  const handlePendingCommPageChange = (page: number) => {
+    setCurrentPendingCommPage(page);
+    setFindPendingCommSkip((page - 1) * findPendingCommTake);
+  };
+
+  const calculateTotalPendingCommPage = () => {
+    return Math.ceil(
+      (pendingCommissionLength.data?.pendingCommissionFindMany?.length ?? 0) /
+        findPendingCommTake
+    );
+  };
+  return {
+    currentPendingCommPage,
+    setCurrentPendingCommPage,
+    findPendingCommSkip,
+    setFindPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
+    pendingCommissionLength,
+  };
+};
+
+type OptionType = {
+  value: number;
+  label: string;
+};
+
+export const useFilterDropdown = () => {
+  const getAffiliators = useAffiliatorFindManyQuery();
+  const getCourses = useCourseFindManyQuery();
+  const getMemberships = useMembershipCategoryFindManyQuery();
+
+  async function loadOptions(search: any, prevOptions: any) {
+    const resultAffiliators =
+      getAffiliators.data?.affiliatorFindMany?.map((affiliator) => ({
+        value: affiliator.user.name,
+        label: affiliator.user.name,
+      })) ?? [];
+    resultAffiliators.unshift({ value: "", label: "Semua Affiliator" });
+    await getAffiliators.refetch({
+      skip: prevOptions.length,
+      where: {
+        user: {
+          is: {
+            name: {
+              contains: search,
+              mode: QueryMode.Insensitive,
+            },
+          },
+        },
+      },
+    });
+
+    const resultCourses =
+      getCourses.data?.courseFindMany?.map((course) => ({
+        value: course.title,
+        label: course.title,
+      })) ?? [];
+    resultCourses.unshift({ value: "", label: "Semua Kelas" });
+    await getCourses.refetch({
+      skip: prevOptions.length,
+      where: {
+        title: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const resultMemberships =
+      getMemberships.data?.membershipCategoryFindMany?.map((membership) => ({
+        value: membership.name,
+        label: membership.name,
+      })) ?? [];
+    resultMemberships.unshift({ value: "", label: "Semua Membership" });
+    await getMemberships.refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    return {
+      options: [...resultAffiliators, ...resultCourses, ...resultMemberships],
+      // options: resultAffiliators,
+      hasMore: false,
+    };
+  }
+  return { loadOptions };
+};
+
+// DONT DELETE
+// export const useCoursesDropdown = () => {
+//   const getCourses = useCourseFindManyQuery();
+
+//   async function loadOptions(search: any, prevOptions: any) {
+//     const resultCourses =
+//       getCourses.data?.courseFindMany?.map((course) => ({
+//         value: course.id,
+//         label: course.title,
+//       })) ?? [];
+//     resultCourses.unshift({ value: 0, label: "Semua Kelas" });
+//     await getCourses.refetch({
+//       skip: prevOptions.length,
+//       where: {
+//         title: {
+//           contains: search,
+//           mode: QueryMode.Insensitive,
+//         },
+//       },
+//     });
+
+//     return {
+//       options: resultCourses,
+//       hasMore: false,
+//     };
+//   }
+//   return { loadOptions };
+// };
+
+// export const useMembershipsDropdown = () => {
+//   const getMemberships = useMembershipCategoryFindManyQuery();
+
+//   async function loadOptions(search: any, prevOptions: any) {
+//     const resultMemberships =
+//       getMemberships.data?.membershipCategoryFindMany?.map((membership) => ({
+//         value: membership.id,
+//         label: membership.name,
+//       })) ?? [];
+//     resultMemberships.unshift({ value: 0, label: "Semua Membership" });
+//     await getMemberships.refetch({
+//       skip: prevOptions.length,
+//       where: {
+//         name: {
+//           contains: search,
+//           mode: QueryMode.Insensitive,
+//         },
+//       },
+//     });
+
+//     return {
+//       options: resultMemberships,
+//       hasMore: false,
+//     };
+//   }
+//   return { loadOptions };
+// };
+
 const useComissionViewModel = () => {
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
   const [status, setStatus] = useState<any>(null);
   const [isCustomTake, setIsCustomTake] = useState(false);
-  const [searchCommission, setSearchComission] = useState("");
+  const [searchCommission, setSearchComission] = useState(null);
+  const [selectedTable, setSelectedTable] = useState("commission");
+  const [searchPendingCommission, setSearchPendingComission] = useState("");
+  const [searchFilter, setSearchFilter] = useState(null);
 
   const {
     currentPage,
@@ -82,6 +253,14 @@ const useComissionViewModel = () => {
     calculateTotalPage,
     invoiceLength,
   } = usePagination();
+  const {
+    currentPendingCommPage,
+    findPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
+  } = usePendingComissionPagination();
 
   // Querying data
   const invoiceFindMany = useInvoiceFindManyQuery({
@@ -104,13 +283,13 @@ const useComissionViewModel = () => {
                         title: {
                           contains: searchCommission,
                           mode: QueryMode.Insensitive,
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
           // Search by buyer name
           {
@@ -129,19 +308,19 @@ const useComissionViewModel = () => {
                                     name: {
                                       contains: searchCommission,
                                       mode: QueryMode.Insensitive,
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
           // Search by affiliator name
           {
@@ -164,24 +343,24 @@ const useComissionViewModel = () => {
                                             name: {
                                               contains: searchCommission,
                                               mode: QueryMode.Insensitive,
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
         status: {
           equals: status == "all" ? null : status,
@@ -190,6 +369,8 @@ const useComissionViewModel = () => {
     },
   });
 
+  console.log(searchCommission);
+
   const transactionFindMany = useTransactionFindManyQuery({
     variables: {
       take: parseInt(findTake.toString()),
@@ -197,7 +378,141 @@ const useComissionViewModel = () => {
       orderBy: {
         updatedAt: orderBy,
       },
-    }
+      where: {
+        // Search by filter dropdown
+        OR: [
+          // Buyer name
+          {
+            payment: {
+              is: {
+                invoice: {
+                  is: {
+                    paymentForGateway: {
+                      is: {
+                        sender_name: {
+                          contains: searchFilter,
+                          mode: QueryMode.Insensitive,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          // Order name
+          {
+            payment: {
+              is: {
+                invoice: {
+                  is: {
+                    paymentForGateway: {
+                      is: {
+                        bill_title: {
+                          contains: searchFilter,
+                          mode: QueryMode.Insensitive,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          // Affiliator name
+          {
+            payment: {
+              is: {
+                invoice: {
+                  is: {
+                    order: {
+                      is: {
+                        createdByUser: {
+                          is: {
+                            affiliator: {
+                              is: {
+                                user: {
+                                  is: {
+                                    name: {
+                                      contains: searchFilter,
+                                      mode: QueryMode.Insensitive,
+                                    }
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+        // Search by searching input
+        payment: {
+          is: {
+            invoice: {
+              is: {
+                OR: [
+                  // Nama affiliator
+                  {
+                    order: {
+                      is: {
+                        createdByUser: {
+                          is: {
+                            affiliator: {
+                              is: {
+                                user: {
+                                  is: {
+                                    name: {
+                                      contains: searchCommission,
+                                      mode: QueryMode.Insensitive,
+                                    }
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      }
+                    }
+                  },
+                  // Nama pembeli
+                  {
+                    paymentForGateway: {
+                      is: {
+                        sender_name: {
+                          contains: searchCommission,
+                          mode: QueryMode.Insensitive,
+                        },
+                      },
+                    },
+                  },
+                  // Nama order
+                  {
+                    paymentForGateway: {
+                      is: {
+                        bill_title: {
+                          contains: searchCommission,
+                          mode: QueryMode.Insensitive,
+                        },
+                      },
+                    },
+                  }
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const pendingComissionFindMany = usePendingCommissionFindManyQuery({
+    variables: { pendingCommissionArgs: {} },
   });
 
   return {
@@ -219,6 +534,17 @@ const useComissionViewModel = () => {
     setFindTake,
     findTake,
     transactionFindMany,
+    pendingComissionFindMany,
+    selectedTable,
+    setSelectedTable,
+    setSearchPendingComission,
+    currentPendingCommPage,
+    findPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
+    setSearchFilter,
   };
 };
 

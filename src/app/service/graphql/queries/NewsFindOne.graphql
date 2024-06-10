@@ -1,0 +1,28 @@
+query NewsFindOne($where: NewsWhereUniqueInput!) {
+  newsFindOne(where: $where) {
+    id
+    title
+    type
+    content
+    createdByAdminId
+    createdAt
+    updatedAt
+    _count {
+      comments
+      userLikes
+      fileUrl
+    }
+    createdByAdmin {
+      user {
+        avatarImageId
+        email
+        id
+        name
+        phoneId
+      }
+    }
+    fileUrl {
+      path
+    }
+  }
+}

@@ -4,10 +4,13 @@ import {
   changeQuizs,
 } from "@/features/reducers/products/productReducer";
 import { ICreateQuizData } from "@/types/contents/products/IQuizData";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const ObjectiveHandler = () => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const dispatch = useDispatch();
   const currentObjectiveSelector = useSelector(
     (state: RootState) => state.product.objective
@@ -15,20 +18,27 @@ const ObjectiveHandler = () => {
   const [items, setItems] = useState<string[]>(currentObjectiveSelector);
 
   const addItem = () => {
-    setItems((prevItems) => [...prevItems, ""]);
+    if (!isDetail) {
+      setItems((prevItems) => [...prevItems, ""]);
+    }
   };
 
   const removeItem = (index: number) => {
-    setItems((prevItems) => prevItems.filter((item, i) => i !== index));
+    if (!isDetail) {
+      setItems((prevItems) => prevItems.filter((item, i) => i !== index));
+    }
   };
 
   const handleInputChange = (index: number, newValue: string) => {
-    setItems((prevItems) =>
-      prevItems.map((item, i) => (i === index ? newValue : item))
-    );
+    if (!isDetail) {
+      setItems((prevItems) =>
+        prevItems.map((item, i) => (i === index ? newValue : item))
+      );
+    }
   };
-
-  dispatch(changeObjective(items));
+  if (!isDetail) {
+    dispatch(changeObjective(items));
+  }
 
   return {
     items,
@@ -39,11 +49,15 @@ const ObjectiveHandler = () => {
 };
 
 export const HandleQuizSubmit = (value: ICreateQuizData) => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
   const dispatch = useDispatch();
   const currentQuizSelector = useSelector(
     (state: RootState) => state.product.quizs
   );
-
+  if (isDetail) {
+    return;
+  }
   dispatch(changeQuizs(currentQuizSelector.concat(value)));
 
   return true;

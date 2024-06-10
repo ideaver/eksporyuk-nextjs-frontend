@@ -51,7 +51,7 @@ const OrderPage = ({}: OrderPageProps) => {
         follupValues={follupValues}
         selectedFollupValue={selectedFollupValue}
         handleFollupChange={handleFollupChange}
-        linkAPIWhatsapp={() => ""}
+        linkAPIWhatsapp=""
       />
     </>
   );

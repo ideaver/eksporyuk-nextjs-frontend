@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export interface IClassTabBarViewModel {
-  urlType: "create" | "edit";
+  urlType: "create" | "edit" | "detail";
   id?: string | string[] | undefined;
 }
 const useClassTabBarViewModel = ({ urlType, id }: IClassTabBarViewModel) => {

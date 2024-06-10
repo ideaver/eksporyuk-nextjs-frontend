@@ -14,13 +14,13 @@ import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal"
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
+import { dateFormatter } from "../Affiliators/AffiliatorManagement/Affiliator-view-model";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
 
@@ -336,7 +336,7 @@ const Body = ({
                     {mentor.user.username}
                   </td> */}
                   <td className="align-middle text-end text-muted fw-bold w-150px">
-                    {mentor.user.createdAt}
+                    {dateFormatter(mentor.user.createdAt)}
                   </td>
                   <td className="align-middle text-end text-muted fw-bold w-150px">
                     {mentor._count.courses}

@@ -13,6 +13,8 @@ query RewardsCatalogFindMany(
     id
     title
     course {
+      id
+      title
       basePrice
       status
     }

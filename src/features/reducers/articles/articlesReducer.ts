@@ -13,6 +13,7 @@ interface ArticleState {
   content: string;
   target: UserRoleEnum[];
   toogleForm: string;
+  urlVideo: string;
 }
 
 const initialState: ArticleState = {
@@ -22,6 +23,7 @@ const initialState: ArticleState = {
   content: "",
   target: [],
   toogleForm: "Article",
+  urlVideo: "",
 };
 
 export const articleSlice = createSlice({
@@ -46,6 +48,9 @@ export const articleSlice = createSlice({
     changeToogleForm: (state, action: PayloadAction<string>) => {
       state.toogleForm = action.payload;
     },
+    changeUrlVideo: (state, action: PayloadAction<string>) => {
+      state.urlVideo = action.payload;
+    },
   },
 });
 
@@ -56,6 +61,7 @@ export const {
   changeStatus,
   changeTitle,
   changeToogleForm,
+  changeUrlVideo,
 } = articleSlice.actions;
 
 export default articleSlice.reducer;
