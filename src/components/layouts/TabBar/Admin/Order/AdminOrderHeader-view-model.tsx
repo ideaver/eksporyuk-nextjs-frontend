@@ -297,10 +297,10 @@ const useAdminOrderHeaderViewModel = ({
       label: "Riwayat Order",
       to: `/admin/${urlType}/${id}/history-order`,
     },
-    {
-      label: "Komisi Affiliasi",
-      to: `/admin/${urlType}/${id}/commission-affiliate`,
-    },
+    // {
+    //   label: "Komisi Affiliasi",
+    //   to: `/admin/${urlType}/${id}/commission-affiliate`,
+    // },
   ];
 
   // First Section START

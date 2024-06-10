@@ -179,10 +179,8 @@ const Head = ({
               { label: "PENDING", value: OrderStatusEnum.Pending },
               { label: "PROCESSING", value: OrderStatusEnum.Processing },
               { label: "DONE", value: OrderStatusEnum.Done },
-              { label: "SHIPPED", value: OrderStatusEnum.Shipped },
-              { label: "DELIVERED", value: OrderStatusEnum.Delivered },
               { label: "CANCELLED", value: OrderStatusEnum.Cancelled },
-              { label: "RETURNED", value: OrderStatusEnum.Returned },
+              { label: "EXPIRED", value: OrderStatusEnum.Expired },
             ]}
             onValueChange={(val) => {
               onStatusChanged(val as string);
