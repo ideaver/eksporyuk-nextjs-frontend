@@ -3,6 +3,7 @@ import {
   AffiliatorFindManyQuery,
   QueryMode,
   SortOrder,
+  useAdminFindManyAffiliatorQueryQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { useState, useEffect } from "react";
@@ -190,6 +191,12 @@ const useAffiliatorViewModel = () => {
     },
   });
 
+  const adminAffiliatorFindMany = useAdminFindManyAffiliatorQueryQuery({
+    variables: {
+      adminFindManyAffiliatorArgs: {},
+    }
+  });
+
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(affiliatorFindMany);
 
@@ -216,6 +223,7 @@ const useAffiliatorViewModel = () => {
     setFindTake,
     handlePageChange,
     affiliatorLength,
+    adminAffiliatorFindMany,
   };
 };
 
