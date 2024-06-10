@@ -16,6 +16,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import DeleteRewardModal from "./components/DeleteRewardModal";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 import useRewardManagementViewModel, {
   dateFormatter,
@@ -173,7 +174,7 @@ const Body = ({
 
   rewardIds = checkedItems.filter((item) => item.value).map((item) => item.id);
 
-  console.log(rewardsCatalogFindMany.data)
+  // console.log(rewardsCatalogFindMany.data)
 
   return (
     <>
@@ -243,7 +244,13 @@ const Body = ({
                             height={50}
                             alt=""
                           /> */}
-                          <p className="min-w-200px mb-0">{reward.title}</p>
+                          {reward?.title && (
+                            <p className="min-w-200px mb-0">Saldo {formatCurrency(Number(reward.title))}</p>
+                          )}
+                          {reward?.course?.title && (
+                            <p className="min-w-200px mb-0">{reward.course?.title}</p>
+                          )}
+                          {/* <p className="min-w-200px mb-0">{reward.title || reward.course?.title}</p> */}
                         </div>
                       </Link>
                     </CheckBoxInput>
