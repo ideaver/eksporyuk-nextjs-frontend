@@ -74,6 +74,7 @@ const Dashboard = ({}) => {
     topSalesTikTok,
     topSalesWhatsApp,
     topSalesYoutube,
+    topSalesTwitter
   } = useReferralLink();
 
   const { data: topOmzetItem } = useTopOmzet();
@@ -309,6 +310,14 @@ const Dashboard = ({}) => {
                 title: "TikTok",
                 salesValue: topSalesTikTok?.[0].sales as number,
                 precentageValue: topSalesTikTok?.[0].conversionRate as number,
+                colorPrecentage: "info",
+                colorSubtle: "info-subtle",
+              },
+              {
+                icon: "/media/svg/brand-logos/twitter.svg",
+                title: "Twitter/X",
+                salesValue: topSalesTwitter?.[0].sales as number,
+                precentageValue: topSalesTwitter?.[0].conversionRate as number,
                 colorPrecentage: "info",
                 colorSubtle: "info-subtle",
               },

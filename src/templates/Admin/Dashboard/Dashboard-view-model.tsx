@@ -1,8 +1,5 @@
 import {
-  OmzetReferralLinkQuery,
   PeriodEnum,
-  SalesDataQuery,
-  TotalSalesAndOmzetQuery,
   useOmzetsReferralLinkQuery,
   useOrderCountsByCustomPeriodQuery,
   usePopularCoursesQuery,
@@ -460,6 +457,9 @@ export const useReferralLink = () => {
   const topSalesYoutube = data?.omzetReferralLink?.filter(
     (e) => e.typeSocialMedia?.toUpperCase() === "YOUTUBE"
   );
+  const topSalesTwitter = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "TWITTER"
+  );
 
   return {
     data,
@@ -468,6 +468,7 @@ export const useReferralLink = () => {
     topSalesTikTok,
     topSalesWhatsApp,
     topSalesYoutube,
+    topSalesTwitter,
   };
 };
 

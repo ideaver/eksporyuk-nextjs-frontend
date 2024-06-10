@@ -11,26 +11,25 @@ import {
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import { RootState } from "@/app/store/store";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
+import { changeFollowUpTamplate } from "@/features/reducers/followup/followupReducer";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import Flatpickr from "react-flatpickr";
+import { useDispatch, useSelector } from "react-redux";
 import { breadcrumbs } from "../Products/Products-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
-import { useSession } from "next-auth/react";
-import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
-import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
-import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/store/store";
-import { changeFollowUpTamplate } from "@/features/reducers/followup/followupReducer";
 
 const OrderPage = ({}) => {
   const { data: session } = useSession();
@@ -63,6 +62,7 @@ const OrderPage = ({}) => {
     handleDeleteFollowUp,
     handleSendFollowUp,
     handleChangeFollowUpState,
+    orderVariables,
   } = useAdminOrderViewModel();
   return (
     <>
@@ -122,16 +122,19 @@ const OrderPage = ({}) => {
         onClick={async () => {
           setIsloading(true);
           try {
-            const response = await exportOrder({
-              variables: {
-                exportOrder: {
-                  adminId: session?.user.id as string,
-                  startDate: exportModalState[0],
-                  endDate: exportModalState[1],
-                  orderType:
-                    categoryOrderType === "all" ? null : categoryOrderType,
-                },
+            const exportVariables = {
+              exportOrder: {
+                adminId: session?.user.id as string,
+                startDate: exportModalState[0]?.toISOString(),
+                endDate: exportModalState[1]?.toISOString(),
+                orderType:
+                  categoryOrderType === "all" ? null : categoryOrderType,
+                where: orderVariables.where,
               },
+            };
+            console.log(exportVariables);
+            const response = await exportOrder({
+              variables: exportVariables,
             });
             const link = document.createElement("a");
             link.href = response.data?.exportOrder?.fileURL as string;
