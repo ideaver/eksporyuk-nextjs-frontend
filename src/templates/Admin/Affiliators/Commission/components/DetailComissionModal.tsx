@@ -60,8 +60,6 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
     }
   };
 
-  console.log(data);
-
   return (
     <Modal
       show={show}
