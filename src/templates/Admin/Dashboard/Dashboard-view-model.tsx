@@ -14,7 +14,7 @@ import {
   useUserCompetitorsQueryQuery,
   useUserCountQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { formatDate } from "@/app/service/utils/dateFormatter";
+// import { formatDate } from "@/app/service/utils/dateFormatter";
 import { QueryResult } from "@apollo/client";
 import { useSelector, useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
@@ -27,6 +27,32 @@ import {
   changeOrderCountPeriod,
   changeSalesPeriod,
 } from "@/features/reducers/dashboard/dashboardReducer";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  date.setDate(date.getDate() + 1);
+
+  const day = ("0" + date.getDate()).slice(-2);
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+};
 
 export const useTotalSales = () => {
   const date = useMemo(() => new Date(), []);
@@ -689,7 +715,7 @@ const useDashboardViewModel = () => {
   ];
 
   // simplefy number
-function simplifyNumber(n: string): string {
+  function simplifyNumber(n: string): string {
     const number = parseInt(n);
     if (number >= 1000000000) {
       return (number / 1000000000).toFixed(0) + "M";
@@ -700,7 +726,7 @@ function simplifyNumber(n: string): string {
     } else {
       return number.toString();
     }
-}
+  }
 
   return {
     breadcrumbs,
