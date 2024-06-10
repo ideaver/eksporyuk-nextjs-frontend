@@ -512,7 +512,20 @@ const useComissionViewModel = () => {
   });
 
   const pendingComissionFindMany = usePendingCommissionFindManyQuery({
-    variables: { pendingCommissionArgs: {} },
+    variables: { pendingCommissionArgs: {
+      take: parseInt(findPendingCommTake.toString()),
+      skip: findPendingCommSkip,
+      where: {
+        createdByUser: {
+          is: {
+            name: {
+              contains: searchPendingCommission,
+              mode: QueryMode.Insensitive,
+            }
+          }
+        }
+      }
+    } },
   });
 
   return {
