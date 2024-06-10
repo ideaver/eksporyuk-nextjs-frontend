@@ -14,7 +14,7 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import clsx from "clsx";
 import Link from "next/link";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import Flatpickr from "react-flatpickr";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
@@ -568,8 +568,9 @@ const AddCouponModal = ({
           </p>
         </div>
         <div>
-          <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
-          <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
+          <h4 className="fw-bold text-gray-700">
+            Batas Waktu Penggunaan
+          </h4>
           <CheckBoxInput
             className="active my-2"
             name="follup"
@@ -629,12 +630,7 @@ const AddCouponModal = ({
           null}
         </div>
         <div className="mb-5 mt-6">
-          <h4 className="required fw-bold text-gray-700">
-            Max Penggunaan User
-          </h4>
-          <h4 className="required fw-bold text-gray-700">
-            Max Penggunaan User
-          </h4>
+          <h4 className="required fw-bold text-gray-700">Max Penggunaan User</h4>
           <TextField
             styleType="outline"
             size="medium"
