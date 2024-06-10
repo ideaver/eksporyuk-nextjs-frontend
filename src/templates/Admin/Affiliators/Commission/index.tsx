@@ -213,6 +213,7 @@ const Head = ({
             },
           }}
         ></TextField>
+        
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
@@ -315,6 +316,9 @@ const Head = ({
             Export Data
           </Buttons>
         </div>
+        <div className="col-lg-auto">
+        <button className="btn btn-success">Pengaturan Komisi</button>
+        </div>
       </div>
     </div>
   );
@@ -348,7 +352,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
             <th className="fw-bold text-muted min-w-100px">Nama Order</th>
             <th className="fw-bold text-muted text-end min-w-80px">Pembeli</th>
             <th className="fw-bold text-muted text-end min-w-150px">
-              Affiliasi
+              Affiliator
             </th>
             <th className="fw-bold text-muted text-end min-w-150px">
               Total Komisi
@@ -367,7 +371,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
 
             return (
               <KTTableBody key={index}>
-                <td className="fw-bold">INV {user.id}</td>
+                <td className="fw-bold">{user.payment?.invoice?.uniqueCode}</td>
                 <td
                   className="fw-bold text-dark text-hover-primary"
                   style={{ cursor: "pointer" }}
@@ -382,8 +386,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
                   {user.payment?.invoice?.paymentForGateway?.sender_name}
                 </td>
                 <td className="fw-bold text-muted text-end">
-                  {user.payment?.invoice?.order?.createdByUser?.affiliator?.user
-                    .name ?? "-"}
+                  {user.toAccount?.user.name ?? "-"}
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {formatToIDR(
@@ -441,7 +444,10 @@ const PendingCommissionBody = ({ data }: { data: any }) => {
             (user: any, index: any) => {
               return (
                 <KTTableBody key={index}>
-                  <td className="fw-bold">INV {user.order?.id}</td>
+                  <td className="fw-bold">
+                    {user?.order?.invoices?.[0]?.uniqueCode ??
+                      "Tidak ditemukan"}
+                  </td>
                   <td
                     className="fw-bold text-dark text-hover-primary"
                     style={{ cursor: "pointer" }}

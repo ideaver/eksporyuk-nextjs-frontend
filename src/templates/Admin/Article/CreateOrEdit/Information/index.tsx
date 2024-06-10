@@ -1,20 +1,16 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useInformationViewModel, {
-  breadcrumbs,
-  useAnnouncementForm,
-  useArticleForm,
-  useCategoriesDropdown,
-  useCategoryForm,
-} from "./Information-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { ChangeEvent, useMemo } from "react";
-import { useRouter } from "next/router";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useDispatch, useSelector } from "react-redux";
+import { PageTitle } from "@/_metronic/layout/core";
+import {
+  AnnouncementTypeEnum,
+  MaterialPromotionPlatformTypeEnum,
+  NewsTypeEnum,
+} from "@/app/service/graphql/gen/graphql";
+import { RootState } from "@/app/store/store";
+import {
+  changeContentAnnouncement,
+  changeTitleAnnouncement,
+} from "@/features/reducers/announcement/announcementReducer";
 import {
   TypeCategory,
   changeContent,
@@ -22,23 +18,6 @@ import {
   changeToogleForm,
   changeUrlVideo,
 } from "@/features/reducers/articles/articlesReducer";
-import clsx from "clsx";
-import { AsyncPaginate } from "react-select-async-paginate";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-import { RootState } from "@/app/store/store";
-import {
-  AnnouncementTypeEnum,
-  MaterialPromotionPlatformTypeEnum,
-  NewsTypeEnum,
-  UserRoleEnum,
-} from "@/app/service/graphql/gen/graphql";
-import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
-import {
-  changeContentAnnouncement,
-  changeTitleAnnouncement,
-} from "@/features/reducers/announcement/announcementReducer";
 import {
   changeContentMaterialPromotionFirst,
   changeContentMaterialPromotionSecond,
@@ -51,6 +30,25 @@ import {
   changeNewsType,
   changeTitleNews,
 } from "@/features/reducers/news/newsReducer";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import { ChangeEvent, useMemo } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch, useSelector } from "react-redux";
+import { AsyncPaginate } from "react-select-async-paginate";
+import useInformationViewModel, {
+  breadcrumbs,
+  useAnnouncementForm,
+  useArticleForm,
+  useCategoriesDropdown,
+  useCategoryForm,
+} from "./Information-view-model";
 
 const InformationPage = () => {
   const ReactQuill = useMemo(
@@ -159,6 +157,16 @@ const InformationPage = () => {
               <button
                 className="dropdown-item"
                 onClick={() => {
+                  dispatch(changeToogleForm("News"));
+                }}
+              >
+                Artikel {"(Student)"}
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
                   dispatch(changeToogleForm("Announcement"));
                 }}
               >
@@ -173,16 +181,6 @@ const InformationPage = () => {
                 }}
               >
                 Material Promotion
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                onClick={() => {
-                  dispatch(changeToogleForm("News"));
-                }}
-              >
-                News {"(Student)"}
               </button>
             </li>
           </ul>
@@ -513,7 +511,7 @@ const InformationPage = () => {
               <div className={"col-lg-8"}>
                 <KTCard className="">
                   <KTCardBody>
-                    <h3 className="mb-5">Tulis News {"(Student)"}</h3>
+                    <h3 className="mb-5">Tulis Artikel {"(Student)"}</h3>
 
                     <h5 className="required">Judul</h5>
                     <TextField

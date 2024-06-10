@@ -26,16 +26,8 @@ const ChangeOrderModal = ({
       value: OrderStatusEnum.Done,
     },
     {
-      title: "Refund",
-      value: OrderStatusEnum.Returned,
-    },
-    {
-      title: "Dikirim",
-      value: OrderStatusEnum.Shipped,
-    },
-    {
-      title: "Terkirim",
-      value: OrderStatusEnum.Delivered,
+      title: "Kadaluarsa",
+      value: OrderStatusEnum.Expired,
     },
     {
       title: "Dibatalkan",
@@ -68,7 +60,7 @@ const ChangeOrderModal = ({
         <div className="row">
           {statuses.map((item, index) => (
             <div
-              className={index > 3 ? "col-4" : "col-12rewfrefer"}
+              className={"col-12"}
               key={index}
             >
               <RadioInput

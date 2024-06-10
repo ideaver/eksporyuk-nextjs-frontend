@@ -1,19 +1,7 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useArticleViewModel, {
-  breadcrumbs,
-  useCategoriesDropdown,
-} from "./Article-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import Link from "next/link";
-import { formatDate } from "@/app/service/utils/dateFormatter";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { AsyncPaginate } from "react-select-async-paginate";
+import { PageTitle } from "@/_metronic/layout/core";
 import {
   AnnouncementFindManyQuery,
   AnnouncementTypeEnum,
@@ -25,9 +13,19 @@ import {
   NewsTypeEnum,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
-import dynamic from "next/dynamic";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { Badge } from "@/stories/atoms/Badge/Badge";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
+import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
+import useArticleViewModel, {
+  breadcrumbs,
+  useCategoriesDropdown,
+} from "./Article-view-model";
 
 const ArticlePage = () => {
   const {
@@ -938,9 +936,9 @@ const Head = ({
             value={selectedTable}
             options={[
               { label: "Article (Affiliator)", value: "article" },
+              { label: "Article (Student)", value: "news" },
               { label: "Announcement", value: "announcement" },
               { label: "Material Promotion", value: "materialPromotion" },
-              { label: "News (Student)", value: "news" },
             ]}
             onValueChange={(e) => {
               selectTable(e);

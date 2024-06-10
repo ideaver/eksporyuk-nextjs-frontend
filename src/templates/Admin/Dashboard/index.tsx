@@ -99,6 +99,7 @@ const Dashboard = ({}) => {
               simplifyNumber(totalLeadData?.totalLead)
             }
             subLabel="Total Lead"
+            nameSeries="Lead"
             dataSeries={leadSeries}
             categoriesXAxis={leadCategories}
             dropdownValue={leadPeriod.toString()}
@@ -115,6 +116,7 @@ const Dashboard = ({}) => {
               simplifyNumber(totalSalesData?.totalSales)
             }
             subLabel="Total Sales"
+               nameSeries="Sales"
             labelIcon="arrow-up"
             labelColorBG="success-subtle"
             baseChartColor="info"
@@ -192,6 +194,7 @@ const Dashboard = ({}) => {
             }
             subLabel="Member Baru"
             labelIcon="arrow-up"
+            nameSeries="Member"
             labelColorBG="success-subtle"
             baseChartColor="info"
             lightChartColor="info-light"

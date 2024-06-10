@@ -11,7 +11,7 @@ interface ChartProps {
   /**
    * What Name Series to use
    */
-  nameSeries?: "Not Paid" | "Paid";
+  nameSeries?: "Not Paid" | "Paid" | string;
 
   /**
    * What Data Series to use
@@ -479,7 +479,9 @@ function getChartOptions(
       },
       y: {
         formatter: function (val) {
-          return currencyFormatter(val);
+          return labelFormat === "currency"
+            ? currencyFormatter(val)
+            : val.toString();
         },
       },
     },

@@ -5,18 +5,18 @@ import {
   OrderStatusEnum,
   useFollowUpDeleteOneMutation,
   useFollowUpFindManyQuery,
-  useOrderStatusUpdateOneMutation,
+  useOrderStatusCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { useSession } from "next-auth/react";
-import { useDispatch } from "react-redux";
 import {
   changeContent,
   changeId,
   changeName,
 } from "@/features/reducers/followup/followupReducer";
+import { Badge } from "@/stories/atoms/Badge/Badge";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
 function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
   switch (status) {
     case OrderStatusEnum.Pending:
@@ -38,7 +38,7 @@ function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
   }
 }
 
-function getProductType(cartItems: any[]) {
+export function getProductType(cartItems: any[]) {
   const types: any = [];
   cartItems.forEach((item) => {
     if (item.productId !== null) types.push("Product");
@@ -50,12 +50,6 @@ function getProductType(cartItems: any[]) {
   return types.join(", ");
 }
 const orderCard = (data: OrderFindOneQuery["orderFindOne"]) => {
-  const latestStatus = data?.statuses
-    ?.slice()
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )[0];
   return [
     {
       title: `Order Detail (${data?.id})`,
@@ -75,8 +69,10 @@ const orderCard = (data: OrderFindOneQuery["orderFindOne"]) => {
           title: "Status",
           value: (
             <Badge
-              badgeColor={getStatusBadgeColor(latestStatus?.status)}
-              label={latestStatus?.status ?? ""}
+              badgeColor={getStatusBadgeColor(
+                data?.statuses?.[data?.statuses?.length - 1]?.status
+              )}
+              label={data?.statuses?.[data?.statuses?.length - 1]?.status ?? ""}
             />
           ),
         },
@@ -213,13 +209,13 @@ const useAdminOrderHeaderViewModel = ({
   };
 
   // Status Update
-  const [orderStatusUpdateOneMutation, orderStatusUpdateResult] =
-    useOrderStatusUpdateOneMutation();
+  const [orderStatusCreateOneMutation, orderStatusCreateOneResult] =
+    useOrderStatusCreateOneMutation();
   const { data: session } = useSession();
 
   const updateOrderStatusHandler = async (status: OrderStatusEnum) => {
     try {
-      await orderStatusUpdateOneMutation({
+      await orderStatusCreateOneMutation({
         variables: {
           data: {
             order: {
@@ -232,17 +228,13 @@ const useAdminOrderHeaderViewModel = ({
                 id: session?.user.id,
               },
             },
-            status: {
-              set: status,
-            },
-          },
-          where: {
-            id: data?.id,
+            status: status,
           },
         },
       });
-      return orderStatusUpdateResult;
+      return orderStatusCreateOneResult;
     } catch (error) {
+      console.log(error);
       return error;
     }
   };
@@ -307,11 +299,13 @@ const useAdminOrderHeaderViewModel = ({
   const orderCardData = orderCard(data);
   const buyersDetailData = buyersDetail(data);
   const affiliateDetailData = affiliateDetail(data);
-  const orderTableDatas = [
-    orderCardData,
-    buyersDetailData,
-    affiliateDetailData,
-  ];
+  const productType = getProductType(data?.cart.cartItems ?? []);
+
+  let orderTableDatas = [orderCardData, buyersDetailData];
+
+  if (productType !== "Service") {
+    orderTableDatas.push(affiliateDetailData);
+  }
   // First Section END
 
   const breadcrumbs = [
@@ -358,7 +352,7 @@ const useAdminOrderHeaderViewModel = ({
     showOrderStatusModal,
     setShowOrderStatusModal,
     updateOrderStatusHandler,
-    orderStatusUpdateResult,
+    orderStatusCreateOneResult,
   };
 };
 

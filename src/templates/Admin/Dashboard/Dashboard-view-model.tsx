@@ -12,10 +12,6 @@ import {
   useUserCountQuery,
 } from "@/app/service/graphql/gen/graphql";
 // import { formatDate } from "@/app/service/utils/dateFormatter";
-import { QueryResult } from "@apollo/client";
-import { useSelector, useDispatch } from "react-redux";
-import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
 import { RootState } from "@/app/store/store";
 import {
   changeLeadPeriod,
@@ -24,6 +20,9 @@ import {
   changeOrderCountPeriod,
   changeSalesPeriod,
 } from "@/features/reducers/dashboard/dashboardReducer";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);

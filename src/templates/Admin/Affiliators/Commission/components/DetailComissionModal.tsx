@@ -71,7 +71,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Detail Order INV {data?.transactionFindOne?.id}</h2>
+        <h2>Detail Order {data?.transactionFindOne?.payment?.invoice?.uniqueCode}</h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -178,8 +178,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark me-2">
-                {data?.transactionFindOne?.payment?.invoice?.order
-                  ?.createdByUser?.affiliator?.user.name ?? "-"}
+                {data?.transactionFindOne?.toAccount?.user.name ?? "-"}
               </span>
               <span
                 className="fw-bolder fs-6 badge text-white me-2"
@@ -190,8 +189,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
                 {
-                  data?.transactionFindOne?.payment?.invoice?.order
-                    ?.createdByUser.affiliator?.user.phone?.phoneNumber ?? "-"
+                  data?.transactionFindOne?.toAccount?.user?.phoneId ?? "-"
                 }
               </span>
               <span
@@ -203,8 +201,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
                 {
-                  data?.transactionFindOne?.payment?.invoice?.order
-                    ?.createdByUser.affiliator?.user.email ?? "-"
+                  data?.transactionFindOne?.toAccount?.user?.email ?? "-"
                 }
               </span>
             </div>

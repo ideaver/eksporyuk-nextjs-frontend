@@ -1,19 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
-  useInvoiceFindManyQuery,
   QueryMode,
   SortOrder,
-  useTransactionFindManyQuery,
-  usePendingCommissionFindManyQuery,
+  TransactionCategoryEnum,
+  TransactionStatusEnum,
   useAffiliatorFindManyQuery,
   useCourseFindManyQuery,
-  useMembershipCategoryFindManyQuery,
   useExportDataTransactionMutation,
-  TransactionStatusEnum,
+  useInvoiceFindManyQuery,
+  useMembershipCategoryFindManyQuery,
+  usePendingCommissionFindManyQuery,
+  useTransactionFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { GroupBase, OptionsOrGroups } from "react-select";
 
 export const formatToIDR = (amount: string) => {
   return parseInt(amount).toLocaleString("id-ID", {
@@ -76,7 +76,9 @@ const usePendingComissionPagination = () => {
   const [findPendingCommTake, setFindPendingCommTake] = useState(10);
   const pendingCommissionLength = usePendingCommissionFindManyQuery({
     variables: {
-      pendingCommissionArgs: {},
+      pendingCommissionFindManyArgs: {
+        
+      },
     },
   });
 
@@ -87,7 +89,7 @@ const usePendingComissionPagination = () => {
 
   const calculateTotalPendingCommPage = () => {
     return Math.ceil(
-      (pendingCommissionLength.data?.pendingCommissionFindMany?.length ?? 0) /
+      ((pendingCommissionLength.data as any)?.pendingCommissionFindMany?.length ?? 0) /
         findPendingCommTake
     );
   };
@@ -512,12 +514,15 @@ const useComissionViewModel = () => {
             },
           },
         },
+        transactionCategory: {
+          equals: TransactionCategoryEnum.Comission
+        }
       },
     },
   });
 
   const pendingComissionFindMany = usePendingCommissionFindManyQuery({
-    variables: { pendingCommissionArgs: {
+    variables: { pendingCommissionFindManyArgs: {
       take: parseInt(findPendingCommTake.toString()),
       skip: findPendingCommSkip,
       where: {

@@ -1,0 +1,44 @@
+mutation OrderStatusCreateOne($data: OrderStatusCreateInput!) {
+  orderStatusCreateOne(data: $data) {
+    id
+    createdAt
+    status
+    changedById
+    orderId
+    order {
+      id
+      platformFee
+      createdAt
+      updatedAt
+      expiredAt
+      cartId
+      createdByUserId
+      couponId
+      referralLinkId
+    }
+    changedBy {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+  }
+}

@@ -168,11 +168,6 @@ const OrderPage = ({
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime()
               )[0];
-              const latestStatus = order?.statuses?.sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )[0];
               return (
                 <tr key={index}>
                   <td className="align-middle fw-bold text-black">
@@ -197,8 +192,13 @@ const OrderPage = ({
                     <p>
                       {" "}
                       <Badge
-                        label={latestStatus?.status ?? "Tidak Diketahui"}
-                        badgeColor={getStatusBadgeColor(latestStatus?.status)}
+                        label={
+                          order?.statuses?.[order?.statuses?.length - 1]
+                            ?.status ?? "Tidak Diketahui"
+                        }
+                        badgeColor={getStatusBadgeColor(
+                          order?.statuses?.[order?.statuses?.length - 1]?.status
+                        )}
                       />{" "}
                     </p>
                   </td>

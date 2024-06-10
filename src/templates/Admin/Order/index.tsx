@@ -127,8 +127,8 @@ const OrderPage = ({}) => {
                 adminId: session?.user.id as string,
                 startDate: exportModalState[0]?.toISOString(),
                 endDate: exportModalState[1]?.toISOString(),
-                orderType:
-                  categoryOrderType === "all" ? null : categoryOrderType,
+                // orderType:
+                //   categoryOrderType === "all" ? null : categoryOrderType,
                 where: orderVariables.where,
               },
             };
@@ -401,13 +401,13 @@ const ExportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
-        <p className="fw-bold text-gray-700">Pilih Category</p>
+        {/* <p className="fw-bold text-gray-700">Pilih Category</p>
 
         <Dropdown
           options={orderTypeOptions}
           onValueChange={onDropdownChange}
           value={orderType}
-        />
+        /> */}
       </KTModal>
     </div>
   );
@@ -506,13 +506,6 @@ const Body = ({
             </KTTableHead>
 
             {orderFindMany.data?.orderFindMany?.map((order, index) => {
-              const latestStatus = order?.statuses
-                ?.slice()
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )[0];
               const latestInvoices = order?.invoices?.sort(
                 (a, b) =>
                   new Date(b.createdAt).getTime() -
@@ -569,7 +562,7 @@ const Body = ({
                           className="symbol-label bg-gray-600"
                           src={
                             order.createdByUser.avatarImageId ??
-                            "/media/avatars/300-1.jpg"
+                            "/media/avatars/blank.png"
                           }
                           width={50}
                           height={50}
@@ -604,7 +597,7 @@ const Body = ({
                             className="symbol-label bg-gray-600"
                             src={
                               order.referralLink?.createdBy.user
-                                .avatarImageId ?? "/media/avatars/300-1.jpg"
+                                .avatarImageId ?? "/media/avatars/blank.png"
                             }
                             width={50}
                             height={50}
@@ -627,8 +620,13 @@ const Body = ({
                     <p className="align-middle">
                       {" "}
                       <Badge
-                        label={latestStatus?.status ?? "Tidak Diketahui"}
-                        badgeColor={getStatusBadgeColor(latestStatus?.status)}
+                         label={
+                          order?.statuses?.[order?.statuses?.length - 1]
+                            ?.status ?? "Tidak Diketahui"
+                        }
+                        badgeColor={getStatusBadgeColor(
+                          order?.statuses?.[order?.statuses?.length - 1]?.status
+                        )}
                       />{" "}
                     </p>
                   </td>
