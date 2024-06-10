@@ -101,11 +101,45 @@ const useCheckbox = (
 };
 
 // Pagination
+// DONT DELETE YET
+// const usePagination = () => {
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [findSkip, setFindSkip] = useState(0);
+//   const [findTake, setFindTake] = useState(10);
+//   const affiliatorLength = useAffiliatorFindManyQuery();
+
+//   const handlePageChange = (page: number) => {
+//     setCurrentPage(page);
+//     setFindSkip((page - 1) * findTake);
+//   };
+
+//   const calculateTotalPage = () => {
+//     return Math.ceil(
+//       (affiliatorLength.data?.affiliatorFindMany?.length ?? 0) / findTake
+//     );
+//   };
+//   return {
+//     currentPage,
+//     setCurrentPage,
+//     findSkip,
+//     setFindSkip,
+//     findTake,
+//     setFindTake,
+//     handlePageChange,
+//     calculateTotalPage,
+//     affiliatorLength,
+//   };
+// };
+
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
   const [findTake, setFindTake] = useState(10);
-  const affiliatorLength = useAffiliatorFindManyQuery();
+  const affiliatorLength = useAdminFindManyAffiliatorQueryQuery({
+    variables: {
+      adminFindManyAffiliatorArgs: {}
+    }
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -114,7 +148,7 @@ const usePagination = () => {
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (affiliatorLength.data?.affiliatorFindMany?.length ?? 0) / findTake
+      (affiliatorLength.data?.adminFindManyAffiliatorQuery?.length ?? 0) / findTake
     );
   };
   return {
@@ -193,7 +227,40 @@ const useAffiliatorViewModel = () => {
 
   const adminAffiliatorFindMany = useAdminFindManyAffiliatorQueryQuery({
     variables: {
-      adminFindManyAffiliatorArgs: {},
+      adminFindManyAffiliatorArgs: {
+        take: parseInt(findTake.toString()),
+        skip: findSkip,
+        where: {
+          OR: [
+            {
+              user: {
+                is: {
+                  name: {
+                    contains: searchAffiliator,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            {
+              user: {
+                is: {
+                  email: {
+                    contains: searchAffiliator,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            {
+              id: {
+                contains: searchAffiliator,
+                mode: QueryMode.Insensitive,
+              },
+            },
+          ]
+        }
+      },
     }
   });
 

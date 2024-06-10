@@ -335,7 +335,7 @@ const BodyAdmin = ({ adminFindMany }: { adminFindMany: any }) => {
     forgotPasswordError,
   } = useForgotPassword();
 
-  console.log(adminFindMany.data.adminFindManyAffiliatorQuery);
+  // console.log(adminFindMany.data.adminFindManyAffiliatorQuery);
 
   return (
     <>
