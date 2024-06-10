@@ -1,40 +1,33 @@
-import Link from "next/link";
 import { QueryResult } from "@apollo/client";
 import { Dispatch, SetStateAction, useState } from "react";
-import dynamic from "next/dynamic";
 import { AsyncPaginate } from "react-select-async-paginate";
 
-import useComissionViewModel, {
-  formatToIDR,
-  breadcrumbs,
-  useFilterDropdown,
-  // useCoursesDropdown,
-  // useMembershipsDropdown,
-} from "./Comission-view-model";
 import {
-  InvoiceFindManyQuery,
-  TransactionFindManyQuery,
-  PendingCommissionFindManyQuery,
   TransactionCategoryEnum,
-  QueryMode,
+  TransactionFindManyQuery,
+  TransactionStatusEnum,
 } from "@/app/service/graphql/gen/graphql";
+import useComissionViewModel, {
+  breadcrumbs,
+  formatToIDR,
+  useFilterDropdown,
+} from "./Comission-view-model";
 import DetailComissionModal from "./components/DetailComissionModal";
-import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
 
-import { PageTitle } from "@/_metronic/layout/core";
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { KTTable } from "@/_metronic/helpers/components/KTTable";
-import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
-import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
+import { PageTitle } from "@/_metronic/layout/core";
+import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import Flatpickr from "react-flatpickr";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { useSession } from "next-auth/react";
+import Flatpickr from "react-flatpickr";
 
 interface ComissionPageProps {}
 
@@ -284,7 +277,7 @@ const Head = ({
             }}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -301,7 +294,7 @@ const Head = ({
               setStatus(e);
             }}
           />
-        </div>
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"

@@ -232,7 +232,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
             </div>
           </div>
         </div>
-        <Modal.Footer className="p-2">
+        {/* <Modal.Footer className="p-2">
           <form onSubmit={handleSubmit} className="">
             <label htmlFor="status" className="form-label">
               Ubah Status
@@ -255,7 +255,7 @@ const DetailComissionModal = ({ show, onClose, id }: any) => {
               </button>
             </div>
           </form>
-        </Modal.Footer>
+        </Modal.Footer> */}
       </Modal.Body>
     </Modal>
   );

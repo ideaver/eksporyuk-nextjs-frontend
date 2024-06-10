@@ -35,7 +35,6 @@ const useDropdownTransaction = () => {
     { value: TransactionStatusEnum.Failed, label: "Failed" },
     { value: TransactionStatusEnum.Pending, label: "Pending" },
     { value: TransactionStatusEnum.Processing, label: "Processing" },
-    { value: TransactionStatusEnum.Processing, label: "Processing" },
   ];
   const categoryDropdownOption = [
     { value: "all", label: "Semua Jenis Transaksi" },
