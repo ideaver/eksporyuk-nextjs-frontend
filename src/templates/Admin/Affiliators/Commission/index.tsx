@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { QueryResult } from "@apollo/client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import dynamic from "next/dynamic";
 import { AsyncPaginate } from "react-select-async-paginate";
 
@@ -89,6 +89,8 @@ const CommissionPage = ({}: ComissionPageProps) => {
     exportData,
     searchCommission,
     searchFilter,
+    filterExportStatus,
+    setFilterExportStatus,
   } = useComissionViewModel();
 
   return (
@@ -143,6 +145,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
         )}
       </KTCard>
       <ExportModal
+        setFilterExportStatus={setFilterExportStatus}
         loading={isLoading}
         onClose={() => {}}
         date={exportModalState}
@@ -162,22 +165,12 @@ const CommissionPage = ({}: ComissionPageProps) => {
                     transactionCategory: {
                       equals: TransactionCategoryEnum.Comission,
                     },
-                    // payment: {
-                    //   is: {
-                    //     invoice: {
-                    //       is: {
-                    //         paymentForGateway: {
-                    //           is: {
-                    //             sender_name: {
-                    //               contains: searchCommission,
-                    //               mode: QueryMode.Insensitive,
-                    //             },
-                    //           },
-                    //         },
-                    //       },
-                    //     },
-                    //   },
-                    // },
+                    status: {
+                      equals:
+                        filterExportStatus === "all"
+                          ? null
+                          : filterExportStatus,
+                    },
                   },
                 },
               },
@@ -566,13 +559,16 @@ const ExportModal = ({
   date,
   onChange,
   onClose,
-
+  setFilterExportStatus,
   onClick,
 }: {
   loading: boolean;
   date: Date;
   onChange: (value: any) => void;
   onClose: () => void;
+  setFilterExportStatus: Dispatch<
+    SetStateAction<TransactionStatusEnum | "all">
+  >;
   // onDropdownChange: (val: any) => void;
 
   onClick: () => void;
@@ -616,13 +612,23 @@ const ExportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
-        {/* <p className="fw-bold text-gray-700">Pilih Category</p> */}
 
-        {/* <Dropdown
-          options={orderTypeOptions}
-          onValueChange={onDropdownChange}
-          value={orderType}
-        /> */}
+        <p className="fw-bold text-gray-700">Pilih Category</p>
+
+        <Dropdown
+          options={[
+            { value: "all", label: "Semua Status" },
+            { value: TransactionStatusEnum.Completed, label: "Completed" },
+            { value: TransactionStatusEnum.Cancelled, label: "Cancelled" },
+            { value: TransactionStatusEnum.Failed, label: "Failed" },
+            { value: TransactionStatusEnum.Pending, label: "Pending" },
+            { value: TransactionStatusEnum.Processing, label: "Processing" },
+          ]}
+          onValueChange={(val) => {
+            setFilterExportStatus(val as TransactionStatusEnum);
+          }}
+          // value={orderType}
+        />
       </KTModal>
     </div>
   );

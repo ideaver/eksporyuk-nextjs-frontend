@@ -11,6 +11,7 @@ import {
   useCourseFindManyQuery,
   useMembershipCategoryFindManyQuery,
   useExportDataTransactionMutation,
+  TransactionStatusEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { GroupBase, OptionsOrGroups } from "react-select";
 
@@ -242,6 +243,9 @@ const useComissionViewModel = () => {
   const [selectedTable, setSelectedTable] = useState("commission");
   const [searchPendingCommission, setSearchPendingComission] = useState("");
   const [searchFilter, setSearchFilter] = useState(null);
+  const [filterExportStatus, setFilterExportStatus] = useState<
+    TransactionStatusEnum | "all"
+  >("all");
 
   const {
     currentPage,
@@ -525,6 +529,8 @@ const useComissionViewModel = () => {
   ]);
 
   return {
+    filterExportStatus,
+    setFilterExportStatus,
     searchFilter,
     searchCommission,
     exportData,
