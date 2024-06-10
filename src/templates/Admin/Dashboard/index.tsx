@@ -1,7 +1,13 @@
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import {
+  OmzetsReferralLinkQuery,
+  PopularCoursesQuery,
+  TopOmzetItemsQuery,
+  TopSalesItemsQuery,
+  UserCompetitorsQueryQuery,
+} from "@/app/service/graphql/gen/graphql";
 import dashboardViewModel, {
-  AkuisisiTableProps,
   useNewMember,
   useOrderCountByCustomPeriod,
   usePopularCourse,
@@ -13,13 +19,7 @@ import dashboardViewModel, {
   useTotalSales,
   useUserCompetitor,
 } from "./Dashboard-view-model";
-import {
-  OmzetsReferralLinkQuery,
-  PopularCoursesQuery,
-  TopOmzetItemsQuery,
-  TopSalesItemsQuery,
-  UserCompetitorsQueryQuery,
-} from "@/app/service/graphql/gen/graphql";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
 
 const Dashboard = ({}) => {
   const { breadcrumbs, simplifyNumber } =
@@ -140,6 +140,7 @@ const Dashboard = ({}) => {
             baseChartColor="danger"
             lightChartColor="danger-light"
             // label="3.2%"
+            labelFormat="currency"
             dataSeries={omzetSeries}
             categoriesXAxis={omzetCategories}
             dropdownValue={omzetPeriod.toString()}
@@ -154,7 +155,7 @@ const Dashboard = ({}) => {
         categories={orderPeriodCategories ?? []}
         className="mb-10"
         title="Riwayat Penjualan"
-        subTitle="Sales(Jumlah Pembelian) dan Omzet (Dalam hitungan Juta)"
+        subTitle="Sales (Jumlah Pembelian) dan Omzet (Dalam hitungan Rupiah)"
         dropdownValue={orderCountPeriod.toString()}
         onDropdownValueChange={(e) => {
           handleChangeOrderCountPeriod(Number(e));
@@ -371,13 +372,13 @@ const OmzetTable = ({
                         </span>
                       </div> */}
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                        <span className="text-dark fs-6 fw-bold">
                           {row.name}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td className="fw-bold text-end"> {row.omzet}</td>
+                  <td className="fw-bold text-end"> {currencyFormatter(row.omzet ?? 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -426,7 +427,7 @@ const SalesTable = ({
                         </span>
                       </div> */}
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                        <span className="text-dark fs-6 fw-bold">
                           {row.name}
                         </span>
                       </div>
@@ -481,7 +482,7 @@ const PopularCourseTable = ({
                         </span>
                       </div> */}
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                        <span className="text-dark fs-6 fw-bold">
                           {row.name}
                         </span>
                       </div>
@@ -540,13 +541,13 @@ const AffiliateTable = ({
                         </span>
                       </div>
                       <div className="d-flex flex-column">
-                        <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                        <span className="text-dark fs-6 fw-bold">
                           {row.User?.name}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td className="fw-bold text-end"> {row.commission}</td>
+                  <td className="fw-bold text-end"> {currencyFormatter(row.commission ?? 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -574,9 +575,9 @@ const AkuisisiTable = ({
                 Data Akuisisi
               </span>
             </h3>
-            <span className="text-muted mt-1 fw-semibold fs-7">
+            {/* <span className="text-muted mt-1 fw-semibold fs-7">
               per Januari 2024
-            </span>
+            </span> */}
           </div>
           <div className="table-responsive">
             <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
@@ -596,7 +597,7 @@ const AkuisisiTable = ({
                     <td className="fw-bold text-muted">{row.clicks}</td>
                     <td className="fw-bold text-muted">{row.totalLead}</td>
                     <td className="fw-bold text-muted">{row.sales}</td>
-                    <td className="fw-bold text-muted text-end">{row.omzet}</td>
+                    <td className="fw-bold text-muted text-end">{currencyFormatter(row.omzet ?? 0)}</td>
                   </tr>
                 ))}
               </tbody>

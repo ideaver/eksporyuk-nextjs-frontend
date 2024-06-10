@@ -226,7 +226,7 @@ const Body = ({
                             className="symbol-label bg-gray-600"
                             src={
                               affiliator.user.avatarImageId ??
-                              "/media/avatars/300-2.jpg"
+                              "/media/avatars/blank.png"
                             }
                             width={50}
                             height={50}

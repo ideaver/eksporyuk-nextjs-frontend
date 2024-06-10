@@ -35,7 +35,7 @@ const AffiliatorHeader = ({ id, data }: any) => {
             <div className="me-7 mb-4">
               <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                 <img
-                  src={userData?.avatarImageId ?? "/media/avatars/300-1.jpg"}
+                  src={userData?.avatarImageId ?? "/media/avatars/blank.png"}
                   alt="Metornic"
                 />
               </div>
