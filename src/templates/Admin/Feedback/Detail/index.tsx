@@ -18,6 +18,12 @@ import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { preventOverflow } from "@popperjs/core";
 import { useSession } from "next-auth/react";
 import { ChatRoomTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import { changeFollowUpTamplate } from "@/features/reducers/followup/followupReducer";
 
 const FeedbackDetail = ({ id, data, refetch }: IFeedbackDetail) => {
   const { feedbackUpdateMutation } = useFeedbackDetailViewModel();
@@ -60,7 +66,15 @@ const Body = ({ id, data, refetch }: IFeedbackDetail) => {
     replyViaLiveChat,
     setLoadingLiveChat,
     loadingLiveChat,
+    followUpFindMany,
+    handleChangeFollowUpState,
+    handleDeleteFollowUp,
+    handleEditState,
+    handleSendFollowUp,
+    handleFollupChange,
   } = useFeedbackDetailViewModel();
+  const followUpState = useSelector((state: RootState) => state.followUp);
+  const dispatch = useDispatch();
   const { data: session, status } = useSession();
   const router = useRouter();
   return (
@@ -135,9 +149,24 @@ const Body = ({ id, data, refetch }: IFeedbackDetail) => {
           >
             Balas via Email
           </Buttons>
-          {/* <Buttons mode="light" showIcon icon="whatsapp">
-          Balas via WhatsApp
-        </Buttons> */}
+          <Buttons
+            mode="light"
+            showIcon
+            icon="whatsapp"
+            data-bs-toggle="modal"
+            data-bs-target="#kt_follup_modal"
+            onClick={() => {
+              handleChangeFollowUpState({
+                name: data.feedbackFindOne?.user.name as string,
+                date: data.feedbackFindOne?.createdAt as string,
+                phone: `${data.feedbackFindOne?.user.phone}`,
+                email: data.feedbackFindOne?.user.email as string,
+                coupon: "Tidak Ada Coupon",
+              });
+            }}
+          >
+            Balas via WhatsApp
+          </Buttons>
           <Buttons
             showIcon
             disabled={loadingLiveChat}
@@ -185,40 +214,62 @@ const Body = ({ id, data, refetch }: IFeedbackDetail) => {
         </div>
       </div>
       {/* reply admin */}
-      <div className="p-10 d-flex flex-column gap-10 border-bottom">
-        <h1>Balasan Admin</h1>
-        <div className="d-flex align-items-center justify-content-between gap-6">
-          <div className="d-flex align-items-center gap-6">
-            <div className="symbol symbol-50px me-2">
-              <span className="symbol-label bg-gray-600 ">
-                <img
-                  src={
-                    data.feedbackFindOne?.resolvedBy?.user.avatarImageId ??
-                    "/media/avatars/300-1.jpg"
-                  }
-                  width={50}
-                  height={50}
-                  alt=""
-                  className="rounded"
-                />
-              </span>
+      {data.feedbackFindOne?.resolvedBy ? (
+        <div className="p-10 d-flex flex-column gap-10 border-bottom">
+          <h1>Balasan Admin</h1>
+          <div className="d-flex align-items-center justify-content-between gap-6">
+            <div className="d-flex align-items-center gap-6">
+              <div className="symbol symbol-50px me-2">
+                <span className="symbol-label bg-gray-600 ">
+                  <img
+                    src={
+                      data.feedbackFindOne?.resolvedBy?.user.avatarImageId ??
+                      "/media/avatars/300-1.jpg"
+                    }
+                    width={50}
+                    height={50}
+                    alt=""
+                    className="rounded"
+                  />
+                </span>
+              </div>
+              <div>
+                <h4>{data.feedbackFindOne?.resolvedBy?.user.name}</h4>
+                <h6 className="text-muted">Balasan via {"Email"}</h6>
+              </div>
+              <p className="fs-5 mt-1 text-muted">
+                {formatTime(data.feedbackFindOne?.feedbackRepliedAt)}
+              </p>
             </div>
-            <div>
-              <h4>{data.feedbackFindOne?.resolvedBy?.user.name}</h4>
-              <h6 className="text-muted">Balasan via {"Email"}</h6>
+            <div className="d-flex align-items-center gap-6">
+              <p className="fs-5 text-muted d-flex align-items-center justify-items-center justify-content-center my-2">
+                {formatDate(data.feedbackFindOne?.feedbackRepliedAt)}{" "}
+              </p>
             </div>
-            <p className="fs-5 mt-1 text-muted">
-              {formatTime(data.feedbackFindOne?.feedbackRepliedAt)}
-            </p>
           </div>
-          <div className="d-flex align-items-center gap-6">
-            <p className="fs-5 text-muted d-flex align-items-center justify-items-center justify-content-center my-2">
-              {formatDate(data.feedbackFindOne?.feedbackRepliedAt)}{" "}
-            </p>
-          </div>
+          <p className="fs-4">{data.feedbackFindOne?.feedbackReplied}</p>
         </div>
-        <p className="fs-4">{data.feedbackFindOne?.feedbackReplied}</p>
-      </div>
+      ) : null}
+      <FollowUpModal
+        follupValues={
+          followUpFindMany.data?.followUpFindMany?.map(
+            (e) => e.name
+          ) as string[]
+        }
+        value={followUpState.followUpTamplate ?? ""}
+        // follupValues={follupValues}
+        selectedFollupValue={followUpState.selectedFollowUpValue}
+        handleFollupChange={handleFollupChange}
+        onChange={(e: any) => {
+          dispatch(changeFollowUpTamplate(e.target.value));
+        }}
+        handleEditState={handleEditState}
+        handleDeleteFollowUp={handleDeleteFollowUp}
+        linkAPIWhatsapp={handleSendFollowUp()}
+      />
+
+      <CreateFollowUpModal />
+      <UpdateFollowUpModal />
     </div>
   );
 };
@@ -246,8 +297,14 @@ const ReplyEmailModal = ({ id }: { id: string | string[] | undefined }) => {
   //   () => dynamic(() => import("react-quill"), { ssr: false }),
   //   []
   // );
-  const { message, setMessage, setSubject, subject, replyViaEmail } =
-    useFeedbackDetailViewModel();
+  const {
+    message,
+    setMessage,
+    setSubject,
+    subject,
+    replyViaEmail,
+    handleUpdateFeedbackEmail,
+  } = useFeedbackDetailViewModel();
 
   return (
     <div>
@@ -280,7 +337,7 @@ const ReplyEmailModal = ({ id }: { id: string | string[] | undefined }) => {
             type="submit"
             onClick={async () => {
               try {
-                replyViaEmail({
+                await replyViaEmail({
                   variables: {
                     feedbackReplyEmail: {
                       feedbackId: parseInt(id as string),
@@ -289,6 +346,7 @@ const ReplyEmailModal = ({ id }: { id: string | string[] | undefined }) => {
                     },
                   },
                 });
+                await handleUpdateFeedbackEmail(parseInt(id as string));
               } catch (error) {
                 console.log(error);
               } finally {

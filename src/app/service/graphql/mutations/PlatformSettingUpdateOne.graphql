@@ -1,0 +1,8 @@
+mutation PlatformSettingUpdateOne(
+  $data: PlatformSettingUpdateInput!
+  $where: PlatformSettingWhereUniqueInput!
+) {
+  platformSettingUpdateOne(data: $data, where: $where) {
+    id
+  }
+}

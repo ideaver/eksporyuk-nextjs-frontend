@@ -559,7 +559,7 @@ const Body = ({
                               <img
                                 src={
                                   row.user.avatarImageId ??
-                                  "/media/avatars/300-1.jpg"
+                                  "/media/avatars/blank.png"
                                 }
                                 width={50}
                                 height={50}
