@@ -6,6 +6,7 @@ import {
   QueryMode,
   SortOrder,
   useTransactionFindManyQuery,
+  usePendingCommissionFindManyQuery
 } from "@/app/service/graphql/gen/graphql";
 
 export const formatToIDR = (amount: string) => {
@@ -63,6 +64,40 @@ const usePagination = () => {
   };
 };
 
+const usePendingComissionPagination = () => {
+  const [currentPendingCommPage, setCurrentPendingCommPage] = useState(1);
+  const [findPendingCommSkip, setFindPendingCommSkip] = useState(0);
+  const [findPendingCommTake, setFindPendingCommTake] = useState(10);
+  const pendingCommissionLength = usePendingCommissionFindManyQuery({
+    variables: {
+      pendingCommissionArgs: {}
+    }
+  });
+
+  const handlePendingCommPageChange = (page: number) => {
+    setCurrentPendingCommPage(page);
+    setFindPendingCommSkip((page - 1) * findPendingCommTake);
+  };
+
+  const calculateTotalPendingCommPage = () => {
+    return Math.ceil(
+      (pendingCommissionLength.data?.pendingCommissionFindMany?.length ?? 0) / findPendingCommTake
+    );
+  };
+  return {
+    currentPendingCommPage,
+    setCurrentPendingCommPage,
+    findPendingCommSkip,
+    setFindPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
+    pendingCommissionLength,
+  };
+};
+
+
 const useComissionViewModel = () => {
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
@@ -70,6 +105,8 @@ const useComissionViewModel = () => {
   const [status, setStatus] = useState<any>(null);
   const [isCustomTake, setIsCustomTake] = useState(false);
   const [searchCommission, setSearchComission] = useState("");
+  const [selectedTable, setSelectedTable] = useState("commission");
+  const [searchPendingCommission, setSearchPendingComission] = useState("");
 
   const {
     currentPage,
@@ -82,6 +119,14 @@ const useComissionViewModel = () => {
     calculateTotalPage,
     invoiceLength,
   } = usePagination();
+  const {
+    currentPendingCommPage,
+    findPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
+  } = usePendingComissionPagination();
 
   // Querying data
   const invoiceFindMany = useInvoiceFindManyQuery({
@@ -197,7 +242,52 @@ const useComissionViewModel = () => {
       orderBy: {
         updatedAt: orderBy,
       },
+      where: {
+        OR: [
+          // Buyer name
+          {
+            payment: {
+              is: {
+                invoice: {
+                  is: {
+                    paymentForGateway: {
+                      is: {
+                        sender_name: {
+                          contains: searchCommission,
+                          mode: QueryMode.Insensitive,
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            payment: {
+              is: {
+                invoice: {
+                  is: {
+                    paymentForGateway: {
+                      is: {
+                        bill_title: {
+                          contains: searchCommission,
+                          mode: QueryMode.Insensitive,
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+        ]
+      }
     }
+  });
+
+  const pendingComissionFindMany = usePendingCommissionFindManyQuery({
+    variables: {pendingCommissionArgs: {}}
   });
 
   return {
@@ -219,6 +309,16 @@ const useComissionViewModel = () => {
     setFindTake,
     findTake,
     transactionFindMany,
+    pendingComissionFindMany,
+    selectedTable,
+    setSelectedTable,
+    setSearchPendingComission,
+    currentPendingCommPage,
+    findPendingCommSkip,
+    findPendingCommTake,
+    setFindPendingCommTake,
+    handlePendingCommPageChange,
+    calculateTotalPendingCommPage,
   };
 };
 
