@@ -125,7 +125,7 @@ const Body = ({ data }: { data: QueryResult<ActivityFindManyQuery> }) => {
           >
             <th className="min-w-100px">IP Address</th>
             <th className="text-start min-w-200px">Hostname</th>
-            <th className="text-end min-w-200px">Country</th>
+            <th className="text-end min-w-200px">Location</th>
             <th className="text-end min-w-200px">Date</th>
             <th className="text-end min-w-200px">Event</th>
             <th className="text-end min-w-200px">Local User</th>
@@ -135,16 +135,18 @@ const Body = ({ data }: { data: QueryResult<ActivityFindManyQuery> }) => {
               <KTTableBody key={index}>
                 <td className="text-start min-w-200px">
                   <span className="text-primary fs-6 fw-bold">
-                    {genRandomIP()}
+                    {activity?.session?.ipAddress ?? "..."}
                   </span>
                 </td>
                 <td className="text-start min-w-200px">
                   <span className="text-dark cursor-pointer fs-6 fw-bold">
-                    ...
+                    {activity?.session?.device ?? "..."}
                   </span>
                 </td>
                 <td className="text-end min-w-200px">
-                  <span className="text-muted fs-6 fw-bold">Unknown</span>
+                  <span className="text-muted fs-6 fw-bold">
+                    {activity.session?.location?.replace(/\s*\[\-?\d+\.\d+,\s*\-?\d+\.\d+\]/, '').trim() ?? "..."}
+                  </span>
                 </td>
                 <td className="text-end min-w-200px">
                   <span className="text-muted fs-6 fw-bold">
