@@ -300,6 +300,21 @@ query StudentFindOne($where: StudentWhereUniqueInput!) {
           orderId
         }
       }
+      identification {
+        id
+        personalId
+        personalAddressId
+        personalDocumentIdPath
+        isVerified
+        phoneNumber
+        identificationStatus
+        rejectedReason
+        verifiedAt
+        createdAt
+        updatedAt
+        userId
+        verifiedById
+      }
     }
     enrollments {
       id
