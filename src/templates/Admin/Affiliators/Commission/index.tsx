@@ -28,6 +28,7 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { useSession } from "next-auth/react";
 import Flatpickr from "react-flatpickr";
+import CommissionDateSettingsModal from "./components/CommisisonDateSetingsModal";
 
 interface ComissionPageProps {}
 
@@ -86,6 +87,8 @@ const CommissionPage = ({}: ComissionPageProps) => {
     setFilterExportStatus,
   } = useComissionViewModel();
 
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Komisi</PageTitle>
@@ -105,6 +108,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
               setSearchFilter={setSearchFilter}
+              setShowSettingsModal={setShowSettingsModal}
             />
           </div>
         </KTCardBody>
@@ -178,6 +182,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
           }
         }}
       />
+      <CommissionDateSettingsModal show={showSettingsModal} handleClose={()=>{setShowSettingsModal(false)}}/>
     </>
   );
 };
@@ -191,6 +196,7 @@ const Head = ({
   selectedTable,
   setSelectedTable,
   setSearchFilter,
+  setShowSettingsModal,
 }: any) => {
   const { loadOptions: loadAffiliator } = useFilterDropdown();
   // const { loadOptions: loadCourses } = useCoursesDropdown();
@@ -317,7 +323,9 @@ const Head = ({
           </Buttons>
         </div>
         <div className="col-lg-auto">
-        <button className="btn btn-success">Pengaturan Komisi</button>
+        <button className="btn btn-success" onClick={(e)=> {
+          setShowSettingsModal(true)
+        }}>Pengaturan Komisi</button>
         </div>
       </div>
     </div>
