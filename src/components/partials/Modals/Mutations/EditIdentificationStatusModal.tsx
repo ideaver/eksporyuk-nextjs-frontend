@@ -5,8 +5,10 @@ import {
 } from "@/app/service/graphql/gen/graphql";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
+import { ApolloError } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import SweetAlert2 from "react-sweetalert2";
 
 type TStatus = {
   title: string;
@@ -38,6 +40,8 @@ const EditIdentificationModal = ({
     },
   ];
 
+  const [swalProps, setSwalProps] = useState({});
+
   const [status, setStatus] = useState<IdentificationStatusEnum>(defaultStatus);
   const [selectedStatus, setSelectedStatus] = useState<TStatus>({
     value: defaultStatus,
@@ -59,9 +63,22 @@ const EditIdentificationModal = ({
           },
         },
       });
-      router.reload();
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Ideentificatn Berhasil Diupdate",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -113,6 +130,16 @@ const EditIdentificationModal = ({
           </div>
         </div>
       </KTModal>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+        }}
+      />
     </div>
   );
 };

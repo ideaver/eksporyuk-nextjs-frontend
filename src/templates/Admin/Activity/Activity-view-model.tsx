@@ -204,7 +204,7 @@ const useActivityViewModel = () => {
       console.log(error);
       setSwalProps({
         show: true,
-        title: "Terjadi kesalahan saat menambahkan mentor",
+        title: "Terjadi kesalahan",
         text: (error as ApolloError).message,
         icon: "error",
         confirmButtonText: "OK",
