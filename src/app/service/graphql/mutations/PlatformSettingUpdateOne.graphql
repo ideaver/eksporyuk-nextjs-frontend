@@ -4,5 +4,21 @@ mutation PlatformSettingUpdateOne(
 ) {
   platformSettingUpdateOne(data: $data, where: $where) {
     id
+    platformFee
+    lastAutomateTransferCommissionDate
+    starSenderApiKey
+    senderEmail
+    senderName
+    senderEmailApiToken
+    listIdMailketingSubscriber
+    facebookCommunities
+    instagramCommunities
+    telegramCommunities
+    whatsappCommunities
+    orderExpirationTime
+    language
+    theme
+    createdAt
+    updatedAt
   }
 }
