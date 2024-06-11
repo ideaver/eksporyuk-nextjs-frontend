@@ -21,6 +21,7 @@ import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Dispatch, SetStateAction } from "react";
+import SweetAlert2 from "react-sweetalert2";
 
 const Activity = () => {
   const {
@@ -46,6 +47,8 @@ const Activity = () => {
     setTelegramCommunities,
     whatsappCommunities,
     setWhatsappCommunities,
+    swalProps,
+    setSwalProps,
   } = useActivityViewModel();
 
   return (
@@ -85,6 +88,8 @@ const Activity = () => {
         setFacebookCommunities={setFacebookCommunities}
         setWhatsappCommunities={setWhatsappCommunities}
         isLoadingPlatformSetting={isLoadingPlatformSetting}
+        swalProps={swalProps}
+        setSwalProps={setSwalProps}
         onClose={() => {}}
       />
     </>
@@ -298,6 +303,8 @@ const SocialMediaForumModal = ({
   setInstagramCommunities,
   setTelegramCommunities,
   isLoadingPlatformSetting,
+  swalProps,
+  setSwalProps,
 }: {
   handleSubmit: () => void;
   onClose: () => void;
@@ -310,6 +317,8 @@ const SocialMediaForumModal = ({
   setInstagramCommunities: Dispatch<SetStateAction<string | undefined>>;
   setTelegramCommunities: Dispatch<SetStateAction<string | undefined>>;
   isLoadingPlatformSetting: boolean;
+  swalProps: object;
+  setSwalProps: Dispatch<SetStateAction<object>>;
 }) => {
   return (
     <div>
@@ -381,6 +390,16 @@ const SocialMediaForumModal = ({
           }}
         />
       </KTModal>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+        }}
+      />
     </div>
   );
 };

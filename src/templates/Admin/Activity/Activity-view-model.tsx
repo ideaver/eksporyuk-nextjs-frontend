@@ -1,4 +1,4 @@
-import { QueryResult } from "@apollo/client";
+import { ApolloError, QueryResult } from "@apollo/client";
 import { useState } from "react";
 
 import {
@@ -120,6 +120,7 @@ const useActivityViewModel = () => {
   >("");
   const [isLoadingPlatformSetting, setIsLoadingPlatformSetting] =
     useState(false);
+  const [swalProps, setSwalProps] = useState({});
 
   // Query data...
   const activityFindMany = useActivityFindManyQuery({
@@ -158,7 +159,7 @@ const useActivityViewModel = () => {
   const handlePlatformSettingUpdateOne = async () => {
     setIsLoadingPlatformSetting(true);
     try {
-      await platformSettingUpdateOne({
+      const response = await platformSettingUpdateOne({
         variables: {
           where: {
             id: 1,
@@ -179,15 +180,44 @@ const useActivityViewModel = () => {
           },
         },
       });
+      setFacebookCommunities(
+        response.data?.platformSettingUpdateOne?.facebookCommunities
+      );
+      setInstagramCommunities(
+        response.data?.platformSettingUpdateOne?.instagramCommunities
+      );
+      setTelegramCommunities(
+        response.data?.platformSettingUpdateOne?.telegramCommunities
+      );
+      setWhatsappCommunities(
+        response.data?.platformSettingUpdateOne?.whatsappCommunities
+      );
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Social Media Forum Diupdate",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      // await platformSetting.refetch();
     } catch (error) {
       console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan saat menambahkan mentor",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setIsLoadingPlatformSetting(false);
-      router.reload();
+      // router.reload();
     }
   };
 
   return {
+    swalProps,
+    setSwalProps,
     setIsLoadingPlatformSetting,
     isLoadingPlatformSetting,
     handlePlatformSettingUpdateOne,
