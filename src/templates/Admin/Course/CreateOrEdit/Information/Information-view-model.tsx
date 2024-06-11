@@ -2,6 +2,7 @@ import {
   AffiliateCommissionTypeEnum,
   CourseLevelEnum,
   QueryMode,
+  useGetAllListSubscribersQuery,
   useMentorFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
@@ -17,6 +18,7 @@ import {
   changeErrorMessage,
   changeIntroVideo,
   changePrice,
+  changeSubscriberListId,
 } from "@/features/reducers/course/courseReducer";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useRouter } from "next/router";
@@ -189,6 +191,75 @@ const ClassDescriptionHandler = () => {
   return { inputClassDescription, setInputClassDescription };
 };
 
+export const useAllListSubscriberDropdown = () => {
+  const router = useRouter();
+  const isDetail = router.query.action === "detail";
+  const dispatch = useDispatch();
+  const [inputSubscriberListId, setInputSubscriberListId] = useState<any>("");
+  const subscriberListId = useSelector(
+    (state: RootState) => state.course.subscriberListId
+  );
+
+  const getAllListSubscriber = useGetAllListSubscribersQuery(
+    {
+      onCompleted(data) {
+        const result =
+    data?.getAllListSubscriber?.map((list) => ({
+          value: list.list_id,
+          label: `${list.list_id} - ${list.list_name}`,
+        })) ?? [];
+              // Check if subscriberListId is not null
+    if (subscriberListId) {
+      // Search for the subscriberListId in the result
+      const selectedOption = result.find(
+        (option) => option.value === subscriberListId
+      );
+      // If found, set inputSubscriberListId to the found object
+      if (selectedOption) {
+        setInputSubscriberListId(selectedOption);
+      }
+    }
+      },
+    }
+  );
+
+
+  const handleInputSubscriberListId = (value: any) => {
+    if (isDetail) {
+      return;
+    }
+    setInputSubscriberListId(value);
+
+    dispatch(changeSubscriberListId(value.value));
+  };
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
+  return {
+    loadOptions,
+    getAllListSubscriber,
+    inputSubscriberListId,
+    handleInputSubscriberListId,
+  };
+};
+
 /**
  * custom hook for information view model
  * @returns
@@ -235,6 +306,7 @@ const useInformationViewModel = () => {
     (state: RootState) => state.course.courseLevel,
     (value) => changeCourseLevel(value as CourseLevelEnum)
   );
+
   return {
     inputClassName,
     setInputClassName,

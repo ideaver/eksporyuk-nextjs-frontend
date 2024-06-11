@@ -143,7 +143,7 @@ const CourseSylabusPage = () => {
       };
     });
     dispatch(changeSections(newLessons));
-    dispatch(deleteLesson(newLessons[index].id));
+    dispatch(deleteLesson(newLessons[index]?.id));
   };
 
   const handleEditLesson = (

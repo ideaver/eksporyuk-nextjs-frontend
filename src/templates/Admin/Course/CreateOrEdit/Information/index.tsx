@@ -8,16 +8,16 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import "react-quill/dist/quill.snow.css";
 import { AsyncPaginate } from "react-select-async-paginate";
 import useInformationViewModel, {
   AddMentorHandler,
   OptionType,
+  useAllListSubscriberDropdown,
   useMentorsDropdown,
 } from "./Information-view-model";
-import { on } from "events";
 
 const ClassInformation = ({}) => {
   const ReactQuill = useMemo(
@@ -57,6 +57,9 @@ const ClassInformation = ({}) => {
     setSelectedMentor,
     removeMentor,
   } = AddMentorHandler();
+
+  const { loadOptions: mailketingLoadOptions, getAllListSubscriber,handleInputSubscriberListId,inputSubscriberListId } =
+    useAllListSubscriberDropdown();
 
   return (
     <>
@@ -265,6 +268,15 @@ const ClassInformation = ({}) => {
               }
             }}
           ></Dropdown>
+          <h5 className="mt-5">Pengaturan Mailketing</h5>
+          <AsyncPaginate
+            defaultValue={inputSubscriberListId}
+            value={inputSubscriberListId}
+            loadOptions={mailketingLoadOptions as any}
+            onChange={(value) => {
+              handleInputSubscriberListId(value);
+            }}
+          />
         </KTCardBody>
       </KTCard>
     </>

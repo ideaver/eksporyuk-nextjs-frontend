@@ -1,6 +1,7 @@
 import {
   QueryMode,
   useCourseFindManyQuery,
+  useGetAllListSubscribersQuery,
   useMembershipCategoryCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
@@ -13,8 +14,10 @@ import {
   changeDuration,
   changeName,
   changePrice,
+  changeSubscriberListId,
 } from "@/features/reducers/membership/membershipReducer";
 import { CourseOptionType } from "@/templates/Admin/Affiliators/RewardManagement/Create/NewReward/NewReward-view-model";
+import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -87,7 +90,64 @@ export const useCoursesDropdown = () => {
 
   return { loadOptions };
 };
+export const useAllListSubscriberDropdown = () => {
+  const dispatch = useDispatch();
+  const [inputSubscriberListId, setInputSubscriberListId] = useState<any>("");
+  const subscriberListId = useSelector(
+    (state: RootState) => state.memebrship.subscriberListId
+  );
 
+  const getAllListSubscriber = useGetAllListSubscribersQuery({
+    onCompleted(data) {
+      const result =
+        data?.getAllListSubscriber?.map((list) => ({
+          value: list.list_id,
+          label: `${list.list_id} - ${list.list_name}`,
+        })) ?? [];
+      // Check if subscriberListId is not null
+      if (subscriberListId) {
+        // Search for the subscriberListId in the result
+        const selectedOption = result.find(
+          (option) => option.value === subscriberListId
+        );
+        // If found, set inputSubscriberListId to the found object
+        if (selectedOption) {
+          setInputSubscriberListId(selectedOption);
+        }
+      }
+    },
+  });
+
+  const handleInputSubscriberListId = (value: any) => {
+    setInputSubscriberListId(value);
+
+    dispatch(changeSubscriberListId(value.value));
+  };
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
+  return {
+    loadOptions,
+    getAllListSubscriber,
+    inputSubscriberListId,
+    handleInputSubscriberListId,
+  };
+};
 export const useMembershipForm = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -148,6 +208,7 @@ export const useMembershipForm = () => {
               name: membershipState.name,
               description: membershipState.description,
               benefits: membershipState.benefits,
+              subscriberListId: membershipState.subscriberListId,
               price: parseFloat(membershipState.price),
               affiliateCommission: parseFloat(
                 membershipState.affiliateCommision.toString()

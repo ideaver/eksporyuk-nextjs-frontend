@@ -324,7 +324,7 @@ const SocialMediaForumModal = ({
     <div>
       <KTModal
         dataBsTarget="kt_social_media_forum_modal"
-        title="Social Media Forum"
+        title="Social Media Forum Affiliasi"
         fade
         modalCentered
         onClose={onClose}

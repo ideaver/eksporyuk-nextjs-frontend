@@ -21,7 +21,7 @@ const AsideMenuItemWithSub: React.FC<Props & WithChildren> = ({
 }) => {
   const {pathname} = useRouter()
   const isActive = checkIsActive(pathname, to)
-  console.log("INI IS ACTIVE at AsideMenuItemWithSub with pathname", pathname, isActive, to)
+  // console.log("INI IS ACTIVE at AsideMenuItemWithSub with pathname", pathname, isActive, to)
   return (
     <div
       className={clsx('menu-item', {'here show': isActive}, 'menu-accordion')}

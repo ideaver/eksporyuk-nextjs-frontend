@@ -296,5 +296,6 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
       exampleTemplateCertificatePath
     }
     affiliateCommissionType
+    subscriberListId
   }
 }

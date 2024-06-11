@@ -1,10 +1,9 @@
 import {
-  QueryMode,
   UserRoleEnum,
   useGetAllListSubscribersQuery,
   usePlatformSettingFindFirstQuery,
   usePlatformSettingUpdateOneMutation,
-  useSendMailForMailketingMutation,
+  useSendMailForMailketingMutation
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
 import { useRouter } from "next/router";

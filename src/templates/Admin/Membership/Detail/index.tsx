@@ -20,6 +20,7 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
     courses,
     affiliateCommission,
     affiliateFirstCommission,
+    subscriberListId,
   } = useDetailMembershipViewModel({ id, data });
   return (
     <>
@@ -112,6 +113,8 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
               </div>
             </div>
           </div>
+          <h4 className="mt-5">Pengaturan Mailketing</h4>
+          <p className="mb-8 fs-5">{subscriberListId}</p>
           <h4 className="mt-8">Benefit</h4>
           <div
             style={{
@@ -122,6 +125,7 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
               <div dangerouslySetInnerHTML={{ __html: benefits as string }} />
             </div>
           </div>
+
           {/* <Textarea
                 placeholder="Masukan Benefit"
                 classNames={clsx(

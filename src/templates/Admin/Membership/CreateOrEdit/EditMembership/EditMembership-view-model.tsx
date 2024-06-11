@@ -45,6 +45,7 @@ interface EditMembershipForm {
   description: string | undefined;
   price: number | undefined;
   benefits: string | undefined;
+  subscriberListId?: string;
   duration: number | undefined;
   id: string | string[] | undefined;
   courses: { value: number; label: string }[] | undefined;
@@ -58,6 +59,7 @@ const useEditMembershipForm = ({
   price,
   benefits,
   duration,
+  subscriberListId,
   id,
   courses,
   affiliateCommission,
@@ -77,6 +79,7 @@ const useEditMembershipForm = ({
       .min(10, "Minimal 10 simbol")
       .required("Deskripsi diperlukan"),
     price: Yup.number().min(2, "Minimal 2 simbol").required("Harga diperlukan"),
+    subscriberListId: Yup.string().optional(),
     benefits: Yup.string()
       .min(5, "Minimal 5 simbol")
       .required("Benefit diperlukan"),
@@ -93,6 +96,7 @@ const useEditMembershipForm = ({
       name,
       description,
       price,
+      subscriberListId,
       benefits,
       duration,
     },
@@ -114,6 +118,9 @@ const useEditMembershipForm = ({
               },
               price: {
                 set: price,
+              },
+              subscriberListId: {
+                set: subscriberListId,
               },
               benefits: {
                 set: benefits,
@@ -170,6 +177,10 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     data.membershipCategoryFindOne?.affiliateFirstCommission
   );
 
+  const [subscriberListId, setSubscriberListId] = useState(
+    data.membershipCategoryFindOne?.subscriberListId || undefined
+  );
+
   const handleChangeCourses = (course: { value: number; label: string }) => {
     setCourses((prev: any) => [...prev, course]);
   };
@@ -188,6 +199,7 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     courses,
     affiliateCommission,
     affiliateFirstCommission,
+    subscriberListId
   });
 
   return {
@@ -195,6 +207,8 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     affiliateFirstCommission,
     setAffiliateCommission,
     setAffiliateFirstCommission,
+    subscriberListId,
+    setSubscriberListId,
     handleChangeCourses,
     handleDeleteCourses,
     courses,

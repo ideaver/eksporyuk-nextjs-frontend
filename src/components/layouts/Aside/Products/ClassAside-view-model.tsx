@@ -1,6 +1,5 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
-  CourseSectionUpdateManyWithoutCourseNestedInput,
   CourseSectionUpdateWithWhereUniqueWithoutCourseInput,
   // CourseDurationTypeEnum,
   CourseStatusEnum,
@@ -265,6 +264,7 @@ const useCreateCourse = () => {
       data: {
         title: currentCourseSelector.courseName,
         description: currentCourseSelector.classDescription,
+        subscriberListId: currentCourseSelector.subscriberListId,
         images: {
           connect: [
             {
@@ -292,6 +292,7 @@ const useCreateCourse = () => {
         },
         basePrice: parseInt(currentCourseSelector.price),
         level: currentCourseSelector.courseLevel,
+
         affiliateCommission: currentCourseSelector.affiliateCommission,
         affiliateCommissionType: currentCourseSelector.affiliateCommissionType,
         ...(currentCourseSelector.certificateTemplateId !== 0
@@ -427,11 +428,17 @@ const useEditCourse = () => {
               (lesson.content as ILessonPDFContent).fileName
             );
           } catch (error) {
-            material = (lesson.content as ILessonPDFContent).file;
+            console.log(
+              "CATCH ERROR LESSON PDF",
+              lesson.content as ILessonPDFContent
+            );
+            material =
+              (lesson.content as ILessonPDFContent).file ??
+              (lesson.content as ILessonPDFContent).content;
           }
         }
         console.log("INI MATERIAL", material);
-        return {
+        const lessonUpdate = {
           where: {
             id: parseInt(lesson.id),
           },
@@ -456,7 +463,9 @@ const useEditCourse = () => {
             },
             ...(material ? { material: { connect: { path: material } } } : {}),
           },
-        };
+        }
+        console.log("THIS IS LESSON UPDATE", lessonUpdate)
+        return lessonUpdate;
       });
       return Promise.all(lessonsPromises);
     };
@@ -644,9 +653,6 @@ const useEditCourse = () => {
           };
         })
       );
-    const sectionData: CourseSectionUpdateManyWithoutCourseNestedInput = {
-      update: sectionColumn,
-    };
 
     try {
       const result = await updateCourseMutation({
@@ -671,6 +677,9 @@ const useEditCourse = () => {
               set: currentCourseSelector.courseMentor?.map((mentor) => ({
                 id: mentor.value,
               })),
+            },
+            subscriberListId: {
+              set: currentCourseSelector.subscriberListId,
             },
             level: {
               set: currentCourseSelector.courseLevel,

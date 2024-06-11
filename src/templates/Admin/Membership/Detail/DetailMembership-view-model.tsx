@@ -57,6 +57,9 @@ const useDetailMembershipViewModel = ({ id, data }: IDetailMembership) => {
   const [affiliateFirstCommission] = useState(
     data.membershipCategoryFindOne?.affiliateCommission
   );
+  const [subscriberListId, setSubscriberListId] = useState(
+    data.membershipCategoryFindOne?.subscriberListId
+  );
 
   return {
     affiliateCommission,
@@ -66,7 +69,7 @@ const useDetailMembershipViewModel = ({ id, data }: IDetailMembership) => {
     descriptionMembership,
     price,
     duration,
-    benefits,
+    benefits,subscriberListId
   };
 };
 
