@@ -156,7 +156,7 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
                   {message.type === "in" ? (
                     <>
                       <div className="symbol  symbol-35px symbol-circle ">
-                        <img alt="Pic" src={userInfo.avatar} />
+                        <img alt="Pic" src={userInfo.avatar ?? "/media/avatars/blank.png"} />
                       </div>
                       <div className="ms-3">
                         <a

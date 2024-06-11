@@ -1,20 +1,16 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useInformationViewModel, {
-  breadcrumbs,
-  useAnnouncementForm,
-  useArticleForm,
-  useCategoriesDropdown,
-  useCategoryForm,
-} from "./Information-view-model";
 import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { ChangeEvent, useMemo } from "react";
-import { useRouter } from "next/router";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
-import { useDispatch, useSelector } from "react-redux";
+import { PageTitle } from "@/_metronic/layout/core";
+import {
+  AnnouncementTypeEnum,
+  MaterialPromotionPlatformTypeEnum,
+  NewsTypeEnum,
+} from "@/app/service/graphql/gen/graphql";
+import { RootState } from "@/app/store/store";
+import {
+  changeContentAnnouncement,
+  changeTitleAnnouncement,
+} from "@/features/reducers/announcement/announcementReducer";
 import {
   TypeCategory,
   changeContent,
@@ -22,23 +18,6 @@ import {
   changeToogleForm,
   changeUrlVideo,
 } from "@/features/reducers/articles/articlesReducer";
-import clsx from "clsx";
-import { AsyncPaginate } from "react-select-async-paginate";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-import { RootState } from "@/app/store/store";
-import {
-  AnnouncementTypeEnum,
-  MaterialPromotionPlatformTypeEnum,
-  NewsTypeEnum,
-  UserRoleEnum,
-} from "@/app/service/graphql/gen/graphql";
-import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
-import {
-  changeContentAnnouncement,
-  changeTitleAnnouncement,
-} from "@/features/reducers/announcement/announcementReducer";
 import {
   changeContentMaterialPromotionFirst,
   changeContentMaterialPromotionSecond,
@@ -51,6 +30,25 @@ import {
   changeNewsType,
   changeTitleNews,
 } from "@/features/reducers/news/newsReducer";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { useCoursesDropdown } from "@/templates/Admin/Affiliators/AdminCoupon/AdminCoupon-view-model";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import { ChangeEvent, useMemo } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch, useSelector } from "react-redux";
+import { AsyncPaginate } from "react-select-async-paginate";
+import useInformationViewModel, {
+  breadcrumbs,
+  useAnnouncementForm,
+  useArticleForm,
+  useCategoriesDropdown,
+  useCategoryForm,
+} from "./Information-view-model";
 
 const InformationPage = () => {
   const ReactQuill = useMemo(
@@ -108,7 +106,7 @@ const InformationPage = () => {
 
   const { loadOptions } = useCoursesDropdown();
 
-  const { formik } = useArticleForm();
+  const { formik } = useArticleForm({});
 
   return (
     <>
@@ -152,7 +150,17 @@ const InformationPage = () => {
                   dispatch(changeToogleForm("Article"));
                 }}
               >
-                Article
+                Article {"(Affiliator)"}
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  dispatch(changeToogleForm("News"));
+                }}
+              >
+                Artikel {"(Student)"}
               </button>
             </li>
             <li>
@@ -175,16 +183,6 @@ const InformationPage = () => {
                 Material Promotion
               </button>
             </li>
-            <li>
-              <button
-                className="dropdown-item"
-                onClick={() => {
-                  dispatch(changeToogleForm("News"));
-                }}
-              >
-                News
-              </button>
-            </li>
           </ul>
         </div>
         {formToogle === "Article" ? (
@@ -202,7 +200,7 @@ const InformationPage = () => {
               <div className="col-lg-8">
                 <KTCard className="">
                   <KTCardBody>
-                    <h3 className="mb-5">Tulis Artikel</h3>
+                    <h3 className="mb-5">Tulis Artikel {"(Affiliator)"}</h3>
                     <h5 className="required">Judul Artikel</h5>
                     <TextField
                       placeholder="Masukan judul artikel"
@@ -243,7 +241,7 @@ const InformationPage = () => {
                     />
 
                     <h5 className="text-muted mt-3">Masukan url video</h5>
-                    <h5 className="required mt-5">Target Artikel</h5>
+                    {/* <h5 className="required mt-5">Target Artikel</h5>
                     <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
                       {target.map((e: any, index) => (
                         <Buttons
@@ -267,7 +265,7 @@ const InformationPage = () => {
                         handleTargetChange([...target, val as UserRoleEnum]);
                       }}
                     />
-                    <h5 className="text-muted mt-3">Masukan target artikel</h5>
+                    <h5 className="text-muted mt-3">Masukan target artikel</h5> */}
 
                     <h5 className="required mt-5">Konten Artikel</h5>
                     <div
@@ -322,8 +320,10 @@ const InformationPage = () => {
                   </Buttons>
                   <Buttons
                     type="submit"
-                    // disabled={!formik.isValid.valueOf()}
-                    onClick={() => {}}
+                    disabled={!formik.isValid.valueOf()}
+                    onClick={() => {
+                      handleArticleCreateOne();
+                    }}
                   >
                     Simpan
                   </Buttons>
@@ -382,12 +382,12 @@ const InformationPage = () => {
                     value={typeAnnouncement}
                     options={[
                       {
-                        value: AnnouncementTypeEnum.Affiliate,
-                        label: "Affiliate",
-                      },
-                      {
                         value: AnnouncementTypeEnum.Course,
                         label: "Course",
+                      },
+                      {
+                        value: AnnouncementTypeEnum.Affiliate,
+                        label: "Affiliate",
                       },
                       {
                         value: AnnouncementTypeEnum.System,
@@ -511,7 +511,7 @@ const InformationPage = () => {
               <div className={"col-lg-8"}>
                 <KTCard className="">
                   <KTCardBody>
-                    <h3 className="mb-5">Tulis News</h3>
+                    <h3 className="mb-5">Tulis Artikel {"(Student)"}</h3>
 
                     <h5 className="required">Judul</h5>
                     <TextField

@@ -270,7 +270,7 @@ const Body = ({
               </th> */}
               <th className="min-w-300px">Nama Lengkap</th>
               {/* <th className="text-end min-w-100px">Kategori</th> */}
-              <th className="text-end min-w-275px">Affiliasi</th>
+              {/* <th className="text-end min-w-275px">Affiliasi</th> */}
               <th className="text-end min-w-200px">Tanggal Pendaftaran</th>
               <th className="text-end min-w-200px">Jumlah Course</th>
               <th className="text-end min-w-150px">Status</th>
@@ -329,7 +329,7 @@ const Body = ({
                   </Link>
                 </td>
                 {/* TODO Update this */}
-                <td className="align-middle text-end w-250px">
+                {/* <td className="align-middle text-end w-250px">
                   <div className="d-flex align-items-center justify-content-end">
                     <div className="symbol symbol-50px symbol-circle me-5">
                       <img
@@ -349,7 +349,7 @@ const Body = ({
                       </span>
                     </div>
                   </div>
-                </td>
+                </td> */}
                 <td className="align-middle text-end text-muted fw-bold w-150px">
                   {formatDate(student.user.createdAt)}
                 </td>

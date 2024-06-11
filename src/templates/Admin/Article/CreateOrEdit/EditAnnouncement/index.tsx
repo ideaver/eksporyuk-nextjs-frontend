@@ -108,12 +108,12 @@ const EditAnnouncement = ({ id, data }: IEditAnnouncement) => {
                 value={announcementType}
                 options={[
                   {
-                    value: AnnouncementTypeEnum.Affiliate,
-                    label: "Affiliate",
-                  },
-                  {
                     value: AnnouncementTypeEnum.Course,
                     label: "Course",
+                  },
+                  {
+                    value: AnnouncementTypeEnum.Affiliate,
+                    label: "Affiliate",
                   },
                   {
                     value: AnnouncementTypeEnum.System,

@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useRef } from "react";
-import ApexCharts, { ApexOptions } from "apexcharts";
-import { useThemeMode } from "@/_metronic/partials";
 import { getCSS, getCSSVariableValue } from "@/_metronic/assets/ts/_utils";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
+import { useThemeMode } from "@/_metronic/partials";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import ApexCharts, { ApexOptions } from "apexcharts";
+import { useEffect, useRef } from "react";
 
 type ChartOptionsParams = {
   labelChartColor?: string;
@@ -224,6 +224,9 @@ function getChartOptions(
         style: {
           colors: labelColor,
           fontSize: "12px",
+        },
+        formatter: function (val) {
+          return currencyFormatter(val);
         },
       },
     },

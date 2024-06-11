@@ -156,151 +156,153 @@ const useAdminOrderViewModel = () => {
     { value: CartItemTypeEnum.Service, label: "Service" },
   ];
 
-  const orderFindMany = useOrderFindManyQuery({
-    variables: {
-      take: parseInt(orderFindTake.toString()),
-      skip: orderFindSkip,
-      orderBy: [
+  const orderVariables =  {
+    take: parseInt(orderFindTake.toString()),
+    skip: orderFindSkip,
+    orderBy: [
+      {
+        createdAt: orderBy,
+      },
+    ],
+    where: {
+      AND: [
         {
-          createdAt: orderBy,
-        },
-      ],
-      where: {
-        AND: [
-          {
-            OR: [
-              {
-                cart: {
-                  is: {
-                    cartItems: {
-                      some: {
-                        OR: [
-                          {
-                            bundle: {
-                              is: {
-                                name: {
-                                  contains: orderFindSearch.toString(),
-                                  mode: QueryMode.Insensitive,
-                                },
+          OR: [
+            {
+              cart: {
+                is: {
+                  cartItems: {
+                    some: {
+                      OR: [
+                        {
+                          bundle: {
+                            is: {
+                              name: {
+                                contains: orderFindSearch.toString(),
+                                mode: QueryMode.Insensitive,
                               },
                             },
                           },
-                          {
-                            course: {
-                              is: {
-                                title: {
-                                  contains: orderFindSearch.toString(),
-                                  mode: QueryMode.Insensitive,
-                                },
+                        },
+                        {
+                          course: {
+                            is: {
+                              title: {
+                                contains: orderFindSearch.toString(),
+                                mode: QueryMode.Insensitive,
                               },
                             },
                           },
-                          {
-                            membership: {
-                              is: {
-                                name: {
-                                  contains: orderFindSearch.toString(),
-                                  mode: QueryMode.Insensitive,
-                                },
+                        },
+                        {
+                          membership: {
+                            is: {
+                              name: {
+                                contains: orderFindSearch.toString(),
+                                mode: QueryMode.Insensitive,
                               },
                             },
                           },
-                          {
-                            product: {
-                              is: {
-                                name: {
-                                  contains: orderFindSearch.toString(),
-                                  mode: QueryMode.Insensitive,
-                                },
+                        },
+                        {
+                          product: {
+                            is: {
+                              name: {
+                                contains: orderFindSearch.toString(),
+                                mode: QueryMode.Insensitive,
                               },
                             },
                           },
-                          {
-                            productService: {
-                              is: {
-                                name: {
-                                  contains: orderFindSearch.toString(),
-                                  mode: QueryMode.Insensitive,
-                                },
+                        },
+                        {
+                          productService: {
+                            is: {
+                              name: {
+                                contains: orderFindSearch.toString(),
+                                mode: QueryMode.Insensitive,
                               },
                             },
                           },
-                        ],
-                      },
-                    },
-                  },
-                },
-              },
-              {
-                invoices: {
-                  some: {
-                    id: {
-                      equals: isNaN(parseInt(orderFindSearch.toString()))
-                        ? 0
-                        : parseInt(orderFindSearch.toString()),
-                    },
-                  },
-                },
-              },
-              {
-                invoices: {
-                  some: {
-                    uniqueCode: {
-                      contains: orderFindSearch.toString(),
-                      mode: QueryMode.Insensitive,
-                    },
-                  },
-                },
-              },
-              {
-                id: {
-                  equals: isNaN(parseInt(orderFindSearch.toString()))
-                    ? 0
-                    : parseInt(orderFindSearch.toString()),
-                },
-              },
-              {
-                createdByUser: {
-                  is: {
-                    name: {
-                      contains: orderFindSearch.toString(),
-                      mode: QueryMode.Insensitive,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-          statusFilter != null
-            ? {
-                statuses: {
-                  some: {
-                    status: {
-                      equals: statusFilter,
-                    },
-                  },
-                },
-              }
-            : {
-                statuses: {
-                  some: {
-                    status: {
-                      in: [
-                        OrderStatusEnum.Cancelled,
-                        OrderStatusEnum.Pending,
-                        OrderStatusEnum.Processing,
-                        OrderStatusEnum.Returned,
-                        OrderStatusEnum.Delivered,
-                        OrderStatusEnum.Done,
-                        OrderStatusEnum.Shipped,
+                        },
                       ],
                     },
                   },
                 },
               },
-        ],
-      },
+            },
+            {
+              invoices: {
+                some: {
+                  id: {
+                    equals: isNaN(parseInt(orderFindSearch.toString()))
+                      ? 0
+                      : parseInt(orderFindSearch.toString()),
+                  },
+                },
+              },
+            },
+            {
+              invoices: {
+                some: {
+                  uniqueCode: {
+                    contains: orderFindSearch.toString(),
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            {
+              id: {
+                equals: isNaN(parseInt(orderFindSearch.toString()))
+                  ? 0
+                  : parseInt(orderFindSearch.toString()),
+              },
+            },
+            {
+              createdByUser: {
+                is: {
+                  name: {
+                    contains: orderFindSearch.toString(),
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            
+          ],
+        },
+        statusFilter != null
+          ? {
+              statuses: {
+                some: {
+                  status: {
+                    equals: statusFilter,
+                  },
+                },
+              },
+            }
+          : {
+              statuses: {
+                some: {
+                  status: {
+                    in: [
+                      OrderStatusEnum.Cancelled,
+                      OrderStatusEnum.Pending,
+                      OrderStatusEnum.Processing,
+                      OrderStatusEnum.Returned,
+                      OrderStatusEnum.Delivered,
+                      OrderStatusEnum.Done,
+                      OrderStatusEnum.Shipped,
+                    ],
+                  },
+                },
+              },
+            },
+      ],
     },
+  }
+  const orderFindMany = useOrderFindManyQuery({
+    variables: orderVariables,
   });
   const [exportOrder] = useExportOrderMutation();
 
@@ -414,6 +416,7 @@ const useAdminOrderViewModel = () => {
     exportModalState,
     setExportModalState,
     setStatusFilter,
+    orderVariables
   };
 };
 export default useAdminOrderViewModel;

@@ -188,6 +188,7 @@ export const useCouponForm = () => {
   const [swalProps, setSwalProps] = useState({});
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
+  const [desc, setDesc] = useState<string>("");
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = allowedCourses.map((item: any) => ({
@@ -245,8 +246,6 @@ export const useCouponForm = () => {
     setNotAllowedCourses([]);
   };
 
-  console.log(addDate);
-
   const [couponCreateOne] = useCouponCreateOneMutation();
 
   const hanldeCouponCreateOne = async () => {
@@ -271,6 +270,7 @@ export const useCouponForm = () => {
                 },
               },
             },
+            description: desc,
             // courseCoupon: {
             //   connect: {
             //     id: connectCourse,
@@ -350,6 +350,8 @@ export const useCouponForm = () => {
     setStartDate,
     endDate,
     setEndDate,
+    setDesc,
+    desc,
   };
 };
 

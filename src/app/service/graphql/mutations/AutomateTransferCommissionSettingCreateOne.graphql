@@ -1,0 +1,17 @@
+mutation AutomateTransferCommissionSettingCreateOne(
+  $data: AutomateTransferCommissionSettingCreateInput!
+) {
+  automateTransferCommissionSettingCreateOne(data: $data) {
+    id
+    title
+    dateOfMonth
+    createdAt
+    updatedAt
+    createdById
+    createdBy {
+      id
+      createdAt
+      modifyPlatformSettingId
+    }
+  }
+}

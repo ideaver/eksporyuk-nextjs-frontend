@@ -158,9 +158,9 @@ export const useCategoryForm = () => {
   return { formik, response };
 };
 
-export const useArticleForm = () => {
+export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
   const articleState = useSelector((state: RootState) => state.article);
-  const [file, setFile] = useState<File | null>(null);
+
   const { articleFindMany, articleLength } = useArticleViewModel();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -197,7 +197,7 @@ export const useArticleForm = () => {
   const uploadFile = async () => {
     try {
       const form = {
-        file: file,
+        file: fileImage,
         userId: session?.user?.id,
       };
       const response = await postDataAPI({
@@ -233,7 +233,7 @@ export const useArticleForm = () => {
             title: articleState.title,
             content: articleState.content,
             target: {
-              set: articleState.target,
+              set: [UserRoleEnum.Affiliator],
             },
             createdByAdmin: {
               connect: {
@@ -244,7 +244,7 @@ export const useArticleForm = () => {
             fileUrl: {
               connect: [
                 {
-                  path: response?.data ? `${response.data}` : null,
+                  path: response?.data,
                 },
               ],
             },
@@ -262,8 +262,8 @@ export const useArticleForm = () => {
       });
       await articleFindMany.refetch();
       await articleLength.refetch();
-      await router.push("/admin/articles");
-      router.reload();
+      // await router.push("/admin/articles");
+      // router.reload();
       resetArticleState();
     } catch (error) {
       console.log(error);
@@ -279,7 +279,7 @@ export const useArticleForm = () => {
     },
     validationSchema: articleSchema,
     onSubmit: () => {
-      handleArticleCreateOne();
+      // handleArticleCreateOne();
     },
   });
 
@@ -287,9 +287,9 @@ export const useArticleForm = () => {
     articleState,
     formik: articleForm,
     response,
-    file,
+    // file,
     categoryArticle,
-    setFile,
+    // setFile,
     uploadFile,
     articleCreateOne,
     isLoading,
@@ -644,6 +644,8 @@ const useInformationViewModel = () => {
 
   const dispatch = useDispatch();
   // article
+  const [file, setFile] = useState<File | null>(null);
+
   const [thumbnail, setThumbnail] = useState<string | null>();
 
   const status = useSelector((state: RootState) => state.article.status);
@@ -654,8 +656,8 @@ const useInformationViewModel = () => {
   const { articleFindMany, articleLength } = useArticleViewModel();
 
   const {
-    file: fileImage,
-    setFile,
+    // file,
+    // setFile,
     uploadFile,
     articleCreateOne,
     formik,
@@ -664,34 +666,34 @@ const useInformationViewModel = () => {
     isLoading,
     setIsLoading,
     handleArticleCreateOne,
-  } = useArticleForm();
+  } = useArticleForm({ fileImage: file });
 
   const {
     materialPromotionForm,
     isLoadingMaterialPromotion,
     resetMaterialPromotionState,
-  } = useMaterialPromotionForm({ fileImage });
+  } = useMaterialPromotionForm({ fileImage: file });
 
   const { resetNewsState, newsForm, isLoadingNews } = useNewsForm({
-    fileImage,
+    fileImage: file,
   });
 
   // create article
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    const blob = file?.slice(0, file?.size);
-    const newFile = new File([blob] as any, file?.name as string);
+    const fil = event.target.files?.[0];
+    const blob = fil?.slice(0, fil?.size);
+    const newFile = new File([blob] as any, fil?.name as string);
 
     setFile(newFile);
 
-    if (!file) return;
+    if (!fil) return;
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnail(reader.result as string);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(fil);
     } catch (error) {
       console.log(error);
     }
@@ -729,7 +731,7 @@ const useInformationViewModel = () => {
     handleStatusChange,
     handleTargetChange,
     thumbnail,
-    fileImage,
+    file,
     uploadFile,
     isLoading,
     handleArticleCreateOne,

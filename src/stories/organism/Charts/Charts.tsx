@@ -11,7 +11,7 @@ interface ChartProps {
   /**
    * What Name Series to use
    */
-  nameSeries?: "Not Paid" | "Paid";
+  nameSeries?: "Not Paid" | "Paid" | string;
 
   /**
    * What Data Series to use
@@ -43,6 +43,12 @@ interface ChartProps {
    */
 
   label?: string;
+
+  /**
+   * Label Formatter
+   */
+
+  labelFormat?: "currency" | "normal";
 
   /**
    * subLabel Content
@@ -119,6 +125,7 @@ export const Charts = ({
   textColor = "success",
   children,
   labelIcon = "arrow-down",
+  labelFormat = "normal",
   classNames,
   labelChartColor = "secondary",
   borderChartColor = "secondary",
@@ -158,6 +165,7 @@ export const Charts = ({
           labelChartColor: labelChartColor,
           baseChartColor: baseChartColor,
           lightChartColor: lightChartColor,
+          labelFormat: labelFormat,
           borderChartColor: borderChartColor,
           nameSeries: nameSeries,
           dataSeries: dataSeries,
@@ -186,6 +194,7 @@ export const Charts = ({
     borderChartColor,
     nameSeries,
     dataSeries,
+    labelFormat,
     categoriesXAxis,
   ]);
 
@@ -356,6 +365,7 @@ function getChartOptions(
     borderChartColor = "gray",
     baseChartColor = "info",
     lightChartColor = "info-light",
+    labelFormat = "normal",
     nameSeries = "Net Profit",
     dataSeries = [30],
     categoriesXAxis = ["Feb"],
@@ -435,6 +445,11 @@ function getChartOptions(
           colors: labelColor,
           fontSize: "12px",
         },
+        formatter: function (val) {
+          return labelFormat === "currency"
+            ? currencyFormatter(val)
+            : val.toString();
+        },
       },
     },
     states: {
@@ -464,7 +479,9 @@ function getChartOptions(
       },
       y: {
         formatter: function (val) {
-          return currencyFormatter(val);
+          return labelFormat === "currency"
+            ? currencyFormatter(val)
+            : val.toString();
         },
       },
     },

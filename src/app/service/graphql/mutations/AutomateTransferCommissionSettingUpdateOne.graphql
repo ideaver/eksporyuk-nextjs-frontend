@@ -1,0 +1,18 @@
+mutation AutomateTransferCommissionSettingUpdateOne(
+  $data: AutomateTransferCommissionSettingUpdateInput!
+  $where: AutomateTransferCommissionSettingWhereUniqueInput!
+) {
+  automateTransferCommissionSettingUpdateOne(data: $data, where: $where) {
+    id
+    title
+    dateOfMonth
+    createdAt
+    updatedAt
+    createdById
+    createdBy {
+      id
+      createdAt
+      modifyPlatformSettingId
+    }
+  }
+}

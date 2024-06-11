@@ -1,5 +1,15 @@
-query TransactionFindMany($where: TransactionWhereInput, $orderBy: [TransactionOrderByWithRelationInput!], $take: Int, $skip: Int) {
-  transactionFindMany(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
+query TransactionFindMany(
+  $where: TransactionWhereInput
+  $orderBy: [TransactionOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  transactionFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
     id
     amount
     uniqueCode
@@ -54,6 +64,87 @@ query TransactionFindMany($where: TransactionWhereInput, $orderBy: [TransactionO
           created_at
           completed_at
         }
+        id
+        adminFee
+        amount
+        uniqueCode
+        createdAt
+        updatedAt
+        status
+        orderId
+        paymentForGatewayId
+        paymentId
+        topupId
+      }
+    }
+    fromAccount {
+      id
+      accountNumber
+      name
+      balance
+      createdAt
+      updatedAt
+      accountCategory
+      userId
+      accountInquiryId
+      user {
+        id
+        name
+        email
+        username
+        couponCodeRegister
+        emailVerifiedAt
+        referralCode
+        password
+        passwordUpdatedAt
+        birthDate
+        personalId
+        npwpId
+        createdAt
+        updatedAt
+        deletedAt
+        deletedReason
+        phoneId
+        referredById
+        role
+        gender
+        avatarImageId
+        referralLinkId
+      }
+    }
+    toAccount {
+      id
+      accountNumber
+      name
+      balance
+      createdAt
+      updatedAt
+      accountCategory
+      userId
+      accountInquiryId
+      user {
+        id
+        name
+        email
+        username
+        couponCodeRegister
+        emailVerifiedAt
+        referralCode
+        password
+        passwordUpdatedAt
+        birthDate
+        personalId
+        npwpId
+        createdAt
+        updatedAt
+        deletedAt
+        deletedReason
+        phoneId
+        referredById
+        role
+        gender
+        avatarImageId
+        referralLinkId
       }
     }
   }

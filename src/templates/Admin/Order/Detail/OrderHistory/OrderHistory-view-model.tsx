@@ -28,9 +28,9 @@ function getStatusBadgeColor(status: OrderStatusEnum | undefined) {
   }
 }
 const tableData = (data: OrderFindOneQuery["orderFindOne"]) => {
-  const latestStatus = data?.statuses?.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )[0];
+  // const latestStatus = data?.statuses?.sort(
+  //   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // )[0];
   const tableData: TableRowData[] | undefined = data?.statuses?.map(
     (status) => {
       return {
@@ -40,12 +40,12 @@ const tableData = (data: OrderFindOneQuery["orderFindOne"]) => {
         },
         status: {
           label: status?.status ?? "No Status",
-          color: getStatusBadgeColor(status?.status),
+          color: getStatusBadgeColor(status?.status) as ColorList,
         },
     
       };
     }
-  );
+  )?.reverse();
 
   // {
   //   waktu: { date: "8 Januari 2024", time: "15.00 WIB" },

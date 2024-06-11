@@ -1,0 +1,20 @@
+query AutomateTransferCommissionSettingFindMany(
+  $where: AutomateTransferCommissionSettingWhereInput
+  $orderBy: [AutomateTransferCommissionSettingOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  automateTransferCommissionSettingFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    title
+    dateOfMonth
+    createdAt
+    updatedAt
+    createdById
+  }
+}

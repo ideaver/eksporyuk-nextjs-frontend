@@ -13,5 +13,21 @@ query ActivityFindMany(
       name
       role
     }
+    session {
+      ipAddress
+      os
+      location
+      browser
+      createdAt
+      device
+      deviceToken
+      deviceType
+      expiresAt
+      id
+      token
+      updatedAt
+      userAgent
+      userId
+    }
   }
 }

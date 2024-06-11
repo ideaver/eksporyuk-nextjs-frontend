@@ -11,6 +11,7 @@ import useAffiliatorViewModel, {
 import {
   AffiliatorFindManyQuery,
   SortOrder,
+  AdminFindManyAffiliatorQuery,
 } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 
@@ -26,6 +27,7 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { formatDate } from "@/app/service/utils/dateFormatter";
+import { formatCurrency } from "@/app/service/utils/currencyFormatter";
 
 const AffiliatorPage = () => {
   const {
@@ -49,6 +51,7 @@ const AffiliatorPage = () => {
     setFindTake,
     handlePageChange,
     affiliatorLength,
+    adminAffiliatorFindMany,
   } = useAffiliatorViewModel();
 
   return (
@@ -62,13 +65,14 @@ const AffiliatorPage = () => {
               setOrderBy(e);
             }}
           />
-          <Body
+          {/* <Body
             handleSelectAllCheck={handleSelectAllCheck}
             handleSingleCheck={handleSingleCheck}
             checkedItems={checkedItems}
             selectAll={selectAll}
             affiliatorFindMany={affiliatorFindMany}
-          />
+          /> */}
+          <BodyAdmin adminFindMany={adminAffiliatorFindMany} />
           <Footer
             pageLength={calculateTotalPage()}
             currentPage={currentPage}
@@ -208,15 +212,15 @@ const Body = ({
                       </Link>
                     </CheckBoxInput> */}
                     <Link
-                        href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
-                        className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
-                        style={{
-                          maxWidth: "150px",
-                          display: "inline-block",
-                        }}
-                      >
-                        {affiliator.user.username}
-                      </Link>
+                      href={`/admin/affiliate/affiliator/detail/${affiliator.id}/profile`}
+                      className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "150px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {affiliator.user.username}
+                    </Link>
                   </td>
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
@@ -226,7 +230,7 @@ const Body = ({
                             className="symbol-label bg-gray-600"
                             src={
                               affiliator.user.avatarImageId ??
-                              "/media/avatars/300-2.jpg"
+                              "/media/avatars/blank.png"
                             }
                             width={50}
                             height={50}
@@ -320,6 +324,149 @@ const Body = ({
   );
 };
 
+const BodyAdmin = ({ adminFindMany }: { adminFindMany: any }) => {
+  const [userEmail, setUserEmail] = useState("");
+  const {
+    forgotPasswordModalLoading,
+    handleForgotPassword,
+    setShowForgotPasswordModal,
+    showForgotPasswordModal,
+    forgotPasswordSuccess,
+    forgotPasswordError,
+  } = useForgotPassword();
+
+  // console.log(adminFindMany.data.adminFindManyAffiliatorQuery);
+
+  return (
+    <>
+      {adminFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{adminFindMany.error.message}</h3>
+        </div>
+      ) : adminFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable utilityGY={5} responsive="table-responsive my-10">
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="">Username</th>
+            <th className="text-start">Nama Lengkap</th>
+            <th className="text-start">Email</th>
+            <th className="text-start min-w-200px">Tanggal Terdaftar</th>
+            <th className="text-start min-w-250px">Komisi Yang Belum Selesai</th>
+            <th className="text-start min-w-250px">Komisi Sudah Selesai</th>
+            <th className="text-start min-w-100px">Komisi Saat Ini</th>
+            <th className="text-start min-w-200px">Komisi Yang Sudah Ditransfer</th>
+            <th className="text-end min-w-100px">Actions</th>
+          </KTTableHead>
+          {adminFindMany.data.adminFindManyAffiliatorQuery.map(
+            (admin: any, index: any) => {
+              return (
+                <KTTableBody key={index}>
+                  <td className="align-middle">
+                    <Link
+                      href={`/admin/affiliate/affiliator/detail/${admin?.affiliator?.id}/profile`}
+                      className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "150px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {admin.affiliator?.user?.username}
+                    </Link>
+                  </td>
+                  <td className="align-middle">
+                    <div className="d-flex align-items-center">
+                      <div className="symbol symbol-50px me-5 symbol-circle">
+                        <span className="symbol-label bg-gray-600">
+                          <img
+                            className="symbol-label bg-gray-600"
+                            src={
+                              admin?.affiliator?.user?.avatarImageId ??
+                              "/media/avatars/300-2.jpg"
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                          />
+                        </span>
+                      </div>
+                      <div className="d-flex flex-column">
+                        <Link
+                          href={`/admin/affiliate/affiliator/detail/${admin?.affiliator?.id}/profile`}
+                        >
+                          <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
+                            {admin?.affiliator?.user?.name}
+                          </span>
+                        </Link>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="align-middle text-start text-muted fw-bold w-150px">
+                    {admin?.affiliator?.user?.email}
+                  </td>
+                  <td className="align-middle text-center text-muted fw-bold w-150px">
+                    {formatDate(admin?.affiliator?.user?.createdAt)}
+                  </td>
+                  <td className="align-middle text-center text-muted fw-bold">
+                    {formatCurrency(admin?.potentialCommission)}
+                  </td>
+                  <td className="align-middle text-center text-muted fw-bold">
+                    {formatCurrency(admin?.totalEarnedCommission)}
+                  </td>
+                  <td className="align-middle text-center text-muted fw-bold">
+                    {formatCurrency(admin?.accountCommission)}
+                  </td>
+                  <td className="align-middle text-center text-muted fw-bold">
+                    {formatCurrency(admin?.totalCommissionTransfer)}
+                  </td>
+                  <td className="align-middle text-start">
+                    <div className="dropdown  ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => {
+                              setShowForgotPasswordModal(true);
+                              setUserEmail(admin?.affiliator?.user?.email);
+                            }}
+                          >
+                            Kirim Pengaturan ulang kata sandi
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </KTTableBody>
+              );
+            }
+          )}
+        </KTTable>
+      )}
+
+      <ForgotPasswordModal
+        handleClose={() => setShowForgotPasswordModal(false)}
+        show={showForgotPasswordModal}
+        handleSubmit={() => handleForgotPassword(userEmail)}
+        isLoading={forgotPasswordModalLoading}
+      />
+    </>
+  );
+};
+
 const Footer = ({
   currentPage,
   setCurrentPage,
@@ -393,4 +540,3 @@ const Footer = ({
     </div>
   );
 };
-

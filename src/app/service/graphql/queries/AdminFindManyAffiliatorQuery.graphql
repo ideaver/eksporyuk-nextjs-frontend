@@ -1,0 +1,25 @@
+query AdminFindManyAffiliatorQuery($adminFindManyAffiliatorArgs: AdminFindManyAffiliatorArgs!) {
+  adminFindManyAffiliatorQuery(adminFindManyAffiliatorArgs: $adminFindManyAffiliatorArgs) {
+    affiliator {
+      id
+      user {
+        id
+        name
+        username
+        avatarImageId
+        email
+        personalId
+        createdAt
+        affiliator {
+          user {
+            name
+          }
+        }
+      }
+    }
+    accountCommission
+    potentialCommission
+    totalCommissionTransfer
+    totalEarnedCommission
+  }
+}

@@ -173,6 +173,9 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
 
   const [connectCourse, setConnectCourse] = useState<number | undefined | null>(data.couponFindOne?.courseCoupon?.course?.id);
   const [maxClaim, setMaxClaim] = useState<number | undefined | null>(data.couponFindOne?.maxClaimPerUser);
+  const [desc, setDesc] = useState<any>(data.couponFindOne?.description);
+
+  console.log(data.couponFindOne?.description);
   
   const transformedCourses = data.couponFindOne?.avaibilities?.onlyAvailableToCourse?.map((item: any) => ({
     value: item.id,
@@ -241,6 +244,9 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
                   maxClaimPerUser: {
                     set: Number(maxClaim),
                   },
+                  description: {
+                    set: desc,
+                  },
                   // courseCoupon: {
                   //   update: {
                   //     data: {
@@ -306,6 +312,8 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     setStartDate,
     endDate,
     setEndDate,
+    desc,
+    setDesc,
   };
 };
 
