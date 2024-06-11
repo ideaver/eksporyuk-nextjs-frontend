@@ -11,7 +11,7 @@ import {
   useExportDataTransactionMutation,
   useInvoiceFindManyQuery,
   useMembershipCategoryFindManyQuery,
-  usePendingCommissionFindManyQuery,
+  usePendingCommissionFindManyyQuery,
   useTransactionFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 
@@ -74,11 +74,9 @@ const usePendingComissionPagination = () => {
   const [currentPendingCommPage, setCurrentPendingCommPage] = useState(1);
   const [findPendingCommSkip, setFindPendingCommSkip] = useState(0);
   const [findPendingCommTake, setFindPendingCommTake] = useState(10);
-  const pendingCommissionLength = usePendingCommissionFindManyQuery({
+  const pendingCommissionLength = usePendingCommissionFindManyyQuery({
     variables: {
-      pendingCommissionFindManyArgs: {
-        
-      },
+      pendingCommissionFindManyArgs: {},
     },
   });
 
@@ -89,8 +87,8 @@ const usePendingComissionPagination = () => {
 
   const calculateTotalPendingCommPage = () => {
     return Math.ceil(
-      ((pendingCommissionLength.data as any)?.pendingCommissionFindMany?.length ?? 0) /
-        findPendingCommTake
+      ((pendingCommissionLength.data as any)?.pendingCommissionFindMany
+        ?.length ?? 0) / findPendingCommTake
     );
   };
   return {
@@ -515,27 +513,29 @@ const useComissionViewModel = () => {
           },
         },
         transactionCategory: {
-          equals: TransactionCategoryEnum.Comission
-        }
+          equals: TransactionCategoryEnum.Comission,
+        },
       },
     },
   });
 
-  const pendingComissionFindMany = usePendingCommissionFindManyQuery({
-    variables: { pendingCommissionFindManyArgs: {
-      take: parseInt(findPendingCommTake.toString()),
-      skip: findPendingCommSkip,
-      where: {
-        createdByUser: {
-          is: {
-            name: {
-              contains: searchPendingCommission,
-              mode: QueryMode.Insensitive,
-            }
-          }
-        }
-      }
-    } },
+  const pendingComissionFindMany = usePendingCommissionFindManyyQuery({
+    variables: {
+      pendingCommissionFindManyArgs: {
+        take: parseInt(findPendingCommTake.toString()),
+        skip: findPendingCommSkip,
+        where: {
+          createdByUser: {
+            is: {
+              name: {
+                contains: searchPendingCommission,
+                mode: QueryMode.Insensitive,
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   const [exportData] = useExportDataTransactionMutation();

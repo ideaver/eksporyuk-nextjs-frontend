@@ -1,4 +1,4 @@
-query PendingCommissionFindMany(
+query PendingCommissionFindManyy(
   $pendingCommissionFindManyArgs: PendingCommissionFindManyArgs!
 ) {
   pendingCommissionFindMany(
