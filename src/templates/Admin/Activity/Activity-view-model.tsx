@@ -5,7 +5,10 @@ import {
   useActivityFindManyQuery,
   ActivityFindManyQuery,
   SortOrder,
+  usePlatformSettingFindFirstQuery,
+  usePlatformSettingUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { useRouter } from "next/router";
 
 export const breadcrumbs = [
   {
@@ -95,10 +98,28 @@ const useActivityViewModel = () => {
     activityLength,
   } = usePagination();
 
+  const router = useRouter();
+
   // Local states
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
+  // social media forum state
+  const [facebookCommunities, setFacebookCommunities] = useState<
+    string | undefined
+  >("");
+  const [whatsappCommunities, setWhatsappCommunities] = useState<
+    string | undefined
+  >("");
+  const [telegramCommunities, setTelegramCommunities] = useState<
+    string | undefined
+  >("");
+  const [instagramCommunities, setInstagramCommunities] = useState<
+    string | undefined
+  >("");
+  const [isLoadingPlatformSetting, setIsLoadingPlatformSetting] =
+    useState(false);
 
   // Query data...
   const activityFindMany = useActivityFindManyQuery({
@@ -113,7 +134,71 @@ const useActivityViewModel = () => {
     },
   });
 
+  // Platform social media forum setting
+  const platformSetting = usePlatformSettingFindFirstQuery({
+    onCompleted: (values) => {
+      setFacebookCommunities(
+        values.platformSettingFindFirst?.facebookCommunities
+      );
+      setInstagramCommunities(
+        values.platformSettingFindFirst?.instagramCommunities
+      );
+      setTelegramCommunities(
+        values.platformSettingFindFirst?.telegramCommunities
+      );
+      setWhatsappCommunities(
+        values.platformSettingFindFirst?.whatsappCommunities
+      );
+    },
+  });
+
+  // Update platform social media forum setting
+  const [platformSettingUpdateOne] = usePlatformSettingUpdateOneMutation();
+
+  const handlePlatformSettingUpdateOne = async () => {
+    setIsLoadingPlatformSetting(true);
+    try {
+      await platformSettingUpdateOne({
+        variables: {
+          where: {
+            id: 1,
+          },
+          data: {
+            facebookCommunities: {
+              set: facebookCommunities,
+            },
+            instagramCommunities: {
+              set: instagramCommunities,
+            },
+            telegramCommunities: {
+              set: telegramCommunities,
+            },
+            whatsappCommunities: {
+              set: whatsappCommunities,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadingPlatformSetting(false);
+      router.reload();
+    }
+  };
+
   return {
+    setIsLoadingPlatformSetting,
+    isLoadingPlatformSetting,
+    handlePlatformSettingUpdateOne,
+    facebookCommunities,
+    setFacebookCommunities,
+    instagramCommunities,
+    setInstagramCommunities,
+    telegramCommunities,
+    setTelegramCommunities,
+    whatsappCommunities,
+    setWhatsappCommunities,
     findTake,
     orderBy,
     setOrderBy,
