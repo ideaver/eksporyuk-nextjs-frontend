@@ -1,0 +1,9 @@
+mutation IdentificationUpdateOne(
+  $data: IdentificationUpdateInput!
+  $where: IdentificationWhereUniqueInput!
+) {
+  identificationUpdateOne(data: $data, where: $where) {
+    identificationStatus
+    userId
+  }
+}

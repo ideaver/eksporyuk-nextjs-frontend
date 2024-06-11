@@ -65,6 +65,21 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
         phoneNumber
       }
       createdAt
+      identification {
+        id
+        personalId
+        personalAddressId
+        personalDocumentIdPath
+        isVerified
+        phoneNumber
+        identificationStatus
+        rejectedReason
+        verifiedAt
+        createdAt
+        updatedAt
+        userId
+        verifiedById
+      }
     }
     createdCoupons {
       code
@@ -86,7 +101,6 @@ query AffiliatorFindOne($where: AffiliatorWhereUniqueInput!) {
           type # AMOUNT/PERCENT
         }
         createdBy {
-          
           id
           user {
             name # Si admin
