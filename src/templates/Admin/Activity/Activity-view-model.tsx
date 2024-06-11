@@ -1,11 +1,14 @@
-import { QueryResult } from "@apollo/client";
+import { ApolloError, QueryResult } from "@apollo/client";
 import { useState } from "react";
 
 import {
   useActivityFindManyQuery,
   ActivityFindManyQuery,
   SortOrder,
+  usePlatformSettingFindFirstQuery,
+  usePlatformSettingUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
+import { useRouter } from "next/router";
 
 export const breadcrumbs = [
   {
@@ -95,10 +98,29 @@ const useActivityViewModel = () => {
     activityLength,
   } = usePagination();
 
+  const router = useRouter();
+
   // Local states
   const [takePage, setTakePage] = useState<any>(10);
   const [skipPage, setSkipPage] = useState<any>(0);
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+
+  // social media forum state
+  const [facebookCommunities, setFacebookCommunities] = useState<
+    string | undefined
+  >("");
+  const [whatsappCommunities, setWhatsappCommunities] = useState<
+    string | undefined
+  >("");
+  const [telegramCommunities, setTelegramCommunities] = useState<
+    string | undefined
+  >("");
+  const [instagramCommunities, setInstagramCommunities] = useState<
+    string | undefined
+  >("");
+  const [isLoadingPlatformSetting, setIsLoadingPlatformSetting] =
+    useState(false);
+  const [swalProps, setSwalProps] = useState({});
 
   // Query data...
   const activityFindMany = useActivityFindManyQuery({
@@ -113,7 +135,100 @@ const useActivityViewModel = () => {
     },
   });
 
+  // Platform social media forum setting
+  const platformSetting = usePlatformSettingFindFirstQuery({
+    onCompleted: (values) => {
+      setFacebookCommunities(
+        values.platformSettingFindFirst?.facebookCommunities
+      );
+      setInstagramCommunities(
+        values.platformSettingFindFirst?.instagramCommunities
+      );
+      setTelegramCommunities(
+        values.platformSettingFindFirst?.telegramCommunities
+      );
+      setWhatsappCommunities(
+        values.platformSettingFindFirst?.whatsappCommunities
+      );
+    },
+  });
+
+  // Update platform social media forum setting
+  const [platformSettingUpdateOne] = usePlatformSettingUpdateOneMutation();
+
+  const handlePlatformSettingUpdateOne = async () => {
+    setIsLoadingPlatformSetting(true);
+    try {
+      const response = await platformSettingUpdateOne({
+        variables: {
+          where: {
+            id: 1,
+          },
+          data: {
+            facebookCommunities: {
+              set: facebookCommunities,
+            },
+            instagramCommunities: {
+              set: instagramCommunities,
+            },
+            telegramCommunities: {
+              set: telegramCommunities,
+            },
+            whatsappCommunities: {
+              set: whatsappCommunities,
+            },
+          },
+        },
+      });
+      setFacebookCommunities(
+        response.data?.platformSettingUpdateOne?.facebookCommunities
+      );
+      setInstagramCommunities(
+        response.data?.platformSettingUpdateOne?.instagramCommunities
+      );
+      setTelegramCommunities(
+        response.data?.platformSettingUpdateOne?.telegramCommunities
+      );
+      setWhatsappCommunities(
+        response.data?.platformSettingUpdateOne?.whatsappCommunities
+      );
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Social Media Forum Diupdate",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      // await platformSetting.refetch();
+    } catch (error) {
+      console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan saat menambahkan mentor",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setIsLoadingPlatformSetting(false);
+      // router.reload();
+    }
+  };
+
   return {
+    swalProps,
+    setSwalProps,
+    setIsLoadingPlatformSetting,
+    isLoadingPlatformSetting,
+    handlePlatformSettingUpdateOne,
+    facebookCommunities,
+    setFacebookCommunities,
+    instagramCommunities,
+    setInstagramCommunities,
+    telegramCommunities,
+    setTelegramCommunities,
+    whatsappCommunities,
+    setWhatsappCommunities,
     findTake,
     orderBy,
     setOrderBy,
