@@ -96,7 +96,7 @@ const AffiliatorProfilePage = ({ data }: { data: AffiliatorFindOneQuery | undefi
             </div>
           </div>
 
-          <div className="row mb-7">
+          {/* <div className="row mb-7">
             <label className="col-lg-4 fw-bold text-muted">No. WhatsApp</label>
 
             <div className="col-lg-8 fv-row">
@@ -104,7 +104,7 @@ const AffiliatorProfilePage = ({ data }: { data: AffiliatorFindOneQuery | undefi
                 Software Engineer
               </span>
             </div>
-          </div>
+          </div> */}
 
           <div className="row mb-7">
             <label className="col-lg-4 fw-bold text-muted">
