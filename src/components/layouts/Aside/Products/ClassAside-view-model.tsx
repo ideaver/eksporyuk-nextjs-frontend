@@ -771,7 +771,7 @@ const useNavigation = () => {
     if (page) {
       router.push(
         {
-          pathname: `/admin/courses/${action}${page}`,
+          pathname: `/admin/product-management/courses/${action}${page}`,
           query: router.query,
         },
         undefined,
@@ -803,7 +803,7 @@ const useNavigation = () => {
               dispatch(resetCourse());
               console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
               console.log("SUCCESS CREATED COURSE", createCourse.data);
-              window.location.href = "/admin/courses";
+              window.location.href = "/admin/product-management/courses";
             } else {
               setIsLoading(false);
               console.log("TERJADI ERROR DI:", res);
@@ -831,7 +831,7 @@ const useNavigation = () => {
               dispatch(resetCourse());
               console.log("SUCCSS UPDATED WITH ERROR", updateCourse.error);
               console.log("SUCCESS UPDATED COURSE", updateCourse.data);
-              window.location.href = "/admin/courses";
+              window.location.href = "/admin/product-management/courses";
             } else {
               setIsLoading(false);
               console.log("TERJADI ERROR DI:", res);

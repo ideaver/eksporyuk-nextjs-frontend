@@ -16,7 +16,7 @@ import {
 export const breadcrumbs = [
   {
     title: "Manajemen Produk",
-    path: "/admin/products",
+    path: "/admin/product-management/products",
     isSeparator: false,
     isActive: false,
   },

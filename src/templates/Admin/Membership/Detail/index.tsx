@@ -1,14 +1,13 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useDetailMembershipViewModel, {
-  IDetailMembership,
-} from "./DetailMembership-view-model";
-import { breadcrumbs } from "../Membership-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import { PageTitle } from "@/_metronic/layout/core";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import CurrencyInput from "react-currency-input-field";
-import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { breadcrumbs } from "../Membership-view-model";
+import useDetailMembershipViewModel, {
+  IDetailMembership,
+} from "./DetailMembership-view-model";
 
 const DetailMembership = ({ id, data }: IDetailMembership) => {
   const router = useRouter();
@@ -159,7 +158,7 @@ const DetailMembership = ({ id, data }: IDetailMembership) => {
           <Link
             className={"col-lg-2 mt-5 mt-lg-0 btn btn-primary"}
             type="submit"
-            href={`/admin/subscriber/edit/${id}`}
+            href={`/admin/product-management/subscriber/edit/${id}`}
           >
             Edit
           </Link>

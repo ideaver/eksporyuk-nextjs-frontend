@@ -130,22 +130,22 @@ export const adminMenus: MenuSection[] = [
       },
       {
         title: "Manajemen Produk",
-        to: "/admin/products",
+        to: "/admin/product-management",
         icon: "basket",
         subItems: [
           {
             title: "Semua Kelas",
-            to: "/admin/courses",
+            to: "/admin/product-management/courses",
             icon: "book-open",
           },
           {
             title: "Semua Produk",
-            to: "/admin/products",
+            to: "/admin/product-management/products",
             icon: "parcel",
           },
           {
             title: "Pengaturan Membership Platform",
-            to: "/admin/subscriber",
+            to: "/admin/product-management/subscriber",
             icon: "classmates",
           },
 

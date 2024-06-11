@@ -415,7 +415,7 @@ const Body = ({
                       <div className="d-flex flex-column">
                         <Link
                           href={
-                            "/admin/courses/detail/information?id=" + course.id
+                            "/admin/product-management/courses/detail/information?id=" + course.id
                           }
                           className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold"
                         >
@@ -484,7 +484,7 @@ const Body = ({
                         <li>
                           <Link
                             href={
-                              "/admin/courses/edit/information?id=" + course.id
+                              "/admin/product-management/courses/edit/information?id=" + course.id
                             }
                             className="dropdown-item"
                           >

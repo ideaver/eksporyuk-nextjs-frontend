@@ -24,7 +24,7 @@ import useProductsViewModel from "../Products-view-model";
 export const breadcrumbs = [
   {
     title: "Semua Service",
-    path: "/admin/products",
+    path: "/admin/product-management/products",
     isSeparator: false,
     isActive: false,
   },
@@ -385,7 +385,7 @@ const useCreateServiceViewModel = () => {
       console.log(error);
     } finally {
       setIsLoading(false);
-      await router.push("/admin/products");
+      await router.push("/admin/product-management/products");
       router.reload();
     }
   };

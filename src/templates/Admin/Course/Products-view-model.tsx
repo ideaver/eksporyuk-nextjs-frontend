@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export const breadcrumbs = [
   {
     title: "Manajemen Kelas",
-    path: "/admin/courses",
+    path: "/admin/product-management/courses",
     isSeparator: false,
     isActive: false,
   },

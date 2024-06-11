@@ -182,7 +182,12 @@ const CommissionPage = ({}: ComissionPageProps) => {
           }
         }}
       />
-      <CommissionDateSettingsModal show={showSettingsModal} handleClose={()=>{setShowSettingsModal(false)}}/>
+      <CommissionDateSettingsModal
+        show={showSettingsModal}
+        handleClose={() => {
+          setShowSettingsModal(false);
+        }}
+      />
     </>
   );
 };
@@ -219,7 +224,6 @@ const Head = ({
             },
           }}
         ></TextField>
-        
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
@@ -323,9 +327,14 @@ const Head = ({
           </Buttons>
         </div>
         <div className="col-lg-auto">
-        <button className="btn btn-success" onClick={(e)=> {
-          setShowSettingsModal(true)
-        }}>Pengaturan Komisi</button>
+          <button
+            className="btn btn-success"
+            onClick={(e) => {
+              setShowSettingsModal(true);
+            }}
+          >
+            Pengaturan Komisi
+          </button>
         </div>
       </div>
     </div>

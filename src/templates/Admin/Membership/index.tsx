@@ -1,17 +1,16 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useMembershipViewModel, { breadcrumbs } from "./Membership-view-model";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import Link from "next/link";
-import { SortOrder } from "@/app/service/graphql/gen/graphql";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
-import { formatDate } from "@/app/service/utils/dateFormatter";
-import { Badge } from "@/stories/atoms/Badge/Badge";
+import { PageTitle } from "@/_metronic/layout/core";
+import { SortOrder } from "@/app/service/graphql/gen/graphql";
 import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import Link from "next/link";
+import useMembershipViewModel, { breadcrumbs } from "./Membership-view-model";
 
 const Membership = () => {
   const {
@@ -83,7 +82,7 @@ const Membership = () => {
                       <tr key={membership.id} className="">
                         <td className="">
                           <Link
-                            href={`/admin/subscriber/detail/${membership.id}`}
+                            href={`/admin/product-management/subscriber/detail/${membership.id}`}
                             className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
                             style={{
                               maxWidth: "150px",
@@ -122,7 +121,7 @@ const Membership = () => {
                             <ul className="dropdown-menu">
                               <li>
                                 <Link
-                                  href={`/admin/subscriber/edit/${membership.id}`}
+                                  href={`/admin/product-management/subscriber/edit/${membership.id}`}
                                   className="dropdown-item"
                                 >
                                   Edit
@@ -222,7 +221,9 @@ const Head = ({
         <div className="col-lg-auto">
           <Buttons>
             <Link
-              href={"/admin/subscriber/information-subscriber"}
+              href={
+                "/admin/product-management/subscriber/information-subscriber"
+              }
               className="text-white"
             >
               Add New Membership

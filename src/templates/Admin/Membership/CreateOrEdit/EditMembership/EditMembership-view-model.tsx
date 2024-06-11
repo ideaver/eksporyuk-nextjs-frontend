@@ -2,16 +2,16 @@ import {
   MembershipCategoryFindOneQuery,
   useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
-import { useState } from "react";
 import { useFormik } from "formik";
-import { useRouter } from "next/router";
-import * as Yup from "yup";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import * as Yup from "yup";
 
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/subscriber",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -23,7 +23,7 @@ export const breadcrumbs = [
   },
   {
     title: "Semua Membership",
-    path: "/admin/subscriber",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -137,7 +137,7 @@ const useEditMembershipForm = ({
         console.log(error);
       } finally {
         setIsloading(false);
-        await router.push("/admin/subscriber");
+        await router.push("/admin/product-management/subscriber");
         router.reload();
       }
     },
