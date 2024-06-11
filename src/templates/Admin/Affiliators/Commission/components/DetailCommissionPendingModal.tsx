@@ -6,6 +6,7 @@ import {
   useTransactionFindOneQuery,
   useTransactionUpdateOneMutation,
   usePendingCommissionFindOneQuery,
+  PendingCommissionFindOneQuery
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { formatToIDR } from "../Comission-view-model";
@@ -22,58 +23,27 @@ const statusMap: { [key: string]: string } = {
   FAILED: "Gagal",
 };
 
-const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
+const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
   const router = useRouter();
 
-  // Komisi berhasil
-  const { data, loading, error } = useTransactionFindOneQuery({
-    variables: {
-      where: {
-        id: id as number,
-      },
-    },
-  });
+  console.log(id);
 
   // Komisi pending
-  const { data: commPendingData, loading: commPendingLoading, error: commPendingError } = usePendingCommissionFindOneQuery({
+  const pendingCommission = usePendingCommissionFindOneQuery({
     variables: {
       pendingCommissionFindOneArgs: {
         where: {
-          id: commPendingId,
+          id: id,
         }
       }
     }
   });
 
-  console.log(commPendingData);
+  // console.log(pendingCommission?.data);
+  // @ts-ignore
+  const data: PendingCommissionFindOneQuery = pendingCommission?.data?.pendingCommissionFindOne;
 
-  const [updateTransaction] = useTransactionUpdateOneMutation();
-  const [status, setStatus] = useState<string | undefined>(
-    data?.transactionFindOne?.status
-  );
-  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatus(event.target.value);
-  };
-
-  useEffect(() => {
-    setStatus(data?.transactionFindOne?.status);
-  }, [data?.transactionFindOne?.status]);
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      await updateTransaction({
-        variables: {
-          data: { status: { set: status as TransactionStatusEnum } },
-          where: { id: id as number },
-        },
-      });
-      onClose();
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to update status:", error);
-    }
-  };
+  console.log(pendingCommission?.data);
 
   return (
     <Modal
@@ -86,7 +56,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Detail Order {data?.transactionFindOne?.payment?.invoice?.uniqueCode}</h2>
+        <h2>Detail Order {data?.order?.invoices?.[0].payment?.invoice?.uniqueCode ?? "-"}</h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -105,7 +75,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
-                {formatDate(data?.transactionFindOne?.createdAt)}
+                {formatDate(data?.order?.createdAt)}
               </span>
             </div>
           </div>
@@ -117,8 +87,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
                 {
-                  data?.transactionFindOne?.payment?.invoice?.paymentForGateway
-                    ?.sender_name
+                  data?.order?.createdByUser?.name
                 }
               </span>
             </div>
@@ -137,8 +106,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
                 {
-                  data?.transactionFindOne?.payment?.invoice?.order
-                    ?.createdByUser.phone?.phoneNumber
+                  data?.order?.createdByUser?.phone?.phoneNumber
                 }
               </span>
               <span
@@ -150,8 +118,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
                 {
-                  data?.transactionFindOne?.payment?.invoice?.order
-                    ?.createdByUser.email
+                  data?.order?.createdByUser?.email
                 }
               </span>
             </div>
@@ -163,9 +130,8 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
-                {
-                  data?.transactionFindOne?.payment?.invoice?.paymentForGateway
-                    ?.bill_title
+              {
+                  data?.productName
                 }
               </span>
             </div>
@@ -179,8 +145,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
               <span className="fw-bolder fs-6 text-dark">
                 {formatToIDR(
                   String(
-                    data?.transactionFindOne?.payment?.invoice
-                      ?.paymentForGateway?.amount
+                    data?.amountCommission
                   )
                 )}
               </span>
@@ -193,7 +158,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark me-2">
-                {data?.transactionFindOne?.toAccount?.user.name ?? "-"}
+                {data?.order?.createdByUser.affiliator?.user.name ?? "-"}
               </span>
               <span
                 className="fw-bolder fs-6 badge text-white me-2"
@@ -204,7 +169,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
                 {
-                  data?.transactionFindOne?.toAccount?.user?.phoneId ?? "-"
+                  data?.order?.createdByUser.affiliator?.user.phone?.phoneNumber ?? "-"
                 }
               </span>
               <span
@@ -215,9 +180,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   className="bi bi-envelope-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.transactionFindOne?.toAccount?.user?.email ?? "-"
-                }
+                {data?.order?.createdByUser.affiliator?.user.email ?? "-"}
               </span>
             </div>
           </div>
@@ -228,47 +191,15 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
 
             <div className="col-lg-8">
               <Badge
-                label={statusMap[data?.transactionFindOne?.status || ""]}
-                badgeColor={
-                  data?.transactionFindOne?.status ===
-                  TransactionStatusEnum.Completed
-                    ? "success"
-                    : data?.transactionFindOne?.status ===
-                      TransactionStatusEnum.Cancelled
-                    ? "danger"
-                    : "warning"
-                }
+                label="Pending"
+                badgeColor="warning"
               />
             </div>
           </div>
         </div>
-        {/* <Modal.Footer className="p-2">
-          <form onSubmit={handleSubmit} className="">
-            <label htmlFor="status" className="form-label">
-              Ubah Status
-            </label>
-            <div className="d-flex align-items-center gap-2">
-              <select
-                id="status"
-                className="form-select"
-                value={status}
-                onChange={handleStatusChange}
-              >
-                <option value="PROCESSING">Di Proses</option>
-                <option value="PENDING">Tertunda</option>
-                <option value="FAILED">Gagal</option>
-                <option value="CANCELLED">Dibatalkan</option>
-                <option value="COMPLETED">Lunas</option>
-              </select>
-              <button type="submit" className="btn btn-primary">
-                Submit
-              </button>
-            </div>
-          </form>
-        </Modal.Footer> */}
       </Modal.Body>
     </Modal>
   );
 };
 
-export default DetailComissionModal;
+export default DetailCommissionPendingModal;
