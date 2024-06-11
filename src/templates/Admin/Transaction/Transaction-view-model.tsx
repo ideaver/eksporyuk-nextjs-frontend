@@ -242,6 +242,9 @@ const useTransactionViewModel = () => {
     },
   });
 
+  const descTransactionFindMany =
+    transactionFindMany.data?.adminFindManyTransaction?.slice().reverse();
+
   const {
     calculateTotalPage,
     transactionLength,
@@ -291,6 +294,7 @@ const useTransactionViewModel = () => {
   };
 
   return {
+    descTransactionFindMany,
     exportFilterStatus,
     setExportFilterCategory,
     setExportFilterStatus,

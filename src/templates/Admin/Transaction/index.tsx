@@ -56,6 +56,7 @@ const Transaction = () => {
     setExportFilterCategory,
     setExportFilterStatus,
     exportFilterCategory,
+    descTransactionFindMany,
   } = useTransactionViewModel();
   return (
     <>
@@ -94,6 +95,8 @@ const Transaction = () => {
               }}
             />
             <Body
+              orderBy={orderBy}
+              descTransactionFindMany={descTransactionFindMany}
               data={transactionFindMany.data}
               error={transactionFindMany.error}
               loading={transactionFindMany.loading}
@@ -345,15 +348,22 @@ const Footer = ({
 };
 
 const Body = ({
+  orderBy,
+  descTransactionFindMany,
   data,
   error,
   loading,
 }: {
+  orderBy: SortOrder;
+  descTransactionFindMany:
+    | AdminFindTransactionManyQuery["adminFindManyTransaction"]
+    | undefined;
   data: AdminFindTransactionManyQuery | undefined;
   error: any;
   loading: any;
 }) => {
   const { formatWIB } = useTransactionViewModel();
+
   return (
     <>
       {error ? (
@@ -387,90 +397,177 @@ const Body = ({
             <th className="text-end min-w-125px">STATUS</th>
             <th className="text-end min-w-150px">ACTION</th>
           </KTTableHead>
-          <tbody className="align-middle">
-            {data?.adminFindManyTransaction?.map((value) => {
-              return (
-                <tr key={value.transaction?.id}>
-                  <td className="text-start min-w-200px">
-                    <Buttons
-                      mode="light"
-                      buttonColor="secondary"
-                      classNames="active pe-none"
-                    >
-                      {value.type}
-                    </Buttons>
-                  </td>
-                  <td className="text-start min-w-250px fs-5 fw-bold">
-                    {value.type === TransactionCategoryEnum.Comission
-                      ? value.transaction?.toAccount?.name
-                      : value.transaction?.payment?.invoice?.paymentForGateway
-                          ?.bill_title}
-                  </td>
-                  <td className="text-start min-w-250px">
-                    <div className="d-flex justify-content-start align-content-start">
-                      <div className="symbol symbol-50px symbol-circle me-5">
-                        <img
-                          className="symbol-label bg-gray-600"
-                          src={
-                            value.user?.avatarImageId ??
-                            "/media/avatars/blank.png"
+          {orderBy == SortOrder.Desc ? (
+            <tbody className="align-middle">
+              {descTransactionFindMany?.map((value) => {
+                return (
+                  <tr key={value.transaction?.id}>
+                    <td className="text-start min-w-200px">
+                      <Buttons
+                        mode="light"
+                        buttonColor="secondary"
+                        classNames="active pe-none"
+                      >
+                        {value.type}
+                      </Buttons>
+                    </td>
+                    <td className="text-start min-w-250px fs-5 fw-bold">
+                      {value.type === TransactionCategoryEnum.Comission
+                        ? value.transaction?.toAccount?.name
+                        : value.transaction?.payment?.invoice?.paymentForGateway
+                            ?.bill_title}
+                    </td>
+                    <td className="text-start min-w-250px">
+                      <div className="d-flex justify-content-start align-content-start">
+                        <div className="symbol symbol-50px symbol-circle me-5">
+                          <img
+                            className="symbol-label bg-gray-600"
+                            src={
+                              value.user?.avatarImageId ??
+                              "/media/avatars/blank.png"
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                          />
+                        </div>
+                        <div className="d-flex flex-column my-2">
+                          <h6>{value.user?.name}</h6>
+                          <h6 className="text-muted">{value.user?.email}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="text-start min-w-225px">
+                      <div className="d-flex flex-column justify-content-start align-content-start">
+                        <h6>
+                          {
+                            value.transaction?.payment?.invoice
+                              ?.paymentForGateway?.sender_bank
                           }
-                          width={50}
-                          height={50}
-                          alt=""
-                        />
+                        </h6>
+                        <h6 className="text-muted">
+                          {
+                            value.transaction?.payment?.invoice
+                              ?.paymentForGateway?.virtual_account_number
+                          }
+                        </h6>
                       </div>
-                      <div className="d-flex flex-column my-2">
-                        <h6>{value.user?.name}</h6>
-                        <h6 className="text-muted">{value.user?.email}</h6>
+                    </td>
+                    <td className="text-end min-w-150px fs-5 fw-bold text-dark">
+                      {formatCurrency(value.transaction?.amount as number)}
+                    </td>
+                    <td className="text-end min-w-200px">
+                      <div className="d-flex flex-column justify-content-start align-content-start">
+                        <h6>{formatDate(value.transaction?.createdAt)}</h6>
+                        <h6 className="text-muted">
+                          {formatWIB(value.transaction?.createdAt)}
+                        </h6>
                       </div>
-                    </div>
-                  </td>
-                  <td className="text-start min-w-225px">
-                    <div className="d-flex flex-column justify-content-start align-content-start">
-                      <h6>
-                        {
-                          value.transaction?.payment?.invoice?.paymentForGateway
-                            ?.sender_bank
-                        }
-                      </h6>
-                      <h6 className="text-muted">
-                        {
-                          value.transaction?.payment?.invoice?.paymentForGateway
-                            ?.virtual_account_number
-                        }
-                      </h6>
-                    </div>
-                  </td>
-                  <td className="text-end min-w-150px fs-5 fw-bold text-dark">
-                    {formatCurrency(value.transaction?.amount as number)}
-                  </td>
-                  <td className="text-end min-w-200px">
-                    <div className="d-flex flex-column justify-content-start align-content-start">
-                      <h6>{formatDate(value.transaction?.createdAt)}</h6>
-                      <h6 className="text-muted">
-                        {formatWIB(value.transaction?.createdAt)}
-                      </h6>
-                    </div>
-                  </td>
-                  <td className="text-end min-w-125px">
-                    <Badge
-                      label={value?.transaction?.status as string}
-                      badgeColor="success"
-                    />{" "}
-                  </td>
-                  <td className="text-end min-w-150px">
-                    <Link
-                      href={`/admin/transaction/${value.transaction?.id}/detail-transaction`}
-                      className="btn btn-secondary"
-                    >
-                      Lihat Detail
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+                    </td>
+                    <td className="text-end min-w-125px">
+                      <Badge
+                        label={value?.transaction?.status as string}
+                        badgeColor="success"
+                      />{" "}
+                    </td>
+                    <td className="text-end min-w-150px">
+                      <Link
+                        href={`/admin/transaction/${value.transaction?.id}/detail-transaction`}
+                        className="btn btn-secondary"
+                      >
+                        Lihat Detail
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          ) : (
+            <tbody className="align-middle">
+              {data?.adminFindManyTransaction?.map((value) => {
+                return (
+                  <tr key={value.transaction?.id}>
+                    <td className="text-start min-w-200px">
+                      <Buttons
+                        mode="light"
+                        buttonColor="secondary"
+                        classNames="active pe-none"
+                      >
+                        {value.type}
+                      </Buttons>
+                    </td>
+                    <td className="text-start min-w-250px fs-5 fw-bold">
+                      {value.type === TransactionCategoryEnum.Comission
+                        ? value.transaction?.toAccount?.name
+                        : value.transaction?.payment?.invoice?.paymentForGateway
+                            ?.bill_title}
+                    </td>
+                    <td className="text-start min-w-250px">
+                      <div className="d-flex justify-content-start align-content-start">
+                        <div className="symbol symbol-50px symbol-circle me-5">
+                          <img
+                            className="symbol-label bg-gray-600"
+                            src={
+                              value.user?.avatarImageId ??
+                              "/media/avatars/blank.png"
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                          />
+                        </div>
+                        <div className="d-flex flex-column my-2">
+                          <h6>{value.user?.name}</h6>
+                          <h6 className="text-muted">{value.user?.email}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="text-start min-w-225px">
+                      <div className="d-flex flex-column justify-content-start align-content-start">
+                        <h6>
+                          {
+                            value.transaction?.payment?.invoice
+                              ?.paymentForGateway?.sender_bank
+                          }
+                        </h6>
+                        <h6 className="text-muted">
+                          {
+                            value.transaction?.payment?.invoice
+                              ?.paymentForGateway?.virtual_account_number
+                          }
+                        </h6>
+                      </div>
+                    </td>
+                    <td className="text-end min-w-150px fs-5 fw-bold text-dark">
+                      {formatCurrency(value.transaction?.amount as number)}
+                    </td>
+                    <td className="text-end min-w-200px">
+                      <div className="d-flex flex-column justify-content-start align-content-start">
+                        <h6>{formatDate(value.transaction?.createdAt)}</h6>
+                        <h6 className="text-muted">
+                          {formatWIB(value.transaction?.createdAt)}
+                        </h6>
+                      </div>
+                    </td>
+                    <td className="text-end min-w-125px">
+                      <Badge
+                        label={value?.transaction?.status as string}
+                        badgeColor="success"
+                      />{" "}
+                    </td>
+                    <td className="text-end min-w-150px">
+                      <Link
+                        href={`/admin/transaction/${value.transaction?.id}/detail-transaction`}
+                        className="btn btn-secondary"
+                      >
+                        Lihat Detail
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          )}
         </KTTable>
       )}
     </>
