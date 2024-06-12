@@ -25,6 +25,8 @@ import useAdminCouponViewModel, {
   breadcrumbs,
   useCouponForm,
   useCoursesDropdown,
+  useMembershipDropdown,
+  useProductServiceDropdown,
 } from "./AdminCoupon-view-model";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 
@@ -451,9 +453,19 @@ const AddCouponModal = ({
     setEndDate,
     setDesc,
     desc,
+    allowMembership,
+    setAllowMembership,
+    addMembership,
+    removeMembership,
+    allowProductService,
+    setAllowProductService,
+    addProductService,
+    removeProductService,
   } = useCouponForm();
 
   const { loadOptions } = useCoursesDropdown();
+  const { loadOptions: loadMembership } = useMembershipDropdown();
+  const { loadOptions: loadProdService } = useProductServiceDropdown();
 
   return (
     <div>
@@ -739,6 +751,78 @@ const AddCouponModal = ({
             ></AsyncPaginate>
           </div>
         )}
+        <div className="mb-8 mt-6">
+          <h4 className="fw-bold text-gray-700">
+            Kupon bisa digunakan di membership
+          </h4>
+          {allowMembership &&
+            allowMembership?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeMembership(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadMembership}
+            onChange={(value) => {
+              addMembership(value);
+            }}
+          ></AsyncPaginate>
+        </div>
+        <div className="mb-8 mt-6">
+          <h4 className="fw-bold text-gray-700">
+            Kupon bisa digunakan di layanan produk
+          </h4>
+          {allowProductService &&
+            allowProductService?.map((mentor: any, index: any) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      props={{
+                        enabled: "false",
+                        value: mentor.label,
+                        onChange: () => {},
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() => removeProductService(index)}
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+          <AsyncPaginate
+            className="mt-5"
+            loadOptions={loadProdService}
+            onChange={(value) => {
+              addProductService(value);
+            }}
+          ></AsyncPaginate>
+        </div>
         <SweetAlert2
           {...swalProps}
           didOpen={() => {

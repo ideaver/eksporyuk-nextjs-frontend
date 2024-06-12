@@ -14,6 +14,8 @@ import {
   usePlatformCouponFindManyQuery,
   useCourseFindManyQuery,
   useSoftDeletePlatformCouponLazyQuery,
+  useMembershipCategoryFindManyQuery,
+  useProductServiceFindManyQuery
 } from "@/app/service/graphql/gen/graphql";
 import { changeCouponLoading } from "@/features/reducers/affiliators/couponReducer";
 import { QueryResult } from "@apollo/client";
@@ -117,6 +119,66 @@ export const AddNotAllowedCourses = (courses: any, setCourses: any) => {
   };
 };
 
+export const AddAllowedMembership = (item: any, setItem: any) => {
+  const [allowMembership, setAllowMembership] = useState<any>([]);
+
+  const addMembership = (membership: any) => {
+    const updatedMembership = allowMembership ? [...allowMembership, membership] : [membership];
+
+    setAllowMembership(updatedMembership);
+    setItem(updatedMembership);
+  };
+
+  const removeMembership = (index: number) => {
+    const updatedMembership = allowMembership?.filter(
+      (_: any, membershipIndex: any) => membershipIndex !== index
+    );
+
+    setAllowMembership(updatedMembership);
+  };
+
+  useEffect(() => {
+    setAllowMembership(allowMembership);
+  }, [allowMembership]);
+
+  return {
+    allowMembership,
+    setAllowMembership,
+    addMembership,
+    removeMembership,
+  };
+};
+
+export const AddAllowedProductService = (item: any, setItem: any) => {
+  const [allowProductService, setAllowProductService] = useState<any>([]);
+
+  const addProductService = (productService: any) => {
+    const updatedProductService = allowProductService ? [...allowProductService, productService] : [productService];
+
+    setAllowProductService(updatedProductService);
+    setItem(updatedProductService);
+  };
+
+  const removeProductService = (index: number) => {
+    const updatedProductService = allowProductService?.filter(
+      (_: any, prodServiceIndex: any) => prodServiceIndex !== index
+    );
+
+    setAllowProductService(updatedProductService);
+  };
+
+  useEffect(() => {
+    setAllowProductService(allowProductService);
+  }, [allowProductService]);
+
+  return {
+    allowProductService,
+    setAllowProductService,
+    addProductService,
+    removeProductService,
+  };
+};
+
 // Dropdown list of courses
 export const useCoursesDropdown = () => {
   const { data, refetch } = useCourseFindManyQuery({
@@ -168,6 +230,106 @@ export const useCoursesDropdown = () => {
   return { loadOptions };
 };
 
+export const useMembershipDropdown = () => {
+  const { data, refetch } = useMembershipCategoryFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.membershipCategoryFindMany?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const fetchedOptions =
+      response.data?.membershipCategoryFindMany?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })) ?? [];
+
+    return {
+      options: newOptions,
+      hasMore: fetchedOptions.length > 0,
+    };
+  }
+
+  return { loadOptions };
+};
+
+export const useProductServiceDropdown = () => {
+  const { data, refetch } = useProductServiceFindManyQuery({
+    variables: {
+      take: 10,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.productServiceFindMany?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })) ?? [];
+
+    const newOptions = result.filter(
+      (option) =>
+        !prevOptions.some(
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
+        )
+    );
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    const fetchedOptions =
+      response.data?.productServiceFindMany?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })) ?? [];
+
+    return {
+      options: newOptions,
+      hasMore: fetchedOptions.length > 0,
+    };
+  }
+
+  return { loadOptions };
+};
+
 export const useCouponForm = () => {
   const { couponFindMany } = useAdminCouponViewModel();
   const dispatch = useDispatch();
@@ -189,6 +351,8 @@ export const useCouponForm = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [desc, setDesc] = useState<string>("");
+  const [allowedMembership, setAllowedMembership] = useState<any>([]);
+  const [allowedProductService, setAllowedProductService] = useState<any>([]);
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = allowedCourses.map((item: any) => ({
@@ -197,6 +361,14 @@ export const useCouponForm = () => {
 
   // Kupon tidak bisa digunakan di kelas
   const notAllowedCourse = notAllowedCourses.map((item: any) => ({
+    id: item.value,
+  }));
+
+  const membershipsId = allowedMembership.map((item: any) => ({
+    id: item.value,
+  }));
+
+  const productServiceId = allowedProductService.map((item: any) => ({
     id: item.value,
   }));
 
@@ -215,6 +387,22 @@ export const useCouponForm = () => {
     addNotAllowedCourse,
     removeNotAllowedCourse,
   } = AddNotAllowedCourses(notAllowedCourses, setNotAllowedCourses);
+
+  // Kupon bisa digunakan di membership
+  const {
+    allowMembership,
+    setAllowMembership,
+    addMembership,
+    removeMembership,
+  } = AddAllowedMembership(allowedMembership, setAllowedMembership);
+
+  // Kupon bisa di gunakan di produk service
+  const {
+    allowProductService,
+    setAllowProductService,
+    addProductService,
+    removeProductService,
+  } = AddAllowedProductService(allowedProductService, setAllowedProductService);
 
   const selectedAllowedCoursesIds = allowedCourses.map(
     (item: any) => item.value
@@ -284,6 +472,12 @@ export const useCouponForm = () => {
                 notAvailableToCourse: {
                   connect: notAllowedCourse,
                 },
+                onlyAvailableToMembershipCategory: {
+                  connect: membershipsId,
+                },
+                onlyAvailableToProductService: {
+                  connect: productServiceId,
+                }
               },
             },
           },
@@ -352,6 +546,14 @@ export const useCouponForm = () => {
     setEndDate,
     setDesc,
     desc,
+    allowMembership,
+    setAllowMembership,
+    addMembership,
+    removeMembership,
+    allowProductService,
+    setAllowProductService,
+    addProductService,
+    removeProductService,
   };
 };
 

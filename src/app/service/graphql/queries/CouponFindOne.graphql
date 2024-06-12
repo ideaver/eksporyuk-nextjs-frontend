@@ -27,6 +27,14 @@ query CouponFindOne($where: CouponWhereUniqueInput!) {
         id
         title
       }
+      onlyAvailableToMembershipCategory {
+        id
+        name
+      }
+      onlyAvailableToProductService {
+        id
+        title
+      }
     }
   }
 }
