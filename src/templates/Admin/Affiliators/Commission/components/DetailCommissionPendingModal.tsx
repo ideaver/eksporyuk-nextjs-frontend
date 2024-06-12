@@ -1,17 +1,13 @@
-import { useState, useEffect } from "react";
-import { Modal } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import { Modal } from "react-bootstrap";
 
 import {
-  useTransactionFindOneQuery,
-  useTransactionUpdateOneMutation,
-  usePendingCommissionFindOneQuery,
-  PendingCommissionFindOneQuery
+  PendingCommissionFindOneQuery,
+  usePendingCommissionFindOneeQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
-import { formatToIDR } from "../Comission-view-model";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
+import { formatToIDR } from "../Comission-view-model";
 
 import { KTIcon } from "@/_metronic/helpers";
 
@@ -29,19 +25,20 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
   console.log(id);
 
   // Komisi pending
-  const pendingCommission = usePendingCommissionFindOneQuery({
+  const pendingCommission = usePendingCommissionFindOneeQuery({
     variables: {
       pendingCommissionFindOneArgs: {
         where: {
           id: id,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   // console.log(pendingCommission?.data);
   // @ts-ignore
-  const data: PendingCommissionFindOneQuery = pendingCommission?.data?.pendingCommissionFindOne;
+  const data: PendingCommissionFindOneQuery =
+    pendingCommission?.data?.pendingCommissionFindOne;
 
   console.log(pendingCommission?.data);
 
@@ -56,7 +53,10 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Detail Order {data?.order?.invoices?.[0].payment?.invoice?.uniqueCode ?? "-"}</h2>
+        <h2>
+          Detail Order{" "}
+          {data?.order?.invoices?.[0].payment?.invoice?.uniqueCode ?? "-"}
+        </h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -86,9 +86,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
-                {
-                  data?.order?.createdByUser?.name
-                }
+                {data?.order?.createdByUser?.name}
               </span>
             </div>
           </div>
@@ -105,9 +103,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
                   className="bi bi-phone-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.order?.createdByUser?.phone?.phoneNumber
-                }
+                {data?.order?.createdByUser?.phone?.phoneNumber}
               </span>
               <span
                 className="fw-bolder fs-6 badge text-white"
@@ -117,9 +113,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
                   className="bi bi-envelope-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.order?.createdByUser?.email
-                }
+                {data?.order?.createdByUser?.email}
               </span>
             </div>
           </div>
@@ -130,9 +124,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
-              {
-                  data?.productName
-                }
+                {data?.productName}
               </span>
             </div>
           </div>
@@ -143,11 +135,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
 
             <div className="col-lg-8">
               <span className="fw-bolder fs-6 text-dark">
-                {formatToIDR(
-                  String(
-                    data?.amountCommission
-                  )
-                )}
+                {formatToIDR(String(data?.amountCommission))}
               </span>
             </div>
           </div>
@@ -168,9 +156,8 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
                   className="bi bi-phone-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.order?.createdByUser.affiliator?.user.phone?.phoneNumber ?? "-"
-                }
+                {data?.order?.createdByUser.affiliator?.user.phone
+                  ?.phoneNumber ?? "-"}
               </span>
               <span
                 className="fw-bolder fs-6 badge text-white"
@@ -190,10 +177,7 @@ const DetailCommissionPendingModal = ({ show, onClose, id }: any) => {
             </label>
 
             <div className="col-lg-8">
-              <Badge
-                label="Pending"
-                badgeColor="warning"
-              />
+              <Badge label="Pending" badgeColor="warning" />
             </div>
           </div>
         </div>

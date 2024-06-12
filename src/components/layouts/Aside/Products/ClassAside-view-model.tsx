@@ -183,7 +183,7 @@ const useCreateCourse = () => {
         return {
           title: lesson.title,
           description: lesson.content.content,
-          orderIndex: index,
+          orderIndex: index + 1,
           accessibility: VisibilityEnum.Public,
           duration:
             (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ?? 0,
@@ -229,7 +229,8 @@ const useCreateCourse = () => {
         return {
           name: section.title,
           accessibility: VisibilityEnum.Public,
-          orderIndex: index,
+          description: section.description,
+          orderIndex: index + 1,
           lessons: {
             create: lessons,
           },
@@ -463,8 +464,8 @@ const useEditCourse = () => {
             },
             ...(material ? { material: { connect: { path: material } } } : {}),
           },
-        }
-        console.log("THIS IS LESSON UPDATE", lessonUpdate)
+        };
+        console.log("THIS IS LESSON UPDATE", lessonUpdate);
         return lessonUpdate;
       });
       return Promise.all(lessonsPromises);

@@ -117,7 +117,7 @@ const Head = ({
             data-bs-toggle="modal"
             data-bs-target="#kt_social_media_forum_modal"
           >
-            Social Media Forum
+            Social Media Forum EksporYuk
           </Buttons>
         </div>
         <div className="col-lg-auto">
