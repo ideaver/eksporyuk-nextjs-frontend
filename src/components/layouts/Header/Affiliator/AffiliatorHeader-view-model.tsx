@@ -9,6 +9,10 @@ const useAffiliatorHeaderViewModel = ({ id }: any) => {
       to: `/admin/affiliate/affiliator/detail/${id}/kupon-affiliasi`,
     },
     {
+      label: "Riwayat Komisi",
+      to: `/admin/affiliate/affiliator/detail/${id}/riwayat-komisi`,
+    },
+    {
       label: "Informasi Rekening",
       to: `/admin/affiliate/affiliator/detail/${id}/informasi-rekening`,
     },

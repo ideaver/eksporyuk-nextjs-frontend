@@ -16,6 +16,7 @@ export interface CourseState {
   classDescription: string;
   introVideo: string;
   courseAuthor: string;
+  subscriberListId: string;
   price: string;
   discountPrice?: string;
   courseLevel: CourseLevelEnum;
@@ -39,6 +40,7 @@ const initialState: CourseState = {
   classDescription: "",
   introVideo: "",
   courseAuthor: "",
+  subscriberListId: "",
   price: "",
   discountPrice: "",
   courseType: "subscription",
@@ -70,6 +72,9 @@ export const courseSlice = createSlice({
     },
     changeCourseName: (state, action: PayloadAction<string>) => {
       state.courseName = action.payload;
+    },
+    changeSubscriberListId: (state, action: PayloadAction<string>) => {
+      state.subscriberListId = action.payload;
     },
     changeClassDescription: (state, action: PayloadAction<string>) => {
       state.classDescription = action.payload;
@@ -153,6 +158,7 @@ export const {
   changeAffiliateCommissionType,
   changeCertificateTemplateId,
   changeErrorMessage,
+  changeSubscriberListId,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

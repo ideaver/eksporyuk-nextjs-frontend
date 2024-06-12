@@ -2,16 +2,16 @@ import {
   MembershipCategoryFindOneQuery,
   useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
-import { useState } from "react";
 import { useFormik } from "formik";
-import { useRouter } from "next/router";
-import * as Yup from "yup";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import * as Yup from "yup";
 
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/subscriber",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -23,7 +23,7 @@ export const breadcrumbs = [
   },
   {
     title: "Semua Membership",
-    path: "/admin/subscriber",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -45,6 +45,7 @@ interface EditMembershipForm {
   description: string | undefined;
   price: number | undefined;
   benefits: string | undefined;
+  subscriberListId?: string;
   duration: number | undefined;
   id: string | string[] | undefined;
   courses: { value: number; label: string }[] | undefined;
@@ -58,6 +59,7 @@ const useEditMembershipForm = ({
   price,
   benefits,
   duration,
+  subscriberListId,
   id,
   courses,
   affiliateCommission,
@@ -77,6 +79,7 @@ const useEditMembershipForm = ({
       .min(10, "Minimal 10 simbol")
       .required("Deskripsi diperlukan"),
     price: Yup.number().min(2, "Minimal 2 simbol").required("Harga diperlukan"),
+    subscriberListId: Yup.string().optional(),
     benefits: Yup.string()
       .min(5, "Minimal 5 simbol")
       .required("Benefit diperlukan"),
@@ -93,6 +96,7 @@ const useEditMembershipForm = ({
       name,
       description,
       price,
+      subscriberListId,
       benefits,
       duration,
     },
@@ -114,6 +118,9 @@ const useEditMembershipForm = ({
               },
               price: {
                 set: price,
+              },
+              subscriberListId: {
+                set: subscriberListId,
               },
               benefits: {
                 set: benefits,
@@ -137,7 +144,7 @@ const useEditMembershipForm = ({
         console.log(error);
       } finally {
         setIsloading(false);
-        await router.push("/admin/subscriber");
+        await router.push("/admin/product-management/subscriber");
         router.reload();
       }
     },
@@ -170,6 +177,10 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     data.membershipCategoryFindOne?.affiliateFirstCommission
   );
 
+  const [subscriberListId, setSubscriberListId] = useState(
+    data.membershipCategoryFindOne?.subscriberListId || undefined
+  );
+
   const handleChangeCourses = (course: { value: number; label: string }) => {
     setCourses((prev: any) => [...prev, course]);
   };
@@ -188,6 +199,7 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     courses,
     affiliateCommission,
     affiliateFirstCommission,
+    subscriberListId
   });
 
   return {
@@ -195,6 +207,8 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     affiliateFirstCommission,
     setAffiliateCommission,
     setAffiliateFirstCommission,
+    subscriberListId,
+    setSubscriberListId,
     handleChangeCourses,
     handleDeleteCourses,
     courses,

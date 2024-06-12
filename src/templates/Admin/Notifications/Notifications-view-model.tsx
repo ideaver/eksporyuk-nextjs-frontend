@@ -227,7 +227,7 @@ const useNotificationsViewModel = () => {
       skip: findSkip,
       orderBy: [
         {
-          createdAt: dateOrderBy === "asc" ? SortOrder.Asc : SortOrder.Desc,
+          updatedAt: dateOrderBy === "desc" ? SortOrder.Asc : SortOrder.Desc,
         },
       ],
       where: {

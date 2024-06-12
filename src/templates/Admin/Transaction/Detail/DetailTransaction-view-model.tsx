@@ -84,7 +84,7 @@ const userDetail = (data: AdminFindTransactionOneQuery | undefined) => {
                 className="symbol symbol-30px symbol-circle"
                 src={
                   transactionFindOne?.user?.avatarImageId ??
-                  "/media/avatars/300-1.jpg"
+                  "/media/avatars/blank.png"
                 }
                 width={30}
                 height={30}

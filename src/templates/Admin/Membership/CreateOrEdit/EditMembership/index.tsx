@@ -1,22 +1,25 @@
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { useGetAllListSubscribersQuery } from "@/app/service/graphql/gen/graphql";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
+import { OptionType } from "@/templates/Admin/Course/CreateOrEdit/Information/Information-view-model";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
+import CurrencyInput from "react-currency-input-field";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch } from "react-redux";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { useCoursesDropdown } from "../InformationMembership/InformationMembership-view-model";
 import useEditMembershipViewModel, {
   IEditMembershipProps,
   breadcrumbs,
 } from "./EditMembership-view-model";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import clsx from "clsx";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import CurrencyInput from "react-currency-input-field";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useRouter } from "next/router";
-import { useMemo } from "react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { useCoursesDropdown } from "../InformationMembership/InformationMembership-view-model";
 
 const EditMembership = ({ id, data }: IEditMembershipProps) => {
   const ReactQuill = useMemo(
@@ -42,8 +45,57 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
     setAffiliateFirstCommission,
     affiliateCommission,
     affiliateFirstCommission,
+    setSubscriberListId,
+    subscriberListId,
   } = useEditMembershipViewModel({ id, data });
-  const { loadOptions } = useCoursesDropdown();
+  const { loadOptions: courseLoadOptions } = useCoursesDropdown();
+
+  const dispatch = useDispatch();
+  const [inputSubscriberListId, setInputSubscriberListId] = useState<any>("");
+  const getAllListSubscriber = useGetAllListSubscribersQuery({
+    onCompleted(data) {
+      const result =
+        data?.getAllListSubscriber?.map((list) => ({
+          value: list.list_id,
+          label: `${list.list_id} - ${list.list_name}`,
+        })) ?? [];
+      // Check if subscriberListId is not null
+      if (subscriberListId) {
+        // Search for the subscriberListId in the result
+        const selectedOption = result.find(
+          (option) => option.value === subscriberListId
+        );
+        // If found, set inputSubscriberListId to the found object
+        if (selectedOption) {
+          setInputSubscriberListId(selectedOption);
+        }
+      }
+    },
+  });
+
+  const handleInputSubscriberListId = (value: any) => {
+    setInputSubscriberListId(value);
+    setSubscriberListId(value.value);
+    // dispatch(changeSubscriberListId(value.value));
+  };
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Edit Membership</PageTitle>
@@ -206,7 +258,7 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
               <AsyncPaginate
                 className="mt-5"
                 isSearchable={true}
-                loadOptions={loadOptions}
+                loadOptions={courseLoadOptions}
                 onChange={(val) => {
                   handleChangeCourses({
                     value: val?.value as number,
@@ -334,6 +386,15 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
               </h5>
+              <h5 className="mt-5">Pengaturan Mailketing</h5>
+              <AsyncPaginate
+                defaultValue={inputSubscriberListId}
+                value={inputSubscriberListId}
+                loadOptions={loadOptions as any}
+                onChange={(value) => {
+                  handleInputSubscriberListId(value);
+                }}
+              />
             </KTCardBody>
             <div className={"row flex-end mt-10"}>
               <Buttons

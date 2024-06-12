@@ -16,26 +16,26 @@ const useClassTabBarViewModel = ({ urlType, id }: IClassTabBarViewModel) => {
   const urls = [
     {
       label: "Informasi",
-      to: `/admin/courses/${urlType}/information?id=${id}`,
+      to: `/admin/product-management/courses/${urlType}/information?id=${id}`,
     },
     // {
     //   label: "Informasi Tambahan",
-    //   to: `/admin/courses/${urlType}/additional-information?id=${courseId}`,
+    //   to: `/admin/product-management/courses/${urlType}/additional-information?id=${courseId}`,
     // },
     {
       label: "Section",
-      to: `/admin/courses/${urlType}/sylabus?id=${id}`,
+      to: `/admin/product-management/courses/${urlType}/sylabus?id=${id}`,
     },
     {
       label: "Sertifikat",
-      to: `/admin/courses/${urlType}/certificate?id=${id}`,
+      to: `/admin/product-management/courses/${urlType}/certificate?id=${id}`,
     },
   ];
 
   const breadcrumbs = [
     {
       title: "Manajemen Kelas",
-      path: "/admin/courses/",
+      path: "/admin/product-management/courses/",
       isSeparator: false,
       isActive: false,
     },

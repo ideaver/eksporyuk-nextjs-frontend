@@ -1,20 +1,19 @@
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import dynamic from "next/dynamic";
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import "react-quill/dist/quill.snow.css";
+import { AsyncPaginate } from "react-select-async-paginate";
+import SweetAlert2 from "react-sweetalert2";
 import useMailketingViewModel, {
   breadcrumbs,
   useAllListSubscriberDropdown,
 } from "./Mailketing-view-model";
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
-import SweetAlert2 from "react-sweetalert2";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-import { AsyncPaginate } from "react-select-async-paginate";
 
 {
   /* <SweetAlert2

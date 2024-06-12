@@ -54,6 +54,7 @@ const InformationPage: NextPage = () => {
       courseType:
         (courseData?.duration ?? 0) >= 9999999 ? "one-time" : "subscription",
       courseLevel: courseData?.level || CourseLevelEnum.Beginner,
+      subscriberListId: courseData?.subscriberListId ?? "",
       courseMentor:
         courseData?.mentors?.map((mentor) => ({
           value: mentor.id,

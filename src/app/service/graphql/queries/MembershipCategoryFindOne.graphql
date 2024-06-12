@@ -61,5 +61,6 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
         phoneId
       }
     }
+    subscriberListId
   }
 }

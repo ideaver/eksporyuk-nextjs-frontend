@@ -1,6 +1,5 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
-  CourseSectionUpdateManyWithoutCourseNestedInput,
   CourseSectionUpdateWithWhereUniqueWithoutCourseInput,
   // CourseDurationTypeEnum,
   CourseStatusEnum,
@@ -184,7 +183,7 @@ const useCreateCourse = () => {
         return {
           title: lesson.title,
           description: lesson.content.content,
-          orderIndex: index,
+          orderIndex: index + 1,
           accessibility: VisibilityEnum.Public,
           duration:
             (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ?? 0,
@@ -230,7 +229,8 @@ const useCreateCourse = () => {
         return {
           name: section.title,
           accessibility: VisibilityEnum.Public,
-          orderIndex: index,
+          description: section.description,
+          orderIndex: index + 1,
           lessons: {
             create: lessons,
           },
@@ -265,6 +265,7 @@ const useCreateCourse = () => {
       data: {
         title: currentCourseSelector.courseName,
         description: currentCourseSelector.classDescription,
+        subscriberListId: currentCourseSelector.subscriberListId,
         images: {
           connect: [
             {
@@ -292,6 +293,7 @@ const useCreateCourse = () => {
         },
         basePrice: parseInt(currentCourseSelector.price),
         level: currentCourseSelector.courseLevel,
+
         affiliateCommission: currentCourseSelector.affiliateCommission,
         affiliateCommissionType: currentCourseSelector.affiliateCommissionType,
         ...(currentCourseSelector.certificateTemplateId !== 0
@@ -427,11 +429,17 @@ const useEditCourse = () => {
               (lesson.content as ILessonPDFContent).fileName
             );
           } catch (error) {
-            material = (lesson.content as ILessonPDFContent).file;
+            console.log(
+              "CATCH ERROR LESSON PDF",
+              lesson.content as ILessonPDFContent
+            );
+            material =
+              (lesson.content as ILessonPDFContent).file ??
+              (lesson.content as ILessonPDFContent).content;
           }
         }
         console.log("INI MATERIAL", material);
-        return {
+        const lessonUpdate = {
           where: {
             id: parseInt(lesson.id),
           },
@@ -457,6 +465,8 @@ const useEditCourse = () => {
             ...(material ? { material: { connect: { path: material } } } : {}),
           },
         };
+        console.log("THIS IS LESSON UPDATE", lessonUpdate);
+        return lessonUpdate;
       });
       return Promise.all(lessonsPromises);
     };
@@ -644,9 +654,6 @@ const useEditCourse = () => {
           };
         })
       );
-    const sectionData: CourseSectionUpdateManyWithoutCourseNestedInput = {
-      update: sectionColumn,
-    };
 
     try {
       const result = await updateCourseMutation({
@@ -671,6 +678,9 @@ const useEditCourse = () => {
               set: currentCourseSelector.courseMentor?.map((mentor) => ({
                 id: mentor.value,
               })),
+            },
+            subscriberListId: {
+              set: currentCourseSelector.subscriberListId,
             },
             level: {
               set: currentCourseSelector.courseLevel,
@@ -771,7 +781,7 @@ const useNavigation = () => {
     if (page) {
       router.push(
         {
-          pathname: `/admin/courses/${action}${page}`,
+          pathname: `/admin/product-management/courses/${action}${page}`,
           query: router.query,
         },
         undefined,
@@ -803,7 +813,7 @@ const useNavigation = () => {
               dispatch(resetCourse());
               console.log("SUCCSS CREATED WITH ERROR", createCourse.error);
               console.log("SUCCESS CREATED COURSE", createCourse.data);
-              window.location.href = "/admin/courses";
+              window.location.href = "/admin/product-management/courses";
             } else {
               setIsLoading(false);
               console.log("TERJADI ERROR DI:", res);
@@ -831,7 +841,7 @@ const useNavigation = () => {
               dispatch(resetCourse());
               console.log("SUCCSS UPDATED WITH ERROR", updateCourse.error);
               console.log("SUCCESS UPDATED COURSE", updateCourse.data);
-              window.location.href = "/admin/courses";
+              window.location.href = "/admin/product-management/courses";
             } else {
               setIsLoading(false);
               console.log("TERJADI ERROR DI:", res);

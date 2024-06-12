@@ -12,5 +12,6 @@ query ProductServiceFindFirst($where: ProductServiceWhereInput) {
     description
     id
     basePrice
+    subscriberListId
   }
 }

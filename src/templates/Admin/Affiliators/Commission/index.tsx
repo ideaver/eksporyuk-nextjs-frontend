@@ -13,6 +13,7 @@ import useComissionViewModel, {
   useFilterDropdown,
 } from "./Comission-view-model";
 import DetailComissionModal from "./components/DetailComissionModal";
+import DetailCommissionPendingModal from "./components/DetailCommissionPendingModal";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { KTModal } from "@/_metronic/helpers/components/KTModal";
@@ -182,7 +183,12 @@ const CommissionPage = ({}: ComissionPageProps) => {
           }
         }}
       />
-      <CommissionDateSettingsModal show={showSettingsModal} handleClose={()=>{setShowSettingsModal(false)}}/>
+      <CommissionDateSettingsModal
+        show={showSettingsModal}
+        handleClose={() => {
+          setShowSettingsModal(false);
+        }}
+      />
     </>
   );
 };
@@ -219,7 +225,6 @@ const Head = ({
             },
           }}
         ></TextField>
-        
       </div>
       <div className="row col-lg-auto gy-3">
         <div className="col-lg-auto">
@@ -323,9 +328,14 @@ const Head = ({
           </Buttons>
         </div>
         <div className="col-lg-auto">
-        <button className="btn btn-success" onClick={(e)=> {
-          setShowSettingsModal(true)
-        }}>Pengaturan Komisi</button>
+          <button
+            className="btn btn-success"
+            onClick={(e) => {
+              setShowSettingsModal(true);
+            }}
+          >
+            Pengaturan Komisi
+          </button>
         </div>
       </div>
     </div>
@@ -423,8 +433,16 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
 };
 
 const PendingCommissionBody = ({ data }: { data: any }) => {
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [commisionPendingId, setComissionPendingId] = useState(0);
+
   return (
     <div className="table-responsive mb-10 p-10">
+      <DetailCommissionPendingModal
+        show={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        id={commisionPendingId}
+      />
       {data.error ? (
         <div className="d-flex justify-content-center align-items-center h-500px flex-column">
           <h3 className="text-center">{data.error.message}</h3>
@@ -450,6 +468,7 @@ const PendingCommissionBody = ({ data }: { data: any }) => {
 
           {data.data?.pendingCommissionFindMany?.map(
             (user: any, index: any) => {
+              console.log(user);
               return (
                 <KTTableBody key={index}>
                   <td className="fw-bold">
@@ -459,7 +478,10 @@ const PendingCommissionBody = ({ data }: { data: any }) => {
                   <td
                     className="fw-bold text-dark text-hover-primary"
                     style={{ cursor: "pointer" }}
-                    onClick={() => {}}
+                    onClick={() => {
+                      setShowDetailModal(true);
+                      setComissionPendingId(user?.order?.id)
+                    }}
                   >
                     {user.productName}
                   </td>

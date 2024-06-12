@@ -10,6 +10,7 @@ interface ProductState {
   classDescription: string;
   introVideo: string;
   classAuthor: string;
+  
   price: string;
   discountPrice: string;
   courseLevel: CourseLevelEnum;

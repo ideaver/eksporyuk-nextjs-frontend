@@ -3,9 +3,9 @@ import Link from "next/link";
 import { ProductServiceFindFirstQuery } from "@/app/service/graphql/gen/graphql";
 import { breadcrumbs } from "./DetaiProduct-view-model";
 
-import { PageTitle } from "@/_metronic/layout/core";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import currencyFormatter from "@/_metronic/helpers/Formatter";
+import { PageTitle } from "@/_metronic/layout/core";
 
 const ProductDetail = ({
   data,
@@ -59,7 +59,11 @@ const ProductDetail = ({
           </div>
           {data?.productServiceFindFirst?.benefits && (
             <div className="mb-5">
-              <h3 className="">{data.productServiceFindFirst.benefits.length !== 0 ? "Benefits" : null}</h3>
+              <h3 className="">
+                {data.productServiceFindFirst.benefits.length !== 0
+                  ? "Benefits"
+                  : null}
+              </h3>
               <ul className="lead text-body">
                 {data.productServiceFindFirst.benefits.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -69,7 +73,11 @@ const ProductDetail = ({
           )}
           {data?.productServiceFindFirst?.portofolio && (
             <div className="mb-5">
-              <h3 className="">{data.productServiceFindFirst.portofolio.length !== 0 ? "Portfolio" : null}</h3>
+              <h3 className="">
+                {data.productServiceFindFirst.portofolio.length !== 0
+                  ? "Portfolio"
+                  : null}
+              </h3>
               <ul className="lead text-body">
                 {data.productServiceFindFirst.portofolio.map((item, index) => (
                   <li key={index}>
@@ -79,12 +87,25 @@ const ProductDetail = ({
               </ul>
             </div>
           )}
+          {data?.productServiceFindFirst?.subscriberListId && (
+            <div className="mb-5">
+              <h3 className="">Mailketing Id</h3>
+              <p className="lead text-body">
+                {data?.productServiceFindFirst?.subscriberListId}
+              </p>
+            </div>
+          )}
           {data?.productServiceFindFirst?.images && (
             <div className="mb-5">
               <h3>Foto Produk</h3>
               <div className="d-flex gap-5 justify-content-center overflow-x-auto">
                 {data.productServiceFindFirst.images.map((imgUrl, index) => (
-                  <img className="img-fluid w-500px" key={index} src={imgUrl.path} alt="" />
+                  <img
+                    className="img-fluid w-500px"
+                    key={index}
+                    src={imgUrl.path}
+                    alt=""
+                  />
                 ))}
               </div>
             </div>
