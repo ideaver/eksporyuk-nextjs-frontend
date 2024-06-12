@@ -205,7 +205,7 @@ const ResourceModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
               <div className="title">
                 <h6 className="mb-0">Pilih file untuk diupload</h6>
                 <p className="mt-1 text-muted fw-bold mb-0">
-                  File yang diupload dapat berformat apapun. Maksimal 10 file
+                  File yang diupload dapat berformat PDF, Gambar, dan Spreadsheet. Maksimal 10 file
                 </p>
               </div>
             </div>

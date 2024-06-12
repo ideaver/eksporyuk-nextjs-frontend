@@ -1,5 +1,9 @@
-query PendingCommissionFindOne($pendingCommissionFindOneArgs: PendingCommissionFindOneArgs!) {
-  pendingCommissionFindOne(pendingCommissionFindOneArgs: $pendingCommissionFindOneArgs) {
+query PendingCommissionFindOnee(
+  $pendingCommissionFindOneArgs: PendingCommissionFindOneArgs!
+) {
+  pendingCommissionFindOne(
+    pendingCommissionFindOneArgs: $pendingCommissionFindOneArgs
+  ) {
     productName
     order {
       createdAt

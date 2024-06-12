@@ -3,8 +3,11 @@ import { useRouter } from "next/router";
 import AffiliatorHeader from "@/components/layouts/Header/Affiliator/AffiliatorHeader";
 import RiwayatKomisi from "@/templates/Admin/Affiliators/AffiliatorManagement/Detail/RiwayatKomisi";
 
-import { useTransactionFindManyQuery, useAffiliatorFindOneQuery } from "@/app/service/graphql/gen/graphql";
-import { TransactionCategoryEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  TransactionCategoryEnum,
+  useAffiliatorFindOneQuery,
+  useTransactionFindManyQuery,
+} from "@/app/service/graphql/gen/graphql";
 
 const RiwayatKomisiPage = () => {
   const router = useRouter();
@@ -13,18 +16,18 @@ const RiwayatKomisiPage = () => {
   const dataTransactionCommission = useTransactionFindManyQuery({
     variables: {
       where: {
-        fromAccount: {
+        toAccount: {
           is: {
             userId: {
               equals: String(id),
-            }
-          }
+            },
+          },
         },
         transactionCategory: {
           equals: TransactionCategoryEnum.Comission,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   const dataAffiliator = useAffiliatorFindOneQuery({

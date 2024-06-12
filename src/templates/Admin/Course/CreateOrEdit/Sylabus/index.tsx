@@ -150,9 +150,9 @@ const CourseSylabusPage = () => {
     newLesson: ILessonBasic,
     parentLesson: ILessonTopic
   ) => {
-    if (isDetail) {
-      return;
-    }
+    // if (isDetail) {
+    //   return;
+    // }
     setLessonId(parentLesson.id);
     dispatch(changeEditLesson(newLesson));
     setIsEdit(newLesson);
@@ -257,9 +257,9 @@ const CourseSylabusPage = () => {
   };
 
   const handleEditQuiz = (newQuiz: ICreateQuizData) => {
-    if (isDetail) {
-      return;
-    }
+    // if (isDetail) {
+    //   return;
+    // }
     dispatch(changeEditQuiz(newQuiz));
     setIsEdit(true);
     setShowQuizModal(true);
@@ -528,6 +528,9 @@ const CourseSylabusPage = () => {
                                                 setShowResourceModal(true);
                                               }}
                                               onRemove={() => {
+                                                if (isDetail) {
+                                                  return;
+                                                }
                                                 const newResources =
                                                   courseSection.resources.filter(
                                                     (_, i) => i !== index
@@ -724,30 +727,23 @@ const LessonCard = ({
             </p>
           </div>
         </div>
-        {!isDetail && (
-          <div className="btns">
-            <button
-              className="btn btn-icon btn-active-danger"
-              onClick={onRemove}
-            >
-              <KTIcon iconName="trash" className="fs-1"></KTIcon>
+
+        <div className="btns">
+          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
+            <KTIcon iconName="trash" className="fs-1"></KTIcon>
+          </button>
+          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
+            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+          </button>
+          {isParent && (
+            <button className="btn btn-icon ">
+              <KTIcon
+                iconName={isActive ? "down" : "up"}
+                className="fs-1"
+              ></KTIcon>
             </button>
-            <button
-              className="btn btn-icon btn-active-success"
-              onClick={onEdit}
-            >
-              <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-            </button>
-            {isParent && (
-              <button className="btn btn-icon ">
-                <KTIcon
-                  iconName={isActive ? "down" : "up"}
-                  className="fs-1"
-                ></KTIcon>
-              </button>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <div className="contens">{children}</div>
     </div>
@@ -774,16 +770,15 @@ const QuizItem = ({
           {data.quizBasic.quizType}
         </p>
       </div>
-      {!isDetail && (
-        <div className="btns">
-          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
-            <KTIcon iconName="trash" className="fs-1"></KTIcon>
-          </button>
-          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
-            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-          </button>
-        </div>
-      )}
+
+      <div className="btns">
+        <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
+          <KTIcon iconName="trash" className="fs-1"></KTIcon>
+        </button>
+        <button className="btn btn-icon btn-active-success" onClick={onEdit}>
+          <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+        </button>
+      </div>
     </div>
   );
 };
@@ -806,16 +801,15 @@ const ResourceItem = ({
           {data.description}, Jumlah File: {data.files.length}
         </p>
       </div>
-      {!isDetail && (
-        <div className="btns">
-          <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
-            <KTIcon iconName="trash" className="fs-1"></KTIcon>
-          </button>
-          <button className="btn btn-icon btn-active-success" onClick={onEdit}>
-            <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
-          </button>
-        </div>
-      )}
+
+      <div className="btns">
+        <button className="btn btn-icon btn-active-danger" onClick={onRemove}>
+          <KTIcon iconName="trash" className="fs-1"></KTIcon>
+        </button>
+        <button className="btn btn-icon btn-active-success" onClick={onEdit}>
+          <KTIcon iconName="notepad-edit" className="fs-1"></KTIcon>
+        </button>
+      </div>
     </div>
   );
 };

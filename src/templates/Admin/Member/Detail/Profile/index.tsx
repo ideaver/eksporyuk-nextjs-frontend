@@ -11,7 +11,6 @@ import EditIdentificationModal from "@/components/partials/Modals/Mutations/Edit
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useState } from "react";
 
 const ProfilePage = ({
   data,
@@ -21,25 +20,25 @@ const ProfilePage = ({
   const userData = data?.user;
   const userAddress = userData?.addresses?.find((a) => a.isMain === true);
 
-  const handleDownloadIdentificationCard = async (
-    path: string,
-    name: string
-  ) => {
-    try {
-      const response = await fetch(path);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `${name}-KTP.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleDownloadIdentificationCard = async (
+  //   path: string,
+  //   name: string
+  // ) => {
+  //   try {
+  //     const response = await fetch(path);
+  //     const blob = await response.blob();
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.style.display = "none";
+  //     a.href = url;
+  //     a.download = `${name}-KTP.jpg`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const {
     forgotPasswordModalLoading,
@@ -139,7 +138,7 @@ const ProfilePage = ({
           </div>
           {data?.user.identification ? (
             <div
-              className="notice d-flex bg-light-primary justify-content-end align-content-end rounded border-primary border mb-2 p-2"
+              className="notice d-flex bg-light-primary justify-content-end align-content-end rounded border-primary border mb-5 p-2"
               style={{ width: "fit-content" }}
             >
               <KTIcon
@@ -149,11 +148,19 @@ const ProfilePage = ({
               <div className="d-flex flex-stack flex-grow-1"></div>
               <Buttons
                 classNames="me-2"
-                onClick={() =>
-                  handleDownloadIdentificationCard(
-                    `${data?.user?.identification?.personalDocumentIdPath}`,
-                    data?.user?.name as string
-                  )
+                onClick={
+                  () => {
+                    if (data?.user?.identification?.personalDocumentIdPath) {
+                      window.open(
+                        data.user.identification.personalDocumentIdPath,
+                        "_blank"
+                      );
+                    }
+                  }
+                  // handleDownloadIdentificationCard(
+                  //   `${data?.user?.identification?.personalDocumentIdPath}`,
+                  //   data?.user?.name as string
+                  // )
                 }
               >
                 Download KTP

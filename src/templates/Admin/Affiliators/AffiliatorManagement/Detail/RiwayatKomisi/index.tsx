@@ -22,7 +22,7 @@ const RiwayatKomisi = ({
 }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [commisionId, setComissionId] = useState(0);
-
+  console.log(data)
   return (
     <>
       <DetailComissionModal
