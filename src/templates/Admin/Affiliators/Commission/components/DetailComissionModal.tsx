@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { Modal } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
 
 import {
+  TransactionStatusEnum,
+  usePendingCommissionFindOneeQuery,
   useTransactionFindOneQuery,
   useTransactionUpdateOneMutation,
-  usePendingCommissionFindOneQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
-import { formatToIDR } from "../Comission-view-model";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
+import { formatToIDR } from "../Comission-view-model";
 
 import { KTIcon } from "@/_metronic/helpers";
 
@@ -35,14 +35,18 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
   });
 
   // Komisi pending
-  const { data: commPendingData, loading: commPendingLoading, error: commPendingError } = usePendingCommissionFindOneQuery({
+  const {
+    data: commPendingData,
+    loading: commPendingLoading,
+    error: commPendingError,
+  } = usePendingCommissionFindOneeQuery({
     variables: {
       pendingCommissionFindOneArgs: {
         where: {
           id: commPendingId,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   console.log(commPendingData);
@@ -86,7 +90,9 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
       centered={true}
     >
       <Modal.Header>
-        <h2>Detail Order {data?.transactionFindOne?.payment?.invoice?.uniqueCode}</h2>
+        <h2>
+          Detail Order {data?.transactionFindOne?.payment?.invoice?.uniqueCode}
+        </h2>
         {/* begin::Close */}
         <div
           className="btn btn-sm btn-icon btn-active-color-primary"
@@ -203,9 +209,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   className="bi bi-phone-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.transactionFindOne?.toAccount?.user?.phoneId ?? "-"
-                }
+                {data?.transactionFindOne?.toAccount?.user?.phoneId ?? "-"}
               </span>
               <span
                 className="fw-bolder fs-6 badge text-white"
@@ -215,9 +219,7 @@ const DetailComissionModal = ({ show, onClose, id, commPendingId }: any) => {
                   className="bi bi-envelope-fill me-2"
                   style={{ fontSize: "16px", color: "white" }}
                 ></i>
-                {
-                  data?.transactionFindOne?.toAccount?.user?.email ?? "-"
-                }
+                {data?.transactionFindOne?.toAccount?.user?.email ?? "-"}
               </span>
             </div>
           </div>
