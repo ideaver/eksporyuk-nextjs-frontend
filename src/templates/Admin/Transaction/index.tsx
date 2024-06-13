@@ -12,6 +12,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import {
   AdminFindManyTransactionQuery,
   AdminFindTransactionManyQuery,
+  QueryMode,
   SortOrder,
   TransactionCategoryEnum,
   TransactionStatusEnum,
@@ -130,7 +131,84 @@ const Transaction = () => {
             transactionCategory?: {
               equals: string;
             };
-          } = {};
+            OR: [
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            bill_title: {
+                              contains: string;
+                              mode: QueryMode;
+                            };
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              },
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            sender_name: {
+                              contains: string;
+                              mode: QueryMode;
+                            };
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              }
+            ];
+          } = {
+            OR: [
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            bill_title: {
+                              contains: transactionFindSearch,
+                              mode: QueryMode.Insensitive,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            sender_name: {
+                              contains: transactionFindSearch,
+                              mode: QueryMode.Insensitive,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          };
           if (exportFilterStatus !== "all") {
             where.status = {
               equals: exportFilterStatus,
