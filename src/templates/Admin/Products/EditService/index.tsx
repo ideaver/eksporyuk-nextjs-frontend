@@ -164,7 +164,10 @@ const EditService = ({ id, data }: IEditProduct) => {
                             top: "-10px",
                             right: "-5px",
                           }}
-                          onClick={() => handleRemoveImage(index)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering file input
+                            handleRemoveImage(index);
+                          }}
                         ></i>
                       </div>
                     ))}

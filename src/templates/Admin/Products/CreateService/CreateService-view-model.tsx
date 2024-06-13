@@ -327,8 +327,12 @@ const useCreateServiceViewModel = () => {
     const updatedImg = updatedImages.filter(
       (_, index) => index !== indexToRemove
     );
+    const updatedImgLocal = selectedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
     dispatch(changeServiceImages(updatedImages)); // Dispatch action to update images
     dispatch(changeUploadImages(updatedImg));
+    setSelectedFiles(updatedImgLocal);
   };
 
   const handleFileClick = () => {
