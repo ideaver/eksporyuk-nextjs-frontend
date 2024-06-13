@@ -128,6 +128,7 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
   );
   const [target, setTarget] = useState(articleData?.target);
   const [urlVideo, setUrlVideo] = useState(articleData?.material?.path);
+  const [articleType, setArticleType] = useState(articleData?.articleType);
 
   const {
     articleForm: formik,
@@ -217,6 +218,9 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
             category: {
               connect: editedCategory ?? null,
             },
+            articleType: {
+              set: articleType,
+            },
             content: {
               set: content,
             },
@@ -270,6 +274,8 @@ const useEditArticleViewModel = ({ data, id }: IEditArticle) => {
   ];
 
   return {
+    articleType,
+    setArticleType,
     urlVideo,
     setUrlVideo,
     targetOptions,

@@ -14,6 +14,7 @@ interface BuyerState {
   abbreviation: "Ton" | "Kg" | "Pcs" | "none";
   demandQuantity: string;
   shippingTerms: InternationalTradeDeliveryTypeEnum | "none";
+  hsCode: string;
   price: string;
 
   // Add other buyers properties here
@@ -32,6 +33,7 @@ const initialState: BuyerState = {
   abbreviation: "Ton",
   shippingTerms: "none",
   price: "",
+  hsCode: "",
 
   // Initialize other buyer properties here
 };
@@ -82,6 +84,9 @@ export const buyerSlice = createSlice({
     changePrice: (state, action: PayloadAction<string>) => {
       state.price = action.payload;
     },
+    changeHsCode: (state, action: PayloadAction<string>) => {
+      state.hsCode = action.payload;
+    },
 
     // Add other buyers actions here
   },
@@ -100,6 +105,7 @@ export const {
   changeShippingTerms,
   changeTelephoneNumber,
   changeLoadingImport,
+  changeHsCode,
 } = buyerSlice.actions;
 
 export default buyerSlice.reducer;

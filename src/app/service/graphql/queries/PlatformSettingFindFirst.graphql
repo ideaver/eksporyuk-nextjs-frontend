@@ -13,6 +13,8 @@ query PlatformSettingFindFirst {
     telegramCommunities
     whatsappCommunities
     orderExpirationTime
+    tiktokCommunities
+    youtubeCommunities
     language
     theme
     createdAt

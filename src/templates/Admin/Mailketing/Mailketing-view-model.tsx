@@ -3,7 +3,7 @@ import {
   useGetAllListSubscribersQuery,
   usePlatformSettingFindFirstQuery,
   usePlatformSettingUpdateOneMutation,
-  useSendMailForMailketingMutation
+  useSendMailForMailketingMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
 import { useRouter } from "next/router";
@@ -58,10 +58,15 @@ const useMailketingViewModel = () => {
 
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
-  const [emailName, setEmailName] = useState<string | undefined>("");
-  const [emailAddress, setEmailAddress] = useState<string | undefined>("");
+  const [emailName, setEmailName] = useState<string | undefined | null>("");
+  const [emailAddress, setEmailAddress] = useState<string | undefined | null>(
+    ""
+  );
   const [listValue, setListValue] = useState<any>("");
-  const [tokenAPI, setTokenAPI] = useState<string | undefined>("");
+  const [tokenAPI, setTokenAPI] = useState<string | undefined | null>("");
+  const [starsenderTokenAPI, setStarsenderTokenAPI] = useState<
+    string | undefined | null
+  >("");
 
   const [sendEmail, setSendEmail] = useState<string[]>([""]);
   const [sendSubject, setSendSubject] = useState("");
@@ -78,6 +83,7 @@ const useMailketingViewModel = () => {
       setEmailAddress(value.platformSettingFindFirst?.senderEmail);
       setListValue(value.platformSettingFindFirst?.listIdMailketingSubscriber);
       setTokenAPI(value.platformSettingFindFirst?.senderEmailApiToken);
+      setStarsenderTokenAPI(value.platformSettingFindFirst?.starSenderApiKey);
     },
   });
   const [paltformSettingUpdateOne, response] =
@@ -120,6 +126,25 @@ const useMailketingViewModel = () => {
           data: {
             senderEmailApiToken: {
               set: tokenAPI,
+            },
+          },
+        },
+      });
+      router.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAPITokenStarsenderUpdate = async () => {
+    try {
+      await paltformSettingUpdateOne({
+        variables: {
+          where: {
+            id: 1,
+          },
+          data: {
+            starSenderApiKey: {
+              set: starsenderTokenAPI,
             },
           },
         },
@@ -193,6 +218,9 @@ const useMailketingViewModel = () => {
   ]);
 
   return {
+    handleAPITokenStarsenderUpdate,
+    starsenderTokenAPI,
+    setStarsenderTokenAPI,
     handleAPITokenUpdate,
     tokenAPI,
     setTokenAPI,

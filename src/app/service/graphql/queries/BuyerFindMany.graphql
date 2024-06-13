@@ -23,11 +23,17 @@ query BuyerFindMany(
     productName
     quantity
     updatedAt
-    hsCodeSection {
-      name
-    }
-    hsCodeSectionId
-    id
+
     countryId
+    createdByAdmin {
+      user {
+        id
+        name
+        email
+        phoneId
+      }
+    }
+    hsCode
+    id
   }
 }

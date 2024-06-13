@@ -17,6 +17,7 @@ import {
 import { RootState } from "@/app/store/store";
 import {
   TypeCategory,
+  changeArticleType,
   changeCategory,
   changeContent,
   changeStatus,
@@ -109,6 +110,7 @@ const useResetArticleState = () => {
     dispatch(changeStatus("published"));
     dispatch(changeTarget([]));
     dispatch(changeUrlVideo(""));
+    dispatch(changeArticleType(ArticleTypeEnum.Article));
     router.push("/admin/articles");
   };
 
@@ -251,7 +253,7 @@ export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
             category: {
               connect: [...categoryArticle],
             },
-            articleType: ArticleTypeEnum.Article,
+            articleType: articleState.articleType,
             material: {
               connect: {
                 path: await handleUploadVideo(),
@@ -708,6 +710,9 @@ const useInformationViewModel = () => {
   const handleTargetChange = (target: UserRoleEnum[]) => {
     dispatch(changeTarget(target));
   };
+  const handleArticleTypeChange = (e: ArticleTypeEnum) => {
+    dispatch(changeArticleType(e));
+  };
 
   const targetOptions = [
     { value: UserRoleEnum.Student, label: "Student" },
@@ -735,6 +740,7 @@ const useInformationViewModel = () => {
     uploadFile,
     isLoading,
     handleArticleCreateOne,
+    handleArticleTypeChange,
     // announcement
     handleConnectCourse,
     // material promotion
