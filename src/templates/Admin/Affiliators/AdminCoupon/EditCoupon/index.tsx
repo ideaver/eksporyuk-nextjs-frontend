@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import Flatpickr from "react-flatpickr";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 
 const EditCoupon = ({ id, data }: IEditCoupon) => {
   const router = useRouter();
@@ -55,6 +56,8 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
     setStartDate,
     endDate,
     setEndDate,
+    desc,
+    setDesc,
   } = useEditCouponViewModel({ id, data });
 
   const { loadOptions } = useCoursesDropdown();
@@ -127,6 +130,20 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               }}
             />
             <h5 className="text-muted mt-2 mb-8">Atur Diskon</h5>
+            <div>
+              <h4 className="required fw-bold text-gray-700">
+                Deskripsi Kupon
+              </h4>
+              <Textarea
+                rows={9}
+                props={{
+                  desc,
+                  onChange: (e: any) => setDesc(e.target.value),
+                }}
+                placeholder={`${desc}`}
+              ></Textarea>
+              <p className="fw-bold fs-6 text-muted">Masukan Deskripsi Kupon</p>
+            </div>
             <h4 className="fw-bold text-gray-700">Batas Waktu Penggunaan</h4>
             <CheckBoxInput
               className="active my-2"
@@ -214,7 +231,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
             }}
           ></AsyncPaginate>
         </div> */}
-            {selectedCourse.length === 0 && (
+            {selectedCourse?.length === 0 && (
               <div className="mb-8 mt-6">
                 <h4 className="fw-bold text-gray-700">
                   Kupon hanya bisa digunakan di kelas
@@ -257,7 +274,7 @@ const EditCoupon = ({ id, data }: IEditCoupon) => {
               </div>
             )}
 
-            {selectedMentor.length === 0 && (
+            {selectedMentor?.length === 0 && (
               <div className="mb-5 mt-6">
                 <h4 className="fw-bold text-gray-700">
                   Kupon tidak bisa digunakan di kelas

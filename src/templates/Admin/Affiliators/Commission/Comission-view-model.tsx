@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
-  useInvoiceFindManyQuery,
   QueryMode,
   SortOrder,
-  useTransactionFindManyQuery,
-  usePendingCommissionFindManyQuery,
+  TransactionCategoryEnum,
+  TransactionStatusEnum,
   useAffiliatorFindManyQuery,
   useCourseFindManyQuery,
+  useExportDataTransactionMutation,
+  useInvoiceFindManyQuery,
   useMembershipCategoryFindManyQuery,
+  usePendingCommissionFindManyyQuery,
+  useTransactionFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { GroupBase, OptionsOrGroups } from "react-select";
 
 export const formatToIDR = (amount: string) => {
   return parseInt(amount).toLocaleString("id-ID", {
@@ -72,9 +74,9 @@ const usePendingComissionPagination = () => {
   const [currentPendingCommPage, setCurrentPendingCommPage] = useState(1);
   const [findPendingCommSkip, setFindPendingCommSkip] = useState(0);
   const [findPendingCommTake, setFindPendingCommTake] = useState(10);
-  const pendingCommissionLength = usePendingCommissionFindManyQuery({
+  const pendingCommissionLength = usePendingCommissionFindManyyQuery({
     variables: {
-      pendingCommissionArgs: {},
+      pendingCommissionFindManyArgs: {},
     },
   });
 
@@ -85,8 +87,8 @@ const usePendingComissionPagination = () => {
 
   const calculateTotalPendingCommPage = () => {
     return Math.ceil(
-      (pendingCommissionLength.data?.pendingCommissionFindMany?.length ?? 0) /
-        findPendingCommTake
+      ((pendingCommissionLength.data as any)?.pendingCommissionFindMany
+        ?.length ?? 0) / findPendingCommTake
     );
   };
   return {
@@ -241,6 +243,9 @@ const useComissionViewModel = () => {
   const [selectedTable, setSelectedTable] = useState("commission");
   const [searchPendingCommission, setSearchPendingComission] = useState("");
   const [searchFilter, setSearchFilter] = useState(null);
+  const [filterExportStatus, setFilterExportStatus] = useState<
+    TransactionStatusEnum | "all"
+  >("all");
 
   const {
     currentPage,
@@ -369,7 +374,7 @@ const useComissionViewModel = () => {
     },
   });
 
-  console.log(searchCommission);
+  // console.log(searchCommission);
 
   const transactionFindMany = useTransactionFindManyQuery({
     variables: {
@@ -436,7 +441,7 @@ const useComissionViewModel = () => {
                                     name: {
                                       contains: searchFilter,
                                       mode: QueryMode.Insensitive,
-                                    }
+                                    },
                                   },
                                 },
                               },
@@ -470,15 +475,15 @@ const useComissionViewModel = () => {
                                     name: {
                                       contains: searchCommission,
                                       mode: QueryMode.Insensitive,
-                                    }
+                                    },
                                   },
                                 },
                               },
                             },
                           },
                         },
-                      }
-                    }
+                      },
+                    },
                   },
                   // Nama pembeli
                   {
@@ -501,8 +506,30 @@ const useComissionViewModel = () => {
                         },
                       },
                     },
-                  }
+                  },
                 ],
+              },
+            },
+          },
+        },
+        transactionCategory: {
+          equals: TransactionCategoryEnum.Comission,
+        },
+      },
+    },
+  });
+
+  const pendingComissionFindMany = usePendingCommissionFindManyyQuery({
+    variables: {
+      pendingCommissionFindManyArgs: {
+        take: parseInt(findPendingCommTake.toString()),
+        skip: findPendingCommSkip,
+        where: {
+          createdByUser: {
+            is: {
+              name: {
+                contains: searchPendingCommission,
+                mode: QueryMode.Insensitive,
               },
             },
           },
@@ -511,11 +538,24 @@ const useComissionViewModel = () => {
     },
   });
 
-  const pendingComissionFindMany = usePendingCommissionFindManyQuery({
-    variables: { pendingCommissionArgs: {} },
-  });
+  const [exportData] = useExportDataTransactionMutation();
+  // export commision
+  const [isLoading, setIsLoading] = useState(false);
+  const [exportModalState, setExportModalState] = useState<any>([
+    new Date(),
+    new Date(),
+  ]);
 
   return {
+    filterExportStatus,
+    setFilterExportStatus,
+    searchFilter,
+    searchCommission,
+    exportData,
+    isLoading,
+    setIsLoading,
+    exportModalState,
+    setExportModalState,
     isCustomTake,
     setIsCustomTake,
     orderBy,

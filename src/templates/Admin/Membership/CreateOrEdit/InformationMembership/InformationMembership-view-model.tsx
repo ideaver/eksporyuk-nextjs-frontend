@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useFormik } from "formik";
-import { useRouter } from "next/router";
-import * as Yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  QueryMode,
+  useCourseFindManyQuery,
+  useMembershipCategoryCreateOneMutation,
+} from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
   changeAffiliateCommission,
@@ -14,20 +14,19 @@ import {
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
-import {
-  AffiliateCommissionTypeEnum,
-  QueryMode,
-  useCourseFindManyQuery,
-  useMembershipCategoryCreateOneMutation,
-} from "@/app/service/graphql/gen/graphql";
-import { useSession } from "next-auth/react";
-import { GroupBase, OptionsOrGroups } from "react-select";
 import { CourseOptionType } from "@/templates/Admin/Affiliators/RewardManagement/Create/NewReward/NewReward-view-model";
+import { useFormik } from "formik";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import * as Yup from "yup";
 
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/subscriber",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -168,7 +167,7 @@ export const useMembershipForm = () => {
         console.log(error);
       } finally {
         setIsloading(false);
-        await router.push("/admin/subscriber");
+        await router.push("/admin/product-management/subscriber");
         router.reload();
       }
     },

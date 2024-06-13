@@ -17,6 +17,11 @@ import useActivityViewModel, {
   formatRelativeTime,
   genRandomIP,
 } from "./Activity-view-model";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Dispatch, SetStateAction } from "react";
+import SweetAlert2 from "react-sweetalert2";
 
 const Activity = () => {
   const {
@@ -31,6 +36,19 @@ const Activity = () => {
     orderBy,
     setOrderBy,
     findTake,
+    setIsLoadingPlatformSetting,
+    isLoadingPlatformSetting,
+    handlePlatformSettingUpdateOne,
+    facebookCommunities,
+    setFacebookCommunities,
+    instagramCommunities,
+    setInstagramCommunities,
+    telegramCommunities,
+    setTelegramCommunities,
+    whatsappCommunities,
+    setWhatsappCommunities,
+    swalProps,
+    setSwalProps,
   } = useActivityViewModel();
 
   return (
@@ -57,6 +75,23 @@ const Activity = () => {
           />
         </KTCardBody>
       </KTCard>
+      <SocialMediaForumModal
+        handleSubmit={() => {
+          handlePlatformSettingUpdateOne();
+        }}
+        facebookCommunities={facebookCommunities}
+        instagramCommunities={instagramCommunities}
+        whatsappCommunities={whatsappCommunities}
+        telegramCommunities={telegramCommunities}
+        setTelegramCommunities={setTelegramCommunities}
+        setInstagramCommunities={setInstagramCommunities}
+        setFacebookCommunities={setFacebookCommunities}
+        setWhatsappCommunities={setWhatsappCommunities}
+        isLoadingPlatformSetting={isLoadingPlatformSetting}
+        swalProps={swalProps}
+        setSwalProps={setSwalProps}
+        onClose={() => {}}
+      />
     </>
   );
 };
@@ -76,6 +111,15 @@ const Head = ({
         <h1>Aktifitas User</h1>
       </div>
       <div className="row col-lg-auto gy-3 align-items-center">
+        <div className="col-lg-auto">
+          {" "}
+          <Buttons
+            data-bs-toggle="modal"
+            data-bs-target="#kt_social_media_forum_modal"
+          >
+            Social Media Forum
+          </Buttons>
+        </div>
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -125,7 +169,7 @@ const Body = ({ data }: { data: QueryResult<ActivityFindManyQuery> }) => {
           >
             <th className="min-w-100px">IP Address</th>
             <th className="text-start min-w-200px">Hostname</th>
-            <th className="text-end min-w-200px">Country</th>
+            <th className="text-end min-w-200px">Location</th>
             <th className="text-end min-w-200px">Date</th>
             <th className="text-end min-w-200px">Event</th>
             <th className="text-end min-w-200px">Local User</th>
@@ -135,16 +179,20 @@ const Body = ({ data }: { data: QueryResult<ActivityFindManyQuery> }) => {
               <KTTableBody key={index}>
                 <td className="text-start min-w-200px">
                   <span className="text-primary fs-6 fw-bold">
-                    {genRandomIP()}
+                    {activity?.session?.ipAddress ?? "..."}
                   </span>
                 </td>
                 <td className="text-start min-w-200px">
                   <span className="text-dark cursor-pointer fs-6 fw-bold">
-                    ...
+                    {activity?.session?.device ?? "..."}
                   </span>
                 </td>
                 <td className="text-end min-w-200px">
-                  <span className="text-muted fs-6 fw-bold">Unknown</span>
+                  <span className="text-muted fs-6 fw-bold">
+                    {activity.session?.location
+                      ?.replace(/\s*\[\-?\d+\.\d+,\s*\-?\d+\.\d+\]/, "")
+                      .trim() ?? "..."}
+                  </span>
                 </td>
                 <td className="text-end min-w-200px">
                   <span className="text-muted fs-6 fw-bold">
@@ -239,6 +287,119 @@ const Footer = ({
           onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
+    </div>
+  );
+};
+
+const SocialMediaForumModal = ({
+  handleSubmit,
+  onClose,
+  facebookCommunities,
+  instagramCommunities,
+  telegramCommunities,
+  whatsappCommunities,
+  setWhatsappCommunities,
+  setFacebookCommunities,
+  setInstagramCommunities,
+  setTelegramCommunities,
+  isLoadingPlatformSetting,
+  swalProps,
+  setSwalProps,
+}: {
+  handleSubmit: () => void;
+  onClose: () => void;
+  facebookCommunities: string | undefined;
+  instagramCommunities: string | undefined;
+  telegramCommunities: string | undefined;
+  whatsappCommunities: string | undefined;
+  setWhatsappCommunities: Dispatch<SetStateAction<string | undefined>>;
+  setFacebookCommunities: Dispatch<SetStateAction<string | undefined>>;
+  setInstagramCommunities: Dispatch<SetStateAction<string | undefined>>;
+  setTelegramCommunities: Dispatch<SetStateAction<string | undefined>>;
+  isLoadingPlatformSetting: boolean;
+  swalProps: object;
+  setSwalProps: Dispatch<SetStateAction<object>>;
+}) => {
+  return (
+    <div>
+      <KTModal
+        dataBsTarget="kt_social_media_forum_modal"
+        title="Social Media Forum"
+        fade
+        modalCentered
+        onClose={onClose}
+        buttonClose={
+          <Buttons
+            buttonColor="secondary"
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+          >
+            Batal
+          </Buttons>
+        }
+        buttonSubmit={
+          <Buttons
+            disabled={isLoadingPlatformSetting}
+            classNames="fw-bold"
+            onClick={handleSubmit}
+          >
+            Simpan Pengaturan
+          </Buttons>
+        }
+        footerContentCentered
+        modalSize="lg"
+      >
+        <h4 className="mt-5">Facebook Communities</h4>
+        <TextField
+          placeholder="Masukan facebook communities"
+          props={{
+            value: facebookCommunities,
+            onChange: (e: any) => {
+              setFacebookCommunities(e.target.value);
+            },
+          }}
+        />
+        <h4 className="mt-5">Instagram Communities</h4>
+        <TextField
+          placeholder="Masukan isntagram communities"
+          props={{
+            value: instagramCommunities,
+            onChange: (e: any) => {
+              setInstagramCommunities(e.target.value);
+            },
+          }}
+        />
+        <h4 className="mt-5">Telegram Communities</h4>
+        <TextField
+          placeholder="Masukan telegram communities"
+          props={{
+            value: telegramCommunities,
+            onChange: (e: any) => {
+              setTelegramCommunities(e.target.value);
+            },
+          }}
+        />
+        <h4 className="mt-5">WhatsApp Communities</h4>
+        <TextField
+          placeholder="Masukan whatsapp communities"
+          props={{
+            value: whatsappCommunities,
+            onChange: (e: any) => {
+              setWhatsappCommunities(e.target.value);
+            },
+          }}
+        />
+      </KTModal>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+        }}
+      />
     </div>
   );
 };

@@ -1,49 +1,54 @@
-import Link from "next/link";
 import { QueryResult } from "@apollo/client";
-import { useState } from "react";
-import dynamic from "next/dynamic";
+import { Dispatch, SetStateAction, useState } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 
+import {
+  TransactionCategoryEnum,
+  TransactionFindManyQuery,
+  TransactionStatusEnum,
+} from "@/app/service/graphql/gen/graphql";
 import useComissionViewModel, {
-  formatToIDR,
   breadcrumbs,
+  formatToIDR,
   useFilterDropdown,
-  // useCoursesDropdown,
-  // useMembershipsDropdown,
 } from "./Comission-view-model";
-import { InvoiceFindManyQuery, TransactionFindManyQuery, PendingCommissionFindManyQuery } from "@/app/service/graphql/gen/graphql";
 import DetailComissionModal from "./components/DetailComissionModal";
-import { TransactionStatusEnum } from "@/app/service/graphql/gen/graphql";
 
-import { PageTitle } from "@/_metronic/layout/core";
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { Badge } from "@/stories/atoms/Badge/Badge";
-import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
+import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
-import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
+import { PageTitle } from "@/_metronic/layout/core";
 import { SortOrder } from "@/app/service/graphql/gen/graphql";
+import { Badge } from "@/stories/atoms/Badge/Badge";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
+import { useSession } from "next-auth/react";
+import Flatpickr from "react-flatpickr";
+import CommissionDateSettingsModal from "./components/CommisisonDateSetingsModal";
 
 interface ComissionPageProps {}
 
 const customStyles = {
   // provide correct types here
   control: (provided: any, state: { isFocused: boolean }) => ({
-      ...provided,
-      borderRadius: '5px',
-      border: '2px solid #ccc',
-      boxShadow: state.isFocused ? '0 0 0 2px #3699FF' : null,
+    ...provided,
+    borderRadius: "5px",
+    border: "2px solid #ccc",
+    boxShadow: state.isFocused ? "0 0 0 2px #3699FF" : null,
   }),
   option: (provided: any, state: { isFocused: boolean }) => ({
-      ...provided,
-      backgroundColor: state.isFocused ? '#3699FF' : null,
-      color: state.isFocused ? 'white' : null,
+    ...provided,
+    backgroundColor: state.isFocused ? "#3699FF" : null,
+    color: state.isFocused ? "white" : null,
   }),
-}
+};
 
 const CommissionPage = ({}: ComissionPageProps) => {
+  const { data: session, status } = useSession();
   const {
     setTakePage,
     skipPage,
@@ -71,7 +76,18 @@ const CommissionPage = ({}: ComissionPageProps) => {
     setFindPendingCommTake,
     findPendingCommTake,
     setSearchFilter,
+    isLoading,
+    setIsLoading,
+    exportModalState,
+    setExportModalState,
+    exportData,
+    searchCommission,
+    searchFilter,
+    filterExportStatus,
+    setFilterExportStatus,
   } = useComissionViewModel();
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   return (
     <>
@@ -81,20 +97,24 @@ const CommissionPage = ({}: ComissionPageProps) => {
           <div className="mb-10">
             <Head
               setStatus={setStatus}
-              onSearch={selectedTable === "commission" ? setSearchComission : setSearchPendingComission}
+              onSearch={
+                selectedTable === "commission"
+                  ? setSearchComission
+                  : setSearchPendingComission
+              }
               setOrderBy={(e: any) => {
                 setOrderBy(e);
               }}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
               setSearchFilter={setSearchFilter}
+              setShowSettingsModal={setShowSettingsModal}
             />
           </div>
         </KTCardBody>
         {selectedTable === "commission" ? (
-
           <Body data={transactionFindMany} />
-        ): (
+        ) : (
           <PendingCommissionBody data={pendingComissionFindMany} />
         )}
         {selectedTable === "commission" ? (
@@ -108,7 +128,7 @@ const CommissionPage = ({}: ComissionPageProps) => {
             }}
             takeValue={findTake}
           />
-        ): (
+        ) : (
           <Footer
             pageLength={calculateTotalPendingCommPage()}
             currentPage={currentPendingCommPage}
@@ -121,13 +141,68 @@ const CommissionPage = ({}: ComissionPageProps) => {
           />
         )}
       </KTCard>
+      <ExportModal
+        setFilterExportStatus={setFilterExportStatus}
+        loading={isLoading}
+        onClose={() => {}}
+        date={exportModalState}
+        onChange={([startDate, endDate]) => {
+          setExportModalState([startDate, endDate]);
+        }}
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            const response = await exportData({
+              variables: {
+                exportTransaction: {
+                  adminId: `${session?.user.id}`,
+                  startDate: exportModalState[0],
+                  endDate: exportModalState[1],
+                  where: {
+                    transactionCategory: {
+                      equals: TransactionCategoryEnum.Comission,
+                    },
+                    status: {
+                      equals:
+                        filterExportStatus === "all"
+                          ? null
+                          : filterExportStatus,
+                    },
+                  },
+                },
+              },
+            });
+            const link = document.createElement("a");
+            link.href = response.data?.exportTransaction?.fileURL as string;
+            link.click();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+      />
+      <CommissionDateSettingsModal
+        show={showSettingsModal}
+        handleClose={() => {
+          setShowSettingsModal(false);
+        }}
+      />
     </>
   );
 };
 
 export default CommissionPage;
 
-const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable, setSearchFilter }: any) => {
+const Head = ({
+  setStatus,
+  onSearch,
+  setOrderBy,
+  selectedTable,
+  setSelectedTable,
+  setSearchFilter,
+  setShowSettingsModal,
+}: any) => {
   const { loadOptions: loadAffiliator } = useFilterDropdown();
   // const { loadOptions: loadCourses } = useCoursesDropdown();
   // const { loadOptions: loadMemberships } = useMembershipsDropdown();
@@ -140,11 +215,11 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
           preffixIcon="magnifier"
           placeholder="Search"
           props={{
-            onChange: (e: any) =>{
+            onChange: (e: any) => {
               if (e.target.value === "") {
                 onSearch(null);
               } else {
-                onSearch(e.target.value)
+                onSearch(e.target.value);
               }
             },
           }}
@@ -157,10 +232,14 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
             loadOptions={loadAffiliator}
             onChange={(e) => {
               console.log(e);
-              if (e?.label === "Semua Affiliator" || e?.label === "Semua Kelas" || e?.label === "Semua Membership") {
+              if (
+                e?.label === "Semua Affiliator" ||
+                e?.label === "Semua Kelas" ||
+                e?.label === "Semua Membership"
+              ) {
                 setSearchFilter(null);
                 // onSearch(null);
-                } else {
+              } else {
                 setSearchFilter(e?.label);
               }
             }}
@@ -209,7 +288,7 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
             }}
           />
         </div>
-        <div className="col-lg-auto">
+        {/* <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
             options={[
@@ -226,7 +305,7 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
               setStatus(e);
             }}
           />
-        </div>
+        </div> */}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -238,6 +317,24 @@ const Head = ({ setStatus, onSearch, setOrderBy, selectedTable, setSelectedTable
               setOrderBy(e);
             }}
           />
+        </div>
+        <div className="col-lg-auto">
+          <Buttons
+            data-bs-toggle="modal"
+            data-bs-target="#kt_export_order_modal"
+          >
+            Export Data
+          </Buttons>
+        </div>
+        <div className="col-lg-auto">
+          <button
+            className="btn btn-success"
+            onClick={(e) => {
+              setShowSettingsModal(true);
+            }}
+          >
+            Pengaturan Komisi
+          </button>
         </div>
       </div>
     </div>
@@ -272,7 +369,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
             <th className="fw-bold text-muted min-w-100px">Nama Order</th>
             <th className="fw-bold text-muted text-end min-w-80px">Pembeli</th>
             <th className="fw-bold text-muted text-end min-w-150px">
-              Affiliasi
+              Affiliator
             </th>
             <th className="fw-bold text-muted text-end min-w-150px">
               Total Komisi
@@ -291,7 +388,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
 
             return (
               <KTTableBody key={index}>
-                <td className="fw-bold">INV {user.id}</td>
+                <td className="fw-bold">{user.payment?.invoice?.uniqueCode}</td>
                 <td
                   className="fw-bold text-dark text-hover-primary"
                   style={{ cursor: "pointer" }}
@@ -303,17 +400,15 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
                   {user.payment?.invoice?.paymentForGateway?.bill_title}
                 </td>
                 <td className="fw-bold text-muted text-end">
-                  {
-                    user.payment?.invoice?.paymentForGateway?.sender_name
-                  }
+                  {user.payment?.invoice?.paymentForGateway?.sender_name}
                 </td>
                 <td className="fw-bold text-muted text-end">
-                  {
-                    user.payment?.invoice?.order?.createdByUser?.affiliator?.user.name ?? "-" 
-                  }
+                  {user.toAccount?.user.name ?? "-"}
                 </td>
                 <td className="fw-bold text-muted text-end">
-                  {formatToIDR(String(user.payment?.invoice?.paymentForGateway?.amount))}
+                  {formatToIDR(
+                    String(user.payment?.invoice?.paymentForGateway?.amount)
+                  )}
                 </td>
                 <td className="text-end">
                   <Badge
@@ -336,7 +431,7 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
   );
 };
 
-const PendingCommissionBody = ({ data }: { data: any}) => {
+const PendingCommissionBody = ({ data }: { data: any }) => {
   return (
     <div className="table-responsive mb-10 p-10">
       {data.error ? (
@@ -362,43 +457,43 @@ const PendingCommissionBody = ({ data }: { data: any}) => {
             <th className="fw-bold text-muted text-end min-w-100px">STATUS</th>
           </KTTableHead>
 
-          {data.data?.pendingCommissionFindMany?.map((user: any, index: any) => {
-            return (
-              <KTTableBody key={index}>
-                <td className="fw-bold">INV {user.order?.id}</td>
-                <td
-                  className="fw-bold text-dark text-hover-primary"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {}}
-                >
-                  {user.productName}
-                </td>
-                <td className="fw-bold text-muted text-end">
-                  {
-                    user.orderBy?.name
-                  }
-                </td>
-                {/* <td className="fw-bold text-muted text-end">
+          {data.data?.pendingCommissionFindMany?.map(
+            (user: any, index: any) => {
+              return (
+                <KTTableBody key={index}>
+                  <td className="fw-bold">
+                    {user?.order?.invoices?.[0]?.uniqueCode ??
+                      "Tidak ditemukan"}
+                  </td>
+                  <td
+                    className="fw-bold text-dark text-hover-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {}}
+                  >
+                    {user.productName}
+                  </td>
+                  <td className="fw-bold text-muted text-end">
+                    {user.orderBy?.name}
+                  </td>
+                  {/* <td className="fw-bold text-muted text-end">
                   {
                     "-" 
                   }
                 </td> */}
-                <td className="fw-bold text-muted text-end">
-                  {formatToIDR(String(user.amountCommission))}
-                </td>
-                <td className="text-end">
-                  <Badge
-                    label="Pending"
-                    badgeColor="warning"
-                  />
-                </td>
-              </KTTableBody>
-            );
-          })}
+                  <td className="fw-bold text-muted text-end">
+                    {formatToIDR(String(user.amountCommission))}
+                  </td>
+                  <td className="text-end">
+                    <Badge label="Pending" badgeColor="warning" />
+                  </td>
+                </KTTableBody>
+              );
+            }
+          )}
         </KTTable>
       )}
     </div>
-  )
+  );
 };
 
 const Footer = ({
@@ -471,6 +566,86 @@ const Footer = ({
           onPageChange={(val) => setCurrentPage(val)}
         ></Pagination>
       </div>
+    </div>
+  );
+};
+
+const ExportModal = ({
+  loading,
+  date,
+  onChange,
+  onClose,
+  setFilterExportStatus,
+  onClick,
+}: {
+  loading: boolean;
+  date: Date;
+  onChange: (value: any) => void;
+  onClose: () => void;
+  setFilterExportStatus: Dispatch<
+    SetStateAction<TransactionStatusEnum | "all">
+  >;
+  // onDropdownChange: (val: any) => void;
+
+  onClick: () => void;
+}) => {
+  return (
+    <div>
+      <KTModal
+        dataBsTarget="kt_export_order_modal"
+        title="Export Data"
+        fade
+        modalCentered
+        onClose={onClose}
+        buttonClose={
+          <Buttons
+            buttonColor="secondary"
+            data-bs-dismiss="modal"
+            classNames="fw-bold"
+          >
+            Batal
+          </Buttons>
+        }
+        buttonSubmit={
+          <Buttons classNames="fw-bold" disabled={loading} onClick={onClick}>
+            Export
+          </Buttons>
+        }
+        footerContentCentered
+        modalSize="lg"
+      >
+        <p className="fw-bold required text-gray-700">Pilih Rentang Waktu</p>
+        <Flatpickr
+          value={date}
+          onChange={onChange}
+          options={{
+            mode: "range",
+            dateFormat: "d m Y",
+          }}
+          className="form-control form-control-solid"
+          placeholder="Pilih Rentang Waktu"
+        />
+        <p className="fw-bold text-muted mt-2">
+          Pilih rentang waktu data yang ingin diexport
+        </p>
+
+        <p className="fw-bold text-gray-700">Pilih Category</p>
+
+        <Dropdown
+          options={[
+            { value: "all", label: "Semua Status" },
+            { value: TransactionStatusEnum.Completed, label: "Completed" },
+            { value: TransactionStatusEnum.Cancelled, label: "Cancelled" },
+            { value: TransactionStatusEnum.Failed, label: "Failed" },
+            { value: TransactionStatusEnum.Pending, label: "Pending" },
+            { value: TransactionStatusEnum.Processing, label: "Processing" },
+          ]}
+          onValueChange={(val) => {
+            setFilterExportStatus(val as TransactionStatusEnum);
+          }}
+          // value={orderType}
+        />
+      </KTModal>
     </div>
   );
 };

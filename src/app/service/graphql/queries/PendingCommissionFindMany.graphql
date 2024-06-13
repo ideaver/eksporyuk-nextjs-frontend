@@ -1,16 +1,144 @@
-query PendingCommissionFindMany($pendingCommissionArgs: PendingCommissionArgs!) {
-  pendingCommissionFindMany(pendingCommissionArgs: $pendingCommissionArgs) {
-    amountCommission # Total Komisi
-    productName #Nama order
+query PendingCommissionFindManyy(
+  $pendingCommissionFindManyArgs: PendingCommissionFindManyArgs!
+) {
+  pendingCommissionFindMany(
+    pendingCommissionFindManyArgs: $pendingCommissionFindManyArgs
+  ) {
+    productName
+    amountCommission
     orderBy {
-      name # Pembeli
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
     }
     order {
-      id # ID Order
-      statuses {
+      id
+      platformFee
+      createdAt
+      updatedAt
+      expiredAt
+      cartId
+      createdByUserId
+      couponId
+      referralLinkId
+      invoices {
+        id
+        adminFee
+        amount
+        uniqueCode
+        createdAt
+        updatedAt
         status
+        orderId
+        paymentForGatewayId
+        paymentId
+        topupId
+      }
+      createdByUser {
+        id
+        name
+        email
+        username
+        couponCodeRegister
+        emailVerifiedAt
+        referralCode
+        password
+        passwordUpdatedAt
+        birthDate
+        personalId
+        npwpId
+        createdAt
+        updatedAt
+        deletedAt
+        deletedReason
+        phoneId
+        referredById
+        role
+        gender
+        avatarImageId
+        referralLinkId
+      }
+      statuses {
+        id
+        createdAt
+        status
+        changedById
+        orderId
+      }
+      coupon {
+        id
+        description
+        startDate
+        endDate
+        isHighlight
+        isActive
+        value
+        minOrderTotalAmountValue
+        maxOrderTotalAmountValue
+        minOrderQuantityValue
+        maxOrderQuantityValue
+        maxClaimPerUser
+        claimerQuota
+        freeDelivery
+        lastClaimAt
+        createdAt
+        updatedAt
+        imageId
+        type
+        source
+      }
+      cart {
+        id
+        adminFee
+        totalQuantity
+        totalPrice
+        totalCost
+        createdAt
+        updatedAt
       }
     }
-
+    affiliateBy {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
   }
 }

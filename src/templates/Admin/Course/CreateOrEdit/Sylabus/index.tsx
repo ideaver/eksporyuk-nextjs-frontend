@@ -329,7 +329,7 @@ const CourseSylabusPage = () => {
   };
 
   useEffect(() => {
-    if (isDetail) {
+    if (!isDetail) {
       dispatch(changeObjective(objectives));
     }
   }, [dispatch, isDetail, objectives]);
@@ -599,29 +599,33 @@ const CourseSylabusPage = () => {
                   }}
                 ></TextField>
               </div>
-              <div className="ms-5">
-                <Buttons
-                  icon="cross"
-                  buttonColor="danger"
-                  showIcon={true}
-                  onClick={() => removeObjectives(index)}
-                ></Buttons>
-              </div>
+              {!isDetail && (
+                <div className="ms-5">
+                  <Buttons
+                    icon="cross"
+                    buttonColor="danger"
+                    showIcon={true}
+                    onClick={() => removeObjectives(index)}
+                  ></Buttons>
+                </div>
+              )}
             </div>
           ))}
           <h6 className="text-muted fw-bold">
             Apa saja yang anda berikan dan sediakan untuk siswa
           </h6>
-          <Buttons
-            showIcon={true}
-            mode="light"
-            classNames="mt-5"
-            onClick={() => {
-              addObjectives();
-            }}
-          >
-            Tambahkan Item
-          </Buttons>
+          {!isDetail && (
+            <Buttons
+              showIcon={true}
+              mode="light"
+              classNames="mt-5"
+              onClick={() => {
+                addObjectives();
+              }}
+            >
+              Tambahkan Item
+            </Buttons>
+          )}
         </KTCardBody>
       </KTCard>
       <SectionModal

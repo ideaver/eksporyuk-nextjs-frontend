@@ -190,7 +190,7 @@ const Head = ({
           ) : (
             <Buttons>
               <Link
-                href="/admin/products/create-service"
+                href="/admin/product-management/products/create-service"
                 className="text-white"
               >
                 Tambah Service Baru
@@ -289,7 +289,7 @@ const Body = ({
                     defaultChildren={false}
                     onChange={() => handleSingleCheck(index)}
                   >
-                    <Link href={`/admin/products/detail/${product.id}`}>
+                    <Link href={`/admin/product-management/products/detail/${product.id}`}>
                       <div className="d-flex align-items-center">
                         <div className="symbol symbol-50px me-5">
                           <span className="symbol-label bg-gray-600">
@@ -345,7 +345,7 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() =>
-                            router.push(`/admin/products/edit/${product.id}`)
+                            router.push(`/admin/product-management/products/edit/${product.id}`)
                           }
                         >
                           Edit

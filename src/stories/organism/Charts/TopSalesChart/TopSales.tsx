@@ -126,7 +126,7 @@ const TopSales: React.FC<TopSalesProps> = ({
                     </td>
                     <td className="">
                       <span className="text-muted text-start fs-7 fw-semibold">
-                        {item.precentageValue}%
+                       {item.precentageValue?.toFixed(2)}%
                       </span>
                     </td>
                   </tr>

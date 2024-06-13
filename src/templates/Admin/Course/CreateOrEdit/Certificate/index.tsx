@@ -35,7 +35,12 @@ const CertificatePage = ({}) => {
                   style={{ height: "300px", width: "100%" }}
                 >
                   <label
-                    className="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-6 mb-5"
+                       className={`btn btn-outline  d-flex flex-stack text-start p-6 mb-5 ${
+                          currentCourseSelector.certificateTemplateId ===
+                          0
+                            ? "btn-outline-dashed btn-active-light-primary active"
+                            : ""
+                        }`}
                     style={{ height: "100%" }}
                   >
                     <div className="d-flex align-items-center me-2">
@@ -73,7 +78,12 @@ const CertificatePage = ({}) => {
                       style={{ height: "300px", width: "100%" }}
                     >
                       <label
-                        className="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-6 mb-5"
+                        className={`btn btn-outline  d-flex flex-stack text-start p-6 mb-5 ${
+                          currentCourseSelector.certificateTemplateId ===
+                          certificate?.id
+                            ? "btn-outline-dashed btn-active-light-primary active"
+                            : ""
+                        }`}
                         style={{ height: "100%" }}
                       >
                         <div className="d-flex align-items-center me-2">
@@ -91,7 +101,9 @@ const CertificatePage = ({}) => {
                                 if (isDetail) {
                                   return;
                                 }
-                                dispatch(changeCertificateTemplateId(0));
+                                dispatch(
+                                  changeCertificateTemplateId(certificate?.id)
+                                );
                               }}
                             />
                           </div>

@@ -3,6 +3,7 @@ import {
   AffiliatorFindManyQuery,
   QueryMode,
   SortOrder,
+  useAdminFindManyAffiliatorQueryQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { useState, useEffect } from "react";
@@ -100,11 +101,45 @@ const useCheckbox = (
 };
 
 // Pagination
+// DONT DELETE YET
+// const usePagination = () => {
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [findSkip, setFindSkip] = useState(0);
+//   const [findTake, setFindTake] = useState(10);
+//   const affiliatorLength = useAffiliatorFindManyQuery();
+
+//   const handlePageChange = (page: number) => {
+//     setCurrentPage(page);
+//     setFindSkip((page - 1) * findTake);
+//   };
+
+//   const calculateTotalPage = () => {
+//     return Math.ceil(
+//       (affiliatorLength.data?.affiliatorFindMany?.length ?? 0) / findTake
+//     );
+//   };
+//   return {
+//     currentPage,
+//     setCurrentPage,
+//     findSkip,
+//     setFindSkip,
+//     findTake,
+//     setFindTake,
+//     handlePageChange,
+//     calculateTotalPage,
+//     affiliatorLength,
+//   };
+// };
+
 const usePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [findSkip, setFindSkip] = useState(0);
   const [findTake, setFindTake] = useState(10);
-  const affiliatorLength = useAffiliatorFindManyQuery();
+  const affiliatorLength = useAdminFindManyAffiliatorQueryQuery({
+    variables: {
+      adminFindManyAffiliatorArgs: {}
+    }
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -113,7 +148,7 @@ const usePagination = () => {
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (affiliatorLength.data?.affiliatorFindMany?.length ?? 0) / findTake
+      (affiliatorLength.data?.adminFindManyAffiliatorQuery?.length ?? 0) / findTake
     );
   };
   return {
@@ -190,6 +225,45 @@ const useAffiliatorViewModel = () => {
     },
   });
 
+  const adminAffiliatorFindMany = useAdminFindManyAffiliatorQueryQuery({
+    variables: {
+      adminFindManyAffiliatorArgs: {
+        take: parseInt(findTake.toString()),
+        skip: findSkip,
+        where: {
+          OR: [
+            {
+              user: {
+                is: {
+                  name: {
+                    contains: searchAffiliator,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            {
+              user: {
+                is: {
+                  email: {
+                    contains: searchAffiliator,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            },
+            {
+              id: {
+                contains: searchAffiliator,
+                mode: QueryMode.Insensitive,
+              },
+            },
+          ]
+        }
+      },
+    }
+  });
+
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(affiliatorFindMany);
 
@@ -216,6 +290,7 @@ const useAffiliatorViewModel = () => {
     setFindTake,
     handlePageChange,
     affiliatorLength,
+    adminAffiliatorFindMany,
   };
 };
 

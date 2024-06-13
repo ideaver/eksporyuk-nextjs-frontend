@@ -191,7 +191,7 @@ const Head = () => {
         </div>
         <div className="col-lg-auto">
           <Buttons>
-            <Link href="/admin/products/create-service" className="text-white">
+            <Link href="/admin/product-management/products/create-service" className="text-white">
               Tambah Service Baru
             </Link>
           </Buttons>

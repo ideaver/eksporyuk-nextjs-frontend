@@ -1,15 +1,16 @@
 import { PageTitle } from "@/_metronic/layout/core";
+import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
 import { FollowUpModal } from "@/components/partials/Modals/FollowUpModal";
+import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { OrderCard } from "@/stories/molecules/Cards/OrderCard/OrderCard";
 import { TabLink } from "@/stories/organism/Links/TabLink/TabLink";
 import { useRouter } from "next/router";
 import useAdminOrderHeaderViewModel, {
+  getProductType,
   IAdminOrderHeaderViewModel,
 } from "./AdminOrderHeader-view-model";
 import ChangeOrderModal from "./components/ChangeOrderModal";
-import { CreateFollowUpModal } from "@/components/partials/Modals/CreateFollowUpModal";
-import { UpdateFollowUpModal } from "@/components/partials/Modals/UpdateFollowUpModal";
 
 const AdminOrderLayout = ({
   urlType,
@@ -57,13 +58,16 @@ const AdminOrderLayout = ({
           >
             Kirim Follow-Up
           </Buttons>
-          {/* <Buttons
-            buttonColor="primary"
-            classNames="fw-bold w-100 w-lg-auto mt-5 mt-lg-0 ms-5"
-            onClick={() => setShowOrderStatusModal(true)}
-          >
-            Ubah status order
-          </Buttons> */}
+          {data?.cart?.cartItems &&
+            getProductType(data.cart.cartItems) === "Service" && (
+              <Buttons
+                buttonColor="primary"
+                classNames="fw-bold w-100 w-lg-auto mt-5 mt-lg-0 ms-5"
+                onClick={() => setShowOrderStatusModal(true)}
+              >
+                Ubah status order
+              </Buttons>
+            )}
         </div>
         <FollowUpModal
           follupValues={
@@ -86,8 +90,13 @@ const AdminOrderLayout = ({
           show={showOrderStatusModal}
           onClose={() => setShowOrderStatusModal(false)}
           onConfirm={async (value) => {
-            await updateOrderStatusHandler(value.value);
-            setShowOrderStatusModal(false);
+            try {
+              await updateOrderStatusHandler(value.value);
+              setShowOrderStatusModal(false);
+              window.location.reload();
+            } catch (error) {
+              setShowOrderStatusModal(false);
+            }
           }}
         ></ChangeOrderModal>
         <CreateFollowUpModal />
@@ -95,7 +104,10 @@ const AdminOrderLayout = ({
       </div>
       <div className="row gy-5 mb-5">
         {orderTableDatas.map((data, index) => (
-          <div className="col-lg-4" key={index}>
+          <div
+            className={orderTableDatas.length === 2 ? "col-lg-6" : "col-lg-4"}
+            key={index}
+          >
             <OrderCard className="h-100" data={data} />
           </div>
         ))}

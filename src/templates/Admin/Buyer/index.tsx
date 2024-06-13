@@ -331,7 +331,7 @@ const Head = ({
                 href={"/admin/buyers/buyer-information"}
                 className="text-white"
               >
-                Add New Buyyer
+                Add New Buyer
               </Link>
             </Buttons>
           )}

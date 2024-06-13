@@ -1,8 +1,5 @@
 import {
-  OmzetReferralLinkQuery,
   PeriodEnum,
-  SalesDataQuery,
-  TotalSalesAndOmzetQuery,
   useOmzetsReferralLinkQuery,
   useOrderCountsByCustomPeriodQuery,
   usePopularCoursesQuery,
@@ -14,11 +11,7 @@ import {
   useUserCompetitorsQueryQuery,
   useUserCountQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { formatDate } from "@/app/service/utils/dateFormatter";
-import { QueryResult } from "@apollo/client";
-import { useSelector, useDispatch } from "react-redux";
-import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+// import { formatDate } from "@/app/service/utils/dateFormatter";
 import { RootState } from "@/app/store/store";
 import {
   changeLeadPeriod,
@@ -27,6 +20,35 @@ import {
   changeOrderCountPeriod,
   changeSalesPeriod,
 } from "@/features/reducers/dashboard/dashboardReducer";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  date.setDate(date.getDate() + 1);
+
+  const day = ("0" + date.getDate()).slice(-2);
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+};
 
 export const useTotalSales = () => {
   const date = useMemo(() => new Date(), []);
@@ -434,6 +456,9 @@ export const useReferralLink = () => {
   const topSalesYoutube = data?.omzetReferralLink?.filter(
     (e) => e.typeSocialMedia?.toUpperCase() === "YOUTUBE"
   );
+  const topSalesTwitter = data?.omzetReferralLink?.filter(
+    (e) => e.typeSocialMedia?.toUpperCase() === "TWITTER"
+  );
 
   return {
     data,
@@ -442,6 +467,7 @@ export const useReferralLink = () => {
     topSalesTikTok,
     topSalesWhatsApp,
     topSalesYoutube,
+    topSalesTwitter,
   };
 };
 
@@ -691,10 +717,12 @@ const useDashboardViewModel = () => {
   // simplefy number
   function simplifyNumber(n: string): string {
     const number = parseInt(n);
-    if (number >= 1000000) {
-      return (number / 1000000).toFixed(0) + "M";
+    if (number >= 1000000000) {
+      return (number / 1000000000).toFixed(0) + "M";
+    } else if (number >= 1000000) {
+      return (number / 1000000).toFixed(0) + "JT";
     } else if (number >= 1000) {
-      return (number / 1000).toFixed(0) + "k";
+      return (number / 1000).toFixed(0) + "RB";
     } else {
       return number.toString();
     }

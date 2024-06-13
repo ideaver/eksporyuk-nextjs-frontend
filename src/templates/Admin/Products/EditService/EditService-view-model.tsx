@@ -17,7 +17,7 @@ export interface IEditProduct {
 export const breadcrumbs = [
   {
     title: "Menejemen Produk",
-    path: "/admin/products",
+    path: "/admin/product-management/products",
     isSeparator: false,
     isActive: false,
   },
@@ -267,7 +267,7 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
       console.log(error);
     } finally {
       setIsLoading(true);
-      await router.push("/admin/products");
+      await router.push("/admin/product-management/products");
       router.reload();
     }
   }
