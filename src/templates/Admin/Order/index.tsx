@@ -125,8 +125,15 @@ const OrderPage = ({}) => {
             const exportVariables = {
               exportOrder: {
                 adminId: session?.user.id as string,
-                startDate: exportModalState[0]?.toISOString(),
-                endDate: exportModalState[1]?.toISOString(),
+                startDate: new Date(
+                  exportModalState[0].getTime() -
+                    exportModalState[0].getTimezoneOffset() * 60000
+                )?.toISOString(),
+                endDate: new Date(
+                  exportModalState[1].getTime() +
+                    24 * 60 * 60 * 1000 -
+                    exportModalState[1].getTimezoneOffset() * 60000
+                )?.toISOString(),
                 // orderType:
                 //   categoryOrderType === "all" ? null : categoryOrderType,
                 where: orderVariables.where,
@@ -620,7 +627,7 @@ const Body = ({
                     <p className="align-middle">
                       {" "}
                       <Badge
-                         label={
+                        label={
                           order?.statuses?.[order?.statuses?.length - 1]
                             ?.status ?? "Tidak Diketahui"
                         }

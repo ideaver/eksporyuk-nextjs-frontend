@@ -230,17 +230,17 @@ const useAdminOrderViewModel = () => {
                 },
               },
             },
-            {
-              invoices: {
-                some: {
-                  id: {
-                    equals: isNaN(parseInt(orderFindSearch.toString()))
-                      ? 0
-                      : parseInt(orderFindSearch.toString()),
-                  },
-                },
-              },
-            },
+            // {
+            //   invoices: {
+            //     some: {
+            //       id: {
+            //         equals: isNaN(parseInt(orderFindSearch.toString()))
+            //           ? 0
+            //           : parseInt(orderFindSearch.toString()),
+            //       },
+            //     },
+            //   },
+            // },
             {
               invoices: {
                 some: {
@@ -251,13 +251,13 @@ const useAdminOrderViewModel = () => {
                 },
               },
             },
-            {
-              id: {
-                equals: isNaN(parseInt(orderFindSearch.toString()))
-                  ? 0
-                  : parseInt(orderFindSearch.toString()),
-              },
-            },
+            // {
+            //   id: {
+            //     equals: isNaN(parseInt(orderFindSearch.toString()))
+            //       ? 0
+            //       : parseInt(orderFindSearch.toString()),
+            //   },
+            // },
             {
               createdByUser: {
                 is: {
