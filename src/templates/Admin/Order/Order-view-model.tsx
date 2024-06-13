@@ -17,9 +17,13 @@ import {
   changeFollowUpCoupon,
   changeFollowUpDate,
   changeFollowUpEmail,
+  changeFollowUpIdInvoiceProductName,
   changeFollowUpName,
   changeFollowUpPhone,
+  changeFollowUpProductName,
+  changeFollowUpProductTypeName,
   changeFollowUpTamplate,
+  changeFollowUpTotalOrderName,
   changeId,
   changeName,
   changeSelectedFollwUpValue,
@@ -156,7 +160,7 @@ const useAdminOrderViewModel = () => {
     { value: CartItemTypeEnum.Service, label: "Service" },
   ];
 
-  const orderVariables =  {
+  const orderVariables = {
     take: parseInt(orderFindTake.toString()),
     skip: orderFindSkip,
     orderBy: [
@@ -268,7 +272,6 @@ const useAdminOrderViewModel = () => {
                 },
               },
             },
-            
           ],
         },
         statusFilter != null
@@ -300,7 +303,7 @@ const useAdminOrderViewModel = () => {
             },
       ],
     },
-  }
+  };
   const orderFindMany = useOrderFindManyQuery({
     variables: orderVariables,
   });
@@ -321,12 +324,20 @@ const useAdminOrderViewModel = () => {
 
   const [followUpDeleteOne] = useFollowUpDeleteOneMutation();
   const handleSendFollowUp = () => {
+    // console.log(followUpState.productName);
     const contentReplaced = followUpState.followUpTamplate
       ?.replace(/\[\[nama\]\]/g, `${followUpState.name}`)
-      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(followUpState.date))
+      .replace(/\[\[tanggal\]\]/g, formatDate(followUpState.date))
       .replace(/\[\[email\]\]/g, `${followUpState.email}`)
       .replace(/\[\[nomor-telepon\]\]/g, `${followUpState.phone}`)
-      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`);
+      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon ?? "--"}`)
+      .replace(/\[\[nama-produk\]\]/g, `${followUpState.productName}`)
+      .replace(/\[\[total-order\]\]/g, `${followUpState.totalOrder}`)
+      .replace(/\[\[jenis-produk\]\]/g, `${followUpState.productType}`)
+      .replace(
+        /\[\[id-invoice-produk\]\]/g,
+        `${followUpState.idInvoiceProduct}`
+      );
     const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
     return `https://web.whatsapp.com/send?phone=${followUpState.phone}&text=${encodedMessage}`;
@@ -337,12 +348,20 @@ const useAdminOrderViewModel = () => {
     email: string;
     phone: string;
     coupon: string;
+    productName: string;
+    totalOrder: string;
+    productType: string;
+    idInvoiceProduct: string;
   }) => {
     dispatch(changeFollowUpName(data.name));
     dispatch(changeFollowUpEmail(data.email));
     dispatch(changeFollowUpDate(data.date));
     dispatch(changeFollowUpCoupon(data.coupon));
     dispatch(changeFollowUpPhone(data.phone));
+    dispatch(changeFollowUpProductName(data.productName));
+    dispatch(changeFollowUpTotalOrderName(data.totalOrder));
+    dispatch(changeFollowUpProductTypeName(data.productType));
+    dispatch(changeFollowUpIdInvoiceProductName(data.idInvoiceProduct));
   };
 
   const handleDeleteFollowUp = async (name: string) => {
@@ -416,7 +435,7 @@ const useAdminOrderViewModel = () => {
     exportModalState,
     setExportModalState,
     setStatusFilter,
-    orderVariables
+    orderVariables,
   };
 };
 export default useAdminOrderViewModel;
