@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   changeDemand,
   changeDemandQuantity,
+  changeHsCode,
   changePrice,
 } from "@/features/reducers/buyers/buyersReducer";
 import { RootState } from "@/app/store/store";
@@ -133,6 +134,19 @@ const DemandPage = () => {
             <h5 className="text-muted mt-2 mb-8">
               Jumlah harga yang dibutuhkan buyer
             </h5>
+            <h5 className="">HS Code</h5>
+            <TextField
+              placeholder="Masukan HS code"
+              props={{
+                value: buyerState.hsCode,
+                onChange: (e: any) => {
+                  dispatch(changeHsCode(e.target.value));
+                },
+              }}
+            />
+            <h5 className="text-muted mt-2 mb-8">
+              HS Code yang diinginkan buyer
+            </h5>
             <h5 className="">Shipping Terms</h5>
             <Dropdown
               value={shippingTerms}
@@ -144,7 +158,7 @@ const DemandPage = () => {
               }}
             ></Dropdown>
             <h5 className="text-muted mt-2 mb-8">
-              Jumlah komoditas yang dibutuhkan buyer
+              Shipping terms yang diinginkan buyer
             </h5>
           </KTCardBody>
           <div className={"row flex-end mt-10"}>
