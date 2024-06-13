@@ -17,13 +17,6 @@ query BuyerFindOne($where: BuyerWhereUniqueInput!) {
     createdAt
     updatedAt
     createdByAdminId
-    hsCodeSectionId
-    hsCodeSection {
-      section
-      name
-      description
-      updatedAt
-    }
     country {
       id
       name
@@ -47,6 +40,16 @@ query BuyerFindOne($where: BuyerWhereUniqueInput!) {
       subregion
       subregion_id
       nationality
+    }
+    hsCode
+    createdByAdmin {
+      user {
+        email
+        name
+        phoneId
+        username
+        id
+      }
     }
   }
 }

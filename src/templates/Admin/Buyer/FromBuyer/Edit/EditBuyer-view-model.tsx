@@ -165,6 +165,7 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   const [deliveryType, setDeliveryType] = useState(
     data?.buyerFindOne?.deliveryType
   );
+  const [hsCode, setHsCode] = useState(data?.buyerFindOne?.hsCode);
 
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -234,6 +235,9 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
             deliveryType: {
               set: deliveryType,
             },
+            hsCode: {
+              set: hsCode,
+            },
           },
         },
       });
@@ -247,6 +251,8 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
   };
 
   return {
+    hsCode,
+    setHsCode,
     handleBuyerUpdateOne,
     loading,
     setLoading,
