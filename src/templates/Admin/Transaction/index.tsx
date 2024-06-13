@@ -209,15 +209,15 @@ const Transaction = () => {
               },
             ],
           };
-          if (exportFilterStatus !== "all") {
+          if (transactionFindStatus !== "all") {
             where.status = {
-              equals: exportFilterStatus,
+              equals: transactionFindStatus,
             };
           }
 
-          if (exportFilterCategory !== "all") {
+          if (transactionFindCategory !== "all") {
             where.transactionCategory = {
-              equals: exportFilterCategory,
+              equals: transactionFindCategory,
             };
           }
           handleLoadingExportChange(true);
@@ -627,7 +627,7 @@ const DownloadReportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
-        <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Status</p>
+        {/* <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Status</p>
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -648,7 +648,7 @@ const DownloadReportModal = ({
               setFilterCategory(e as TransactionCategoryEnum | "all");
             }}
           />
-        </div>
+        </div> */}
       </KTModal>
     </div>
   );
