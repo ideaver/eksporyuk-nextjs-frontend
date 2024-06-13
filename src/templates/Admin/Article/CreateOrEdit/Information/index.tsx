@@ -3,6 +3,7 @@ import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { PageTitle } from "@/_metronic/layout/core";
 import {
   AnnouncementTypeEnum,
+  ArticleTypeEnum,
   MaterialPromotionPlatformTypeEnum,
   NewsTypeEnum,
 } from "@/app/service/graphql/gen/graphql";
@@ -60,7 +61,9 @@ const InformationPage = () => {
   const formToogle = useSelector(
     (state: RootState) => state.article.toogleForm
   );
-  const urlVideo = useSelector((state: RootState) => state.article.urlVideo);
+  const { urlVideo, articleType } = useSelector(
+    (state: RootState) => state.article
+  );
   const typeAnnouncement = useSelector(
     (state: RootState) => state.announcement.announcementType
   );
@@ -102,6 +105,7 @@ const InformationPage = () => {
     newsForm,
     isLoadingNews,
     resetNewsState,
+    handleArticleTypeChange,
   } = useInformationViewModel();
 
   const { loadOptions } = useCoursesDropdown();
@@ -241,31 +245,23 @@ const InformationPage = () => {
                     />
 
                     <h5 className="text-muted mt-3">Masukan url video</h5>
-                    {/* <h5 className="required mt-5">Target Artikel</h5>
-                    <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-                      {target.map((e: any, index) => (
-                        <Buttons
-                          key={index}
-                          classNames="fit-content"
-                          icon="cross"
-                          buttonColor="secondary"
-                          showIcon
-                          onClick={() => {
-                            handleTargetChange(target.filter((v) => v !== e));
-                          }}
-                        >
-                          <span>{e}</span>
-                        </Buttons>
-                      ))}
-                    </div>
+                    <h5 className="required mt-5">Tipe Artikel</h5>
 
                     <Dropdown
-                      options={targetOptions}
+                      value={articleType}
+                      options={[
+                        { value: ArticleTypeEnum.Article, label: "Article" },
+                        {
+                          value: ArticleTypeEnum.Education,
+                          label: "Education",
+                        },
+                        { value: ArticleTypeEnum.Event, label: "Event" },
+                      ]}
                       onValueChange={(val) => {
-                        handleTargetChange([...target, val as UserRoleEnum]);
+                        handleArticleTypeChange(val as ArticleTypeEnum);
                       }}
                     />
-                    <h5 className="text-muted mt-3">Masukan target artikel</h5> */}
+                    <h5 className="text-muted mt-3">Pilih tipe artikel</h5>
 
                     <h5 className="required mt-5">Konten Artikel</h5>
                     <div

@@ -17,7 +17,10 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { useRouter } from "next/router";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  ArticleTypeEnum,
+  UserRoleEnum,
+} from "@/app/service/graphql/gen/graphql";
 
 const EditArticle = ({ id, data }: IEditArticle) => {
   const ReactQuill = useMemo(
@@ -43,6 +46,8 @@ const EditArticle = ({ id, data }: IEditArticle) => {
     targetOptions,
     urlVideo,
     setUrlVideo,
+    articleType,
+    setArticleType,
   } = useEditArticleViewModel({ data, id });
 
   const router = useRouter();
@@ -121,33 +126,20 @@ const EditArticle = ({ id, data }: IEditArticle) => {
                     }}
                   />
                   <h5 className="text-muted mt-3">Edit judul artikel</h5>
-                  {/* <h5 className="required mt-5">Target Artikel</h5>
-                  <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-                    {target?.map((e: any, index) => (
-                      <Buttons
-                        key={index}
-                        classNames="fit-content"
-                        icon="cross"
-                        buttonColor="secondary"
-                        showIcon
-                        onClick={() => {
-                          setTarget((prev) => prev?.filter((v) => v !== e));
-                        }}
-                      >
-                        <span>{e}</span>
-                      </Buttons>
-                    ))}
-                  </div>
+                  <h5 className="required mt-5">Tipe Artikel</h5>
 
                   <Dropdown
-                    options={targetOptions}
+                    value={articleType}
+                    options={[
+                      { value: ArticleTypeEnum.Article, label: "Article" },
+                      { value: ArticleTypeEnum.Education, label: "Education" },
+                      { value: ArticleTypeEnum.Event, label: "Event" },
+                    ]}
                     onValueChange={(val) => {
-                      setTarget((prev: any) => {
-                        return [...prev, val as UserRoleEnum];
-                      });
+                      setArticleType(val as ArticleTypeEnum);
                     }}
                   />
-                  <h5 className="text-muted mt-3">Masukan target artikel</h5> */}
+                  <h5 className="text-muted mt-3">Edit tipe artikel</h5>
                   <h5 className="required mt-5">Konten Artikel</h5>
                   <div>
                     <ReactQuill

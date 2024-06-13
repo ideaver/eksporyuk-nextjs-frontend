@@ -12,11 +12,19 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import Link from "next/link";
 
 const DetailArticle = ({ id, data }: IDetailArticle) => {
-  const { thumbnail, content, title, status, category, target, urlVideo } =
-    useDetailArticleViewModel({
-      id,
-      data,
-    });
+  const {
+    thumbnail,
+    content,
+    title,
+    status,
+    category,
+    target,
+    urlVideo,
+    articleType,
+  } = useDetailArticleViewModel({
+    id,
+    data,
+  });
   const router = useRouter();
   return (
     <>
@@ -33,6 +41,8 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
               <h3 className="mb-5">Detail Artikel</h3>
               <h4 className="">Judul Artikel</h4>
               <h5 className="my-4 mx-4">{title}</h5>
+              <h4 className="">Tipe Artikel</h4>
+              <h5 className="my-4 mx-4">{articleType}</h5>
               <h4 className="">URL Video</h4>
               <Link href={urlVideo as string} className="m-4">
                 {urlVideo}

@@ -195,6 +195,7 @@ const ArticleTable = ({
             </th>
             <th className="text-end min-w-200px">PENULIS</th>
             <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-200px">TIPE</th>
             <th className="text-end min-w-200px">KATEGORI</th>
             <th className="text-end min-w-150px">STATUS</th>
             <th className="text-end min-w-125px">ACTION</th>
@@ -236,6 +237,9 @@ const ArticleTable = ({
                       <span>{formatDate(article.updatedAt)}</span>
                       <span>{formatWIB(article.updatedAt)}</span>
                     </div>
+                  </td>
+                  <td className="min-w-175px text-end fw-bold text-muted">
+                    {article.articleType}
                   </td>
                   <td className="min-w-175px text-end fw-bold text-muted">
                     {article.category?.map((val) => (

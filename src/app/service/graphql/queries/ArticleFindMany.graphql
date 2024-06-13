@@ -21,5 +21,6 @@ query ArticleFindMany(
     isActive
     title
     updatedAt
+    articleType
   }
 }
