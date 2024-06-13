@@ -58,12 +58,14 @@ const useMailketingViewModel = () => {
 
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
-  const [emailName, setEmailName] = useState<string | undefined>("");
-  const [emailAddress, setEmailAddress] = useState<string | undefined>("");
+  const [emailName, setEmailName] = useState<string | undefined | null>("");
+  const [emailAddress, setEmailAddress] = useState<string | undefined | null>(
+    ""
+  );
   const [listValue, setListValue] = useState<any>("");
-  const [tokenAPI, setTokenAPI] = useState<string | undefined>("");
+  const [tokenAPI, setTokenAPI] = useState<string | undefined | null>("");
   const [starsenderTokenAPI, setStarsenderTokenAPI] = useState<
-    string | undefined
+    string | undefined | null
   >("");
 
   const [sendEmail, setSendEmail] = useState<string[]>([""]);

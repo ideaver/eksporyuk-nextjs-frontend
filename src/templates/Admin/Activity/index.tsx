@@ -47,6 +47,10 @@ const Activity = () => {
     setTelegramCommunities,
     whatsappCommunities,
     setWhatsappCommunities,
+    setYoutubeCommunities,
+    youtubeCommunities,
+    setTiktokCommunities,
+    tiktokCommunities,
     swalProps,
     setSwalProps,
   } = useActivityViewModel();
@@ -87,6 +91,10 @@ const Activity = () => {
         setInstagramCommunities={setInstagramCommunities}
         setFacebookCommunities={setFacebookCommunities}
         setWhatsappCommunities={setWhatsappCommunities}
+        setTiktokCommunities={setTiktokCommunities}
+        setYoutubeCommunities={setYoutubeCommunities}
+        youtubeCommunities={youtubeCommunities}
+        tiktokCommunities={tiktokCommunities}
         isLoadingPlatformSetting={isLoadingPlatformSetting}
         swalProps={swalProps}
         setSwalProps={setSwalProps}
@@ -305,20 +313,28 @@ const SocialMediaForumModal = ({
   isLoadingPlatformSetting,
   swalProps,
   setSwalProps,
+  tiktokCommunities,
+  setTiktokCommunities,
+  youtubeCommunities,
+  setYoutubeCommunities,
 }: {
   handleSubmit: () => void;
   onClose: () => void;
-  facebookCommunities: string | undefined;
-  instagramCommunities: string | undefined;
-  telegramCommunities: string | undefined;
-  whatsappCommunities: string | undefined;
-  setWhatsappCommunities: Dispatch<SetStateAction<string | undefined>>;
-  setFacebookCommunities: Dispatch<SetStateAction<string | undefined>>;
-  setInstagramCommunities: Dispatch<SetStateAction<string | undefined>>;
-  setTelegramCommunities: Dispatch<SetStateAction<string | undefined>>;
+  facebookCommunities: string | undefined | null;
+  instagramCommunities: string | undefined | null;
+  telegramCommunities: string | undefined | null;
+  whatsappCommunities: string | undefined | null;
+  setWhatsappCommunities: Dispatch<SetStateAction<string | undefined | null>>;
+  setFacebookCommunities: Dispatch<SetStateAction<string | undefined | null>>;
+  setInstagramCommunities: Dispatch<SetStateAction<string | undefined | null>>;
+  setTelegramCommunities: Dispatch<SetStateAction<string | undefined | null>>;
   isLoadingPlatformSetting: boolean;
   swalProps: object;
   setSwalProps: Dispatch<SetStateAction<object>>;
+  tiktokCommunities: string | undefined | null;
+  youtubeCommunities: string | undefined | null;
+  setTiktokCommunities: Dispatch<SetStateAction<string | undefined | null>>;
+  setYoutubeCommunities: Dispatch<SetStateAction<string | undefined | null>>;
 }) => {
   return (
     <div>
@@ -386,6 +402,26 @@ const SocialMediaForumModal = ({
             value: whatsappCommunities,
             onChange: (e: any) => {
               setWhatsappCommunities(e.target.value);
+            },
+          }}
+        />
+        <h4 className="mt-5">YouTube Communities</h4>
+        <TextField
+          placeholder="Masukan youtube communities"
+          props={{
+            value: youtubeCommunities,
+            onChange: (e: any) => {
+              setYoutubeCommunities(e.target.value);
+            },
+          }}
+        />
+        <h4 className="mt-5">TIkTok Communities</h4>
+        <TextField
+          placeholder="Masukan tiktok communities"
+          props={{
+            value: tiktokCommunities,
+            onChange: (e: any) => {
+              setTiktokCommunities(e.target.value);
             },
           }}
         />

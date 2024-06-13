@@ -336,10 +336,10 @@ const Aside = ({
   handleSubmit,
   handleSubmitStarsender,
 }: {
-  tokenAPI: string | undefined;
-  setTokenAPI: Dispatch<SetStateAction<string | undefined>>;
-  starsenderTokenAPI: string | undefined;
-  setStarsenderTokenAPI: Dispatch<SetStateAction<string | undefined>>;
+  tokenAPI: string | undefined | null;
+  setTokenAPI: Dispatch<SetStateAction<string | undefined | null>>;
+  starsenderTokenAPI: string | undefined | null;
+  setStarsenderTokenAPI: Dispatch<SetStateAction<string | undefined | null>>;
   handleSubmit: () => void;
   handleSubmitStarsender: () => void;
 }) => {
