@@ -123,12 +123,52 @@ export const UpdateFollowUpModal = ({}: {}) => {
           icon="copy"
           buttonColor="secondary"
           onClick={() => {
+            dispatch(changeContent(followUpState.content + "[[tanggal]]"));
+          }}
+        >
+          {"[[tanggal]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            dispatch(changeContent(followUpState.content + "[[nama-produk]]"));
+          }}
+        >
+          {"[[nama-produk]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            dispatch(changeContent(followUpState.content + "[[total-order]]"));
+          }}
+        >
+          {"[[total-order]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            dispatch(changeContent(followUpState.content + "[[jenis-produk]]"));
+          }}
+        >
+          {"[[jenis-produk]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
             dispatch(
-              changeContent(followUpState.content + "[[tanggal-pembelian]]")
+              changeContent(followUpState.content + "[[id-invoice-produk]]")
             );
           }}
         >
-          {"[[tanggal-pembelian]]"}
+          {"[[id-invoice-produk]]"}
         </Buttons>
         <Buttons
           showIcon

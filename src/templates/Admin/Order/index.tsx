@@ -672,6 +672,12 @@ const Body = ({
                           phone: order.createdByUser.phoneId,
                           email: order.createdByUser.email,
                           coupon: order.coupon?.affiliatorCoupon?.code,
+                          productName: getProductName(
+                            order.cart.cartItems ?? []
+                          ),
+                          totalOrder: order.cart.cartItems?.[0]?.totalPrice,
+                          productType: order.cart.cartItems?.[0]?.type,
+                          idInvoiceProduct: latestInvoices?.uniqueCode,
                         });
                       }}
                     >

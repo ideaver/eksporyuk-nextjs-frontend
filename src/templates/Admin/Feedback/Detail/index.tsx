@@ -159,7 +159,7 @@ const Body = ({ id, data, refetch }: IFeedbackDetail) => {
               handleChangeFollowUpState({
                 name: data.feedbackFindOne?.user.name as string,
                 date: data.feedbackFindOne?.createdAt as string,
-                phone: `${data.feedbackFindOne?.user.phone}`,
+                phone: `${data.feedbackFindOne?.user.phone?.phoneNumber}`,
                 email: data.feedbackFindOne?.user.email as string,
                 coupon: "Tidak Ada Coupon",
               });
