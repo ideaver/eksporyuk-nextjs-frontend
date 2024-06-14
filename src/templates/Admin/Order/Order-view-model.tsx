@@ -28,6 +28,7 @@ import {
   changeName,
   changeSelectedFollwUpValue,
 } from "@/features/reducers/followup/followupReducer";
+import { changeTransactionLoading } from "@/features/reducers/transaction/transactionReducer";
 import { QueryResult } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -396,12 +397,22 @@ const useAdminOrderViewModel = () => {
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =
     useCheckbox(orderFindMany);
 
+  useEffect(() => {
+    dispatch(changeTransactionLoading(false));
+  }, [dispatch]);
+
+  const handleLoadingExportChange = (value: boolean) => {
+    dispatch(changeTransactionLoading(value));
+  };
+
   const [exportModalState, setExportModalState] = useState<any>([
     new Date(),
     new Date(),
   ]);
 
   return {
+    orderFindSearch,
+    handleLoadingExportChange,
     handleChangeFollowUpState,
     handleDeleteFollowUp,
     handleEditState,
@@ -421,7 +432,6 @@ const useAdminOrderViewModel = () => {
     setOrderFindTake,
     orderFindSkip,
     setorderFindSkip,
-    orderFindSearch,
     setOrderFindSearch,
     ordersLemngth,
     currentPage,
