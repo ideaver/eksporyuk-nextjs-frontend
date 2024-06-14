@@ -66,6 +66,20 @@ const useUserEdit = () => {
             npwpId: {
               set: data.npwpNumber,
             },
+            mentor: {
+              update: {
+                where: {
+                  id: {
+                    equals: id,
+                  },
+                },
+                data: {
+                  description: {
+                    set: data.description,
+                  },
+                },
+              },
+            },
           },
         },
       });

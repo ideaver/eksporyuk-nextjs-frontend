@@ -5,6 +5,7 @@ import {
 } from "@/app/service/graphql/gen/graphql";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 import { ErrorMessage, Form, Formik } from "formik";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
@@ -27,6 +28,7 @@ export interface IValidationSchema {
   birthDate: Date | undefined;
   ktpNumber: string | undefined;
   npwpNumber: string | undefined;
+  description: string | undefined | null;
 }
 
 interface IEditUserModal {
@@ -53,6 +55,7 @@ const validationSchema = Yup.object<IValidationSchema>().shape({
   birthDate: Yup.date().required("Data ini diperlukan"),
   ktpNumber: Yup.string().optional(),
   npwpNumber: Yup.string().optional(),
+  description: Yup.string().optional().nullable(),
 });
 
 const EditUserModal = ({
@@ -136,10 +139,12 @@ const EditUserModal = ({
                 birthDate: new Date(Date.parse(userData?.birthDate ?? "")),
                 ktpNumber: userData?.personalId ?? "",
                 npwpNumber: userData?.npwpId ?? "",
+                description: userData?.mentor?.description,
               } as IValidationSchema
             }
             validationSchema={validationSchema}
             onSubmit={(values) => {
+              console.log(values.description);
               handleSubmit(values, selectedFile);
             }}
           >
@@ -300,7 +305,20 @@ const EditUserModal = ({
                     </div>
                   </div>
                   <div className="birth mt-5">
-                    <h5 className="text-muted">Tanggal Lahir</h5>
+                    <h5 className="text-muted">Bio</h5>
+                    <Textarea
+                      props={{
+                        value: values.description,
+                        onChange: (e: ChangeEvent<HTMLInputElement>) =>
+                          setFieldValue("description", e.target.value),
+                      }}
+                    />
+                    <ErrorMessage
+                      className="text-danger"
+                      name="description"
+                      component="div"
+                    />
+                    <h5 className="text-muted mt-5">Tanggal Lahir</h5>
                     <div className="input-group">
                       <span className="input-group-text" id="basic-addon1">
                         <KTIcon iconName={"calendar"} className="fs-1"></KTIcon>

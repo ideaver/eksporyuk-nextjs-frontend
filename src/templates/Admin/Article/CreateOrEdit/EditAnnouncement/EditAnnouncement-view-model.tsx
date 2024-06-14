@@ -67,8 +67,8 @@ const useEditAnnouncementViewModel = ({ id, data }: IEditAnnouncement) => {
     data.announcementFindOne?.type
   );
   const [course, setCourse] = useState({
-    value: data.announcementFindOne?.course.id,
-    label: data.announcementFindOne?.course.title,
+    value: data?.announcementFindOne?.course?.id,
+    label: data?.announcementFindOne?.course?.title,
   });
 
   const [isLoading, setIsLoading] = useState(false);
