@@ -57,6 +57,12 @@ const useUserEdit = () => {
             password: {
               set: data.password,
             },
+            deletedAt: {
+              set: data.deletedReason?.value === "active" ? null : undefined,
+            },
+            deletedReason: {
+              set: data.deletedReason?.value === "active" ? null : undefined,
+            },
             birthDate: {
               set: data.birthDate,
             },

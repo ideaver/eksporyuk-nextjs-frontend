@@ -23,6 +23,12 @@ export interface IValidationSchema {
       }
     | undefined;
   email: string | undefined;
+  deletedReason:
+    | {
+        value: string;
+        label: string;
+      }
+    | undefined;
   password: string | undefined;
   phoneNumber: string | undefined;
   birthDate: Date | undefined;
@@ -135,6 +141,16 @@ const EditUserModal = ({
                 },
                 email: userData?.email,
                 password: "",
+                deletedReason: {
+                  value:
+                    (userData?.deletedReason || userData?.deletedAt) === null
+                      ? "active"
+                      : "nonactive" ?? "active",
+                  label:
+                    (userData?.deletedReason || userData?.deletedAt) === null
+                      ? "Aktif"
+                      : "Non Aktif" ?? "Aktif",
+                },
                 phoneNumber: userData?.phone?.phoneNumber.toString(),
                 birthDate: new Date(Date.parse(userData?.birthDate ?? "")),
                 ktpNumber: userData?.personalId ?? "",
@@ -376,6 +392,29 @@ const EditUserModal = ({
                       </div>
                     </div>
                   </div>
+                  <h5 className="text-muted mt-5">Status</h5>
+                  <Select
+                    placeholder="Select an option"
+                    value={values.deletedReason}
+                    options={[
+                      {
+                        value: "active",
+                        label: "Aktif",
+                      },
+                      {
+                        value: "nonactive",
+                        label: "Non Aktif",
+                      },
+                    ]}
+                    onChange={(selectedOption) =>
+                      setFieldValue("deletedReason", selectedOption)
+                    }
+                  />
+                  <ErrorMessage
+                    className="text-danger"
+                    name="phoneNumber"
+                    component="div"
+                  />
                   <div className="modal-footer justify-content-center mt-5 pb-0">
                     <Buttons
                       buttonColor="secondary"

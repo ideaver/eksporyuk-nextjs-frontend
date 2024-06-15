@@ -1,0 +1,14 @@
+mutation SopFileUpdateOne(
+  $data: SopFileUpdateInput!
+  $where: SopFileWhereUniqueInput!
+) {
+  sopFileUpdateOne(data: $data, where: $where) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}

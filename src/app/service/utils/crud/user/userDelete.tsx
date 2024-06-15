@@ -1,4 +1,4 @@
-import { useUserSoftDeleteMutation } from "@/app/service/graphql/gen/graphql";
+import { useUserSoftDeleteForAdminMutation } from "@/app/service/graphql/gen/graphql";
 import { useState } from "react";
 
 const useDeleteUser = () => {
@@ -6,7 +6,7 @@ const useDeleteUser = () => {
   const [deleteUserLoading, setDeleteUserModalLoading] = useState(false);
   const [deleteUserSuccess, setDeleteUserSuccess] = useState(false);
   const [delteUserError, setDeleteUserError] = useState("");
-  const userSoftDeleteMutation = useUserSoftDeleteMutation();
+  const userSoftDeleteMutation = useUserSoftDeleteForAdminMutation();
 
   const handleDeleteUser = async (id: string, deleteReason: string) => {
     setDeleteUserModalLoading(true);
@@ -24,7 +24,7 @@ const useDeleteUser = () => {
         },
       });
       setDeleteUserModalLoading(false);
-      if (response.data?.userSoftDelete === true) {
+      if (response.data?.userSoftDeleteForAdmin === true) {
         setShowDeleteUserModal(false);
         setDeleteUserSuccess(true);
 
@@ -33,6 +33,7 @@ const useDeleteUser = () => {
         }, 5000);
       }
     } catch (error: any) {
+      console.log(error);
       setDeleteUserModalLoading(false);
       setShowDeleteUserModal(false);
       setDeleteUserError(error.toString());

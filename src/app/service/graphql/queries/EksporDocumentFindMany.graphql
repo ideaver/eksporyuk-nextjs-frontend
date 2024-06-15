@@ -1,0 +1,21 @@
+query EksporDocumentFindMany(
+  $take: Int
+  $skip: Int
+  $orderBy: [EksporDocumentOrderByWithRelationInput!]
+  $where: EksporDocumentWhereInput
+) {
+  eksporDocumentFindMany(
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+    where: $where
+  ) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}

@@ -1,0 +1,16 @@
+query SopFileFindMany(
+  $take: Int
+  $skip: Int
+  $where: SopFileWhereInput
+  $orderBy: [SopFileOrderByWithRelationInput!]
+) {
+  sopFileFindMany(take: $take, skip: $skip, where: $where, orderBy: $orderBy) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}

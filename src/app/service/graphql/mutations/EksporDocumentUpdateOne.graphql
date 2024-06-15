@@ -1,0 +1,14 @@
+mutation EksporDocumentUpdateOne(
+  $data: EksporDocumentUpdateInput!
+  $where: EksporDocumentWhereUniqueInput!
+) {
+  eksporDocumentUpdateOne(data: $data, where: $where) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}
