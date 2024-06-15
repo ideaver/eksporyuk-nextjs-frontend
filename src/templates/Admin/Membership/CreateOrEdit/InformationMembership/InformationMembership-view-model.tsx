@@ -1,4 +1,5 @@
 import {
+  MembershipBenefitServiceEnum,
   QueryMode,
   useCourseFindManyQuery,
   useGetAllListSubscribersQuery,
@@ -8,6 +9,7 @@ import { RootState } from "@/app/store/store";
 import {
   changeAffiliateCommission,
   changeAffiliateFirstCommission,
+  changeBenefitService,
   changeBenefits,
   changeCourses,
   changeDescription,
@@ -168,6 +170,7 @@ export const useMembershipForm = () => {
     dispatch(changeCourses([]));
     dispatch(changeAffiliateCommission(100));
     dispatch(changeAffiliateFirstCommission(100));
+    dispatch(changeBenefitService([]));
   };
 
   const membershipSchema = Yup.object().shape({
@@ -220,6 +223,9 @@ export const useMembershipForm = () => {
               benefitCourses: {
                 connect: idCourses,
               },
+              membershipBenefitServiceEnum: {
+                set: membershipState.benefitService,
+              },
             },
           },
         });
@@ -248,6 +254,9 @@ const useInformationMembershipViewModel = () => {
   const coursesState = useSelector(
     (state: RootState) => state.memebrship.courses
   );
+  const benefitService = useSelector(
+    (state: RootState) => state.memebrship.benefitService
+  );
 
   const handleChangeCourses = (course: { value: number; label: string }) => {
     dispatch(changeCourses([...coursesState, course]));
@@ -262,8 +271,28 @@ const useInformationMembershipViewModel = () => {
   const handleChangeAffiliateCommission = (val: number) => {
     dispatch(changeAffiliateCommission(val));
   };
+  const handleChangeBenefitService = (val: MembershipBenefitServiceEnum) => {
+    dispatch(changeBenefitService([...benefitService, val]));
+  };
+  const handleDeleteBenefitService = (val: MembershipBenefitServiceEnum) => {
+    dispatch(changeBenefitService(benefitService.filter((v) => v !== val)));
+  };
 
+  const benefitServiceOptions = Object.keys(MembershipBenefitServiceEnum).map(
+    (key) => {
+      return {
+        value:
+          MembershipBenefitServiceEnum[
+            key as keyof typeof MembershipBenefitServiceEnum
+          ],
+        label: key,
+      };
+    }
+  );
   return {
+    benefitServiceOptions,
+    handleDeleteBenefitService,
+    handleChangeBenefitService,
     handleDeleteCourses,
     handleChangeCourses,
     handleChangeAffiliateCommission,
