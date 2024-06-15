@@ -26,13 +26,14 @@ const useDocumentViewModel = () => {
   //   state SOP
   const [filePDFPreview, setFilePDFPreview] = useState<string | undefined>();
   const [filePDF, setFilePDF] = useState<File | undefined>();
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<string | null>(null);
 
   //   state Ekspor dokumen
   const [filePDFPreviewEkspor, setFilePDFPreviewEkspor] = useState<
     string | undefined
   >();
   const [filePDFEkspor, setFilePDFEkspor] = useState<File | undefined>();
+  const [titleEkspor, setTitleEkspor] = useState<string | null>(null);
 
   const [swalProps, setSwalProps] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +99,7 @@ const useDocumentViewModel = () => {
       });
       setFilePDFPreview(undefined);
       setFilePDF(undefined);
-      setContent("");
+      setContent(null);
     } catch (error) {
       console.log(error);
       setSwalProps({
@@ -140,6 +141,7 @@ const useDocumentViewModel = () => {
               },
             },
             // content: content,
+            title: titleEkspor,
             file: {
               connect: {
                 path: response?.data,
@@ -172,6 +174,8 @@ const useDocumentViewModel = () => {
   };
 
   return {
+    titleEkspor,
+    setTitleEkspor,
     isLoading,
     content,
     setContent,

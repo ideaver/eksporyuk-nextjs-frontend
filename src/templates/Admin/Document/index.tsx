@@ -30,6 +30,8 @@ const Document = () => {
     filePDFEkspor,
     filePDFPreviewEkspor,
     handleFileChangeEkspor,
+    titleEkspor,
+    setTitleEkspor,
   } = useDocumentViewModel();
   return (
     <>
@@ -163,8 +165,19 @@ const Document = () => {
           <TextField placeholder="Judul SOP" />
           <h5 className="text-muted mt-2 mb-5">Masukan judul SOP</h5> */}
             <h2 className="mb-5">Ekspor Dokumen</h2>
+            <h4>Judul Ekspor Dokumen</h4>
+            <TextField
+              placeholder="masukan judul"
+              props={{
+                value: titleEkspor,
+                onChange: (e: any) => {
+                  setTitleEkspor(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan judul ekspor dokumen</h5>
 
-            <div className="">
+            <div className="mt-5">
               <h4 className="fw-bold text-gray-700">Ekspor Dokumen File</h4>
               <div className=" rounded" style={{ cursor: "pointer" }}>
                 <input
