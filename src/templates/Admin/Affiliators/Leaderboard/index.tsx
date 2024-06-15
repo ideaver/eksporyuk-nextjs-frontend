@@ -2,16 +2,23 @@ import currencyFormatter from "@/_metronic/helpers/Formatter";
 import { PageTitle } from "@/_metronic/layout/core";
 import { Card } from "react-bootstrap";
 import Flatpickr from "react-flatpickr";
-import { breadcrumbs, useUserCompetitor } from "./Affiliator-view-model";
+import {
+  breadcrumbs,
+  useCoursesDropdown,
+  useUserCompetitor,
+} from "./Affiliator-view-model";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const LeaderboardPage = ({}) => {
-  const { date, onChange, data, loading } = useUserCompetitor();
+  const { date, onChange, data, loading, handleSearch } = useUserCompetitor();
+  const { loadOptions } = useCoursesDropdown();
   const colors = ["warning", "primary", "success", "secondary"];
 
   let count = 0;
 
   return (
     <>
+      <div></div>
       <h3>Pilih Rentang Waktu</h3>
       <Flatpickr
         value={date}
@@ -23,6 +30,14 @@ const LeaderboardPage = ({}) => {
         className="form-control mb-5"
         placeholder="Pilih Rentang Waktu"
       />
+      <h3>Pilih Berdasarkan Kelas</h3>
+      <AsyncPaginate
+        className="mb-5"
+        loadOptions={loadOptions}
+        onChange={(value: any) => {
+          handleSearch(value?.value);
+        }}
+      ></AsyncPaginate>
       {loading && (
         <Card className="mx-1 mb-2 position-relative text-center">
           <Card.Body>
@@ -30,7 +45,7 @@ const LeaderboardPage = ({}) => {
           </Card.Body>
         </Card>
       )}
-      {(!data || !data.userCompetitorQuery) && !loading ? (
+      {(!data || !data.leaderboardAffiliatorQuery) && !loading ? (
         <Card className="mx-1 mb-2 position-relative text-center">
           <Card.Body>
             <Card.Title>Error: Data not available</Card.Title>
@@ -47,7 +62,7 @@ const LeaderboardPage = ({}) => {
               >
                 {Array.from({ length: rowIndex + 1 }, (_, cardIndex) => {
                   const leaderIndex = count++;
-                  let length = data?.userCompetitorQuery?.length ?? 0;
+                  let length = data?.leaderboardAffiliatorQuery?.length ?? 0;
                   if (leaderIndex >= length) {
                     return null;
                   }
@@ -61,8 +76,9 @@ const LeaderboardPage = ({}) => {
                         className="mt-5"
                         variant="top"
                         src={
-                          data?.userCompetitorQuery?.[leaderIndex]?.User
-                            ?.avatarImageId ?? "/media/avatars/blank.png"
+                          data?.leaderboardAffiliatorQuery?.[leaderIndex]
+                            ?.affiliator?.avatarImageId ??
+                          "/media/avatars/blank.png"
                         }
                         style={{
                           borderRadius: "50%",
@@ -82,14 +98,14 @@ const LeaderboardPage = ({}) => {
                       </Card.ImgOverlay>
                       <Card.Body>
                         <Card.Title>
-                          {data?.userCompetitorQuery?.[leaderIndex]?.User
-                            ?.name ?? ""}
+                          {data?.leaderboardAffiliatorQuery?.[leaderIndex]
+                            ?.affiliator?.name ?? ""}
                         </Card.Title>
                         <Card.Text>
                           Jumlah Komisi:{" "}
                           {currencyFormatter(
                             parseInt(
-                              data?.userCompetitorQuery?.[
+                              data?.leaderboardAffiliatorQuery?.[
                                 leaderIndex
                               ]?.commission?.toFixed(0) ?? "0"
                             )
