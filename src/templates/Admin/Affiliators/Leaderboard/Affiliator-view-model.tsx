@@ -2,6 +2,7 @@ import {
   QueryMode,
   useCourseFindManyQuery,
   useLeaderboardAffiliatorFindManyQuery,
+  useMembershipCategoryFindManyQuery,
   useUserCompetitorsQueryQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { useEffect, useState } from "react";
@@ -58,6 +59,43 @@ export const useCoursesDropdown = () => {
     return {
       options: result,
       hasMore: true,
+    };
+  }
+
+  return { loadOptions };
+};
+export const useMembershipOptions = () => {
+  const { data, refetch } = useMembershipCategoryFindManyQuery({
+    variables: {
+      take: null,
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<CourseOptionType, GroupBase<CourseOptionType>>
+  ) {
+    const result =
+      data?.membershipCategoryFindMany?.map((membership) => ({
+        value: membership.name,
+        label: membership.name,
+      })) ?? [];
+
+    const response = await refetch({
+      skip: prevOptions.length,
+      where: {
+        name: {
+          contains: search,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    });
+
+    result.unshift({ value: "", label: "Semua" });
+
+    return {
+      options: result,
+      hasMore: false,
     };
   }
 

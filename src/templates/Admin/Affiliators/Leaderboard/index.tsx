@@ -5,6 +5,7 @@ import Flatpickr from "react-flatpickr";
 import {
   breadcrumbs,
   useCoursesDropdown,
+  useMembershipOptions,
   useUserCompetitor,
 } from "./Affiliator-view-model";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -12,7 +13,8 @@ import { AsyncPaginate } from "react-select-async-paginate";
 const LeaderboardPage = ({}) => {
   const { date, onChange, data, loading, handleSearch } = useUserCompetitor();
   const { loadOptions } = useCoursesDropdown();
-  const colors = ["warning", "primary", "success", "secondary"];
+  const { loadOptions: loadOptionsMembership } = useMembershipOptions();
+  const colors = ["war=ning", "primary", "success", "secondary"];
 
   let count = 0;
 
@@ -34,6 +36,14 @@ const LeaderboardPage = ({}) => {
       <AsyncPaginate
         className="mb-5"
         loadOptions={loadOptions}
+        onChange={(value: any) => {
+          handleSearch(value?.value);
+        }}
+      ></AsyncPaginate>
+      <h3>Pilih Berdasarkan Membership</h3>
+      <AsyncPaginate
+        className="mb-5"
+        loadOptions={loadOptionsMembership}
         onChange={(value: any) => {
           handleSearch(value?.value);
         }}
