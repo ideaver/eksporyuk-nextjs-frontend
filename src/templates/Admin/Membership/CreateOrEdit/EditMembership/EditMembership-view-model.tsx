@@ -1,4 +1,5 @@
 import {
+  MembershipBenefitServiceEnum,
   MembershipCategoryFindOneQuery,
   useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
@@ -51,6 +52,7 @@ interface EditMembershipForm {
   courses: { value: number; label: string }[] | undefined;
   affiliateCommission: number | undefined;
   affiliateFirstCommission: number | undefined;
+  benefitService: MembershipBenefitServiceEnum[] | undefined | null;
 }
 
 const useEditMembershipForm = ({
@@ -64,6 +66,7 @@ const useEditMembershipForm = ({
   courses,
   affiliateCommission,
   affiliateFirstCommission,
+  benefitService,
 }: EditMembershipForm) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -137,6 +140,9 @@ const useEditMembershipForm = ({
               affiliateFirstCommission: {
                 set: affiliateFirstCommission,
               },
+              membershipBenefitServiceEnum: {
+                set: benefitService,
+              },
             },
           },
         });
@@ -176,6 +182,9 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
   const [affiliateFirstCommission, setAffiliateFirstCommission] = useState(
     data.membershipCategoryFindOne?.affiliateFirstCommission
   );
+  const [benefitService, setBenefitService] = useState(
+    data.membershipCategoryFindOne?.membershipBenefitServiceEnum
+  );
 
   const [subscriberListId, setSubscriberListId] = useState(
     data.membershipCategoryFindOne?.subscriberListId || undefined
@@ -199,10 +208,26 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     courses,
     affiliateCommission,
     affiliateFirstCommission,
-    subscriberListId
+    subscriberListId,
+    benefitService,
   });
 
+  const benefitServiceOptions = Object.keys(MembershipBenefitServiceEnum).map(
+    (key) => {
+      return {
+        value:
+          MembershipBenefitServiceEnum[
+            key as keyof typeof MembershipBenefitServiceEnum
+          ],
+        label: key,
+      };
+    }
+  );
+
   return {
+    setBenefitService,
+    benefitService,
+    benefitServiceOptions,
     affiliateCommission,
     affiliateFirstCommission,
     setAffiliateCommission,

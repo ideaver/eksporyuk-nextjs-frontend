@@ -1,6 +1,9 @@
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
-import { useGetAllListSubscribersQuery } from "@/app/service/graphql/gen/graphql";
+import {
+  MembershipBenefitServiceEnum,
+  useGetAllListSubscribersQuery,
+} from "@/app/service/graphql/gen/graphql";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
@@ -20,6 +23,7 @@ import useEditMembershipViewModel, {
   IEditMembershipProps,
   breadcrumbs,
 } from "./EditMembership-view-model";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 
 const EditMembership = ({ id, data }: IEditMembershipProps) => {
   const ReactQuill = useMemo(
@@ -47,6 +51,9 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
     affiliateFirstCommission,
     setSubscriberListId,
     subscriberListId,
+    setBenefitService,
+    benefitService,
+    benefitServiceOptions,
   } = useEditMembershipViewModel({ id, data });
   const { loadOptions: courseLoadOptions } = useCoursesDropdown();
 
@@ -233,6 +240,43 @@ const EditMembership = ({ id, data }: IEditMembershipProps) => {
               )}
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
+              </h5>
+              <h5 className="">Benefit Service</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {benefitService?.map((e, index) => {
+                  return (
+                    <div key={e}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          setBenefitService((prev) =>
+                            prev?.filter((val) => e !== val)
+                          );
+                        }}
+                        key={e + index}
+                      >
+                        {e}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-2">
+                <Dropdown
+                  options={benefitServiceOptions}
+                  onValueChange={(val) => {
+                    setBenefitService((prev) => [
+                      ...(prev ?? []),
+                      val as MembershipBenefitServiceEnum,
+                    ]);
+                  }}
+                />
+              </div>
+              <h5 className="text-muted mt-2 mb-5">
+                Masukan benefit service ketika berlangganan
               </h5>
               <h5 className="">Benefit Kelas</h5>
               <div className="d-flex fflex-wrap gap-2">

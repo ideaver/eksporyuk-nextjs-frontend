@@ -10,6 +10,7 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
     price
     orderIndex
     affiliateFirstCommission
+    membershipBenefitServiceEnum
     affiliateCommission
     createdAt
     updatedAt

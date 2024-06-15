@@ -26,6 +26,8 @@ import useInformationMembershipViewModel, {
   useCoursesDropdown,
   useMembershipForm,
 } from "./InformationMembership-view-model";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { MembershipBenefitServiceEnum } from "@/app/service/graphql/gen/graphql";
 
 const InformationMembership = () => {
   const ReactQuill = useMemo(
@@ -43,10 +45,13 @@ const InformationMembership = () => {
   } = useMembershipForm();
   const { loadOptions } = useCoursesDropdown();
   const {
+    handleChangeBenefitService,
     handleChangeCourses,
     handleDeleteCourses,
     handleChangeAffiliateCommission,
     handleChangeAffiliateFirstCommission,
+    handleDeleteBenefitService,
+    benefitServiceOptions,
   } = useInformationMembershipViewModel();
 
   const {
@@ -213,6 +218,44 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
               </h5>
+
+              <h5 className="">Benefit Service</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {useSelector(
+                  (state: RootState) => state.memebrship.benefitService
+                )?.map((e, index) => {
+                  return (
+                    <div key={e}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          handleDeleteBenefitService(e);
+                        }}
+                        key={e + index}
+                      >
+                        {e}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-2">
+                <Dropdown
+                  options={benefitServiceOptions}
+                  onValueChange={(val) => {
+                    handleChangeBenefitService(
+                      val as MembershipBenefitServiceEnum
+                    );
+                  }}
+                />
+              </div>
+              <h5 className="text-muted mt-2 mb-5">
+                Masukan benefit service ketika berlangganan
+              </h5>
+
               <h5 className="">Benefit Kelas</h5>
               <div className="d-flex fflex-wrap gap-2">
                 {useSelector(
