@@ -16,11 +16,13 @@ interface SelectMentorModalProps {
 
   onClose: () => void;
   onSumbit: (id: string | null) => void;
+  mentorRefetch: any;
 }
 const SelectMentorModal = ({
   show,
   onClose,
   onSumbit,
+  mentorRefetch,
 }: SelectMentorModalProps) => {
   const take = 10;
   const [skip, setSkip] = useState(0);
@@ -172,6 +174,7 @@ const SelectMentorModal = ({
           confirmButtonText: "OK",
         });
       }
+      await mentorRefetch();
     } catch (error) {
       setIsLoading(false);
 

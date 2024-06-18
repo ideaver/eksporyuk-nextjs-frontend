@@ -78,6 +78,7 @@ const MentorPage = ({}) => {
         </KTCardBody>
       </KTCard>
       <SelectMentorModal
+        mentorRefetch={mentorFindMany.refetch}
         show={showMentorSelectModal}
         onClose={() => setShowMentorSelectModal(false)}
         onSumbit={(id) => {

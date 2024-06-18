@@ -51,6 +51,7 @@ import {
   changeNewsType,
   changeTitleNews,
 } from "@/features/reducers/news/newsReducer";
+import { Diplomata } from "next/font/google";
 
 export const breadcrumbs = [
   {
@@ -228,7 +229,6 @@ export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
     setIsLoading(true);
     try {
       const response = await uploadFile();
-      console.log(response);
       await articleCreateOne({
         variables: {
           data: {
@@ -318,8 +318,11 @@ export const useAnnouncementForm = () => {
     dispatch(changeCourse(null));
     dispatch(changeAnnouncementType(AnnouncementTypeEnum.Affiliate));
   };
-  const handleAnnouncementTypeChange = (e: AnnouncementTypeEnum) => {
-    dispatch(changeAnnouncementType(e));
+  const handleAnnouncementTypeChange = (type: AnnouncementTypeEnum) => {
+    if (type !== AnnouncementTypeEnum.Course) {
+      dispatch(changeCourse(null));
+    }
+    dispatch(changeAnnouncementType(type));
   };
 
   const [announcementCreateOne, response] = useAnnouncementCreateOneMutation({
@@ -469,7 +472,7 @@ export const useMaterialPromotionForm = ({
         MaterialPromotionPlatformTypeEnum.Banner
       ) {
         const response = await uploadFile();
-        console.log(response);
+        // console.log(response);
         await materialPromotionCreateOne({
           variables: {
             data: {
@@ -495,7 +498,7 @@ export const useMaterialPromotionForm = ({
           },
         });
       } else {
-        console.log(response);
+        // console.log(response);
         await materialPromotionCreateOne({
           variables: {
             data: {
@@ -591,7 +594,7 @@ export const useNewsForm = ({ fileImage }: { fileImage: File | null }) => {
     setIsLoadingNews(true);
     try {
       const response = await uploadFile();
-      console.log(response);
+      // console.log(response);
       await newsCreateOne({
         variables: {
           data: {

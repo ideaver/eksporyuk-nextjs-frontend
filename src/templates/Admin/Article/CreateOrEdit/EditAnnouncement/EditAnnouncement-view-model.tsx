@@ -1,5 +1,6 @@
 import {
   AnnouncementFindOneQuery,
+  AnnouncementTypeEnum,
   useAnnouncementUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { useRouter } from "next/router";
@@ -66,7 +67,7 @@ const useEditAnnouncementViewModel = ({ id, data }: IEditAnnouncement) => {
   const [announcementType, setAnnouncementType] = useState(
     data.announcementFindOne?.type
   );
-  const [course, setCourse] = useState({
+  const [course, setCourse] = useState<any>({
     value: data?.announcementFindOne?.course?.id,
     label: data?.announcementFindOne?.course?.title,
   });
@@ -78,29 +79,57 @@ const useEditAnnouncementViewModel = ({ id, data }: IEditAnnouncement) => {
   const handleAnnouncementUpdateOne = async () => {
     setIsLoading(true);
     try {
-      await announcementUpdateOne({
-        variables: {
-          where: {
-            id: parseInt(id as string),
-          },
-          data: {
-            content: {
-              set: content,
+      if (announcementType === AnnouncementTypeEnum.Course) {
+        await announcementUpdateOne({
+          variables: {
+            where: {
+              id: parseInt(id as string),
             },
-            title: {
-              set: title,
-            },
-            type: {
-              set: announcementType,
-            },
-            course: {
-              connect: {
-                id: course.value,
+            data: {
+              content: {
+                set: content,
+              },
+              title: {
+                set: title,
+              },
+              type: {
+                set: announcementType,
+              },
+              course: {
+                connect: {
+                  id: course.value,
+                },
               },
             },
           },
-        },
-      });
+        });
+      } else {
+        await announcementUpdateOne({
+          variables: {
+            where: {
+              id: parseInt(id as string),
+            },
+            data: {
+              content: {
+                set: content,
+              },
+              title: {
+                set: title,
+              },
+              type: {
+                set: announcementType,
+              },
+              course: {
+                disconnect: {
+                  id: {
+                    equals: data?.announcementFindOne?.course?.id,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
     } catch (error) {
       console.log(error);
     } finally {
