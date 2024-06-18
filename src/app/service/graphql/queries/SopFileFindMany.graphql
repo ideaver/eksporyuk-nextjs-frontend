@@ -12,5 +12,15 @@ query SopFileFindMany(
     updatedAt
     fileId
     createdById
+    createdBy {
+      user {
+        email
+        id
+        avatarImageId
+        name
+        phoneId
+        username
+      }
+    }
   }
 }

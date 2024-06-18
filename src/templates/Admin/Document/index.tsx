@@ -2,263 +2,566 @@ import { PageTitle } from "@/_metronic/layout/core";
 import useDocumentViewModel, { breadcrumbs } from "./Document-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { useMemo } from "react";
-import "react-quill/dist/quill.snow.css";
-
-import dynamic from "next/dynamic";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import SweetAlert2 from "react-sweetalert2";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import Link from "next/link";
+import {
+  EksporDocumentFindManyQuery,
+  SopFileFindManyQuery,
+  SortOrder,
+} from "@/app/service/graphql/gen/graphql";
+import { Dispatch, DispatchWithoutAction, SetStateAction } from "react";
+import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
+import { QueryResult } from "@apollo/client";
+import { formatDate } from "@/app/service/utils/dateFormatter";
+import { Pagination } from "@/stories/organism/Paginations/Pagination";
 
 const Document = () => {
-  const ReactQuill = useMemo(
-    () => dynamic(() => import("react-quill"), { ssr: false }),
-    []
-  );
   const {
-    filePDF,
-    filePDFPreview,
-    handleFileChange,
-    swalProps,
-    setSwalProps,
-    handleSOPFileCreateOne,
-    content,
-    setContent,
-    isLoading,
-    handleEksporFileCreateOne,
-    filePDFEkspor,
-    filePDFPreviewEkspor,
-    handleFileChangeEkspor,
-    titleEkspor,
-    setTitleEkspor,
+    currentPageEkspor,
+    setCurrentPageEkspor,
+    handlePageChangeEkspor,
+    calculateTotalPageEkspor,
+    currentPageSop,
+    setCurrentPageSop,
+    handlePageChangeSop,
+    calculateTotalPageSop,
+    sopFileFindMany,
+    documentFindSkip,
+    documentFindTake,
+    orderBy,
+    documentFindSearch,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+    setOrderBy,
+    setDocumentFindSearch,
+    selectTable,
+    setSelectTable,
+    eksporFindMany,
+    eksporDeleteOne,
+    sopDeleteOne,
   } = useDocumentViewModel();
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Dokumen</PageTitle>
-      <LoadingOverlayWrapper
-        styles={{
-          overlay: (base) => ({
-            ...base,
-            background: "rgba(255, 255, 255, 0.8)",
-          }),
-          spinner: (base) => ({
-            ...base,
-            width: "100px",
-            "& svg circle": {
-              stroke: "rgba(3, 0, 0, 1)",
-            },
-          }),
-        }}
-        active={isLoading}
-        spinner
-      >
-        <KTCard>
-          <KTCardBody>
-            {/* <h4 className="fw-bold text-gray-700">Judul SOP</h4>
-          <TextField placeholder="Judul SOP" />
-          <h5 className="text-muted mt-2 mb-5">Masukan judul SOP</h5> */}
-            <h2 className="mb-5">SOP</h2>
+      <PageTitle breadcrumbs={breadcrumbs}>Semua Dokumen</PageTitle>
 
-            <div className="">
-              <h4 className="fw-bold text-gray-700">SOP File</h4>
-              <div className=" rounded" style={{ cursor: "pointer" }}>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  className="d-none"
-                  accept=".pdf"
-                  id="input-pdf"
-                />
-                {filePDFPreview ? (
-                  <label
-                    className="d-flex bg-light-primary align-items-center rounded border border-primary border-dashed "
-                    htmlFor="input-pdf"
-                  >
-                    <div className="m-4 mx-10">
-                      <div className="d-flex">
-                        <img
-                          src="/media/svg/files/pdf.svg"
-                          width={60}
-                          height={60}
-                          alt="xlsx icon"
-                        />
-                        <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
-                          <h4>{filePDFPreview}</h4>
-                          <h5 className="text-muted">
-                            Klik untuk mengganti file
-                          </h5>
-                        </div>
-                      </div>
+      <KTCard>
+        <KTCardBody>
+          <Head
+            selectTable={selectTable}
+            setDocumentFindSkip={setDocumentFindSkip}
+            setDocumentFindSearch={setDocumentFindSearch}
+            documentFindSearch={documentFindSearch}
+            setSelectTable={setSelectTable}
+            setOrder={setOrderBy}
+            handlePageChange={(page) => {
+              handlePageChangeEkspor(page);
+              handlePageChangeSop(page);
+            }}
+          />
+          {selectTable === "sop" ? (
+            <SopTable
+              sopDeleteOne={sopDeleteOne}
+              sopFileFindMany={sopFileFindMany}
+            />
+          ) : (
+            <EksporTable
+              eksporDeleteOne={eksporDeleteOne}
+              eksporFindMany={eksporFindMany}
+            />
+          )}
+          <Footer
+            pageLength={
+              selectTable === "sop"
+                ? calculateTotalPageSop()
+                : calculateTotalPageEkspor()
+            }
+            currentPage={currentPageSop}
+            setCurrentPage={(val) => {
+              handlePageChangeEkspor(val);
+              handlePageChangeSop(val);
+            }}
+            setArticleFindSkip={(val) => {}}
+            setArticleFindTake={(val) => {
+              setDocumentFindTake(val);
+            }}
+            articleFindTake={documentFindTake}
+            selectedTable={selectTable}
+          />
+        </KTCardBody>
+      </KTCard>
+    </>
+  );
+};
+
+const SopTable = ({
+  sopFileFindMany,
+  sopDeleteOne,
+}: //   sopLength,
+{
+  sopFileFindMany: QueryResult<SopFileFindManyQuery>;
+  //   sopLength: number;
+  sopDeleteOne: any;
+}) => {
+  return (
+    <>
+      {sopFileFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{sopFileFindMany.error.message}</h3>
+        </div>
+      ) : sopFileFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">
+              <p className="mb-0">content</p>
+            </th>
+            <th className="text-end min-w-200px">PENULIS</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-150px">FILE</th>
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {sopFileFindMany?.data?.sopFileFindMany?.map((document) => {
+              return (
+                <tr key={document.id} className="">
+                  <td className="">
+                    <p
+                      //   href={`/admin/documents/detail/${document.id}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                        maxHeight: "40px",
+                      }}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: document.content as string,
+                        }}
+                      />
+                    </p>
+                  </td>
+
+                  <td className="min-w-250px text-end fw-bold text-muted">
+                    <img
+                      className="symbol-label bg-gray-600 rounded-circle mx-3"
+                      src={
+                        document.createdBy.user.avatarImageId ??
+                        "/media/avatars/blank.png"
+                      }
+                      width={40}
+                      height={40}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">
+                      {document.createdBy.user.name}
+                    </span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{formatDate(document.updatedAt)}</span>
                     </div>
-                  </label>
-                ) : (
-                  <label
-                    htmlFor="input-pdf"
-                    className="d-flex justify-content-between bg-light-primary p-5 align-items-center rounded border border-primary border-dashed "
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="title">
-                      <div className="mt-1 text-muted fw-bold mb-0">
-                        <div className="d-flex">
-                          <img
-                            src="/media/svg/files/upload.svg"
-                            width={50}
-                            height={50}
-                            alt="xlsx icon"
-                          />
-                          <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
-                            <h4>Pilih file yang ingin di upload</h4>
-                            <h5 className="text-muted">
-                              File yang diupload harus berformat .PDF
-                            </h5>
-                          </div>
-                        </div>
-                      </div>
+                  </td>
+                  <td className="min-w-100px text-end fw-bold text-muted">
+                    <Link
+                      href={`${document.fileId}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {document.fileId}
+                    </Link>
+                  </td>
+
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        {/* <li>
+                          <Link
+                            href={`/admin/documents/edit/${document.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li> */}
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await sopDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: document.id,
+                                    },
+                                  },
+                                });
+                                await sopFileFindMany.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
                     </div>
-                  </label>
-                )}
-              </div>
-            </div>
-            <h4 className="fw-bold text-gray-700 mt-5">Content SOP</h4>
-            <div
-              style={{
-                height: "225px",
-              }}
-            >
-              <ReactQuill
-                modules={{
-                  toolbar: [
-                    [{ header: [1, 2, false] }],
-                    [
-                      "link",
-                      "bold",
-                      "italic",
-                      "underline",
-                      "strike",
-                      "blockquote",
-                    ],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    [{ align: [] }],
-                    ["clean"],
-                  ],
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+const EksporTable = ({
+  eksporFindMany,
+  eksporDeleteOne,
+}: //   sopLength,
+{
+  eksporFindMany: QueryResult<EksporDocumentFindManyQuery>;
+  //   sopLength: number;
+  eksporDeleteOne: any;
+}) => {
+  return (
+    <>
+      {eksporFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{eksporFindMany.error.message}</h3>
+        </div>
+      ) : eksporFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">
+              <p className="mb-0">content</p>
+            </th>
+            <th className="text-end min-w-200px">TITLE</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-150px">FILE</th>
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {eksporFindMany?.data?.eksporDocumentFindMany?.map((document) => {
+              return (
+                <tr key={document.id} className="">
+                  <td className="">
+                    <p
+                      //   href={`/admin/documents/detail/${document.id}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                        maxHeight: "40px",
+                      }}
+                    >
+                      {document.title}
+                    </p>
+                  </td>
+
+                  <td className="min-w-250px text-end fw-bold text-muted">
+                    <img
+                      className="symbol-label bg-gray-600 rounded-circle mx-3"
+                      src={
+                        document.createdBy.user.avatarImageId ??
+                        "/media/avatars/blank.png"
+                      }
+                      width={40}
+                      height={40}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">
+                      {document.createdBy.user.name}
+                    </span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{formatDate(document.updatedAt)}</span>
+                    </div>
+                  </td>
+                  <td className="min-w-100px text-end fw-bold text-muted">
+                    <Link
+                      href={`${document.fileId}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {document.fileId}
+                    </Link>
+                  </td>
+
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        {/* <li>
+                          <Link
+                            href={`/admin/documents/edit/${document.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li> */}
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await eksporDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: document.id,
+                                    },
+                                  },
+                                });
+                                await eksporFindMany.refetch();
+                                //   await articleLength.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+
+const Head = ({
+  selectTable,
+  setDocumentFindSkip,
+  handlePageChange,
+  setSelectTable,
+  setOrder,
+  documentFindSearch,
+  setDocumentFindSearch,
+}: {
+  selectTable: string;
+  setDocumentFindSkip: Dispatch<SetStateAction<number>>;
+  handlePageChange: (val: number) => void;
+  setSelectTable: Dispatch<SetStateAction<string>>;
+  setOrder: Dispatch<SetStateAction<SortOrder>>;
+  documentFindSearch: string;
+  setDocumentFindSearch: Dispatch<SetStateAction<string>>;
+}) => {
+  return (
+    <div className="row justify-content-between gy-5">
+      <div className="col-lg-auto">
+        <TextField
+          styleType="solid"
+          preffixIcon="magnifier"
+          placeholder="Search"
+          props={{
+            value: documentFindSearch,
+            onChange: (e: any) => {
+              setDocumentFindSearch(e.target.value);
+            },
+          }}
+        ></TextField>
+      </div>
+      <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={selectTable}
+            options={[
+              { label: "SOP", value: "sop" },
+              { label: "Ekspor Dokumen", value: "ekspor" },
+            ]}
+            onValueChange={(e) => {
+              setSelectTable(e as string);
+              setDocumentFindSkip(0);
+              handlePageChange(1);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            options={[
+              { label: "Terbaru", value: SortOrder.Desc },
+              { label: "Terlama", value: SortOrder.Asc },
+            ]}
+            onValueChange={(e) => {
+              setOrder(e as SortOrder);
+            }}
+          />
+        </div>
+
+        <div className="col-lg-auto">
+          <Buttons>
+            <Link href={"/admin/document/create"} className="text-white">
+              Tambah Dokumen Baru
+            </Link>
+          </Buttons>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Footer = ({
+  currentPage,
+  setCurrentPage,
+  setArticleFindTake,
+  setArticleFindSkip,
+  articleFindTake,
+  pageLength,
+  selectedTable,
+}: // handlePageChangeEkspor,
+// handlePageChangeSop,
+{
+  setArticleFindTake: (val: number) => void;
+  setArticleFindSkip: (val: number) => void;
+  articleFindTake: number;
+  currentPage: number;
+  setCurrentPage: (val: number) => void;
+  pageLength: number;
+  selectedTable: string;
+  // handlePageChangeSop: (val: number) => void;
+  // handlePageChangeEkspor: (val: number) => void;
+}) => {
+  // const {
+  //   handlePageChangeMaterialPromotion,
+  //   calculateTotalPageMaterialPromotion,
+  //   handlePageChangeAnnouncement,
+  //   calculateTotalPageAnnouncement,
+  //   handlePageChangeNews,
+  //   calculateTotalPageNews,
+  // } = useArticleViewModel();
+
+  return (
+    <div className="row justify-content-between gy-5">
+      <div className="row col-lg-auto gy-3 align-middle">
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle p-3"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {articleFindTake}
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(10);
                 }}
-                theme="snow"
-                value={content}
-                style={{ height: "70%" }}
+              >
+                10
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setArticleFindTake(50);
+                }}
+              >
+                50
+              </button>
+            </li>
+            <li>
+              {/* <button className="dropdown-item">Hapus</button> */}
+              <input
+                type="number"
+                value={articleFindTake}
+                className="form-control py-2"
+                placeholder="Nilai Custom"
+                min={0}
                 onChange={(e) => {
-                  setContent(e);
+                  setArticleFindTake(parseInt(e.target.value));
                 }}
               />
-            </div>
-            <h5 className="text-muted mb-5">Masukan content SOP</h5>
-            <div className="d-flex justify-content-end align-content-center">
-              <Buttons disabled={!filePDF} onClick={handleSOPFileCreateOne}>
-                Tambah SOP
-              </Buttons>
-            </div>
-          </KTCardBody>
-        </KTCard>
-        <KTCard className="mt-5">
-          <KTCardBody>
-            {/* <h4 className="fw-bold text-gray-700">Judul SOP</h4>
-          <TextField placeholder="Judul SOP" />
-          <h5 className="text-muted mt-2 mb-5">Masukan judul SOP</h5> */}
-            <h2 className="mb-5">Ekspor Dokumen</h2>
-            <h4>Judul Ekspor Dokumen</h4>
-            <TextField
-              placeholder="masukan judul"
-              props={{
-                value: titleEkspor,
-                onChange: (e: any) => {
-                  setTitleEkspor(e.target.value);
-                },
-              }}
-            />
-            <h5 className="text-muted mt-1">Masukan judul ekspor dokumen</h5>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-            <div className="mt-5">
-              <h4 className="fw-bold text-gray-700">Ekspor Dokumen File</h4>
-              <div className=" rounded" style={{ cursor: "pointer" }}>
-                <input
-                  type="file"
-                  onChange={handleFileChangeEkspor}
-                  className="d-none"
-                  accept=".pdf"
-                  id="input-pdf-ekspor"
-                />
-                {filePDFPreviewEkspor ? (
-                  <label
-                    className="d-flex bg-light-primary align-items-center rounded border border-primary border-dashed "
-                    htmlFor="input-pdf-ekspor"
-                  >
-                    <div className="m-4 mx-10">
-                      <div className="d-flex">
-                        <img
-                          src="/media/svg/files/pdf.svg"
-                          width={60}
-                          height={60}
-                          alt="xlsx icon"
-                        />
-                        <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
-                          <h4>{filePDFPreviewEkspor}</h4>
-                          <h5 className="text-muted">
-                            Klik untuk mengganti file
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                ) : (
-                  <label
-                    htmlFor="input-pdf-ekspor"
-                    className="d-flex justify-content-between bg-light-primary p-5 align-items-center rounded border border-primary border-dashed "
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="title">
-                      <div className="mt-1 text-muted fw-bold mb-0">
-                        <div className="d-flex">
-                          <img
-                            src="/media/svg/files/upload.svg"
-                            width={50}
-                            height={50}
-                            alt="xlsx icon"
-                          />
-                          <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
-                            <h4>Pilih file yang ingin di upload</h4>
-                            <h5 className="text-muted">
-                              File yang diupload harus berformat .PDF
-                            </h5>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                )}
-              </div>
-            </div>
-            <div className="d-flex justify-content-end align-content-center mt-5">
-              <Buttons
-                disabled={!filePDFEkspor}
-                onClick={handleEksporFileCreateOne}
-              >
-                Tambah ekspor dokumen
-              </Buttons>
-            </div>
-          </KTCardBody>
-        </KTCard>
-        <SweetAlert2
-          {...swalProps}
-          didOpen={() => {
-            // run when swal is opened...
-          }}
-          didClose={async () => {
-            console.log("closed");
-            setSwalProps({});
-          }}
-        />
-      </LoadingOverlayWrapper>
-    </>
+      <div className="row col-lg-auto gy-3">
+        <div className="col-auto">
+          <Pagination
+            total={pageLength}
+            // selectedTable === "article"
+            //   ? pageLength
+            //   : selectedTable === "announcement"
+            //   ? calculateTotalPageAnnouncement()
+            //   : selectedTable === "news"
+            //   ? calculateTotalPageNews()
+            //   : calculateTotalPageMaterialPromotion()
+            current={currentPage}
+            maxLength={5}
+            onPageChange={(val) => {
+              // handlePageChangeEkspor(val);
+              // handlePageChangeSop(val);
+              setCurrentPage(val);
+            }}
+          ></Pagination>
+        </div>
+      </div>
+    </div>
   );
 };
 

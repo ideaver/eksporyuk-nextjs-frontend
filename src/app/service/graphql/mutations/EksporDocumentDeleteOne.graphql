@@ -1,0 +1,3 @@
+mutation EksporDocumentDeleteOne($where: EksporDocumentWhereUniqueInput!) {
+  eksporDocumentDeleteOne(where: $where)
+}

@@ -1,15 +1,18 @@
-import { postDataAPI } from "@/app/service/api/rest-service";
 import {
-  useEksporDocumentCreateOneMutation,
-  useSopFileCreateOneMutation,
+  QueryMode,
+  SortOrder,
+  useEksporDocumentDeleteOneMutation,
+  useEksporDocumentFindLengthQuery,
+  useEksporDocumentFindManyQuery,
+  useSopFileDeleteOneMutation,
+  useSopFileFimdLengthQuery,
+  useSopFileFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { ApolloError } from "@apollo/client";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Dokument",
+    title: "Manajemen Dokumen",
     path: "/admin/document",
     isSeparator: false,
     isActive: false,
@@ -21,176 +24,246 @@ export const breadcrumbs = [
     isActive: false,
   },
 ];
+
+const usePaginationSop = ({
+  documentFindTake,
+  documentFindSkip,
+  documentFindSearch,
+  setDocumentFindSkip,
+  setDocumentFindTake,
+}: {
+  documentFindTake: number;
+  documentFindSkip: number;
+  documentFindSearch: string;
+  setDocumentFindSkip: Dispatch<SetStateAction<number>>;
+  setDocumentFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const sopLength = useSopFileFimdLengthQuery({
+    variables: {
+      where: {
+        content: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setDocumentFindSkip((page - 1) * documentFindTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (sopLength.data?.sopFileFindMany?.length ?? 0) / documentFindTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+  };
+};
+
+const usePaginationEkspor = ({
+  documentFindTake,
+  documentFindSkip,
+  documentFindSearch,
+  setDocumentFindSkip,
+  setDocumentFindTake,
+}: {
+  documentFindTake: number;
+  documentFindSkip: number;
+  documentFindSearch: string;
+  setDocumentFindSkip: Dispatch<SetStateAction<number>>;
+  setDocumentFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const eksporLength = useEksporDocumentFindLengthQuery({
+    variables: {
+      where: {
+        title: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setDocumentFindSkip((currentPage - 1) * documentFindTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (eksporLength.data?.eksporDocumentFindMany?.length ?? 0) /
+        documentFindTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+  };
+};
+
 const useDocumentViewModel = () => {
-  const { data: session, status } = useSession();
-  //   state SOP
-  const [filePDFPreview, setFilePDFPreview] = useState<string | undefined>();
-  const [filePDF, setFilePDF] = useState<File | undefined>();
-  const [content, setContent] = useState<string | null>(null);
-
-  //   state Ekspor dokumen
-  const [filePDFPreviewEkspor, setFilePDFPreviewEkspor] = useState<
-    string | undefined
-  >();
-  const [filePDFEkspor, setFilePDFEkspor] = useState<File | undefined>();
-  const [titleEkspor, setTitleEkspor] = useState<string | null>(null);
-
-  const [swalProps, setSwalProps] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [SOPFileCreateOne] = useSopFileCreateOneMutation();
-  const [eksporDocumentCreateOne] = useEksporDocumentCreateOneMutation();
-
-  const uploadFile = async (fileImage: File | undefined) => {
-    try {
-      const form = {
-        file: fileImage,
-        userId: session?.user?.id,
-      };
-      const response = await postDataAPI({
-        endpoint: "upload/file",
-        body: form,
-        isMultipartRequest: true,
-      });
-      return response;
-    } catch (error) {
-      return null;
-    }
-  };
-  //  sop create one
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setFilePDFPreview(file.name);
-
-    const blob = file.slice(0, file.size);
-    const newFile = new File([blob as Blob], file.name);
-
-    setFilePDF(newFile);
-  };
-
-  const handleSOPFileCreateOne = async () => {
-    setIsLoading(true);
-    try {
-      const response = await uploadFile(filePDF);
-      await SOPFileCreateOne({
-        variables: {
-          data: {
-            createdBy: {
-              connect: {
-                id: session?.user.id,
-              },
+  const [selectTable, setSelectTable] = useState("sop");
+  const [documentFindSkip, setDocumentFindSkip] = useState(0);
+  const [documentFindTake, setDocumentFindTake] = useState(10);
+  const [orderBy, setOrderBy] = useState(SortOrder.Desc);
+  const [documentFindSearch, setDocumentFindSearch] = useState("");
+  const sopFileFindMany = useSopFileFindManyQuery({
+    variables: {
+      skip: documentFindSkip,
+      take: parseInt(documentFindTake.toString()),
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
+      where: {
+        OR: [
+          {
+            title: {
+              contains: documentFindSearch,
+              mode: QueryMode.Insensitive,
             },
-            content: content,
-            file: {
-              connect: {
-                path: response?.data,
+          },
+          {
+            content: {
+              contains: documentFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+          {
+            createdBy: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: documentFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
               },
             },
           },
+        ],
+      },
+    },
+  });
+
+  const eksporFindMany = useEksporDocumentFindManyQuery({
+    variables: {
+      skip: documentFindSkip,
+      take: parseInt(documentFindTake.toString()),
+      orderBy: [
+        {
+          createdAt: orderBy,
         },
-      });
-      setSwalProps({
-        show: true,
-        title: "Berhasil",
-        text: "SOP berhasil ditambahkan",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-      setFilePDFPreview(undefined);
-      setFilePDF(undefined);
-      setContent(null);
-    } catch (error) {
-      console.log(error);
-      setSwalProps({
-        show: true,
-        title: "Terjadi kesalahan",
-        text: (error as ApolloError).message,
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  //   ekspor dokumen create one
-  const handleFileChangeEkspor = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setFilePDFPreviewEkspor(file.name);
-
-    const blob = file.slice(0, file.size);
-    const newFile = new File([blob as Blob], file.name);
-
-    setFilePDFEkspor(newFile);
-  };
-
-  const handleEksporFileCreateOne = async () => {
-    setIsLoading(true);
-    try {
-      const response = await uploadFile(filePDF);
-      await eksporDocumentCreateOne({
-        variables: {
-          data: {
-            createdBy: {
-              connect: {
-                id: session?.user.id,
-              },
+      ],
+      where: {
+        OR: [
+          {
+            title: {
+              contains: documentFindSearch,
+              mode: QueryMode.Insensitive,
             },
-            // content: content,
-            title: titleEkspor,
-            file: {
-              connect: {
-                path: response?.data,
+          },
+          {
+            content: {
+              contains: documentFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+          {
+            createdBy: {
+              is: {
+                user: {
+                  is: {
+                    name: {
+                      contains: documentFindSearch,
+                      mode: QueryMode.Insensitive,
+                    },
+                  },
+                },
               },
             },
           },
-        },
-      });
-      setSwalProps({
-        show: true,
-        title: "Berhasil",
-        text: "Ekspor Dokumen berhasil ditambahkan",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-      setFilePDFPreviewEkspor(undefined);
-      setFilePDFEkspor(undefined);
-    } catch (error) {
-      console.log(error);
-      setSwalProps({
-        show: true,
-        title: "Terjadi kesalahan",
-        text: (error as ApolloError).message,
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        ],
+      },
+    },
+  });
+  const [sopDeleteOne] = useSopFileDeleteOneMutation();
+  const [eksporDeleteOne] = useEksporDocumentDeleteOneMutation();
+
+  // pagination
+  const {
+    currentPage: currentPageSop,
+    setCurrentPage: setCurrentPageSop,
+    handlePageChange: handlePageChangeSop,
+    calculateTotalPage: calculateTotalPageSop,
+  } = usePaginationSop({
+    documentFindSearch,
+    documentFindSkip,
+    documentFindTake,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+  });
+
+  const {
+    currentPage: currentPageEkspor,
+    setCurrentPage: setCurrentPageEkspor,
+    handlePageChange: handlePageChangeEkspor,
+    calculateTotalPage: calculateTotalPageEkspor,
+  } = usePaginationEkspor({
+    documentFindSearch,
+    documentFindSkip,
+    documentFindTake,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+  });
+  // useEffect(() => {
+  //   if (documentFindSearch.length !== 0) {
+  //     setCurrentPageSop(1);
+  //     setCurrentPageEkspor(1);
+  //     setDocumentFindSkip(0);
+  //     // articleFindMany.refetch();
+  //   }
+  // }, [documentFindSearch, setCurrentPageEkspor, setCurrentPageSop]);
 
   return {
-    titleEkspor,
-    setTitleEkspor,
-    isLoading,
-    content,
-    setContent,
-    handleSOPFileCreateOne,
-    swalProps,
-    setSwalProps,
-    filePDFPreview,
-    filePDF,
-    setFilePDF,
-    setFilePDFPreview,
-    handleFileChange,
-    handleEksporFileCreateOne,
-    filePDFEkspor,
-    filePDFPreviewEkspor,
-    handleFileChangeEkspor,
+    sopDeleteOne,
+    eksporDeleteOne,
+    eksporFindMany,
+    setSelectTable,
+    selectTable,
+    currentPageEkspor,
+    setCurrentPageEkspor,
+    handlePageChangeEkspor,
+    calculateTotalPageEkspor,
+    currentPageSop,
+    setCurrentPageSop,
+    handlePageChangeSop,
+    calculateTotalPageSop,
+    sopFileFindMany,
+    documentFindSkip,
+    documentFindTake,
+    orderBy,
+    documentFindSearch,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+    setOrderBy,
+    setDocumentFindSearch,
   };
 };
 

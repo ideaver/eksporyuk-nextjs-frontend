@@ -35,12 +35,11 @@ const CertificatePage = ({}) => {
                   style={{ height: "300px", width: "100%" }}
                 >
                   <label
-                       className={`btn btn-outline  d-flex flex-stack text-start p-6 mb-5 ${
-                          currentCourseSelector.certificateTemplateId ===
-                          0
-                            ? "btn-outline-dashed btn-active-light-primary active"
-                            : ""
-                        }`}
+                    className={`btn btn-outline  d-flex flex-stack text-start p-6 mb-5 ${
+                      currentCourseSelector.certificateTemplateId === 0
+                        ? "btn-outline-dashed btn-active-light-primary active"
+                        : ""
+                    }`}
                     style={{ height: "100%" }}
                   >
                     <div className="d-flex align-items-center me-2">
@@ -111,7 +110,9 @@ const CertificatePage = ({}) => {
                         <div className="ms-5 p-10">
                           <img
                             className="img-fluid rounded"
-                            src={certificate?.exampleTemplateCertificatePath}
+                            src={
+                              certificate?.exampleTemplateCertificatePath ?? ""
+                            }
                             alt={certificate?.name}
                           />
                         </div>

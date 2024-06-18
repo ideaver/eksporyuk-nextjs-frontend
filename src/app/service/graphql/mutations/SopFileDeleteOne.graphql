@@ -1,0 +1,3 @@
+mutation SopFileDeleteOne($where: SopFileWhereUniqueInput!) {
+  sopFileDeleteOne(where: $where)
+}
