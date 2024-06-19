@@ -60,8 +60,13 @@ const useDetailMembershipViewModel = ({ id, data }: IDetailMembership) => {
   const [subscriberListId, setSubscriberListId] = useState(
     data.membershipCategoryFindOne?.subscriberListId
   );
+  const [benefitService] = useState(
+    data.membershipCategoryFindOne?.membershipBenefitServiceEnum
+  );
+  console.log(benefitService);
 
   return {
+    benefitService,
     affiliateCommission,
     affiliateFirstCommission,
     courses,
@@ -69,7 +74,8 @@ const useDetailMembershipViewModel = ({ id, data }: IDetailMembership) => {
     descriptionMembership,
     price,
     duration,
-    benefits,subscriberListId
+    benefits,
+    subscriberListId,
   };
 };
 

@@ -1,0 +1,6 @@
+mutation UserSoftDeleteForAdmin(
+  $where: UserWhereUniqueInput!
+  $data: UserUpdateInput!
+) {
+  userSoftDeleteForAdmin(where: $where, data: $data)
+}

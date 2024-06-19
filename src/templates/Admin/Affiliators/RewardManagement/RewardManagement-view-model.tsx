@@ -9,6 +9,7 @@ import {
   SortOrder,
   useRewardsCatalogDeleteOneMutation,
   useRewardsCatalogDeleteManyMutation,
+  useSoftDeleteRewardsCatalogLazyQuery,
 } from "@/app/service/graphql/gen/graphql";
 
 export const dateFormatter = (dateStr: string) => {
@@ -143,6 +144,7 @@ const useRewardManagementViewModel = () => {
   // Graphql
   const [rewardCatalogDeleteOneMutation] = useRewardsCatalogDeleteOneMutation();
   const [rewardCatalogDeleteManyMutation] = useRewardsCatalogDeleteManyMutation();
+  const [softDeleteRewardsCatalog] = useSoftDeleteRewardsCatalogLazyQuery();
 
   const handleRewardCatalogDeleteOneMutation = async (rewardId: number) => {
     const data = await rewardCatalogDeleteOneMutation({
@@ -228,6 +230,23 @@ const useRewardManagementViewModel = () => {
     }
   };
 
+  const softDeleteReward = async (id: number) => {
+    try {
+      await softDeleteRewardsCatalog({
+        variables: {
+          where: {
+            id: id,
+          }
+        }
+      });
+
+      router.refresh();
+      // rewardsCatalogFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Calculating total page
   // const calculateTotalPage = () => {
   //   return Math.ceil(
@@ -275,6 +294,7 @@ const useRewardManagementViewModel = () => {
     handlePageChange,
     setFindTake,
     findTake,
+    softDeleteReward,
   };
 };
 

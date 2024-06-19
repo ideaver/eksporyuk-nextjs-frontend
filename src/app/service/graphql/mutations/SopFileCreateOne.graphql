@@ -1,0 +1,11 @@
+mutation SopFileCreateOne($data: SopFileCreateInput!) {
+  sopFileCreateOne(data: $data) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}

@@ -101,12 +101,58 @@ export const CreateFollowUpModal = () => {
           icon="copy"
           buttonColor="secondary"
           onClick={() => {
+            setTamplateContent((prevMessage) => prevMessage + "[[tanggal]]");
+          }}
+        >
+          {"[[tanggal]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
             setTamplateContent(
-              (prevMessage) => prevMessage + "[[tanggal-pembelian]]"
+              (prevMessage) => prevMessage + "[[nama-produk]]"
             );
           }}
         >
-          {"[[tanggal-pembelian]]"}
+          {"[[nama-produk]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            setTamplateContent(
+              (prevMessage) => prevMessage + "[[total-order]]"
+            );
+          }}
+        >
+          {"[[total-order]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            setTamplateContent(
+              (prevMessage) => prevMessage + "[[jenis-produk]]"
+            );
+          }}
+        >
+          {"[[jenis-produk]]"}
+        </Buttons>
+        <Buttons
+          showIcon
+          icon="copy"
+          buttonColor="secondary"
+          onClick={() => {
+            setTamplateContent(
+              (prevMessage) => prevMessage + "[[id-invoice-produk]]"
+            );
+          }}
+        >
+          {"[[id-invoice-produk]]"}
         </Buttons>
         <Buttons
           showIcon

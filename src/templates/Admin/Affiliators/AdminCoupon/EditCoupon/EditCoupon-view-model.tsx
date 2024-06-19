@@ -68,7 +68,8 @@ export const useMentorsDropdown = () => {
     const newOptions = result.filter(
       (option) =>
         !prevOptions.some(
-          (prevOption) => (prevOption as CourseOptionType).value === option.value
+          (prevOption) =>
+            (prevOption as CourseOptionType).value === option.value
         )
     );
 
@@ -78,10 +79,9 @@ export const useMentorsDropdown = () => {
         title: {
           contains: search,
           mode: QueryMode.Insensitive,
-          },
         },
       },
-    );
+    });
 
     return {
       options: newOptions,
@@ -227,7 +227,9 @@ export const AddAllowedMembership = (item: any, setItem: any) => {
   const [allowMembership, setAllowMembership] = useState<any>(item);
 
   const addMembership = (membership: any) => {
-    const updatedMembership = allowMembership ? [...allowMembership, membership] : [membership];
+    const updatedMembership = allowMembership
+      ? [...allowMembership, membership]
+      : [membership];
 
     setAllowMembership(updatedMembership);
     setItem(updatedMembership);
@@ -257,7 +259,9 @@ export const AddAllowedProductService = (item: any, setItem: any) => {
   const [allowProductService, setAllowProductService] = useState<any>(item);
 
   const addProductService = (productService: any) => {
-    const updatedProductService = allowProductService ? [...allowProductService, productService] : [productService];
+    const updatedProductService = allowProductService
+      ? [...allowProductService, productService]
+      : [productService];
 
     setAllowProductService(updatedProductService);
     setItem(updatedProductService);
@@ -283,7 +287,10 @@ export const AddAllowedProductService = (item: any, setItem: any) => {
   };
 };
 
-export const AddNotAllowedCourses = ({ notAllowedCourses, setNotAllowedCourses }: any) => {
+export const AddNotAllowedCourses = ({
+  notAllowedCourses,
+  setNotAllowedCourses,
+}: any) => {
   const [selectedCourse, setSelectedCourses] = useState<any>(notAllowedCourses);
 
   const addCourse = (mentor: any) => {
@@ -329,46 +336,72 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     data.couponFindOne?.endDate ? true : false
   );
   const [date, setDate] = useState(new Date(data.couponFindOne?.endDate));
-  const [startDate, setStartDate] = useState<Date>(new Date(data.couponFindOne?.startDate));
-  const [endDate, setEndDate] = useState<Date>(new Date(data.couponFindOne?.endDate));
+  const [startDate, setStartDate] = useState<Date>(
+    new Date(data.couponFindOne?.startDate)
+  );
+  const [endDate, setEndDate] = useState<Date>(
+    new Date(data.couponFindOne?.endDate)
+  );
   console.log(date);
 
-  const [connectCourse, setConnectCourse] = useState<number | undefined | null>(data.couponFindOne?.courseCoupon?.course?.id);
-  const [maxClaim, setMaxClaim] = useState<number | undefined | null>(data.couponFindOne?.maxClaimPerUser);
+  const [connectCourse, setConnectCourse] = useState<number | undefined | null>(
+    data.couponFindOne?.courseCoupon?.course?.id
+  );
+  const [maxClaim, setMaxClaim] = useState<number | undefined | null>(
+    data.couponFindOne?.maxClaimPerUser
+  );
   const [desc, setDesc] = useState<any>(data.couponFindOne?.description);
 
   console.log(data.couponFindOne?.description);
-  
-  const transformedCourses = data.couponFindOne?.avaibilities?.onlyAvailableToCourse?.map((item: any) => ({
-    value: item.id,
-    label: item.title,
-  }));
 
-  const transformedNotAllowedCourses = data.couponFindOne?.avaibilities?.notAvailableToCourse?.map((item: any) => ({
-    value: item.id,
-    label: item.title,
-  }));
+  const transformedCourses =
+    data.couponFindOne?.avaibilities?.onlyAvailableToCourse?.map(
+      (item: any) => ({
+        value: item.id,
+        label: item.title,
+      })
+    );
 
-  const transformedAllowedMembership = data.couponFindOne?.avaibilities?.onlyAvailableToMembershipCategory?.map((item: any) => ({
-    value: item.id,
-    label: item.name,
-  }));
+  const transformedNotAllowedCourses =
+    data.couponFindOne?.avaibilities?.notAvailableToCourse?.map(
+      (item: any) => ({
+        value: item.id,
+        label: item.title,
+      })
+    );
 
-  const transformedAllowedProdService = data.couponFindOne?.avaibilities?.onlyAvailableToProductService?.map((item: any) => ({
-    value: item.id,
-    label: item.title,
-  }));
+  const transformedAllowedMembership =
+    data.couponFindOne?.avaibilities?.onlyAvailableToMembershipCategory?.map(
+      (item: any) => ({
+        value: item.id,
+        label: item.name,
+      })
+    );
+
+  const transformedAllowedProdService =
+    data.couponFindOne?.avaibilities?.onlyAvailableToProductService?.map(
+      (item: any) => ({
+        value: item.id,
+        label: item.title,
+      })
+    );
 
   const [courses, setCourses] = useState<any>(transformedCourses);
-  const [notAllowedCourses, setNotAllowedCourses] = useState<any>(transformedNotAllowedCourses);
-  const [allowedMembership, setAllowedMembership] = useState<any>(transformedAllowedMembership);
-  const [allowedProductService, setAllowedProductService] = useState<any>(transformedAllowedProdService);
+  const [notAllowedCourses, setNotAllowedCourses] = useState<any>(
+    transformedNotAllowedCourses
+  );
+  const [allowedMembership, setAllowedMembership] = useState<any>(
+    transformedAllowedMembership
+  );
+  const [allowedProductService, setAllowedProductService] = useState<any>(
+    transformedAllowedProdService
+  );
 
-  const membershipsId = allowedMembership.map((item: any) => ({
+  const membershipsId = allowedMembership?.map((item: any) => ({
     id: item.value,
   }));
 
-  const productServiceId = allowedProductService.map((item: any) => ({
+  const productServiceId = allowedProductService?.map((item: any) => ({
     id: item.value,
   }));
 
@@ -390,12 +423,12 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
 
   // Kupon hanya bisa digunakan di kelas
   const selectedCourses = courses?.map((item: any) => ({
-    id: item.value
+    id: item.value,
   }));
 
   // Kupon tidak bisa digunakan di kelas
   const notAllowedCourse = notAllowedCourses?.map((item: any) => ({
-    id: item.value
+    id: item.value,
   }));
 
   // Kupon hanya bisa digunakan di kelas
@@ -460,20 +493,20 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
                     update: {
                       data: {
                         onlyAvailableToCourse: {
-                          connect: selectedCourses
+                          connect: selectedCourses,
                         },
                         notAvailableToCourse: {
-                          connect: notAllowedCourse
+                          connect: notAllowedCourse,
                         },
                         onlyAvailableToProductService: {
-                          connect: productServiceId
+                          connect: productServiceId,
                         },
                         onlyAvailableToMembershipCategory: {
                           connect: membershipsId,
-                        }
-                      }
-                    }
-                  }
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -509,8 +542,14 @@ const useEditCouponViewModel = ({ id, data }: IEditCoupon) => {
     setMaxClaim,
     connectCourse,
     setConnectCourse,
-    selectedMentor, setSelectedMentor, addMentor, removeMentor,
-    selectedCourse, setSelectedCourses, addCourse, removeCourse,
+    selectedMentor,
+    setSelectedMentor,
+    addMentor,
+    removeMentor,
+    selectedCourse,
+    setSelectedCourses,
+    addCourse,
+    removeCourse,
     courses,
     startDate,
     setStartDate,

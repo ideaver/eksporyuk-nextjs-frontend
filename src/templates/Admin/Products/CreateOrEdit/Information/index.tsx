@@ -38,7 +38,7 @@ const ClassInformation = ({}) => {
             onChange: setInputClassName,
           }}
         />
-        <h5 className="mt-5">Deskrpsi Kelas</h5>
+        <h5 className="mt-5">Deskripsi Kelas</h5>
         <div
           className=""
           style={{
@@ -83,7 +83,6 @@ const ClassInformation = ({}) => {
         <AsyncPaginate
           isSearchable={true}
           loadOptions={loadOptions}
-          
         ></AsyncPaginate>
       </KTCardBody>
     </KTCard>

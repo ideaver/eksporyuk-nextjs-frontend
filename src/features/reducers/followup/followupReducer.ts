@@ -13,6 +13,10 @@ interface followupState {
   email: string;
   phone: string;
   coupon: string;
+  productName: string;
+  totalOrder: string;
+  productType: string;
+  idInvoiceProduct: string;
 }
 const initialState: followupState = {
   name: "",
@@ -25,12 +29,31 @@ const initialState: followupState = {
   email: "",
   phone: "",
   coupon: "",
+  productName: "",
+  totalOrder: "",
+  productType: "",
+  idInvoiceProduct: "",
 };
 
 export const followupSlice = createSlice({
-  name: "feedback",
+  name: "followUp",
   initialState,
   reducers: {
+    changeFollowUpTotalOrderName: (state, action: PayloadAction<string>) => {
+      state.totalOrder = action.payload;
+    },
+    changeFollowUpProductTypeName: (state, action: PayloadAction<string>) => {
+      state.productType = action.payload;
+    },
+    changeFollowUpIdInvoiceProductName: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.idInvoiceProduct = action.payload;
+    },
+    changeFollowUpProductName: (state, action: PayloadAction<string>) => {
+      state.productName = action.payload;
+    },
     changeName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
     },
@@ -71,6 +94,10 @@ export const followupSlice = createSlice({
 });
 
 export const {
+  changeFollowUpProductName,
+  changeFollowUpProductTypeName,
+  changeFollowUpTotalOrderName,
+  changeFollowUpIdInvoiceProductName,
   changeContent,
   changeId,
   changeName,

@@ -1,0 +1,3 @@
+query SoftDeleteRewardsCatalog($where: RewardsCatalogWhereUniqueInput!) {
+  rewardsCatalogSoftDelete(where: $where)
+}

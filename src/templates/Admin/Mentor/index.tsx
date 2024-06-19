@@ -78,6 +78,7 @@ const MentorPage = ({}) => {
         </KTCardBody>
       </KTCard>
       <SelectMentorModal
+        mentorRefetch={mentorFindMany.refetch}
         show={showMentorSelectModal}
         onClose={() => setShowMentorSelectModal(false)}
         onSumbit={(id) => {
@@ -420,9 +421,10 @@ const Body = ({
         handleClose={() => setShowEditUserModal(false)}
         show={showEditUserModal}
         userId={selectedUserId}
-        handleSubmit={(value, file) =>
-          handleUserUpdate(selectedUserId, value, file)
-        }
+        handleSubmit={async (value, file) => {
+          await handleUserUpdate(selectedUserId, value, file);
+          await mentorFindMany.refetch();
+        }}
         isLoading={editUserModalLoading}
       />
       <DeleteUserModal

@@ -23,7 +23,8 @@ const initialState: ServiceState = {
   serviceCost: "",
   serviceObjective: [],
   servicePortfolio: [],
-  serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG" }],
+  // serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG" }],
+  serviceImages: [{ path: "", fileType: "PNG" }],
   uploadImages: [{ path: "" }],
   serviceDiscountCost: "",
 };

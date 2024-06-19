@@ -8,7 +8,7 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import CurrencyInput from "react-currency-input-field";
 import "react-quill/dist/quill.snow.css";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -58,8 +58,12 @@ const ClassInformation = ({}) => {
     removeMentor,
   } = AddMentorHandler();
 
-  const { loadOptions: mailketingLoadOptions, getAllListSubscriber,handleInputSubscriberListId,inputSubscriberListId } =
-    useAllListSubscriberDropdown();
+  const {
+    loadOptions: mailketingLoadOptions,
+    getAllListSubscriber,
+    handleInputSubscriberListId,
+    inputSubscriberListId,
+  } = useAllListSubscriberDropdown();
 
   return (
     <>
@@ -80,7 +84,7 @@ const ClassInformation = ({}) => {
               onChange: setInputClassName,
             }}
           />
-          <h5 className="mt-5 required">Deskrpsi Kelas</h5>
+          <h5 className="mt-5 required">Deskripsi Kelas</h5>
           <div
             className=""
             style={{

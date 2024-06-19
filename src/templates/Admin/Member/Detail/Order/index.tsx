@@ -18,9 +18,13 @@ import {
   changeFollowUpCoupon,
   changeFollowUpDate,
   changeFollowUpEmail,
+  changeFollowUpIdInvoiceProductName,
   changeFollowUpName,
   changeFollowUpPhone,
+  changeFollowUpProductName,
+  changeFollowUpProductTypeName,
   changeFollowUpTamplate,
+  changeFollowUpTotalOrderName,
   changeId,
   changeName,
   changeSelectedFollwUpValue,
@@ -56,26 +60,43 @@ const OrderPage = ({
   const handleSendFollowUp = () => {
     const contentReplaced = followUpState.followUpTamplate
       ?.replace(/\[\[nama\]\]/g, `${followUpState.name}`)
-      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(followUpState.date))
+      .replace(/\[\[tanggal\]\]/g, formatDate(followUpState.date))
       .replace(/\[\[email\]\]/g, `${followUpState.email}`)
       .replace(/\[\[nomor-telepon\]\]/g, `${followUpState.phone}`)
-      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`);
+      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`)
+      .replace(/\[\[nama-produk\]\]/g, `${followUpState.productName}`)
+      .replace(/\[\[total-order\]\]/g, `${followUpState.totalOrder}`)
+      .replace(/\[\[jenis-produk\]\]/g, `${followUpState.productType}`)
+      .replace(
+        /\[\[id-invoice-produk\]\]/g,
+        `${followUpState.idInvoiceProduct}`
+      );
     const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
     return `https://web.whatsapp.com/send?phone=${followUpState.phone}&text=${encodedMessage}`;
   };
   const handleChangeFollowUpState = (data: {
-    name: string;
-    date: string;
-    email: string;
-    phone: string;
-    coupon: string;
+    name: string | undefined | null;
+    date: string | undefined | null;
+    email: string | undefined | null;
+    phone: string | undefined | null;
+    coupon: string | undefined | null;
+    productName: string | undefined | null;
+    totalOrder: string | undefined | null;
+    productType: string | undefined | null;
+    idInvoiceProduct: string | undefined | null;
   }) => {
-    dispatch(changeFollowUpName(data.name));
-    dispatch(changeFollowUpEmail(data.email));
-    dispatch(changeFollowUpDate(data.date));
-    dispatch(changeFollowUpCoupon(data.coupon));
-    dispatch(changeFollowUpPhone(data.phone));
+    dispatch(changeFollowUpName(data.name as string));
+    dispatch(changeFollowUpEmail(data.email as string));
+    dispatch(changeFollowUpDate(data.date as string));
+    dispatch(changeFollowUpCoupon(data.coupon as string));
+    dispatch(changeFollowUpPhone(data.phone as string));
+    dispatch(changeFollowUpProductName(data.productName as string));
+    dispatch(changeFollowUpTotalOrderName(data.totalOrder as string));
+    dispatch(changeFollowUpProductTypeName(data.productType as string));
+    dispatch(
+      changeFollowUpIdInvoiceProductName(data.idInvoiceProduct as string)
+    );
   };
 
   const handleDeleteFollowUp = async (name: string) => {
@@ -208,6 +229,7 @@ const OrderPage = ({
                       data-bs-toggle="modal"
                       data-bs-target="#kt_follup_modal"
                       onClick={() => {
+                        // console.log(order.cart.cartItems?.[0].type);
                         handleChangeFollowUpState({
                           name: order?.createdByUser.name,
                           date: order.createdAt,
@@ -216,6 +238,12 @@ const OrderPage = ({
                           email: order.createdByUser.email,
                           coupon: order.coupon?.affiliatorCoupon
                             ?.code as string,
+                          productName: getProductName(
+                            order?.cart?.cartItems ?? []
+                          ),
+                          totalOrder: `${order.cart.totalPrice}`,
+                          productType: order.cart.cartItems?.[0]?.type,
+                          idInvoiceProduct: order.invoices?.[0].uniqueCode,
                         });
                       }}
                     >

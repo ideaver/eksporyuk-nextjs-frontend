@@ -103,7 +103,25 @@ const EditAnnouncement = ({ id, data }: IEditAnnouncement) => {
                   </div>
                 )}
               <h5 className="text-muted mt-3">Masukan judul</h5>
-              <h5 className="required mt-5">Tipe Announcement</h5>
+              <h5 className="required mt-5">
+                <label htmlFor="">
+                  Tipe Announcement{" "}
+                  {announcementType === AnnouncementTypeEnum.Course ? (
+                    <>
+                      <small className="text-info fs-6">
+                        Announcement akan dikirim ke spesifik course tertentu
+                      </small>
+                    </>
+                  ) : announcementType == AnnouncementTypeEnum.Affiliate ? (
+                    <>
+                      {" "}
+                      <small className="text-info fs-6">
+                        Announcement akan dikirim ke affiliator
+                      </small>
+                    </>
+                  ) : null}
+                </label>
+              </h5>
               <Dropdown
                 value={announcementType}
                 options={[
@@ -125,33 +143,41 @@ const EditAnnouncement = ({ id, data }: IEditAnnouncement) => {
                   },
                 ]}
                 onValueChange={(val) => {
+                  if (val !== AnnouncementTypeEnum.Course) {
+                    setCourse(null);
+                  }
                   setAnnouncementType(val as AnnouncementTypeEnum);
                 }}
               />
               <h5 className="text-muted mt-3">Masukan tipe announcement</h5>
 
-              <h5 className="required">Hubungkan Kelas</h5>
-              {course?.label ? (
-                <div className="d-flex mt-5">
-                  <div className="w-100">
-                    <TextField
-                      props={{
-                        disabled: true,
-                        value: course.label,
-                      }}
-                    ></TextField>
-                  </div>
-                </div>
+              {announcementType === AnnouncementTypeEnum.Course ? (
+                <>
+                  {" "}
+                  <h5 className="required">Hubungkan Kelas</h5>
+                  {course?.label ? (
+                    <div className="d-flex mt-5">
+                      <div className="w-100">
+                        <TextField
+                          props={{
+                            disabled: true,
+                            value: course.label,
+                          }}
+                        ></TextField>
+                      </div>
+                    </div>
+                  ) : null}
+                  <AsyncPaginate
+                    className="mt-5"
+                    isSearchable={true}
+                    loadOptions={loadOptions}
+                    onChange={(value) => {
+                      setCourse(value as any);
+                    }}
+                  ></AsyncPaginate>
+                  <h5 className="text-muted mt-3">Hubungkan dengan kelas</h5>
+                </>
               ) : null}
-              <AsyncPaginate
-                className="mt-5"
-                isSearchable={true}
-                loadOptions={loadOptions}
-                onChange={(value) => {
-                  setCourse(value as any);
-                }}
-              ></AsyncPaginate>
-              <h5 className="text-muted mt-3">Hubungkan dengan kelas</h5>
 
               <h5 className="required mt-5">Konten Announcement</h5>
               <div

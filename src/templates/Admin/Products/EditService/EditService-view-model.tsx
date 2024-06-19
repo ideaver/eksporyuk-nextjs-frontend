@@ -238,8 +238,12 @@ console.log( data?.productServiceFindFirst?.subscriberListId)
     const updatedImages = serviceImages.filter(
       (_: any, index: any) => index !== indexToRemove
     );
+    const updatedImgLocal = selectedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
 
     setServiceImages(updatedImages);
+    setSelectedFiles(updatedImgLocal);
   };
 
   const handleFileClick = () => {

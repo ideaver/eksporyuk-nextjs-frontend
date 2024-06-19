@@ -13,7 +13,7 @@ interface deleteRewardModal {
 }
 
 const DeleteRewardModal = ({ show, handleClose, rewardId, rewardIds }: deleteRewardModal) => {
-  const { onDeleteOne, onDeleteMany } = useRewardManagementViewModel();
+  const { onDeleteOne, onDeleteMany, softDeleteReward } = useRewardManagementViewModel();
 
   return (
     <Modal show={show} centered={true}>
@@ -46,7 +46,7 @@ const DeleteRewardModal = ({ show, handleClose, rewardId, rewardIds }: deleteRew
             if (rewardIds.length !== 0) {
               onDeleteMany(rewardIds);
             } else {
-              onDeleteOne(rewardId);
+              softDeleteReward(rewardId);
             }
           }}
         >

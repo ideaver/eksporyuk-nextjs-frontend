@@ -57,6 +57,15 @@ const useUserEdit = () => {
             password: {
               set: data.password,
             },
+            // deletedAt: {
+            //   set: data.deletedReason?.value === "active" ? null : undefined,
+            // },
+            deletedReason: {
+              set:
+                data.deletedReason?.value === "active"
+                  ? "reActivateUser"
+                  : undefined,
+            },
             birthDate: {
               set: data.birthDate,
             },
@@ -65,6 +74,20 @@ const useUserEdit = () => {
             },
             npwpId: {
               set: data.npwpNumber,
+            },
+            mentor: {
+              update: {
+                where: {
+                  id: {
+                    equals: id,
+                  },
+                },
+                data: {
+                  description: {
+                    set: data.description,
+                  },
+                },
+              },
             },
           },
         },

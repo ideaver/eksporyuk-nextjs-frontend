@@ -1,0 +1,11 @@
+mutation EksporDocumentCreateOne($data: EksporDocumentCreateInput!) {
+  eksporDocumentCreateOne(data: $data) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    fileId
+    createdById
+  }
+}

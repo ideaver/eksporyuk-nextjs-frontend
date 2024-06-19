@@ -69,10 +69,10 @@ const ArticlePage = () => {
     setNewsFindType,
     newsFindType,
   } = useArticleViewModel();
-  console.log("Article", calculateTotalPage());
-  console.log("announcement", calculateTotalPageAnnouncement());
-  console.log("Material", calculateTotalPageMaterialPromotion());
-  console.log("news", calculateTotalPageNews());
+  // console.log("Article", calculateTotalPage());
+  // console.log("announcement", calculateTotalPageAnnouncement());
+  // console.log("Material", calculateTotalPageMaterialPromotion());
+  // console.log("news", calculateTotalPageNews());
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Artikel</PageTitle>

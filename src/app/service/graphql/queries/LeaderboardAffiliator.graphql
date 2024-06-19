@@ -1,0 +1,34 @@
+query LeaderboardAffiliatorFindMany(
+  $leaderboardAffiliatorArgs: LeaderboardAffiliatorArgs!
+) {
+  leaderboardAffiliatorQuery(
+    leaderboardAffiliatorArgs: $leaderboardAffiliatorArgs
+  ) {
+    commission
+    salesAffiliate
+    affiliator {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+  }
+}

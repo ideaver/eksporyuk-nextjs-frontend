@@ -98,5 +98,9 @@ query UserFindOne($where: UserWhereUniqueInput!) {
     phone {
       phoneNumber
     }
+    mentor {
+      description
+      id
+    }
   }
 }

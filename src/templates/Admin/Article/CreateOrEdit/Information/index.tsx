@@ -373,7 +373,26 @@ const InformationPage = () => {
                       </div>
                     )}
                   <h5 className="text-muted mt-3">Masukan judul</h5>
-                  <h5 className="required mt-5">Tipe Announcement</h5>
+                  <h5 className="required mt-5">
+                    <label htmlFor="">
+                      Tipe Announcement{" "}
+                      {typeAnnouncement === AnnouncementTypeEnum.Course ? (
+                        <>
+                          <small className="text-info fs-6">
+                            Announcement akan dikirim ke spesifik course
+                            tertentu
+                          </small>
+                        </>
+                      ) : typeAnnouncement == AnnouncementTypeEnum.Affiliate ? (
+                        <>
+                          {" "}
+                          <small className="text-info fs-6">
+                            Announcement akan dikirim ke affiliator
+                          </small>
+                        </>
+                      ) : null}
+                    </label>
+                  </h5>
                   <Dropdown
                     value={typeAnnouncement}
                     options={[
@@ -400,28 +419,35 @@ const InformationPage = () => {
                   />
                   <h5 className="text-muted mt-3">Masukan tipe announcement</h5>
 
-                  <h5 className="required">Hubungkan Kelas</h5>
-                  {courseAnnouncement?.label ? (
-                    <div className="d-flex mt-5">
-                      <div className="w-100">
-                        <TextField
-                          props={{
-                            disabled: true,
-                            value: courseAnnouncement.label,
-                          }}
-                        ></TextField>
-                      </div>
-                    </div>
+                  {typeAnnouncement === AnnouncementTypeEnum.Course ? (
+                    <>
+                      {" "}
+                      <h5 className="required">Hubungkan Kelas</h5>
+                      {courseAnnouncement?.label ? (
+                        <div className="d-flex mt-5">
+                          <div className="w-100">
+                            <TextField
+                              props={{
+                                disabled: true,
+                                value: courseAnnouncement.label,
+                              }}
+                            ></TextField>
+                          </div>
+                        </div>
+                      ) : null}
+                      <AsyncPaginate
+                        className="mt-5"
+                        isSearchable={true}
+                        loadOptions={loadOptions}
+                        onChange={(value) => {
+                          handleConnectCourse(value as any);
+                        }}
+                      ></AsyncPaginate>
+                      <h5 className="text-muted mt-3">
+                        Hubungkan dengan kelas
+                      </h5>
+                    </>
                   ) : null}
-                  <AsyncPaginate
-                    className="mt-5"
-                    isSearchable={true}
-                    loadOptions={loadOptions}
-                    onChange={(value) => {
-                      handleConnectCourse(value as any);
-                    }}
-                  ></AsyncPaginate>
-                  <h5 className="text-muted mt-3">Hubungkan dengan kelas</h5>
 
                   <h5 className="required mt-5">Konten Announcement</h5>
                   <div
