@@ -15,9 +15,9 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import useInformationViewModel, {
   AddMentorHandler,
   OptionType,
+  useAllListSubscriberDropdown,
   useMentorsDropdown,
 } from "./Information-view-model";
-import { on } from "events";
 
 const ClassInformation = ({}) => {
   const ReactQuill = useMemo(
@@ -58,6 +58,13 @@ const ClassInformation = ({}) => {
     removeMentor,
   } = AddMentorHandler();
 
+  const {
+    loadOptions: mailketingLoadOptions,
+    getAllListSubscriber,
+    handleInputSubscriberListId,
+    inputSubscriberListId,
+  } = useAllListSubscriberDropdown();
+
   return (
     <>
       {inputErrorMessage && (
@@ -77,7 +84,7 @@ const ClassInformation = ({}) => {
               onChange: setInputClassName,
             }}
           />
-          <h5 className="mt-5 required">Deskrpsi Kelas</h5>
+          <h5 className="mt-5 required">Deskripsi Kelas</h5>
           <div
             className=""
             style={{
@@ -265,6 +272,15 @@ const ClassInformation = ({}) => {
               }
             }}
           ></Dropdown>
+          <h5 className="mt-5">Pengaturan Mailketing</h5>
+          <AsyncPaginate
+            defaultValue={inputSubscriberListId}
+            value={inputSubscriberListId}
+            loadOptions={mailketingLoadOptions as any}
+            onChange={(value) => {
+              handleInputSubscriberListId(value);
+            }}
+          />
         </KTCardBody>
       </KTCard>
     </>

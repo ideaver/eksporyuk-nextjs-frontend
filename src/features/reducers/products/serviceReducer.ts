@@ -5,10 +5,11 @@ interface ServiceState {
   serviceStatus: boolean;
   serviceDescription: string;
   serviceType: string;
+  subscriberListId: string;
   serviceCost: string;
   serviceObjective: string[];
   servicePortfolio: string[];
-  serviceImages: { path: string, fileType: string }[];
+  serviceImages: { path: string; fileType: string }[];
   uploadImages: { path: string }[];
   serviceDiscountCost: string;
 }
@@ -18,10 +19,12 @@ const initialState: ServiceState = {
   serviceStatus: false,
   serviceDescription: "",
   serviceType: "",
+  subscriberListId: "",
   serviceCost: "",
   serviceObjective: [],
   servicePortfolio: [],
-  serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG"}],
+  // serviceImages: [{ path: "/media/avatars/300-1.jpg", fileType: "PNG" }],
+  serviceImages: [{ path: "", fileType: "PNG" }],
   uploadImages: [{ path: "" }],
   serviceDiscountCost: "",
 };
@@ -45,13 +48,19 @@ export const serviceSlice = createSlice({
     changeServiceCost: (state, action: PayloadAction<string>) => {
       state.serviceCost = action.payload;
     },
+    changeSubscriberListId: (state, action: PayloadAction<string>) => {
+      state.subscriberListId = action.payload;
+    },
     changeServiceObjective: (state, action: PayloadAction<string[]>) => {
       state.serviceObjective = action.payload;
     },
     changeServicePortfolio: (state, action: PayloadAction<string[]>) => {
       state.servicePortfolio = action.payload;
     },
-    changeServiceImages: (state, action: PayloadAction<{ path: string, fileType: string }[]>) => {
+    changeServiceImages: (
+      state,
+      action: PayloadAction<{ path: string; fileType: string }[]>
+    ) => {
       state.serviceImages = action.payload;
     },
     changeUploadImages: (state, action: PayloadAction<{ path: string }[]>) => {
@@ -59,8 +68,8 @@ export const serviceSlice = createSlice({
     },
     changeServiceDiscountCost: (state, action: PayloadAction<string>) => {
       state.serviceDiscountCost = action.payload;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -74,6 +83,7 @@ export const {
   changeServicePortfolio,
   changeUploadImages,
   changeServiceDiscountCost,
+  changeSubscriberListId,
 } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

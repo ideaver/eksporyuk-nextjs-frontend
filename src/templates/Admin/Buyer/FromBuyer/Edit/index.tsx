@@ -46,6 +46,8 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
     setAbbreviation,
     setPrice,
     setDeliveryType,
+    hsCode,
+    setHsCode,
   } = useEditBuyerViewModel({ id, data });
   return (
     <>
@@ -322,6 +324,19 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah harga yang dibutuhkan buyer
               </h5>
+              <h5 className="">HS Code</h5>
+              <TextField
+                placeholder="Masukan HS code"
+                props={{
+                  value: hsCode,
+                  onChange: (e: any) => {
+                    setHsCode(e.target.value);
+                  },
+                }}
+              />
+              <h5 className="text-muted mt-2 mb-8">
+                HS code yang diinginkan buyer
+              </h5>
               <h5 className="">Shipping Terms</h5>
               <Dropdown
                 value={deliveryType}
@@ -331,7 +346,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 }}
               ></Dropdown>
               <h5 className="text-muted mt-2 mb-8">
-                Jumlah komoditas yang dibutuhkan buyer
+                Shipping terms yang diinginkan buyer
               </h5>
             </KTCardBody>
             <div className={"row flex-end mt-10"}>

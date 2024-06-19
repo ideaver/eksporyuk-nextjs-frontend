@@ -7,11 +7,12 @@ import useEditServiceViewModel, {
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const EditService = ({ id, data }: IEditProduct) => {
   const {
@@ -42,6 +43,9 @@ const EditService = ({ id, data }: IEditProduct) => {
     handleInputPortfolioChange,
     onSubmit,
     isLoading,
+    handleInputSubscriberListId,
+    inputSubscriberListId,
+    loadOptions,
   } = useEditServiceViewModel({ data, id });
 
   return (
@@ -160,7 +164,10 @@ const EditService = ({ id, data }: IEditProduct) => {
                             top: "-10px",
                             right: "-5px",
                           }}
-                          onClick={() => handleRemoveImage(index)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering file input
+                            handleRemoveImage(index);
+                          }}
                         ></i>
                       </div>
                     ))}
@@ -385,8 +392,16 @@ const EditService = ({ id, data }: IEditProduct) => {
               </div>
             </>
           )}
-
-          <div className="mb-5">
+          <h4 className="mt-5 text-gray-700">Pengaturan Mailketing</h4>
+          <AsyncPaginate
+            defaultValue={inputSubscriberListId}
+            value={inputSubscriberListId}
+            loadOptions={loadOptions as any}
+            onChange={(value) => {
+              handleInputSubscriberListId(value);
+            }}
+          />
+          <div className="mb-5 mt-5">
             <h4 className="required fw-bold text-gray-700">Status</h4>
             <Dropdown
               options={[

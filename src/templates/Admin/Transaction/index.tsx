@@ -12,6 +12,7 @@ import { Badge } from "@/stories/atoms/Badge/Badge";
 import {
   AdminFindManyTransactionQuery,
   AdminFindTransactionManyQuery,
+  QueryMode,
   SortOrder,
   TransactionCategoryEnum,
   TransactionStatusEnum,
@@ -133,16 +134,93 @@ const Transaction = () => {
             transactionCategory?: {
               equals: string;
             };
-          } = {};
-          if (exportFilterStatus !== "all") {
+            OR: [
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            bill_title: {
+                              contains: string;
+                              mode: QueryMode;
+                            };
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              },
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            sender_name: {
+                              contains: string;
+                              mode: QueryMode;
+                            };
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              }
+            ];
+          } = {
+            OR: [
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            bill_title: {
+                              contains: transactionFindSearch,
+                              mode: QueryMode.Insensitive,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                payment: {
+                  is: {
+                    invoice: {
+                      is: {
+                        paymentForGateway: {
+                          is: {
+                            sender_name: {
+                              contains: transactionFindSearch,
+                              mode: QueryMode.Insensitive,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          };
+          if (transactionFindStatus !== "all") {
             where.status = {
-              equals: exportFilterStatus,
+              equals: transactionFindStatus,
             };
           }
 
-          if (exportFilterCategory !== "all") {
+          if (transactionFindCategory !== "all") {
             where.transactionCategory = {
-              equals: exportFilterCategory,
+              equals: transactionFindCategory,
             };
           }
           handleLoadingExportChange(true);
@@ -646,7 +724,7 @@ const DownloadReportModal = ({
         <p className="fw-bold text-muted mt-2">
           Pilih rentang waktu data yang ingin diexport
         </p>
-        <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Status</p>
+        {/* <p className="fw-bold text-gray-700 mt-4 mb-2">Filter Status</p>
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -667,7 +745,7 @@ const DownloadReportModal = ({
               setFilterCategory(e as TransactionCategoryEnum | "all");
             }}
           />
-        </div>
+        </div> */}
       </KTModal>
     </div>
   );

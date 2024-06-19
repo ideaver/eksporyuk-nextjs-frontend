@@ -107,16 +107,22 @@ const useActivityViewModel = () => {
 
   // social media forum state
   const [facebookCommunities, setFacebookCommunities] = useState<
-    string | undefined
+    string | undefined | null
   >("");
   const [whatsappCommunities, setWhatsappCommunities] = useState<
-    string | undefined
+    string | undefined | null
   >("");
   const [telegramCommunities, setTelegramCommunities] = useState<
-    string | undefined
+    string | undefined | null
   >("");
   const [instagramCommunities, setInstagramCommunities] = useState<
-    string | undefined
+    string | undefined | null
+  >("");
+  const [youtubeCommunities, setYoutubeCommunities] = useState<
+    string | undefined | null
+  >("");
+  const [tiktokCommunities, setTiktokCommunities] = useState<
+    string | undefined | null
   >("");
   const [isLoadingPlatformSetting, setIsLoadingPlatformSetting] =
     useState(false);
@@ -150,6 +156,10 @@ const useActivityViewModel = () => {
       setWhatsappCommunities(
         values.platformSettingFindFirst?.whatsappCommunities
       );
+      setYoutubeCommunities(
+        values.platformSettingFindFirst?.youtubeCommunities
+      );
+      setTiktokCommunities(values.platformSettingFindFirst?.tiktokCommunities);
     },
   });
 
@@ -177,6 +187,12 @@ const useActivityViewModel = () => {
             whatsappCommunities: {
               set: whatsappCommunities,
             },
+            youtubeCommunities: {
+              set: youtubeCommunities,
+            },
+            tiktokCommunities: {
+              set: tiktokCommunities,
+            },
           },
         },
       });
@@ -192,6 +208,12 @@ const useActivityViewModel = () => {
       setWhatsappCommunities(
         response.data?.platformSettingUpdateOne?.whatsappCommunities
       );
+      setTiktokCommunities(
+        response.data?.platformSettingUpdateOne?.tiktokCommunities
+      );
+      setWhatsappCommunities(
+        response.data?.platformSettingUpdateOne?.youtubeCommunities
+      );
       setSwalProps({
         show: true,
         title: "Berhasil",
@@ -204,7 +226,7 @@ const useActivityViewModel = () => {
       console.log(error);
       setSwalProps({
         show: true,
-        title: "Terjadi kesalahan saat menambahkan mentor",
+        title: "Terjadi kesalahan",
         text: (error as ApolloError).message,
         icon: "error",
         confirmButtonText: "OK",
@@ -216,6 +238,10 @@ const useActivityViewModel = () => {
   };
 
   return {
+    setTiktokCommunities,
+    tiktokCommunities,
+    setYoutubeCommunities,
+    youtubeCommunities,
     swalProps,
     setSwalProps,
     setIsLoadingPlatformSetting,

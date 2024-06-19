@@ -238,14 +238,43 @@ const useAdminOrderHeaderViewModel = ({
       return error;
     }
   };
+
+  function getProductName(cartItems: any[]) {
+    const types: any = [];
+    cartItems.forEach((item, index) => {
+      if (item.productId !== null) types.push(item.product?.name);
+      if (item.bundleId !== null) types.push(item.bundle?.name);
+      if (item.courseId !== null) types.push(item.course?.title);
+      if (item.membershipCategoryId !== null) types.push(item.membership?.name);
+      if (item.productServiceId !== null) types.push(item.productService?.name);
+    });
+    return types.filter(Boolean).join(", ");
+  }
+
   const [followUpDeleteOne] = useFollowUpDeleteOneMutation();
   const handleSendFollowUp = () => {
     const contentReplaced = followUpTamplate
       ?.replace(/\[\[nama\]\]/g, `${data?.createdByUser.name}`)
-      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(data?.createdAt))
+      .replace(/\[\[tanggal\]\]/g, formatDate(data?.createdAt))
       .replace(/\[\[email\]\]/g, `${data?.createdByUser.email}`)
       .replace(/\[\[nomor-telepon\]\]/g, `${data?.createdByUser.phoneId}`)
-      .replace(/\[\[kupon\]\]/g, `${data?.coupon?.affiliatorCoupon?.code}`);
+      .replace(
+        /\[\[kupon\]\]/g,
+        `${data?.coupon?.affiliatorCoupon?.code ?? "--"}`
+      )
+      .replace(
+        /\[\[nama-produk\]\]/g,
+        `${getProductName(data?.cart?.cartItems ?? [])}`
+      )
+      .replace(
+        /\[\[total-order\]\]/g,
+        `${data?.cart.cartItems?.[0]?.totalPrice}`
+      )
+      .replace(/\[\[jenis-produk\]\]/g, `${data?.cart.cartItems?.[0]?.type}`)
+      .replace(
+        /\[\[id-invoice-produk\]\]/g,
+        `${data?.invoices?.[0]?.uniqueCode}`
+      );
     const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
     return `https://api.whatsapp.com/send?phone=${data?.createdByUser.phoneId}&text=${encodedMessage}`;

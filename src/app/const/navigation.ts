@@ -197,7 +197,12 @@ export const adminMenus: MenuSection[] = [
         icon: "message-notif",
       },
       {
-        title: "Manajemen Aplikasi",
+        title: "Manajemen Dokumen",
+        to: "/admin/document",
+        icon: "document",
+      },
+      {
+        title: "Aktivitas Pengguna",
         to: "/admin/activity",
         icon: "gear",
       },

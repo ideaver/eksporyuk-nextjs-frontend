@@ -1,4 +1,4 @@
-import { AffiliateCommissionTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { MembershipBenefitServiceEnum } from "@/app/service/graphql/gen/graphql";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface membershipState {
@@ -6,20 +6,24 @@ interface membershipState {
   description: string;
   duration: number;
   price: string;
+  subscriberListId: string;
   benefits: string;
   courses: { value: number; label: string }[];
   affiliateFirstCommision: number;
   affiliateCommision: number;
+  benefitService: MembershipBenefitServiceEnum[];
 }
 const initialState: membershipState = {
   name: "",
   description: "",
   duration: 0,
   price: "0",
+  subscriberListId: "",
   benefits: "",
   courses: [],
   affiliateFirstCommision: 100,
   affiliateCommision: 100,
+  benefitService: [],
 };
 
 export const membershipSlice = createSlice({
@@ -38,6 +42,9 @@ export const membershipSlice = createSlice({
     changeBenefits: (state, action: PayloadAction<string>) => {
       state.benefits = action.payload;
     },
+    changeSubscriberListId: (state, action: PayloadAction<string>) => {
+      state.subscriberListId = action.payload;
+    },
     changePrice: (state, action: PayloadAction<string>) => {
       state.price = action.payload;
     },
@@ -53,6 +60,12 @@ export const membershipSlice = createSlice({
     changeAffiliateFirstCommission: (state, action: PayloadAction<number>) => {
       state.affiliateFirstCommision = action.payload;
     },
+    changeBenefitService: (
+      state,
+      action: PayloadAction<MembershipBenefitServiceEnum[]>
+    ) => {
+      state.benefitService = action.payload;
+    },
   },
 });
 
@@ -65,6 +78,8 @@ export const {
   changeCourses,
   changeAffiliateCommission,
   changeAffiliateFirstCommission,
+  changeSubscriberListId,
+  changeBenefitService,
 } = membershipSlice.actions;
 
 export default membershipSlice.reducer;

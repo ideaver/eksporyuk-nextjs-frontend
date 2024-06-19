@@ -1,29 +1,27 @@
-import Link from "next/link";
 import { QueryResult } from "@apollo/client";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { KTModal } from "@/_metronic/helpers/components/KTModal";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
+import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { KTTableHead } from "@/_metronic/helpers/components/KTTableHead";
 import { PageTitle } from "@/_metronic/layout/core";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
-import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import DeleteProductModal from "./components/DeleteProductModal";
 
-import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
+import currencyFormatter from "@/_metronic/helpers/Formatter";
 import {
   ProductServiceFindManyQuery,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
-import currencyFormatter from "@/_metronic/helpers/Formatter";
+import useProductsViewModel, { breadcrumbs } from "./Products-view-model";
 
 const CoursePage = ({}) => {
   const {
@@ -289,14 +287,16 @@ const Body = ({
                     defaultChildren={false}
                     onChange={() => handleSingleCheck(index)}
                   >
-                    <Link href={`/admin/product-management/products/detail/${product.id}`}>
+                    <Link
+                      href={`/admin/product-management/products/detail/${product.id}`}
+                    >
                       <div className="d-flex align-items-center">
                         <div className="symbol symbol-50px me-5">
                           <span className="symbol-label bg-gray-600">
                             <img
                               src={
                                 product?.images?.[0]?.path ??
-                                "/media/products/1.png"
+                                "/media/avatars/blank.png"
                               }
                               width={50}
                               height={50}
@@ -345,7 +345,9 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() =>
-                            router.push(`/admin/product-management/products/edit/${product.id}`)
+                            router.push(
+                              `/admin/product-management/products/edit/${product.id}`
+                            )
                           }
                         >
                           Edit

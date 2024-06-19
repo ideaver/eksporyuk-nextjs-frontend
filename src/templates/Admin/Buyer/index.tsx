@@ -122,6 +122,7 @@ const BuyerPage = () => {
                   <th className="text-end min-w-250px">TANGGAL TERDAFTAR</th>
                   <th className="text-end min-w-200px">DEMAND</th>
                   <th className="text-end min-w-250px">QUANTITY REQUIRED</th>
+                  <th className="text-end min-w-200px">HS CODE</th>
                   <th className="text-end min-w-200px">SHIPPING TERMS</th>
                   <th className="text-end min-w-125px">ACTION</th>
                 </KTTableHead>
@@ -181,6 +182,9 @@ const BuyerPage = () => {
                         </td>
                         <td className="min-w-200px text-end fw-bold text-muted">
                           {buyer.quantity} <span>{buyer.abbreviation}</span>
+                        </td>
+                        <td className="min-w-200px text-end fw-bold text-muted">
+                          {buyer.hsCode}
                         </td>
                         <td className="min-w-200px text-end fw-bold text-muted">
                           {buyer.deliveryType}

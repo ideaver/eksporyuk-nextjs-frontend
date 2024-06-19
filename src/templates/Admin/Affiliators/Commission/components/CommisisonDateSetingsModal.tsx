@@ -135,7 +135,7 @@ const CommissionDateSettingsModal = ({
     <>
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Pengaturan Transfer Komisi Otomatis</Modal.Title>
+          <Modal.Title>Pengaturan Transfer Komisi Otomatis Ke E-Wallet Affiliator</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Button
@@ -145,7 +145,7 @@ const CommissionDateSettingsModal = ({
               setShowCreateModal(true);
             }}
           >
-            Buat Baru
+            Tambahkan Tanggal
           </Button>
  {data?.automateTransferCommissionSettingFindMany?.map((item) => (
   <Card key={item.id} className="mb-3 shadow-sm">
@@ -250,7 +250,7 @@ const CommissionDateSettingsModal = ({
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Perbarui tanggal transfer otomatis baru</Modal.Title>
+          <Modal.Title>Perbarui tanggal transfer otomatis</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedItem && (

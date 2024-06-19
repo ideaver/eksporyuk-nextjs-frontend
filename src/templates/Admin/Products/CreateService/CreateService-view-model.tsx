@@ -1,24 +1,30 @@
-import { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
+import { postDataAPI } from "@/app/service/api/rest-service";
+import {
+  useGetAllListSubscribersQuery,
+  useProductServiceCreateOneMutation,
+} from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
-  changeServiceName,
-  changeServiceImages,
-  changeServiceDesc,
   changeServiceCost,
-  changeServiceType,
-  changeServiceObjective,
-  changeServiceStatus,
-  changeServicePortfolio,
-  changeUploadImages,
+  changeServiceDesc,
   changeServiceDiscountCost,
+  changeServiceImages,
+  changeServiceName,
+  changeServiceObjective,
+  changeServicePortfolio,
+  changeServiceStatus,
+  changeServiceType,
+  changeSubscriberListId,
+  changeUploadImages,
 } from "@/features/reducers/products/serviceReducer";
-import { useProductServiceCreateOneMutation } from "@/app/service/graphql/gen/graphql";
-import { postDataAPI } from "@/app/service/api/rest-service";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import { OptionType } from "../../Course/CreateOrEdit/Information/Information-view-model";
 import useProductsViewModel from "../Products-view-model";
 
 export const breadcrumbs = [
@@ -69,11 +75,12 @@ const ObjectiveHandler = () => {
   const serviceObjective = useSelector(
     (state: RootState) => state.service.serviceObjective
   );
-  const [itemObjective, setItemObjective] = useState<string[]>(serviceObjective);
+  const [itemObjective, setItemObjective] =
+    useState<string[]>(serviceObjective);
 
-  useEffect(() => {
-    setItemObjective(serviceObjective);
-  }, [serviceObjective]);
+  // useEffect(() => {
+  //   setItemObjective(serviceObjective);
+  // }, [serviceObjective]);
 
   useEffect(() => {
     dispatch(changeServiceObjective(itemObjective));
@@ -106,11 +113,8 @@ const PortfolioHandler = () => {
   const servicePortfolio = useSelector(
     (state: RootState) => state.service.servicePortfolio
   );
-  const [itemPortfolio, setItemPortfolio] = useState<string[]>(servicePortfolio);
-
-  useEffect(() => {
-    setItemPortfolio(servicePortfolio);
-  }, [servicePortfolio]);
+  const [itemPortfolio, setItemPortfolio] =
+    useState<string[]>(servicePortfolio);
 
   useEffect(() => {
     dispatch(changeServicePortfolio(itemPortfolio));
@@ -135,6 +139,65 @@ const PortfolioHandler = () => {
     addPortfolioItem,
     removePortfolioItem,
     handleInputPortfolioChange,
+  };
+};
+
+export const useAllListSubscriberDropdown = () => {
+  const dispatch = useDispatch();
+  const [inputSubscriberListId, setInputSubscriberListId] = useState<any>("");
+  const subscriberListId = useSelector(
+    (state: RootState) => state.service.subscriberListId
+  );
+
+  const getAllListSubscriber = useGetAllListSubscribersQuery({
+    onCompleted(data) {
+      const result =
+        data?.getAllListSubscriber?.map((list) => ({
+          value: list.list_id,
+          label: `${list.list_id} - ${list.list_name}`,
+        })) ?? [];
+      // Check if subscriberListId is not null
+      if (subscriberListId) {
+        // Search for the subscriberListId in the result
+        const selectedOption = result.find(
+          (option) => option.value === subscriberListId
+        );
+        // If found, set inputSubscriberListId to the found object
+        if (selectedOption) {
+          setInputSubscriberListId(selectedOption);
+        }
+      }
+    },
+  });
+
+  const handleInputSubscriberListId = (value: any) => {
+    setInputSubscriberListId(value);
+
+    dispatch(changeSubscriberListId(value.value));
+  };
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
+  return {
+    loadOptions,
+    getAllListSubscriber,
+    inputSubscriberListId,
+    handleInputSubscriberListId,
   };
 };
 
@@ -165,7 +228,6 @@ const useCreateServiceViewModel = () => {
     (value) => changeServiceDesc(value)
   );
 
-  
   // Currency stuff
   const serviceCost = useSelector(
     (state: RootState) => state.service.serviceCost
@@ -174,14 +236,14 @@ const useCreateServiceViewModel = () => {
   const serviceDiscountCost = useSelector(
     (state: RootState) => state.service.serviceDiscountCost
   );
-  
+
   const handleChangeServiceCost = (price: string) => {
     dispatch(changeServiceCost(price));
   };
 
   const handleChangeServiceDiscountCost = (price: string) => {
     dispatch(changeServiceDiscountCost(price));
-  }
+  };
 
   // Status handler
   const serviceStatus = useSelector(
@@ -218,7 +280,7 @@ const useCreateServiceViewModel = () => {
 
     const url = await response?.data;
     return response?.data;
-  }
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -249,7 +311,7 @@ const useCreateServiceViewModel = () => {
           // const updatedImg = [...uploadImages, ...newImgObj];
           // dispatch(changeUploadImages(updatedImg));
           dispatch(changeServiceImages(updatedImages));
-          setSelectedFiles(prevFiles => [...prevFiles, ...newSelectedFiles]);
+          setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
         }
       };
 
@@ -265,8 +327,12 @@ const useCreateServiceViewModel = () => {
     const updatedImg = updatedImages.filter(
       (_, index) => index !== indexToRemove
     );
+    const updatedImgLocal = selectedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
     dispatch(changeServiceImages(updatedImages)); // Dispatch action to update images
     dispatch(changeUploadImages(updatedImg));
+    setSelectedFiles(updatedImgLocal);
   };
 
   const handleFileClick = () => {
@@ -290,7 +356,7 @@ const useCreateServiceViewModel = () => {
   const [productServiceCreateMutation] = useProductServiceCreateOneMutation({
     onCompleted: () => {
       productServiceFindMany.refetch();
-    }
+    },
   });
 
   const handleProductServiceCreateMutation = async ({
@@ -303,27 +369,30 @@ const useCreateServiceViewModel = () => {
     servicePortfolio,
     uploadImages,
     serviceDiscountCost,
+    subscriberListId,
   }: any) => {
-    const data = await productServiceCreateMutation({
-      variables: {
-        data: {
-          name: serviceName,
-          description: serviceDesc,
-          productServiceCategory: serviceType,
-          images: {
-            connect: uploadImages,
-          },
-          basePrice: Number(serviceCost),
-          isActive: serviceStatus,
-          benefits: {
-            set: serviceObjective,
-          },
-          portofolio: {
-            set: servicePortfolio,
-          },
-          salePrice: Number(serviceDiscountCost),
+    const variables = {
+      data: {
+        name: serviceName,
+        description: serviceDesc,
+        productServiceCategory: serviceType,
+        subscriberListId: subscriberListId,
+        images: {
+          connect: uploadImages,
         },
+        basePrice: Number(serviceCost),
+        isActive: serviceStatus,
+        benefits: {
+          set: serviceObjective,
+        },
+        portofolio: {
+          set: servicePortfolio,
+        },
+        salePrice: Number(serviceDiscountCost),
       },
+    };
+    const data = await productServiceCreateMutation({
+      variables: variables,
     });
 
     return data;
@@ -340,8 +409,11 @@ const useCreateServiceViewModel = () => {
     dispatch(changeServicePortfolio([]));
     dispatch(changeServiceImages([]));
     dispatch(changeServiceDiscountCost(""));
-  }
-
+    dispatch(changeSubscriberListId(""));
+  };
+  const subscriberListId = useSelector(
+    (state: RootState) => state.service.subscriberListId
+  );
   // Submit all data
   const onSubmit = async () => {
     if (
@@ -361,9 +433,9 @@ const useCreateServiceViewModel = () => {
 
     try {
       // Upload images
-      const uploadPromises = selectedFiles.map(file => convertImg(file));
+      const uploadPromises = selectedFiles.map((file) => convertImg(file));
       const uploadedImages = await Promise.all(uploadPromises);
-      const uploadImgArray = uploadedImages.map(path => ({ path }));
+      const uploadImgArray = uploadedImages.map((path) => ({ path }));
 
       const data = await handleProductServiceCreateMutation({
         serviceType,
@@ -375,9 +447,9 @@ const useCreateServiceViewModel = () => {
         servicePortfolio,
         uploadImages: uploadImgArray,
         serviceDiscountCost,
+        subscriberListId,
       });
       const result = data.data;
-      console.log(result);
       dispatch(changeServiceObjective([]));
       dispatch(changeServicePortfolio([]));
       resetFormData();

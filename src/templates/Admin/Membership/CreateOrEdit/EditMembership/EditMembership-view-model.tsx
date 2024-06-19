@@ -1,4 +1,5 @@
 import {
+  MembershipBenefitServiceEnum,
   MembershipCategoryFindOneQuery,
   useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
@@ -45,11 +46,13 @@ interface EditMembershipForm {
   description: string | undefined;
   price: number | undefined;
   benefits: string | undefined;
+  subscriberListId?: string;
   duration: number | undefined;
   id: string | string[] | undefined;
   courses: { value: number; label: string }[] | undefined;
   affiliateCommission: number | undefined;
   affiliateFirstCommission: number | undefined;
+  benefitService: MembershipBenefitServiceEnum[] | undefined | null;
 }
 
 const useEditMembershipForm = ({
@@ -58,10 +61,12 @@ const useEditMembershipForm = ({
   price,
   benefits,
   duration,
+  subscriberListId,
   id,
   courses,
   affiliateCommission,
   affiliateFirstCommission,
+  benefitService,
 }: EditMembershipForm) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -77,6 +82,7 @@ const useEditMembershipForm = ({
       .min(10, "Minimal 10 simbol")
       .required("Deskripsi diperlukan"),
     price: Yup.number().min(2, "Minimal 2 simbol").required("Harga diperlukan"),
+    subscriberListId: Yup.string().optional(),
     benefits: Yup.string()
       .min(5, "Minimal 5 simbol")
       .required("Benefit diperlukan"),
@@ -93,6 +99,7 @@ const useEditMembershipForm = ({
       name,
       description,
       price,
+      subscriberListId,
       benefits,
       duration,
     },
@@ -115,6 +122,9 @@ const useEditMembershipForm = ({
               price: {
                 set: price,
               },
+              subscriberListId: {
+                set: subscriberListId,
+              },
               benefits: {
                 set: benefits,
               },
@@ -129,6 +139,9 @@ const useEditMembershipForm = ({
               },
               affiliateFirstCommission: {
                 set: affiliateFirstCommission,
+              },
+              membershipBenefitServiceEnum: {
+                set: benefitService,
               },
             },
           },
@@ -169,6 +182,13 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
   const [affiliateFirstCommission, setAffiliateFirstCommission] = useState(
     data.membershipCategoryFindOne?.affiliateFirstCommission
   );
+  const [benefitService, setBenefitService] = useState(
+    data.membershipCategoryFindOne?.membershipBenefitServiceEnum
+  );
+
+  const [subscriberListId, setSubscriberListId] = useState(
+    data.membershipCategoryFindOne?.subscriberListId || undefined
+  );
 
   const handleChangeCourses = (course: { value: number; label: string }) => {
     setCourses((prev: any) => [...prev, course]);
@@ -188,13 +208,32 @@ const useEditMembershipViewModel = ({ id, data }: IEditMembershipProps) => {
     courses,
     affiliateCommission,
     affiliateFirstCommission,
+    subscriberListId,
+    benefitService,
   });
 
+  const benefitServiceOptions = Object.keys(MembershipBenefitServiceEnum).map(
+    (key) => {
+      return {
+        value:
+          MembershipBenefitServiceEnum[
+            key as keyof typeof MembershipBenefitServiceEnum
+          ],
+        label: key,
+      };
+    }
+  );
+
   return {
+    setBenefitService,
+    benefitService,
+    benefitServiceOptions,
     affiliateCommission,
     affiliateFirstCommission,
     setAffiliateCommission,
     setAffiliateFirstCommission,
+    subscriberListId,
+    setSubscriberListId,
     handleChangeCourses,
     handleDeleteCourses,
     courses,

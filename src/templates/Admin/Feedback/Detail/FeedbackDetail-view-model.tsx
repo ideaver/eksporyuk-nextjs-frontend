@@ -120,10 +120,14 @@ const useFeedbackDetailViewModel = () => {
   const handleSendFollowUp = () => {
     const contentReplaced = followUpState.followUpTamplate
       ?.replace(/\[\[nama\]\]/g, `${followUpState.name}`)
-      .replace(/\[\[tanggal-pembelian\]\]/g, formatDate(followUpState.date))
+      .replace(/\[\[tanggal\]\]/g, formatDate(followUpState.date))
       .replace(/\[\[email\]\]/g, `${followUpState.email}`)
       .replace(/\[\[nomor-telepon\]\]/g, `${followUpState.phone}`)
-      .replace(/\[\[kupon\]\]/g, `${followUpState.coupon}`);
+      .replace(/\[\[kupon\]\]/g, `--`)
+      .replace(/\[\[nama-produk\]\]/g, `--`)
+      .replace(/\[\[total-order\]\]/g, `--`)
+      .replace(/\[\[jenis-produk\]\]/g, `--`)
+      .replace(/\[\[id-invoice-produk\]\]/g, `--`);
     const encodedMessage = encodeURIComponent(`${contentReplaced}`);
 
     return `https://web.whatsapp.com/send?phone=${followUpState.phone}&text=${encodedMessage}`;

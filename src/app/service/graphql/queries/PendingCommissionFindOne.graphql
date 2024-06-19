@@ -1,0 +1,42 @@
+query PendingCommissionFindOnee(
+  $pendingCommissionFindOneArgs: PendingCommissionFindOneArgs!
+) {
+  pendingCommissionFindOne(
+    pendingCommissionFindOneArgs: $pendingCommissionFindOneArgs
+  ) {
+    productName
+    order {
+      createdAt
+      id
+      createdByUser {
+        email
+        name
+        phone {
+          phoneNumber
+        }
+        affiliator {
+          user {
+            name
+          }
+        }
+      }
+      invoices {
+        paymentForGateway {
+          sender_name
+          sender_email
+          amount
+          bill_title
+        }
+        uniqueCode
+      }
+    }
+    affiliateBy {
+      name
+      email
+      phone {
+        phoneNumber
+      }
+    }
+    amountCommission
+  }
+}

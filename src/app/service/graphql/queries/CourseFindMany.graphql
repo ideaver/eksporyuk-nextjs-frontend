@@ -138,5 +138,6 @@ query CourseFindMany(
       filePath
     }
     affiliateCommissionType
+    subscriberListId
   }
 }

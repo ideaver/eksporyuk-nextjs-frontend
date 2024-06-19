@@ -8,6 +8,7 @@ import {
   changeDemand,
   changeDemandQuantity,
   changeEmail,
+  changeHsCode,
   changePrice,
   changeShippingTerms,
   changeTelephoneNumber,
@@ -39,6 +40,7 @@ const useResetBuyerState = () => {
     dispatch(changeEmail(""));
     dispatch(changeShippingTerms("none"));
     dispatch(changeTelephoneNumber(""));
+    dispatch(changeHsCode(""));
     router.push("/admin/buyers");
   };
   return { resetBuyerState };
@@ -62,6 +64,7 @@ export const useBuyerInformationForm = () => {
     demand,
     demandQuantity,
     shippingTerms,
+    hsCode,
   } = useSelector((state: RootState) => state.buyer);
 
   const { data: session, status } = useSession();
@@ -95,6 +98,7 @@ export const useBuyerInformationForm = () => {
           shippingTerms === "none"
             ? null
             : (shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum),
+        hsCode: hsCode,
       },
     },
   });

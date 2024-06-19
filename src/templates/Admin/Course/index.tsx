@@ -8,12 +8,12 @@ import {
   CourseFindManyQuery,
   CourseStatusEnum,
   SortOrder,
+  useCourseUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { Badge } from "@/stories/atoms/Badge/Badge";
 import { Alert } from "@/stories/molecules/Alert/Alert";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
@@ -43,8 +43,11 @@ const CoursePage = ({}) => {
     statusFindSearch,
     setStatusFindSearch,
     checked,
-    handleCourseDeleteMany,
+    // handleCourseDeleteMany,
   } = useCoursesViewModel();
+
+  const [courseUpdateOneMutation, { data, loading, error }] =
+    useCourseUpdateOneMutation();
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Kelas</PageTitle>
@@ -63,7 +66,7 @@ const CoursePage = ({}) => {
               setStatusFindSearch(e);
             }}
             checked={checked}
-            handleDeleteMany={handleCourseDeleteMany}
+            // handleDeleteMany={handleCourseDeleteMany}
           />
           <Body
             courseFindMany={courseFindMany}
@@ -71,6 +74,24 @@ const CoursePage = ({}) => {
             handleSingleCheck={handleSingleCheck}
             checkedItems={checkedItems}
             selectAll={selectAll}
+            handleDelete={async (id) => {
+              try {
+                await courseUpdateOneMutation({
+                  variables: {
+                    where: {
+                      id: id,
+                    },
+                    data: {
+                      status: {
+                        set: CourseStatusEnum.Archived,
+                      },
+                    },
+                  },
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            }}
           />
           <Footer
             pageLength={calculateTotalPage()}
@@ -95,15 +116,15 @@ const Head = ({
   status,
   onStatusChange,
   checked,
-  handleDeleteMany,
-}: {
+}: // handleDeleteMany,
+{
   onSearch: (val: string) => void;
   setOrderBy: (e: SortOrder) => void;
   orderBy: SortOrder;
   status: CourseStatusEnum | "all";
   onStatusChange: (e: CourseStatusEnum | "all") => void;
   checked: number[];
-  handleDeleteMany: () => Promise<void>;
+  // handleDeleteMany: () => Promise<void>;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -177,9 +198,7 @@ const Head = ({
         </div>
         <div className="col-lg-auto">
           {checked.length > 0 ? (
-            <Buttons buttonColor="danger" onClick={handleDeleteMany}>
-              Delete Selected
-            </Buttons>
+            <Buttons buttonColor="danger">Delete Selected</Buttons>
           ) : (
             <Buttons>
               <Link href={"courses/create/information"} className="text-white">
@@ -325,9 +344,11 @@ const Body = ({
   handleSingleCheck,
   checkedItems,
   selectAll,
+  handleDelete,
 }: {
   courseFindMany: QueryResult<CourseFindManyQuery>;
   handleSelectAllCheck: () => void;
+  handleDelete: (id: number) => void;
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
@@ -351,7 +372,7 @@ const Body = ({
               fontWeight="bold"
               className="text-uppercase align-middle"
             >
-              <th>
+              {/* <th>
                 <CheckBoxInput
                   checked={selectAll}
                   name="check-all"
@@ -361,7 +382,7 @@ const Body = ({
                 >
                   <></>
                 </CheckBoxInput>
-              </th>
+              </th> */}
               <th className="min-w-375px">Nama Course</th>
               {/* <th className="text-end min-w-100px">Kategori</th> */}
               <th className="text-end min-w-275px">Author</th>
@@ -386,7 +407,7 @@ const Body = ({
               );
               return (
                 <tr key={index}>
-                  <td className="align-middle">
+                  {/* <td className="align-middle">
                     <CheckBoxInput
                       className="ps-0"
                       checked={checkedItems[index]?.value ?? false}
@@ -397,7 +418,7 @@ const Body = ({
                     >
                       <></>
                     </CheckBoxInput>
-                  </td>
+                  </td> */}
                   <td className="align-middle ">
                     <div className="d-flex align-items-center">
                       <div className="symbol symbol-50px me-5">
@@ -415,7 +436,8 @@ const Body = ({
                       <div className="d-flex flex-column">
                         <Link
                           href={
-                            "/admin/product-management/courses/detail/information?id=" + course.id
+                            "/admin/product-management/courses/detail/information?id=" +
+                            course.id
                           }
                           className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold"
                         >
@@ -484,7 +506,8 @@ const Body = ({
                         <li>
                           <Link
                             href={
-                              "/admin/product-management/courses/edit/information?id=" + course.id
+                              "/admin/product-management/courses/edit/information?id=" +
+                              course.id
                             }
                             className="dropdown-item"
                           >
@@ -492,7 +515,12 @@ const Body = ({
                           </Link>
                         </li>
                         <li>
-                          <button className="dropdown-item">Hapus</button>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => handleDelete(course.id)}
+                          >
+                            Hapus
+                          </button>
                         </li>
                       </ul>
                     </div>

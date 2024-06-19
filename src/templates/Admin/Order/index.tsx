@@ -8,6 +8,7 @@ import {
   FollowUpFindManyQuery,
   OrderFindManyQuery,
   OrderStatusEnum,
+  QueryMode,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
@@ -30,9 +31,13 @@ import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { breadcrumbs } from "../Products/Products-view-model";
 import useAdminOrderViewModel from "./Order-view-model";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 
 const OrderPage = ({}) => {
   const { data: session } = useSession();
+  const isLoadingExport = useSelector(
+    (state: RootState) => state.transaction.loading
+  );
   const {
     exportModalState,
     setExportModalState,
@@ -63,89 +68,120 @@ const OrderPage = ({}) => {
     handleSendFollowUp,
     handleChangeFollowUpState,
     orderVariables,
+    orderFindSearch,
+    handleLoadingExportChange,
   } = useAdminOrderViewModel();
+
+  console.log(isLoadingExport);
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Order</PageTitle>
-      <KTCard className="h-100">
-        <KTCardBody>
-          <Head
-            onStatusChanged={(val) => {
-              if (val === "all") return setStatusFilter(undefined);
-              setStatusFilter(val as OrderStatusEnum);
-            }}
-            onSearch={(val) => {
-              setOrderFindSearch(val);
-            }}
-            orderBy={orderBy}
-            setOrderBy={(e) => {
-              setOrderBy(e);
-            }}
-          />
-          <Body
-            orderFindMany={orderFindMany}
-            handleSelectAllCheck={handleSelectAllCheck}
-            handleSingleCheck={handleSingleCheck}
-            checkedItems={checkedItems}
-            selectAll={selectAll}
-            followUpFindMany={followUpFindMany}
-            handleFollupChange={handleFollupChange}
-            handleEditState={handleEditState}
-            handleDeleteFollowUp={handleDeleteFollowUp}
-            handleSendFollowUp={handleSendFollowUp}
-            handleFollowUpState={handleChangeFollowUpState}
-          />
-          <Footer
-            pageLength={calculateTotalPage()}
-            currentPage={currentPage}
-            setCurrentPage={(val) => handlePageChange(val)}
-            setMentorFindSkip={(val) => {}}
-            setMentorFindTake={(val) => {
-              setOrderFindTake(val);
-            }}
-            orderFindTake={orderFindTake}
-          />
-        </KTCardBody>
-      </KTCard>
-      <ExportModal
-        loading={isLoading}
-        onClose={() => {}}
-        orderTypeOptions={orderTypeOptions}
-        onDropdownChange={(e) => {
-          setCategoryOrderType(e);
+      <LoadingOverlayWrapper
+        styles={{
+          overlay: (base) => ({
+            ...base,
+            background: "rgba(255, 255, 255, 0.8)",
+          }),
+          spinner: (base) => ({
+            ...base,
+            width: "100px",
+            "& svg circle": {
+              stroke: "rgba(3, 0, 0, 1)",
+            },
+          }),
         }}
-        orderType={categoryOrderType}
-        date={exportModalState}
-        onChange={([startDate, endDate]) => {
-          setExportModalState([startDate, endDate]);
-        }}
-        onClick={async () => {
-          setIsloading(true);
-          try {
-            const exportVariables = {
-              exportOrder: {
-                adminId: session?.user.id as string,
-                startDate: exportModalState[0]?.toISOString(),
-                endDate: exportModalState[1]?.toISOString(),
-                // orderType:
-                //   categoryOrderType === "all" ? null : categoryOrderType,
-                where: orderVariables.where,
-              },
-            };
-            console.log(exportVariables);
-            const response = await exportOrder({
-              variables: exportVariables,
-            });
-            const link = document.createElement("a");
-            link.href = response.data?.exportOrder?.fileURL as string;
-            link.click();
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsloading(false);
-          }
-        }}
-      />
+        active={isLoadingExport || isLoading}
+        spinner
+      >
+        <KTCard className="h-100">
+          <KTCardBody>
+            <Head
+              onStatusChanged={(val) => {
+                if (val === "all") return setStatusFilter(undefined);
+                setStatusFilter(val as OrderStatusEnum);
+              }}
+              onSearch={(val) => {
+                setOrderFindSearch(val);
+              }}
+              orderBy={orderBy}
+              setOrderBy={(e) => {
+                setOrderBy(e);
+              }}
+            />
+            <Body
+              orderFindMany={orderFindMany}
+              handleSelectAllCheck={handleSelectAllCheck}
+              handleSingleCheck={handleSingleCheck}
+              checkedItems={checkedItems}
+              selectAll={selectAll}
+              followUpFindMany={followUpFindMany}
+              handleFollupChange={handleFollupChange}
+              handleEditState={handleEditState}
+              handleDeleteFollowUp={handleDeleteFollowUp}
+              handleSendFollowUp={handleSendFollowUp}
+              handleFollowUpState={handleChangeFollowUpState}
+            />
+            <Footer
+              pageLength={calculateTotalPage()}
+              currentPage={currentPage}
+              setCurrentPage={(val) => handlePageChange(val)}
+              setMentorFindSkip={(val) => {}}
+              setMentorFindTake={(val) => {
+                setOrderFindTake(val);
+              }}
+              orderFindTake={orderFindTake}
+            />
+          </KTCardBody>
+        </KTCard>
+        <ExportModal
+          loading={isLoading}
+          onClose={() => {}}
+          orderTypeOptions={orderTypeOptions}
+          onDropdownChange={(e) => {
+            setCategoryOrderType(e);
+          }}
+          orderType={categoryOrderType}
+          date={exportModalState}
+          onChange={([startDate, endDate]) => {
+            setExportModalState([startDate, endDate]);
+          }}
+          onClick={async () => {
+            setIsloading(true);
+            handleLoadingExportChange(true);
+            try {
+              const exportVariables = {
+                exportOrder: {
+                  adminId: session?.user.id as string,
+                  startDate: new Date(
+                    exportModalState[0].getTime() -
+                      exportModalState[0].getTimezoneOffset() * 60000
+                  )?.toISOString(),
+                  endDate: new Date(
+                    exportModalState[1].getTime() +
+                      24 * 60 * 60 * 1000 -
+                      exportModalState[1].getTimezoneOffset() * 60000
+                  )?.toISOString(),
+                  // orderType:
+                  //   categoryOrderType === "all" ? null : categoryOrderType,
+                  where: orderVariables.where,
+                },
+              };
+              console.log(exportVariables);
+              const response = await exportOrder({
+                variables: exportVariables,
+              });
+              const link = document.createElement("a");
+              link.href = response.data?.exportOrder?.fileURL as string;
+              link.click();
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsloading(false);
+              handleLoadingExportChange(false);
+            }
+          }}
+        />
+      </LoadingOverlayWrapper>
     </>
   );
 };
@@ -380,7 +416,12 @@ const ExportModal = ({
           </Buttons>
         }
         buttonSubmit={
-          <Buttons classNames="fw-bold" disabled={loading} onClick={onClick}>
+          <Buttons
+            classNames="fw-bold"
+            data-bs-dismiss="modal"
+            disabled={loading}
+            onClick={onClick}
+          >
             Export
           </Buttons>
         }
@@ -620,7 +661,7 @@ const Body = ({
                     <p className="align-middle">
                       {" "}
                       <Badge
-                         label={
+                        label={
                           order?.statuses?.[order?.statuses?.length - 1]
                             ?.status ?? "Tidak Diketahui"
                         }
@@ -665,6 +706,12 @@ const Body = ({
                           phone: order.createdByUser.phoneId,
                           email: order.createdByUser.email,
                           coupon: order.coupon?.affiliatorCoupon?.code,
+                          productName: getProductName(
+                            order.cart.cartItems ?? []
+                          ),
+                          totalOrder: order.cart.cartItems?.[0]?.totalPrice,
+                          productType: order.cart.cartItems?.[0]?.type,
+                          idInvoiceProduct: latestInvoices?.uniqueCode,
                         });
                       }}
                     >

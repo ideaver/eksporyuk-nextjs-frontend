@@ -1,0 +1,15 @@
+query EksporDocumentFindLength(
+  $take: Int
+  $skip: Int
+  $orderBy: [EksporDocumentOrderByWithRelationInput!]
+  $where: EksporDocumentWhereInput
+) {
+  eksporDocumentFindMany(
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+    where: $where
+  ) {
+    id
+  }
+}

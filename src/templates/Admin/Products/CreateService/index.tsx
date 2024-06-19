@@ -2,15 +2,17 @@ import CurrencyInput from "react-currency-input-field";
 
 import useCreateServiceViewModal, {
   breadcrumbs,
+  useAllListSubscriberDropdown,
 } from "./CreateService-view-model";
 
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { RadioInput } from "@/stories/molecules/Forms/Advance/RadioInput/RadioInput";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const CreateService = () => {
   const {
@@ -43,6 +45,13 @@ const CreateService = () => {
     serviceDiscountCost,
     handleChangeServiceDiscountCost,
   } = useCreateServiceViewModal();
+
+  const {
+    loadOptions: mailketingLoadOptions,
+    getAllListSubscriber,
+    handleInputSubscriberListId,
+    inputSubscriberListId,
+  } = useAllListSubscriberDropdown();
 
   return (
     <>
@@ -163,7 +172,10 @@ const CreateService = () => {
                             top: "-10px",
                             right: "-5px",
                           }}
-                          onClick={() => handleRemoveImage(index)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering file input
+                            handleRemoveImage(index);
+                          }}
                         ></i>
                       </div>
                     ))}
@@ -349,7 +361,7 @@ const CreateService = () => {
                   Tambahkan Objektif
                 </Buttons>
               </div>
-              
+
               <div className="mb-3">
                 <h4 className="required fw-bold text-gray-700">
                   Portfolio Website
@@ -388,8 +400,16 @@ const CreateService = () => {
               </div>
             </>
           )}
-
-          <div className="mb-5">
+          <h4 className="mt-5 text-gray-700">Pengaturan Mailketing</h4>
+          <AsyncPaginate
+            defaultValue={inputSubscriberListId}
+            value={inputSubscriberListId}
+            loadOptions={mailketingLoadOptions as any}
+            onChange={(value) => {
+              handleInputSubscriberListId(value);
+            }}
+          />
+          <div className="mb-5 mt-5">
             <h4 className="required fw-bold text-gray-700">Status</h4>
             <Dropdown
               options={[
@@ -402,7 +422,11 @@ const CreateService = () => {
             <p className="text-muted fw-bold mt-5">Atur Status</p>
           </div>
 
-          <button className="btn btn-primary w-100 mt-3" onClick={onSubmit} disabled={isLoading}>
+          <button
+            className="btn btn-primary w-100 mt-3"
+            onClick={onSubmit}
+            disabled={isLoading}
+          >
             {isLoading ? "Submit Data..." : "Buat Service"}
           </button>
         </KTCardBody>

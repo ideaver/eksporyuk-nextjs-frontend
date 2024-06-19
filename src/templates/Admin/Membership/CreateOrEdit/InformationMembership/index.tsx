@@ -1,17 +1,6 @@
-import { PageTitle } from "@/_metronic/layout/core";
-import useInformationMembershipViewModel, {
-  breadcrumbs,
-  useCoursesDropdown,
-  useMembershipForm,
-} from "./InformationMembership-view-model";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import clsx from "clsx";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import CurrencyInput from "react-currency-input-field";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { useDispatch, useSelector } from "react-redux";
+import { PageTitle } from "@/_metronic/layout/core";
+import { RootState } from "@/app/store/store";
 import {
   changeBenefits,
   changeDescription,
@@ -19,14 +8,26 @@ import {
   changeName,
   changePrice,
 } from "@/features/reducers/membership/membershipReducer";
-import { AffiliateCommissionTypeEnum } from "@/app/service/graphql/gen/graphql";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import dynamic from "next/dynamic";
+import CurrencyInput from "react-currency-input-field";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import "react-quill/dist/quill.snow.css";
-import { RootState } from "@/app/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { AsyncPaginate } from "react-select-async-paginate";
+import useInformationMembershipViewModel, {
+  breadcrumbs,
+  useAllListSubscriberDropdown,
+  useCoursesDropdown,
+  useMembershipForm,
+} from "./InformationMembership-view-model";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { MembershipBenefitServiceEnum } from "@/app/service/graphql/gen/graphql";
 
 const InformationMembership = () => {
   const ReactQuill = useMemo(
@@ -44,11 +45,22 @@ const InformationMembership = () => {
   } = useMembershipForm();
   const { loadOptions } = useCoursesDropdown();
   const {
+    handleChangeBenefitService,
     handleChangeCourses,
     handleDeleteCourses,
     handleChangeAffiliateCommission,
     handleChangeAffiliateFirstCommission,
+    handleDeleteBenefitService,
+    benefitServiceOptions,
   } = useInformationMembershipViewModel();
+
+  const {
+    loadOptions: mailketingLoadOptions,
+    getAllListSubscriber,
+    handleInputSubscriberListId,
+    inputSubscriberListId,
+  } = useAllListSubscriberDropdown();
+
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Tambah Membership</PageTitle>
@@ -206,6 +218,44 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
               </h5>
+
+              <h5 className="">Benefit Service</h5>
+              <div className="d-flex fflex-wrap gap-2">
+                {useSelector(
+                  (state: RootState) => state.memebrship.benefitService
+                )?.map((e, index) => {
+                  return (
+                    <div key={e}>
+                      <Buttons
+                        showIcon
+                        icon="cross"
+                        buttonColor="secondary"
+                        classNames="text-dark me-1"
+                        onClick={() => {
+                          handleDeleteBenefitService(e);
+                        }}
+                        key={e + index}
+                      >
+                        {e}
+                      </Buttons>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-2">
+                <Dropdown
+                  options={benefitServiceOptions}
+                  onValueChange={(val) => {
+                    handleChangeBenefitService(
+                      val as MembershipBenefitServiceEnum
+                    );
+                  }}
+                />
+              </div>
+              <h5 className="text-muted mt-2 mb-5">
+                Masukan benefit service ketika berlangganan
+              </h5>
+
               <h5 className="">Benefit Kelas</h5>
               <div className="d-flex fflex-wrap gap-2">
                 {useSelector(
@@ -364,6 +414,15 @@ const InformationMembership = () => {
               <h5 className="text-muted mt-2 mb-8">
                 Masukan durasi membership
               </h5>
+              <h5 className="mt-5">Pengaturan Mailketing</h5>
+              <AsyncPaginate
+                defaultValue={inputSubscriberListId}
+                value={inputSubscriberListId}
+                loadOptions={mailketingLoadOptions as any}
+                onChange={(value) => {
+                  handleInputSubscriberListId(value);
+                }}
+              />
             </KTCardBody>
             <div className={"row flex-end mt-10"}>
               <Buttons

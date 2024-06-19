@@ -1,13 +1,15 @@
-import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 
+import { postDataAPI } from "@/app/service/api/rest-service";
 import {
   ProductServiceFindFirstQuery,
-  ProductServiceUpdateOneMutation,
+  useGetAllListSubscribersQuery,
   useProductServiceUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
-import { postDataAPI } from "@/app/service/api/rest-service";
+import { GroupBase, OptionsOrGroups } from "react-select";
+import { OptionType } from "../../Course/CreateOrEdit/Information/Information-view-model";
 
 export interface IEditProduct {
   id: string | string[] | undefined;
@@ -28,6 +30,17 @@ export const breadcrumbs = [
     isActive: false,
   },
 ];
+
+// export const useAllListSubscriberDropdown = () => {
+//   const dispatch = useDispatch();
+
+//   return {
+//     loadOptions,
+//     getAllListSubscriber,
+//     inputSubscriberListId,
+//     handleInputSubscriberListId,
+//   };
+// };
 
 const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,6 +75,51 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
   const [status, setStatus] = useState<any>(
     data?.productServiceFindFirst?.isActive === true ? "Aktif" : "Tidak Aktif"
   );
+console.log( data?.productServiceFindFirst?.subscriberListId)
+  const [dataSubscriberListId, setDataSubscriberListId] = useState<any>(
+    data?.productServiceFindFirst?.subscriberListId
+  );
+  const [inputSubscriberListId, setInputSubscriberListId] = useState<any>("");
+
+  const getAllListSubscriber = useGetAllListSubscribersQuery({
+    onCompleted(data) {
+      const result =
+        data?.getAllListSubscriber?.map((list) => ({
+          value: list.list_id,
+          label: `${list.list_id} - ${list.list_name}`,
+        })) ?? [];
+      // Check if subscriberListId is not null
+      if (dataSubscriberListId) {
+        // Search for the subscriberListId in the result
+        const selectedOption = result.find(
+          (option) => option.value === dataSubscriberListId
+        );
+        // If found, set inputSubscriberListId to the found object
+        if (selectedOption) {
+          setInputSubscriberListId(selectedOption);
+          setDataSubscriberListId(selectedOption.value);
+        }
+      }
+    },
+  });
+
+  async function loadOptions(
+    search: string,
+    prevOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>
+  ) {
+    const result =
+      getAllListSubscriber.data?.getAllListSubscriber?.map((list) => ({
+        value: list.list_id,
+        label: `${list.list_id} - ${list.list_name}`,
+      })) ?? [];
+    await getAllListSubscriber.refetch();
+
+    return {
+      options: result,
+      hasMore: false,
+    };
+  }
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [itemObjective, setItemObjective] = useState<string[]>(itemObjectives);
   const [itemPortfolio, setItemPortfolio] = useState<string[]>(itemPortfolios);
@@ -121,6 +179,11 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
     setStatus(status === "true");
   };
 
+  const handleInputSubscriberListId = (value: any) => {
+    setInputSubscriberListId(value);
+    setDataSubscriberListId(value.value);
+  };
+
   // Image handler stuff
   const convertImgToURL = async (image: any) => {
     const blob = image?.slice(0, image?.size);
@@ -175,8 +238,12 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
     const updatedImages = serviceImages.filter(
       (_: any, index: any) => index !== indexToRemove
     );
+    const updatedImgLocal = selectedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
 
     setServiceImages(updatedImages);
+    setSelectedFiles(updatedImgLocal);
   };
 
   const handleFileClick = () => {
@@ -187,7 +254,8 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
   // Image handler end
 
   // Graphql, mutation operation
-  const [productServiceUpdateOneMutation] = useProductServiceUpdateOneMutation();
+  const [productServiceUpdateOneMutation] =
+    useProductServiceUpdateOneMutation();
 
   const handleProductServiceUpdateOneMutation = async ({
     serviceType,
@@ -209,11 +277,14 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
           name: {
             set: serviceName,
           },
+          subscriberListId: {
+            set: dataSubscriberListId,
+          },
           description: {
             set: serviceDesc,
           },
           productServiceCategory: {
-            set: serviceType
+            set: serviceType,
           },
           images: {
             set: serviceImages,
@@ -232,13 +303,13 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
           },
           isActive: {
             set: Boolean(status),
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return data;
-  }
+  };
 
   // Submit data
   const onSubmit = async () => {
@@ -246,9 +317,9 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
 
     try {
       // Upload images
-      const uploadPromises = selectedFiles.map(file => convertImgToURL(file));
+      const uploadPromises = selectedFiles.map((file) => convertImgToURL(file));
       const uploadedImages = await Promise.all(uploadPromises);
-      const uploadImgArray = uploadedImages.map(path => ({ path }));
+      const uploadImgArray = uploadedImages.map((path) => ({ path }));
 
       const data = await handleProductServiceUpdateOneMutation({
         serviceType,
@@ -270,7 +341,7 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
       await router.push("/admin/product-management/products");
       router.reload();
     }
-  }
+  };
 
   return {
     serviceType,
@@ -283,6 +354,9 @@ const useEditServiceViewModel = ({ data, id }: IEditProduct) => {
     setServiceImages,
     serviceCost,
     setServiceCost,
+    inputSubscriberListId,
+    handleInputSubscriberListId,
+    loadOptions,
     serviceDiscountCost,
     setServiceDiscountCost,
     itemObjectives,

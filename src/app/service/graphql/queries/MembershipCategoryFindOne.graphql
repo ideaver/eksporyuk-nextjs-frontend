@@ -10,6 +10,7 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
     price
     orderIndex
     affiliateFirstCommission
+    membershipBenefitServiceEnum
     affiliateCommission
     createdAt
     updatedAt
@@ -61,5 +62,6 @@ query MembershipCategoryFindOne($where: MembershipCategoryWhereUniqueInput!) {
         phoneId
       }
     }
+    subscriberListId
   }
 }

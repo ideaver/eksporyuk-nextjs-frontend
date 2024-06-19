@@ -17,6 +17,7 @@ import {
 import { RootState } from "@/app/store/store";
 import {
   TypeCategory,
+  changeArticleType,
   changeCategory,
   changeContent,
   changeStatus,
@@ -50,6 +51,7 @@ import {
   changeNewsType,
   changeTitleNews,
 } from "@/features/reducers/news/newsReducer";
+import { Diplomata } from "next/font/google";
 
 export const breadcrumbs = [
   {
@@ -109,6 +111,7 @@ const useResetArticleState = () => {
     dispatch(changeStatus("published"));
     dispatch(changeTarget([]));
     dispatch(changeUrlVideo(""));
+    dispatch(changeArticleType(ArticleTypeEnum.Article));
     router.push("/admin/articles");
   };
 
@@ -226,7 +229,6 @@ export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
     setIsLoading(true);
     try {
       const response = await uploadFile();
-      console.log(response);
       await articleCreateOne({
         variables: {
           data: {
@@ -251,7 +253,7 @@ export const useArticleForm = ({ fileImage }: { fileImage?: File | null }) => {
             category: {
               connect: [...categoryArticle],
             },
-            articleType: ArticleTypeEnum.Article,
+            articleType: articleState.articleType,
             material: {
               connect: {
                 path: await handleUploadVideo(),
@@ -316,8 +318,11 @@ export const useAnnouncementForm = () => {
     dispatch(changeCourse(null));
     dispatch(changeAnnouncementType(AnnouncementTypeEnum.Affiliate));
   };
-  const handleAnnouncementTypeChange = (e: AnnouncementTypeEnum) => {
-    dispatch(changeAnnouncementType(e));
+  const handleAnnouncementTypeChange = (type: AnnouncementTypeEnum) => {
+    if (type !== AnnouncementTypeEnum.Course) {
+      dispatch(changeCourse(null));
+    }
+    dispatch(changeAnnouncementType(type));
   };
 
   const [announcementCreateOne, response] = useAnnouncementCreateOneMutation({
@@ -467,7 +472,7 @@ export const useMaterialPromotionForm = ({
         MaterialPromotionPlatformTypeEnum.Banner
       ) {
         const response = await uploadFile();
-        console.log(response);
+        // console.log(response);
         await materialPromotionCreateOne({
           variables: {
             data: {
@@ -493,7 +498,7 @@ export const useMaterialPromotionForm = ({
           },
         });
       } else {
-        console.log(response);
+        // console.log(response);
         await materialPromotionCreateOne({
           variables: {
             data: {
@@ -589,7 +594,7 @@ export const useNewsForm = ({ fileImage }: { fileImage: File | null }) => {
     setIsLoadingNews(true);
     try {
       const response = await uploadFile();
-      console.log(response);
+      // console.log(response);
       await newsCreateOne({
         variables: {
           data: {
@@ -708,6 +713,9 @@ const useInformationViewModel = () => {
   const handleTargetChange = (target: UserRoleEnum[]) => {
     dispatch(changeTarget(target));
   };
+  const handleArticleTypeChange = (e: ArticleTypeEnum) => {
+    dispatch(changeArticleType(e));
+  };
 
   const targetOptions = [
     { value: UserRoleEnum.Student, label: "Student" },
@@ -735,6 +743,7 @@ const useInformationViewModel = () => {
     uploadFile,
     isLoading,
     handleArticleCreateOne,
+    handleArticleTypeChange,
     // announcement
     handleConnectCourse,
     // material promotion

@@ -3,9 +3,9 @@ import {
   CourseStatusEnum,
   QueryMode,
   SortOrder,
-  useCourseDeleteManyMutation,
   useCourseFindLengthQuery,
   useCourseFindManyQuery,
+  useCourseUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { useRouter } from "next/router";
@@ -116,6 +116,8 @@ const useCheckbox = (courseFindMany: QueryResult<CourseFindManyQuery>) => {
       return newCheckedItems;
     });
   }, [selectAll]);
+
+
 
   return {
     selectAll,
@@ -251,28 +253,28 @@ const useCoursesViewModel = () => {
     checked,
   } = useCheckbox(courseFindMany);
 
-  const [courseDeleteMany] = useCourseDeleteManyMutation();
+  // const [courseDeleteMany] = useCourseDeleteManyMutation();
 
-  const handleCourseDeleteMany = async () => {
-    try {
-      await courseDeleteMany({
-        variables: {
-          where: {
-            id: {
-              in: checked,
-            },
-          },
-        },
-      });
-      await courseFindMany.refetch();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      router;
-    }
-  };
+  // const handleCourseDeleteMany = async () => {
+  //   try {
+  //     await courseDeleteMany({
+  //       variables: {
+  //         where: {
+  //           id: {
+  //             in: checked,
+  //           },
+  //         },
+  //       },
+  //     });
+  //     await courseFindMany.refetch();
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     router;
+  //   }
+  // };
   return {
-    handleCourseDeleteMany,
+    // handleCourseDeleteMany,
     checked,
     statusFindSearch,
     setStatusFindSearch,

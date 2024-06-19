@@ -1,33 +1,19 @@
+import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { PageTitle } from "@/_metronic/layout/core";
+import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TextField } from "@/stories/molecules/Forms/Input/TextField";
+import dynamic from "next/dynamic";
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import "react-quill/dist/quill.snow.css";
+import { AsyncPaginate } from "react-select-async-paginate";
+import SweetAlert2 from "react-sweetalert2";
 import useMailketingViewModel, {
   breadcrumbs,
   useAllListSubscriberDropdown,
 } from "./Mailketing-view-model";
-import { KTCard, KTCardBody, KTIcon } from "@/_metronic/helpers";
-import { TextField } from "@/stories/molecules/Forms/Input/TextField";
-import { Buttons } from "@/stories/molecules/Buttons/Buttons";
-import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import LoadingOverlayWrapper from "react-loading-overlay-ts";
-import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { UserRoleEnum } from "@/app/service/graphql/gen/graphql";
-import SweetAlert2 from "react-sweetalert2";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-import { AsyncPaginate } from "react-select-async-paginate";
-
-{
-  /* <SweetAlert2
-{...swalProps}
-didOpen={() => {
-  // run when swal is opened...
-}}
-didClose={async () => {
-  console.log("closed");
-  setSwalProps({});
-}}
-/> */
-}
 
 const Mailketing = () => {
   const ReactQuill = useMemo(
@@ -63,6 +49,9 @@ const Mailketing = () => {
     tokenAPI,
     setTokenAPI,
     handleAPITokenUpdate,
+    handleAPITokenStarsenderUpdate,
+    starsenderTokenAPI,
+    setStarsenderTokenAPI,
   } = useMailketingViewModel();
 
   const { loadOptions, getAllListSubscriber } = useAllListSubscriberDropdown();
@@ -104,6 +93,9 @@ const Mailketing = () => {
             handleSubmit={() => {
               handleAPITokenUpdate();
             }}
+            starsenderTokenAPI={starsenderTokenAPI}
+            handleSubmitStarsender={handleAPITokenStarsenderUpdate}
+            setStarsenderTokenAPI={setStarsenderTokenAPI}
           />
           <div className="col-lg-8">
             <KTCard className="mb-10 ">
@@ -339,15 +331,21 @@ const Mailketing = () => {
 const Aside = ({
   tokenAPI,
   setTokenAPI,
+  setStarsenderTokenAPI,
+  starsenderTokenAPI,
   handleSubmit,
+  handleSubmitStarsender,
 }: {
-  tokenAPI: string | undefined;
-  setTokenAPI: Dispatch<SetStateAction<string | undefined>>;
+  tokenAPI: string | undefined | null;
+  setTokenAPI: Dispatch<SetStateAction<string | undefined | null>>;
+  starsenderTokenAPI: string | undefined | null;
+  setStarsenderTokenAPI: Dispatch<SetStateAction<string | undefined | null>>;
   handleSubmit: () => void;
+  handleSubmitStarsender: () => void;
 }) => {
   return (
     <div className="col-lg-4">
-      <KTCard>
+      <KTCard className="mb-5">
         <KTCardBody>
           <h1>Token API Mailketing</h1>
           <TextField
@@ -364,6 +362,25 @@ const Aside = ({
           <h5 className="text-muted">Mailketing, login mailketing,</h5>
           <h5 className="text-muted">Integration {">"} generate token</h5>
           <Buttons classNames="mt-5" onClick={handleSubmit}>
+            Connect
+          </Buttons>
+        </KTCardBody>
+      </KTCard>
+      <KTCard>
+        <KTCardBody>
+          <h1>Token API Starsender</h1>
+          <TextField
+            placeholder="Token API"
+            classNames="my-5"
+            props={{
+              value: starsenderTokenAPI,
+              onChange: (e: any) => {
+                setStarsenderTokenAPI(e?.target?.value);
+              },
+            }}
+          />
+          <h5 className="text-muted">Fill with API Token form Starsender</h5>
+          <Buttons classNames="mt-5" onClick={handleSubmitStarsender}>
             Connect
           </Buttons>
         </KTCardBody>
