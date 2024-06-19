@@ -1,0 +1,8 @@
+mutation CertificateTemplateCreateOne($data: CertificateTemplateCreateInput!) {
+  certificateTemplateCreateOne(data: $data) {
+    id
+    name
+    exampleTemplateCertificatePath
+    filePath
+  }
+}
