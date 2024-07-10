@@ -73,6 +73,7 @@ const Membership = () => {
                 <th className="text-end min-w-250px">TANGGAL</th>
                 {/* <th className="text-end min-w-200px">TIPE MEMBERSHIP</th> */}
                 <th className="text-end min-w-150px">HARGA</th>
+                <th className="text-end min-w-150px">STATUS</th>
                 <th className="text-end min-w-125px">ACTION</th>
               </KTTableHead>
               <tbody className="align-middle">
@@ -106,6 +107,13 @@ const Membership = () => {
                         </td> */}
                         <td className="min-w-150px text-end fw-bold text-muted">
                           {formatCurrency(membership.price)}
+                        </td>
+                        <td className="min-w-150px text-end fw-bold text-muted">
+                          {membership.isActive ? (
+                            <span className="text-success">Aktif</span>
+                          ) : (
+                            <span className="text-danger">Non Aktif</span>
+                          )}
                         </td>
 
                         <td className="text-end ">
@@ -149,7 +157,7 @@ const Membership = () => {
                                     }
                                   }}
                                 >
-                                  Hapus
+                                  Non Aktifkan
                                 </button>
                               </li>
                             </ul>

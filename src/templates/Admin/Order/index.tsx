@@ -72,7 +72,6 @@ const OrderPage = ({}) => {
     handleLoadingExportChange,
   } = useAdminOrderViewModel();
 
-  console.log(isLoadingExport);
   return (
     <>
       <PageTitle breadcrumbs={breadcrumbs}>Semua Order</PageTitle>

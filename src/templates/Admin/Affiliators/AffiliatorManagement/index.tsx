@@ -28,6 +28,9 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { KTTableBody } from "@/_metronic/helpers/components/KTTableBody";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { formatCurrency } from "@/app/service/utils/currencyFormatter";
+import { FollowUpModal } from "@/components/partials/Modals/FollowUpAffiliatorModal";
+import { CreateFollowUpAffiliatorModal } from "@/components/partials/Modals/CreateFollowUpAffiliatorModal";
+import { UpdateFollowUpAffiliatorModal } from "@/components/partials/Modals/UpdateFollowUpAffiliatorModal";
 
 const AffiliatorPage = () => {
   const {
@@ -85,6 +88,9 @@ const AffiliatorPage = () => {
           />
         </KTCardBody>
       </KTCard>
+      <FollowUpModal />
+      <CreateFollowUpAffiliatorModal />
+      <UpdateFollowUpAffiliatorModal />
     </>
   );
 };
@@ -111,6 +117,11 @@ const Head = ({
         ></TextField>
       </div>
       <div className="row col-lg-auto gy-3">
+        <div className="col-lg-auto">
+          <Buttons data-bs-toggle="modal" data-bs-target="#kt_follup_modal">
+            Follow Up Affiliator
+          </Buttons>
+        </div>
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"
@@ -358,10 +369,14 @@ const BodyAdmin = ({ adminFindMany }: { adminFindMany: any }) => {
             <th className="text-start">Nama Lengkap</th>
             <th className="text-start">Email</th>
             <th className="text-start min-w-200px">Tanggal Terdaftar</th>
-            <th className="text-start min-w-250px">Komisi Yang Belum Selesai</th>
+            <th className="text-start min-w-250px">
+              Komisi Yang Belum Selesai
+            </th>
             <th className="text-start min-w-250px">Komisi Sudah Selesai</th>
             <th className="text-start min-w-100px">Komisi Saat Ini</th>
-            <th className="text-start min-w-200px">Komisi Yang Sudah Ditransfer</th>
+            <th className="text-start min-w-200px">
+              Komisi Yang Sudah Ditransfer
+            </th>
             <th className="text-end min-w-100px">Actions</th>
           </KTTableHead>
           {adminFindMany.data.adminFindManyAffiliatorQuery.map(

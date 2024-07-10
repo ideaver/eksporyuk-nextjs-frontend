@@ -1,0 +1,5 @@
+mutation MembershipCategorySoftDelete(
+  $where: MembershipCategoryWhereUniqueInput!
+) {
+  membershipCategorySoftDelete(where: $where)
+}

@@ -6,6 +6,7 @@ import {
   useFollowUpDeleteOneMutation,
   useFollowUpFindManyQuery,
   useOrderStatusCreateOneMutation,
+  UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import {
@@ -194,7 +195,15 @@ const useAdminOrderHeaderViewModel = ({
   );
 
   // followup find many
-  const followUpFindMany = useFollowUpFindManyQuery();
+  const followUpFindMany = useFollowUpFindManyQuery({
+    variables: {
+      where: {
+        forRole: {
+          equals: UserRoleEnum.Admin,
+        },
+      },
+    },
+  });
 
   const handleFollupChange = (
     event: React.ChangeEvent<HTMLInputElement> | any
