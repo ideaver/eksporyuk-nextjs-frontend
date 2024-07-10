@@ -9,6 +9,7 @@ import {
   useFollowUpFindManyQuery,
   useOrderFindLengthQuery,
   useOrderFindManyQuery,
+  UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { RootState } from "@/app/store/store";
@@ -310,7 +311,15 @@ const useAdminOrderViewModel = () => {
   });
   const [exportOrder] = useExportOrderMutation();
 
-  const followUpFindMany = useFollowUpFindManyQuery();
+  const followUpFindMany = useFollowUpFindManyQuery({
+    variables: {
+      where: {
+        forRole: {
+          equals: UserRoleEnum.Admin,
+        },
+      },
+    },
+  });
 
   const handleFollupChange = (
     event: React.ChangeEvent<HTMLInputElement> | any

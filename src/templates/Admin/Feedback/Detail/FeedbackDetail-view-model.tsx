@@ -6,6 +6,7 @@ import {
   useFeedbackUpdateOneMutation,
   useFollowUpDeleteOneMutation,
   useFollowUpFindManyQuery,
+  UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { RootState } from "@/app/store/store";
@@ -102,7 +103,15 @@ const useFeedbackDetailViewModel = () => {
       router.reload();
     }
   };
-  const followUpFindMany = useFollowUpFindManyQuery();
+  const followUpFindMany = useFollowUpFindManyQuery({
+    variables: {
+      where: {
+        forRole: {
+          equals: UserRoleEnum.Admin,
+        },
+      },
+    },
+  });
 
   const handleFollupChange = (
     event: React.ChangeEvent<HTMLInputElement> | any

@@ -7,6 +7,7 @@ import {
   StudentFindOneQuery,
   useFollowUpDeleteOneMutation,
   useFollowUpFindManyQuery,
+  UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import { RootState } from "@/app/store/store";
@@ -43,7 +44,15 @@ const OrderPage = ({
   const dispatch = useDispatch();
   const followUpState = useSelector((state: RootState) => state.followUp);
 
-  const followUpFindMany = useFollowUpFindManyQuery();
+  const followUpFindMany = useFollowUpFindManyQuery({
+    variables: {
+      where: {
+        forRole: {
+          equals: UserRoleEnum.Admin,
+        },
+      },
+    },
+  });
 
   const handleFollupChange = (
     event: React.ChangeEvent<HTMLInputElement> | any

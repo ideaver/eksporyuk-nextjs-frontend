@@ -58,5 +58,6 @@ query MembershipCategoryFindMany(
       userId
       membershipCategoryId
     }
+    isActive
   }
 }

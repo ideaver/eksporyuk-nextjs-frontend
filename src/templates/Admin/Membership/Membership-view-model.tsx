@@ -1,7 +1,7 @@
 import {
   QueryMode,
   SortOrder,
-  useMembershipCategoryDeleteOneMutation,
+  useMembershipCategorySoftDeleteMutation,
   useMembershipCategoryFindLengthQuery,
   useMembershipCategoryFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
@@ -94,7 +94,7 @@ const useMembershipViewModel = () => {
       skip: membershipSkip,
     },
   });
-  const [membershipDeleteOne] = useMembershipCategoryDeleteOneMutation();
+  const [membershipDeleteOne] = useMembershipCategorySoftDeleteMutation();
 
   const {
     membershipLength,
