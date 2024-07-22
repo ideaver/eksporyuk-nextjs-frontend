@@ -6,16 +6,19 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string | undefined;
+      token: string | undefined;
       role: string | undefined;
     } & DefaultSession["user"];
   }
   interface User {
     role: string | undefined;
+    token: string | undefined;
   }
 }
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
+    token: string | undefined;
     role: string | undefined;
   }
 }
@@ -32,12 +35,14 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
         role: { label: "Role", type: "text" },
         image: { label: "Image", type: "text" },
+        token: { label: "Token", type: "text" },
       },
       async authorize(credentials, req) {
         var user;
         if (process.env.NEXT_PUBLIC_MAINTENANCE == "true") {
           user = {
             id: "1",
+            token: "token",
             name: "admin",
             email: "admin@mail.com",
             password: "admin",
@@ -46,6 +51,7 @@ export default NextAuth({
           };
         } else {
           user = {
+            token: req?.body?.token,
             id: req?.body?.id,
             name: req?.body?.name,
             email: req?.body?.email,
@@ -55,8 +61,9 @@ export default NextAuth({
           };
         }
         if (
-          user.email === credentials?.email &&
-          user.password === credentials?.password
+          (user.email === credentials?.email &&
+            user.password === credentials?.password) ||
+          user.token == undefined
         ) {
           return user;
         } else {
@@ -77,6 +84,7 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.token = user.token;
         token.id = user.id;
         token.role = user.role;
         token.name = user.name;
@@ -86,8 +94,8 @@ export default NextAuth({
       return token;
     },
     async session({ session, token, user }) {
-      
       if (session?.user) {
+        session.user.token = token.token;
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.id = token.id;

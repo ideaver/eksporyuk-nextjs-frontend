@@ -1,15 +1,15 @@
-import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
-import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_SCHEMA as string;
 
-const createApolloClient = () => {
+const createApolloClient = ({ token }: { token: string | undefined }) => {
   return new ApolloClient({
-    link: createUploadLink({ uri: GRAPHQL_ENDPOINT }) as unknown as ApolloLink,
+    uri: GRAPHQL_ENDPOINT,
     cache: new InMemoryCache(),
     headers: {
       "Apollo-Require-Preflight": "true",
-      // "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "*",
+      Authorization: `Bearer ${token}`,
     },
   });
 };

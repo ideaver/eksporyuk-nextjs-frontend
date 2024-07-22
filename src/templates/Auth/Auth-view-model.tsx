@@ -52,6 +52,7 @@ const useAuthViewModel = () => {
         password: password,
         role: fetchResult?.authLogin?.user?.role,
         image: fetchResult?.authLogin?.user?.avatarImageId,
+        token: fetchResult?.authLogin?.accessToken,
         redirect: false,
       });
     } else {
@@ -62,7 +63,7 @@ const useAuthViewModel = () => {
         password: "admin",
         role: "ADMIN",
         image: "/media/avatars/300-1.jpg",
-
+        token: "null",
         redirect: false,
       });
     }
