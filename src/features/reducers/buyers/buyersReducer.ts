@@ -16,6 +16,8 @@ interface BuyerState {
   shippingTerms: InternationalTradeDeliveryTypeEnum | "none";
   hsCode: string;
   price: string;
+  specification: string;
+  paymentTerms: string;
 
   // Add other buyers properties here
 }
@@ -34,6 +36,8 @@ const initialState: BuyerState = {
   shippingTerms: "none",
   price: "",
   hsCode: "",
+  specification: "",
+  paymentTerms: "",
 
   // Initialize other buyer properties here
 };
@@ -87,6 +91,12 @@ export const buyerSlice = createSlice({
     changeHsCode: (state, action: PayloadAction<string>) => {
       state.hsCode = action.payload;
     },
+    changeSpecification: (state, action: PayloadAction<string>) => {
+      state.specification = action.payload;
+    },
+    changePaymetTerms: (state, action: PayloadAction<string>) => {
+      state.paymentTerms = action.payload;
+    },
 
     // Add other buyers actions here
   },
@@ -106,6 +116,8 @@ export const {
   changeTelephoneNumber,
   changeLoadingImport,
   changeHsCode,
+  changePaymetTerms,
+  changeSpecification,
 } = buyerSlice.actions;
 
 export default buyerSlice.reducer;

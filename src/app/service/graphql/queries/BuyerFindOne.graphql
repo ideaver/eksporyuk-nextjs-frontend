@@ -51,5 +51,8 @@ query BuyerFindOne($where: BuyerWhereUniqueInput!) {
         id
       }
     }
+    paymentTerms
+    quantityRequired
+    spesification
   }
 }

@@ -5,6 +5,7 @@ import {
   useMembershipCategoryFindLengthQuery,
   useMembershipCategoryFindManyQuery,
   useMembershipCategoryDuplicateLazyQuery,
+  useMembershipCategoryUpdateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -113,6 +114,28 @@ const useMembershipViewModel = () => {
     setMembershipTake,
   });
 
+  const [membershipUpdateOne] = useMembershipCategoryUpdateOneMutation();
+
+  const handleMembershipActivateOne = async (id: number) => {
+    try {
+      await membershipUpdateOne({
+        variables: {
+          where: {
+            id,
+          },
+          data: {
+            isActive: {
+              set: true,
+            },
+          },
+        },
+      });
+      await membershipFindMany.refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const [membershipDuplicateOne] = useMembershipCategoryDuplicateLazyQuery();
 
   const handleMembershipDuplicateOne = async (id: number) => {
@@ -162,6 +185,7 @@ const useMembershipViewModel = () => {
     membershipFindMany,
     membershipFindSearch,
     setMembershipFindSearch,
+    handleMembershipActivateOne,
   };
 };
 

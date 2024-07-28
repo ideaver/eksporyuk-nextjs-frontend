@@ -14,6 +14,7 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import CurrencyInput from "react-currency-input-field";
 import { InternationalTradeDeliveryTypeEnum } from "@/app/service/graphql/gen/graphql";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 
 const EditBuyer = ({ id, data }: IEditBuyer) => {
   const router = useRouter();
@@ -48,6 +49,10 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
     setDeliveryType,
     hsCode,
     setHsCode,
+    paymentTerms,
+    specification,
+    setPaymentTerms,
+    setSpecification,
   } = useEditBuyerViewModel({ id, data });
   return (
     <>
@@ -249,10 +254,23 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Komoditas yang diinginkan buyer
               </h5>
+              <h5 className="required">Spesifikasi</h5>
+              <Textarea
+                placeholder="Masukan spesifikasi"
+                props={{
+                  onChange: (e: any) => {
+                    setSpecification(e.target.value);
+                  },
+                  value: specification,
+                }}
+              />
+              <h5 className="text-muted mt-2 mb-8">
+                Spesifikasi yang diinginkan buyer
+              </h5>
               <h5 className="">Quantity Required</h5>
               <TextField
                 placeholder="Masukan quantity required"
-                type="number"
+                type="text"
                 classNames={clsx(
                   {
                     "is-invalid":
@@ -265,7 +283,6 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 )}
                 props={{
                   ...formik.getFieldProps("quantity"),
-
                   value: formik.values.quantity,
                   onChange: (e: any) => {
                     formik.setFieldValue("demandQuantity", e.target.value);
@@ -281,7 +298,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah komoditas yang dibutuhkan buyer
               </h5>
-              <h5 className="">Satuan</h5>
+              {/* <h5 className="">Satuan</h5>
               <Dropdown
                 value={abbreviation}
                 options={[
@@ -294,9 +311,9 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               ></Dropdown>
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah komoditas yang dibutuhkan buyer
-              </h5>
+              </h5> */}
               <h5 className="">Harga</h5>
-              <CurrencyInput
+              {/* <CurrencyInput
                 className={clsx(
                   "form-control",
                   {
@@ -315,7 +332,16 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                 onValueChange={(value, name, values) => {
                   setPrice(value);
                 }}
-              />
+              /> */}
+              <TextField
+                placeholder="Masukan harga"
+                props={{
+                  value: price,
+                  onChange: (e: any) => {
+                    setPrice(e.target.value);
+                  },
+                }}
+              ></TextField>
               {formik.touched.price && formik.errors.price && (
                 <div className="fv-plugins-message-container">
                   <span role="alert">{formik.errors.price}</span>
@@ -323,6 +349,19 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
               )}
               <h5 className="text-muted mt-2 mb-8">
                 Jumlah harga yang dibutuhkan buyer
+              </h5>
+              <h5 className="required">Payment Terms</h5>
+              <TextField
+                placeholder="Masukan payment terms"
+                props={{
+                  onChange: (e: any) => {
+                    setPaymentTerms(e.target.value);
+                  },
+                  value: paymentTerms,
+                }}
+              />
+              <h5 className="text-muted mt-2 mb-8">
+                Payment terms yang diinginkan buyer
               </h5>
               <h5 className="">HS Code</h5>
               <TextField

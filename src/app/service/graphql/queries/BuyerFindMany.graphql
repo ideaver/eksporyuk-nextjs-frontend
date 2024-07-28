@@ -35,5 +35,8 @@ query BuyerFindMany(
     }
     hsCode
     id
+    spesification
+    quantityRequired
+    paymentTerms
   }
 }

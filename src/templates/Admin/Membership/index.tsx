@@ -32,6 +32,7 @@ const Membership = () => {
     swalProps,
     setSwalProps,
     handleMembershipDuplicateOne,
+    handleMembershipActivateOne,
   } = useMembershipViewModel();
   return (
     <>
@@ -153,28 +154,41 @@ const Membership = () => {
                                 </button>
                               </li>
                               <li>
-                                <button
-                                  className="dropdown-item"
-                                  onClick={async () => {
-                                    try {
-                                      await membershipDeleteOne({
-                                        variables: {
-                                          where: {
-                                            id: membership.id,
+                                {membership.isActive ? (
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={async () => {
+                                      try {
+                                        await membershipDeleteOne({
+                                          variables: {
+                                            where: {
+                                              id: membership.id,
+                                            },
                                           },
-                                        },
-                                      });
-                                      await membershipFindMany.refetch();
-                                    } catch (error) {
-                                      console.log(error);
-                                    } finally {
-                                      await membershipFindMany.refetch();
-                                      await membershipLength.refetch();
-                                    }
-                                  }}
-                                >
-                                  Non Aktifkan
-                                </button>
+                                        });
+                                        await membershipFindMany.refetch();
+                                      } catch (error) {
+                                        console.log(error);
+                                      } finally {
+                                        await membershipFindMany.refetch();
+                                        await membershipLength.refetch();
+                                      }
+                                    }}
+                                  >
+                                    Non Aktifkan
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={async () => {
+                                      await handleMembershipActivateOne(
+                                        membership.id
+                                      );
+                                    }}
+                                  >
+                                    Aktifkan
+                                  </button>
+                                )}
                               </li>
                             </ul>
                           </div>
