@@ -3,7 +3,7 @@ import useCreateDocumentViewModel, { breadcrumbs } from "./Document-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
-import { useMemo } from "react";
+import { ChangeEvent, useMemo } from "react";
 import "react-quill/dist/quill.snow.css";
 
 import dynamic from "next/dynamic";
@@ -34,6 +34,8 @@ const CreateDocument = () => {
     handleFileChangeEkspor,
     titleEkspor,
     setTitleEkspor,
+    titleSOP,
+    setTitleSOP,
   } = useCreateDocumentViewModel();
   return (
     <>
@@ -63,6 +65,17 @@ const CreateDocument = () => {
             <h2 className="mb-5">SOP</h2>
 
             <div className="">
+              <h4>Judul SOP</h4>
+              <TextField
+                placeholder="masukan judul"
+                props={{
+                  value: titleSOP,
+                  onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                    setTitleSOP(e.target.value);
+                  },
+                }}
+              />
+              <h5 className="text-muted mt-1 mb-4">Masukan Judul SOP</h5>
               <h4 className="fw-bold text-gray-700">SOP File</h4>
               <div className=" rounded" style={{ cursor: "pointer" }}>
                 <input

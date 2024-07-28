@@ -4,13 +4,15 @@ import {
   useMembershipCategorySoftDeleteMutation,
   useMembershipCategoryFindLengthQuery,
   useMembershipCategoryFindManyQuery,
+  useMembershipCategoryDuplicateLazyQuery,
 } from "@/app/service/graphql/gen/graphql";
+import { ApolloError } from "@apollo/client";
 import { Dispatch, SetStateAction, useState } from "react";
 
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/membership",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -72,6 +74,7 @@ const useMembershipViewModel = () => {
 
   const [membershipFindSearch, setMembershipFindSearch] = useState("");
   const [orderBy, setOrderBy] = useState(SortOrder.Desc);
+  const [swalProps, setSwalProps] = useState({});
 
   const membershipFindMany = useMembershipCategoryFindManyQuery({
     variables: {
@@ -110,7 +113,40 @@ const useMembershipViewModel = () => {
     setMembershipTake,
   });
 
+  const [membershipDuplicateOne] = useMembershipCategoryDuplicateLazyQuery();
+
+  const handleMembershipDuplicateOne = async (id: number) => {
+    try {
+      const response = await membershipDuplicateOne({
+        variables: {
+          where: {
+            id,
+          },
+        },
+      });
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Berhasil Terduplikasi",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      await membershipFindMany.refetch();
+    } catch (error) {
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   return {
+    handleMembershipDuplicateOne,
+    swalProps,
+    setSwalProps,
     membershipLength,
     membershipDeleteOne,
     setOrderBy,

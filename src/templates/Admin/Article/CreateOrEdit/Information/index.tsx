@@ -267,6 +267,8 @@ const InformationPage = () => {
                     <div
                       style={{
                         height: "220px",
+                        resize: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       <ReactQuill
@@ -288,7 +290,7 @@ const InformationPage = () => {
                         }}
                         theme="snow"
                         value={formik.values.content}
-                        style={{ height: "70%" }}
+                        style={{ height: "100%" }}
                         onChange={(e) => {
                           formik.setFieldValue("content", e);
                           dispatch(changeContent(e));
@@ -453,6 +455,8 @@ const InformationPage = () => {
                   <div
                     style={{
                       height: "220px",
+                      resize: "vertical",
+                      overflow: "hidden",
                     }}
                   >
                     <ReactQuill
@@ -474,7 +478,7 @@ const InformationPage = () => {
                       }}
                       theme="snow"
                       value={announcementForm.values.contentAnnouncement}
-                      style={{ height: "70%" }}
+                      style={{ height: "100%" }}
                       onChange={(e) => {
                         announcementForm.setFieldValue(
                           "contentAnnouncement",
@@ -594,6 +598,8 @@ const InformationPage = () => {
                     <div
                       style={{
                         height: "220px",
+                        resize: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       <ReactQuill
@@ -615,7 +621,7 @@ const InformationPage = () => {
                         }}
                         theme="snow"
                         value={newsState.contentNews}
-                        style={{ height: "70%" }}
+                        style={{ height: "100%" }}
                         onChange={(e) => {
                           dispatch(changeContentNews(e));
                         }}
@@ -776,6 +782,8 @@ const InformationPage = () => {
                     <div
                       style={{
                         height: "220px",
+                        resize: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       <ReactQuill
@@ -799,7 +807,7 @@ const InformationPage = () => {
                         value={
                           materialPromotionState.contentMaterialPromotionFirst
                         }
-                        style={{ height: "70%" }}
+                        style={{ height: "100%" }}
                         onChange={(e) => {
                           formik.setFieldValue("content", e);
                           dispatch(changeContentMaterialPromotionFirst(e));
@@ -836,7 +844,7 @@ const InformationPage = () => {
                         value={
                           materialPromotionState.contentMaterialPromotionSecond
                         }
-                        style={{ height: "70%" }}
+                        style={{ height: "100%" }}
                         onChange={(e) => {
                           formik.setFieldValue("content", e);
                           dispatch(changeContentMaterialPromotionSecond(e));

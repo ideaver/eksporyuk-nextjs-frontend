@@ -1,0 +1,20 @@
+query MembershipCategoryDuplicate($where: MembershipCategoryWhereUniqueInput!) {
+  membershipCategoryDuplicate(where: $where) {
+    id
+    name
+    description
+    durationDay
+    benefits
+    price
+    isActive
+    orderIndex
+    affiliateFirstCommission
+    affiliateCommission
+    subscriberListId
+    membershipBenefitServiceEnum
+    createdAt
+    updatedAt
+    deletedAt
+    createdById
+  }
+}

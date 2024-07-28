@@ -11,6 +11,7 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import Link from "next/link";
 import useMembershipViewModel, { breadcrumbs } from "./Membership-view-model";
+import SweetAlert2 from "react-sweetalert2";
 
 const Membership = () => {
   const {
@@ -28,6 +29,9 @@ const Membership = () => {
     setOrderBy,
     membershipLength,
     membershipDeleteOne,
+    swalProps,
+    setSwalProps,
+    handleMembershipDuplicateOne,
   } = useMembershipViewModel();
   return (
     <>
@@ -135,7 +139,19 @@ const Membership = () => {
                                   Edit
                                 </Link>
                               </li>
-                              <li></li>
+                              <li>
+                                {" "}
+                                <button
+                                  className="dropdown-item"
+                                  onClick={async () => {
+                                    await handleMembershipDuplicateOne(
+                                      membership.id
+                                    );
+                                  }}
+                                >
+                                  Duplikat
+                                </button>
+                              </li>
                               <li>
                                 <button
                                   className="dropdown-item"
@@ -186,6 +202,16 @@ const Membership = () => {
           />
         </KTCardBody>
       </KTCard>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          setSwalProps({});
+        }}
+      />
     </>
   );
 };

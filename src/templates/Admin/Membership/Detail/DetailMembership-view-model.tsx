@@ -10,7 +10,7 @@ import { useState } from "react";
 export const breadcrumbs = [
   {
     title: "Manajemen Membership",
-    path: "/admin/membership",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },
@@ -22,7 +22,7 @@ export const breadcrumbs = [
   },
   {
     title: "Manajemen Membership",
-    path: "/admin/membership",
+    path: "/admin/product-management/subscriber",
     isSeparator: false,
     isActive: false,
   },

@@ -26,6 +26,7 @@ import useArticleViewModel, {
   breadcrumbs,
   useCategoriesDropdown,
 } from "./Article-view-model";
+import { useSession } from "next-auth/react";
 
 const ArticlePage = () => {
   const {

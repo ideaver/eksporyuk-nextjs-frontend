@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export const breadcrumbs = [
   {
-    title: "Manajemen Dokument",
+    title: "Manajemen Dokumen",
     path: "/admin/document",
     isSeparator: false,
     isActive: false,
@@ -27,6 +27,7 @@ const useCreateDocumentViewModel = () => {
   const [filePDFPreview, setFilePDFPreview] = useState<string | undefined>();
   const [filePDF, setFilePDF] = useState<File | undefined>();
   const [content, setContent] = useState<string | null>(null);
+  const [titleSOP, setTitleSOP] = useState<string | null>(null);
 
   //   state Ekspor dokumen
   const [filePDFPreviewEkspor, setFilePDFPreviewEkspor] = useState<
@@ -81,6 +82,7 @@ const useCreateDocumentViewModel = () => {
                 id: session?.user.id,
               },
             },
+            title: titleSOP,
             content: content,
             file: {
               connect: {
@@ -191,6 +193,8 @@ const useCreateDocumentViewModel = () => {
     filePDFEkspor,
     filePDFPreviewEkspor,
     handleFileChangeEkspor,
+    titleSOP,
+    setTitleSOP,
   };
 };
 

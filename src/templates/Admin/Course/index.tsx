@@ -19,11 +19,12 @@ import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import useCoursesViewModel, {
   breadcrumbs,
   getStatusBadgeColor,
 } from "./Products-view-model";
+import SweetAlert2 from "react-sweetalert2";
 
 const CoursePage = ({}) => {
   const {
@@ -43,6 +44,9 @@ const CoursePage = ({}) => {
     statusFindSearch,
     setStatusFindSearch,
     checked,
+    swalProps,
+    setSwalProps,
+    handleCourseDuplicateOne,
     // handleCourseDeleteMany,
   } = useCoursesViewModel();
 
@@ -92,6 +96,7 @@ const CoursePage = ({}) => {
                 console.log(error);
               }
             }}
+            handleDuplicate={handleCourseDuplicateOne}
           />
           <Footer
             pageLength={calculateTotalPage()}
@@ -105,6 +110,18 @@ const CoursePage = ({}) => {
           />
         </KTCardBody>
       </KTCard>
+      <SweetAlert2
+        {...swalProps}
+        didOpen={() => {
+          // run when swal is opened...
+        }}
+        didClose={async () => {
+          console.log("closed");
+          // await router.push("/admin/document");
+          // router.reload();
+          setSwalProps({});
+        }}
+      />
     </>
   );
 };
@@ -345,6 +362,7 @@ const Body = ({
   checkedItems,
   selectAll,
   handleDelete,
+  handleDuplicate,
 }: {
   courseFindMany: QueryResult<CourseFindManyQuery>;
   handleSelectAllCheck: () => void;
@@ -352,6 +370,7 @@ const Body = ({
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: number; value: boolean }[];
   selectAll: boolean;
+  handleDuplicate: (id: number) => Promise<void>;
 }) => {
   const [selectedMentor, setSelectedMentor] = useState("");
   return (
@@ -513,6 +532,16 @@ const Body = ({
                           >
                             Edit
                           </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () =>
+                              await handleDuplicate(course.id)
+                            }
+                          >
+                            Duplikat
+                          </button>
                         </li>
                         <li>
                           <button
