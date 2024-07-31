@@ -55,7 +55,9 @@ query ChatRoomFindOne($where: ChatRoomWhereUniqueInput!) {
         reviewId
         productId
         complainItemId
-        courseId
+        course {
+          id
+        }
         resourceId
         messageFileId
         newsId
