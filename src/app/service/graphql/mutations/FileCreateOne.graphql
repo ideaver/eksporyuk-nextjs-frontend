@@ -8,7 +8,9 @@ mutation FileCreateOne($data: FileCreateInput!) {
     reviewId
     productId
     complainItemId
-    courseId
+    course {
+      id
+    }
     resourceId
     messageFileId
     newsId

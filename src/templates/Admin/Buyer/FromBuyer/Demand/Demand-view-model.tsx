@@ -65,6 +65,8 @@ export const useBuyerInformationForm = () => {
     demandQuantity,
     shippingTerms,
     hsCode,
+    paymentTerms,
+    specification,
   } = useSelector((state: RootState) => state.buyer);
 
   const { data: session, status } = useSession();
@@ -72,7 +74,7 @@ export const useBuyerInformationForm = () => {
   const [buyerCreateOne, response] = useBuyerCreateOneMutation({
     variables: {
       data: {
-        abbreviation: abbreviation === "none" ? null : abbreviation,
+        // abbreviation: abbreviation === "none" ? null : abbreviation,
         address: companyAddress,
         buyerName,
         companyName: companyName,
@@ -93,12 +95,15 @@ export const useBuyerInformationForm = () => {
         email,
         price,
         productName: demand,
-        quantity: parseFloat(demandQuantity),
+        // quantity: parseFloat(demandQuantity),
+        quantityRequired: demandQuantity,
         deliveryType:
           shippingTerms === "none"
             ? null
             : (shippingTerms.toLocaleUpperCase() as InternationalTradeDeliveryTypeEnum),
         hsCode: hsCode,
+        spesification: specification,
+        paymentTerms,
       },
     },
   });

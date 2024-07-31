@@ -14,11 +14,14 @@ import {
   changeDemand,
   changeDemandQuantity,
   changeHsCode,
+  changePaymetTerms,
   changePrice,
+  changeSpecification,
 } from "@/features/reducers/buyers/buyersReducer";
 import { RootState } from "@/app/store/store";
 import { useSession } from "next-auth/react";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
+import { Textarea } from "@/stories/molecules/Forms/Textarea/Textarea";
 
 const DemandPage = () => {
   const buyerState = useSelector((state: RootState) => state.buyer);
@@ -87,10 +90,25 @@ const DemandPage = () => {
             <h5 className="text-muted mt-2 mb-8">
               Komoditas yang diinginkan buyer
             </h5>
+            <h5 className="">Spesifikasi</h5>
+            <Textarea
+              placeholder="Masukan quantity required"
+              classNames={clsx()}
+              props={{
+                value: buyerState.specification,
+                onChange: (e: any) => {
+                  // formik.setFieldValue("demandQuantity", e.target.value);
+                  dispatch(changeSpecification(e.target.value));
+                },
+              }}
+            />
+            <h5 className="text-muted mt-2 mb-8">
+              Spesifikasi yang diinginkan buyer
+            </h5>
             <h5 className="">Quantity Required</h5>
             <TextField
               placeholder="Masukan quantity required"
-              type="number"
+              type="text"
               classNames={clsx()}
               props={{
                 value: buyerState.demandQuantity,
@@ -103,7 +121,7 @@ const DemandPage = () => {
             <h5 className="text-muted mt-2 mb-8">
               Jumlah komoditas yang dibutuhkan buyer
             </h5>
-            <h5 className="">Satuan</h5>
+            {/* <h5 className="">Satuan</h5>
             <Dropdown
               value={abbreviation}
               options={[
@@ -118,9 +136,25 @@ const DemandPage = () => {
             ></Dropdown>
             <h5 className="text-muted mt-2 mb-8">
               Jumlah komoditas yang dibutuhkan buyer
+            </h5> */}
+            <h5 className="">Payment Terms</h5>
+            <TextField
+              placeholder="Masukan quantity required"
+              type="text"
+              classNames={clsx()}
+              props={{
+                value: buyerState.paymentTerms,
+                onChange: (e: any) => {
+                  // formik.setFieldValue("demandQuantity", e.target.value);
+                  dispatch(changePaymetTerms(e.target.value));
+                },
+              }}
+            />
+            <h5 className="text-muted mt-2 mb-8">
+              Payment terms yang diinginkan buyer
             </h5>
             <h5 className="">Harga</h5>
-            <CurrencyInput
+            {/* <CurrencyInput
               className={clsx("form-control")}
               placeholder="Masukan Harga (Rp)"
               intlConfig={{ locale: "id-ID" }}
@@ -130,7 +164,18 @@ const DemandPage = () => {
               onValueChange={(value, name, values) => {
                 dispatch(changePrice(value as string));
               }}
-            />
+            /> */}
+            <TextField
+              placeholder="Masukan harga yang diinginkan"
+              type="text"
+              props={{
+                value: buyerState.price,
+                onChange: (e: any) => {
+                  formik.setFieldValue("price", e.target.value);
+                  dispatch(changePrice(e.target.value));
+                },
+              }}
+            ></TextField>
             <h5 className="text-muted mt-2 mb-8">
               Jumlah harga yang dibutuhkan buyer
             </h5>

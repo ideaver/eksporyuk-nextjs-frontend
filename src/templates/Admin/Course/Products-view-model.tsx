@@ -6,8 +6,9 @@ import {
   useCourseFindLengthQuery,
   useCourseFindManyQuery,
   useCourseUpdateOneMutation,
+  useDuplicateCourseLazyQuery,
 } from "@/app/service/graphql/gen/graphql";
-import { QueryResult } from "@apollo/client";
+import { ApolloError, QueryResult } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -117,8 +118,6 @@ const useCheckbox = (courseFindMany: QueryResult<CourseFindManyQuery>) => {
     });
   }, [selectAll]);
 
-
-
   return {
     selectAll,
     checkedItems,
@@ -192,7 +191,8 @@ const useCoursesViewModel = () => {
     CourseStatusEnum | "all"
   >("all");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
-  const router = useRouter();
+
+  const [swalProps, setSwalProps] = useState({});
 
   const courseFindMany = useCourseFindManyQuery({
     variables: {
@@ -253,6 +253,36 @@ const useCoursesViewModel = () => {
     checked,
   } = useCheckbox(courseFindMany);
 
+  const [courseDuplicateOne] = useDuplicateCourseLazyQuery();
+
+  const handleCourseDuplicateOne = async (id: number) => {
+    try {
+      const response = await courseDuplicateOne({
+        variables: {
+          where: {
+            id,
+          },
+        },
+      });
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Berhasil Terduplikasi",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      await courseFindMany.refetch();
+    } catch (error) {
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   // const [courseDeleteMany] = useCourseDeleteManyMutation();
 
   // const handleCourseDeleteMany = async () => {
@@ -275,6 +305,9 @@ const useCoursesViewModel = () => {
   // };
   return {
     // handleCourseDeleteMany,
+    handleCourseDuplicateOne,
+    swalProps,
+    setSwalProps,
     checked,
     statusFindSearch,
     setStatusFindSearch,

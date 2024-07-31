@@ -51,7 +51,7 @@ interface EditFormProps {
   phone: string | undefined | null;
   country: any | undefined | null;
   demand: string | undefined | null;
-  quantity: number | undefined | null;
+  quantity: string | undefined | null;
   abbreviation: string | undefined | null;
   price: string | undefined | null;
   deliveryType: InternationalTradeDeliveryTypeEnum | undefined | null | string;
@@ -157,7 +157,9 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
     label: data?.buyerFindOne?.country?.name,
   });
   const [demand, setDemand] = useState(data?.buyerFindOne?.productName);
-  const [quantity, setQuantity] = useState(data?.buyerFindOne?.quantity);
+  const [quantity, setQuantity] = useState(
+    data?.buyerFindOne?.quantityRequired
+  );
   const [abbreviation, setAbbreviation] = useState(
     data?.buyerFindOne?.abbreviation
   );
@@ -166,6 +168,12 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
     data?.buyerFindOne?.deliveryType
   );
   const [hsCode, setHsCode] = useState(data?.buyerFindOne?.hsCode);
+  const [specification, setSpecification] = useState(
+    data?.buyerFindOne?.spesification
+  );
+  const [paymentTerms, setPaymentTerms] = useState(
+    data?.buyerFindOne?.paymentTerms
+  );
 
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -226,7 +234,10 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
             productName: {
               set: demand,
             },
-            quantity: {
+            // quantity: {
+            //   set: quantity,
+            // },
+            quantityRequired: {
               set: quantity,
             },
             price: {
@@ -237,6 +248,12 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
             },
             hsCode: {
               set: hsCode,
+            },
+            paymentTerms: {
+              set: paymentTerms,
+            },
+            spesification: {
+              set: specification,
             },
           },
         },
@@ -271,6 +288,10 @@ const useEditBuyerViewModel = ({ id, data }: IEditBuyer) => {
     abbreviation,
     price,
     deliveryType,
+    paymentTerms,
+    specification,
+    setPaymentTerms,
+    setSpecification,
     setBuyerName,
     setAddress,
     setCompanyName,

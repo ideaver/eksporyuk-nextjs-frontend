@@ -105,7 +105,9 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
           reviewId
           productId
           complainItemId
-          courseId
+          course {
+            id
+          }
           resourceId
           messageFileId
           newsId
@@ -129,7 +131,9 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
           reviewId
           productId
           complainItemId
-          courseId
+          course {
+            id
+          }
           resourceId
           messageFileId
           newsId
@@ -179,7 +183,9 @@ query CourseFindOne($where: CourseWhereUniqueInput!) {
           reviewId
           productId
           complainItemId
-          courseId
+          course {
+            id
+          }
           resourceId
           messageFileId
           newsId

@@ -57,14 +57,17 @@ const useUserEdit = () => {
             password: {
               set: data.password,
             },
-            // deletedAt: {
-            //   set: data.deletedReason?.value === "active" ? null : undefined,
-            // },
+            deletedAt: {
+              set:
+                data.deletedReason?.value === "active"
+                  ? null
+                  : new Date().toISOString(),
+            },
             deletedReason: {
               set:
                 data.deletedReason?.value === "active"
                   ? "reActivateUser"
-                  : undefined,
+                  : "Non Active",
             },
             birthDate: {
               set: data.birthDate,

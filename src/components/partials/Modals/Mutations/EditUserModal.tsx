@@ -160,7 +160,7 @@ const EditUserModal = ({
             }
             validationSchema={validationSchema}
             onSubmit={(values) => {
-              console.log(values.description);
+              console.log(values);
               handleSubmit(values, selectedFile);
             }}
           >
@@ -426,7 +426,9 @@ const EditUserModal = ({
                     <Buttons
                       buttonColor="primary"
                       classNames="btn-lg"
-                      // onClick={handleSubmit}
+                      // onClick={() => {
+                      //   handleSubmit();
+                      // }}
                       type="submit"
                     >
                       Kirim

@@ -181,7 +181,7 @@ const BuyerPage = () => {
                           {buyer.productName}
                         </td>
                         <td className="min-w-200px text-end fw-bold text-muted">
-                          {buyer.quantity} <span>{buyer.abbreviation}</span>
+                          {buyer.quantityRequired}
                         </td>
                         <td className="min-w-200px text-end fw-bold text-muted">
                           {buyer.hsCode}

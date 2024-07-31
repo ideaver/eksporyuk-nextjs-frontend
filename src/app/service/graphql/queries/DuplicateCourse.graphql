@@ -1,0 +1,29 @@
+query DuplicateCourse($where: CourseWhereUniqueInput!) {
+  duplicateCourse(where: $where) {
+    id
+    title
+    description
+    prerequisites
+    objective
+    outcome
+    startDate
+    endDate
+    maxEnrollment
+    deepLink
+    isCertificationProvided
+    basePrice
+    salePrice
+    affiliateCommissionType
+    affiliateCommission
+    createdAt
+    updatedAt
+    status
+    level
+    duration
+    categoryId
+    createdById
+    certificateTemplateId
+    subscriberListId
+    videoUrlId
+  }
+}

@@ -126,6 +126,8 @@ const SopTable = ({
             fontWeight="bold"
             className="text-uppercase align-middle"
           >
+            <th className="min-w-200px">JUDUL</th>
+
             <th className="min-w-200px">
               <p className="mb-0">content</p>
             </th>
@@ -138,6 +140,7 @@ const SopTable = ({
             {sopFileFindMany?.data?.sopFileFindMany?.map((document) => {
               return (
                 <tr key={document.id} className="">
+                  <td className="text-muted">{document.title ?? "-"}</td>
                   <td className="">
                     <p
                       //   href={`/admin/documents/detail/${document.id}`}

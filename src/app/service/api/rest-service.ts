@@ -1,9 +1,11 @@
 import axios, { AxiosResponse } from "axios";
+import { getSession } from "next-auth/react";
 
-const httpHeaders = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-};
+// const httpHeaders = {
+//   Accept: "application/json",
+//   "Content-Type": "application/json",
+//   Authorization: `Bearer ${useSession().data?.user.token}`,
+// };
 
 export async function postDataAPI({
   endpoint,
@@ -18,6 +20,14 @@ export async function postDataAPI({
   fields?: Record<string, string>;
   isMultipartRequest?: boolean;
 }): Promise<AxiosResponse | null> {
+  const session = await getSession();
+
+  const httpHeaders = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${session?.user.token}`,
+  };
+
   const baseUrl = process.env.NEXT_PUBLIC_UPLOAD_FILE_URL;
 
   if (!baseUrl) {

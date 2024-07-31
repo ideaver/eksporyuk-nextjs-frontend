@@ -10,7 +10,11 @@ const ClassTabBar = ({ urlType, id }: IClassTabBarViewModel) => {
   return (
     <div>
       <PageTitle breadcrumbs={breadcrumbs}>
-        {urlType === "create" ? "Tambah Kelas Baru" : "Edit Kelas"}
+        {urlType === "create"
+          ? "Tambah Kelas Baru"
+          : urlType === "edit"
+          ? "Edit Kelas"
+          : "Detail Kelas"}
       </PageTitle>
       <div className="d-lg-flex justify-content-between mb-5">
         <TabLink className="mb-5" links={urls} />
