@@ -4,6 +4,9 @@ import {
   useEksporDocumentDeleteOneMutation,
   useEksporDocumentFindLengthQuery,
   useEksporDocumentFindManyQuery,
+  useLocalCommodityDeleteOneMutation,
+  useLocalCommodityFindLengthQuery,
+  useLocalCommodityFindManyQuery,
   useSopFileDeleteOneMutation,
   useSopFileFimdLengthQuery,
   useSopFileFindManyQuery,
@@ -114,11 +117,57 @@ const usePaginationEkspor = ({
   };
 };
 
+const usePaginationCommodity = ({
+  documentFindTake,
+  documentFindSkip,
+  documentFindSearch,
+  setDocumentFindSkip,
+  setDocumentFindTake,
+}: {
+  documentFindTake: number;
+  documentFindSkip: number;
+  documentFindSearch: string;
+  setDocumentFindSkip: Dispatch<SetStateAction<number>>;
+  setDocumentFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const commodityLength = useLocalCommodityFindLengthQuery({
+    variables: {
+      where: {
+        name: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setDocumentFindSkip((currentPage - 1) * documentFindTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (commodityLength.data?.localCommodityFindMany?.length ?? 0) /
+        documentFindTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+  };
+};
+
 const useDocumentViewModel = () => {
   const [selectTable, setSelectTable] = useState("sop");
   const [documentFindSkip, setDocumentFindSkip] = useState(0);
   const [documentFindTake, setDocumentFindTake] = useState(10);
   const [orderBy, setOrderBy] = useState(SortOrder.Desc);
+
   const [documentFindSearch, setDocumentFindSearch] = useState("");
   const sopFileFindMany = useSopFileFindManyQuery({
     variables: {
@@ -205,6 +254,25 @@ const useDocumentViewModel = () => {
   });
   const [sopDeleteOne] = useSopFileDeleteOneMutation();
   const [eksporDeleteOne] = useEksporDocumentDeleteOneMutation();
+  const [commodityDeleteOne] = useLocalCommodityDeleteOneMutation();
+
+  const commodityFindMany = useLocalCommodityFindManyQuery({
+    variables: {
+      take: parseInt(documentFindTake.toString()),
+      skip: documentFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
+      where: {
+        name: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
 
   // pagination
   const {
@@ -232,6 +300,18 @@ const useDocumentViewModel = () => {
     setDocumentFindSkip,
     setDocumentFindTake,
   });
+  const {
+    currentPage: currentPageCommodity,
+    setCurrentPage: setCurrentPageCommodity,
+    handlePageChange: handlePageChangeCommodity,
+    calculateTotalPage: calculateTotalPageCommodity,
+  } = usePaginationCommodity({
+    documentFindSearch,
+    documentFindSkip,
+    documentFindTake,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+  });
   // useEffect(() => {
   //   if (documentFindSearch.length !== 0) {
   //     setCurrentPageSop(1);
@@ -244,6 +324,7 @@ const useDocumentViewModel = () => {
   return {
     sopDeleteOne,
     eksporDeleteOne,
+    commodityDeleteOne,
     eksporFindMany,
     setSelectTable,
     selectTable,
@@ -264,6 +345,11 @@ const useDocumentViewModel = () => {
     setDocumentFindTake,
     setOrderBy,
     setDocumentFindSearch,
+    commodityFindMany,
+    currentPageCommodity,
+    setCurrentPageCommodity,
+    handlePageChangeCommodity,
+    calculateTotalPageCommodity,
   };
 };
 

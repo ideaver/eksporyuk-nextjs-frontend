@@ -1,6 +1,7 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
   useEksporDocumentCreateOneMutation,
+  useLocalCommodityCreateOneMutation,
   useSopFileCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
@@ -35,6 +36,19 @@ const useCreateDocumentViewModel = () => {
   >();
   const [filePDFEkspor, setFilePDFEkspor] = useState<File | undefined>();
   const [titleEkspor, setTitleEkspor] = useState<string | null>(null);
+
+  // state Komoditas ekspor
+  const [filePDFPreviewCommodity, setFilePDFPreviewCommodity] = useState<
+    string | undefined
+  >();
+  const [filePDFCommodity, setFilePDFCommudity] = useState<File | undefined>();
+  const [titleCommodity, setTitleCommodity] = useState<string | null>(null);
+  const [descriptionCommodity, setDescriptionCommodity] = useState<
+    string | null
+  >(null);
+  const [instructionCommodity, setInstructionCommodity] = useState<
+    string | null
+  >(null);
 
   const [swalProps, setSwalProps] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -175,6 +189,60 @@ const useCreateDocumentViewModel = () => {
     }
   };
 
+  const handleFileChangeCommodity = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setFilePDFPreviewCommodity(file.name);
+
+    const blob = file.slice(0, file.size);
+    const newFile = new File([blob as Blob], file.name);
+
+    setFilePDFCommudity(newFile);
+  };
+
+  const [commodityCreateOne] = useLocalCommodityCreateOneMutation();
+
+  const handleCommodityCreateOne = async () => {
+    setIsLoading(true);
+    try {
+      const response = await uploadFile(filePDFCommodity);
+      await commodityCreateOne({
+        variables: {
+          data: {
+            name: titleCommodity ?? "Komoditas",
+            description: descriptionCommodity,
+            instructionsForUse: instructionCommodity,
+            file: {
+              connect: {
+                path: response?.data,
+              },
+            },
+          },
+        },
+      });
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Komoditas berhasil ditambahkan",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.log(error);
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     titleEkspor,
     setTitleEkspor,
@@ -195,6 +263,16 @@ const useCreateDocumentViewModel = () => {
     handleFileChangeEkspor,
     titleSOP,
     setTitleSOP,
+    titleCommodity,
+    setTitleCommodity,
+    filePDFPreviewCommodity,
+    filePDFCommodity,
+    handleFileChangeCommodity,
+    descriptionCommodity,
+    setDescriptionCommodity,
+    instructionCommodity,
+    setInstructionCommodity,
+    handleCommodityCreateOne,
   };
 };
 

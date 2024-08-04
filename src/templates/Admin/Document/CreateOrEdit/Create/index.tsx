@@ -36,6 +36,16 @@ const CreateDocument = () => {
     setTitleEkspor,
     titleSOP,
     setTitleSOP,
+    titleCommodity,
+    setTitleCommodity,
+    handleFileChangeCommodity,
+    filePDFPreviewCommodity,
+    filePDFCommodity,
+    descriptionCommodity,
+    setDescriptionCommodity,
+    instructionCommodity,
+    setInstructionCommodity,
+    handleCommodityCreateOne,
   } = useCreateDocumentViewModel();
   return (
     <>
@@ -258,6 +268,118 @@ const CreateDocument = () => {
                 onClick={handleEksporFileCreateOne}
               >
                 Tambah ekspor dokumen
+              </Buttons>
+            </div>
+          </KTCardBody>
+        </KTCard>
+
+        <KTCard className="mt-5">
+          <KTCardBody>
+            {/* <h4 className="fw-bold text-gray-700">Judul SOP</h4>
+          <TextField placeholder="Judul SOP" />
+          <h5 className="text-muted mt-2 mb-5">Masukan judul SOP</h5> */}
+            <h2 className="mb-5">Komoditas Ekspor</h2>
+            <h4>Judul Komotidas Ekspor</h4>
+            <TextField
+              placeholder="masukan judul"
+              props={{
+                value: titleCommodity,
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  setTitleCommodity(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan judul komoditas</h5>
+
+            <div className="mt-5">
+              <h4 className="fw-bold text-gray-700">Komoditas File</h4>
+              <div className=" rounded" style={{ cursor: "pointer" }}>
+                <input
+                  type="file"
+                  onChange={handleFileChangeCommodity}
+                  className="d-none"
+                  accept=".pdf"
+                  id="input-pdf-commodity"
+                />
+                {filePDFPreviewCommodity ? (
+                  <label
+                    className="d-flex bg-light-primary align-items-center rounded border border-primary border-dashed "
+                    htmlFor="input-pdf-commodity"
+                  >
+                    <div className="m-4 mx-10">
+                      <div className="d-flex">
+                        <img
+                          src="/media/svg/files/pdf.svg"
+                          width={60}
+                          height={60}
+                          alt="xlsx icon"
+                        />
+                        <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
+                          <h4>{filePDFPreviewCommodity}</h4>
+                          <h5 className="text-muted">
+                            Klik untuk mengganti file
+                          </h5>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                ) : (
+                  <label
+                    htmlFor="input-pdf-commodity"
+                    className="d-flex justify-content-between bg-light-primary p-5 align-items-center rounded border border-primary border-dashed "
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="title">
+                      <div className="mt-1 text-muted fw-bold mb-0">
+                        <div className="d-flex">
+                          <img
+                            src="/media/svg/files/upload.svg"
+                            width={50}
+                            height={50}
+                            alt="xlsx icon"
+                          />
+                          <div className="px-3 mt-1  d-flex flex-column align-content-center justify-content-center ">
+                            <h4>Pilih file yang ingin di upload</h4>
+                            <h5 className="text-muted">
+                              File yang diupload harus berformat .PDF
+                            </h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                )}
+              </div>
+            </div>
+            <h4 className="mt-5">Informasi Komotidas Ekspor</h4>
+            <Textarea
+              placeholder="masukan Informasi"
+              props={{
+                value: descriptionCommodity,
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  setDescriptionCommodity(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan informasi komoditas</h5>
+
+            <h4 className="mt-5">Instruksi Komotidas Ekspor</h4>
+            <Textarea
+              placeholder="masukan instruksi"
+              props={{
+                value: instructionCommodity,
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  setInstructionCommodity(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan instruksi komoditas</h5>
+            <div className="d-flex justify-content-end align-content-center mt-5">
+              <Buttons
+                disabled={!filePDFCommodity}
+                onClick={handleCommodityCreateOne}
+              >
+                Tambah komoditas ekspor
               </Buttons>
             </div>
           </KTCardBody>

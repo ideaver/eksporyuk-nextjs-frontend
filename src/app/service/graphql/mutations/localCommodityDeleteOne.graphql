@@ -1,0 +1,3 @@
+mutation LocalCommodityDeleteOne($where: LocalCommodityWhereUniqueInput!) {
+  localCommodityDeleteOne(where: $where)
+}

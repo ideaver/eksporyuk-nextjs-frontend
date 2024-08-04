@@ -7,6 +7,7 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import Link from "next/link";
 import {
   EksporDocumentFindManyQuery,
+  LocalCommodityFindManyQuery,
   SopFileFindManyQuery,
   SortOrder,
 } from "@/app/service/graphql/gen/graphql";
@@ -41,6 +42,12 @@ const Document = () => {
     eksporFindMany,
     eksporDeleteOne,
     sopDeleteOne,
+    calculateTotalPageCommodity,
+    commodityFindMany,
+    currentPageCommodity,
+    handlePageChangeCommodity,
+    setCurrentPageCommodity,
+    commodityDeleteOne,
   } = useDocumentViewModel();
   return (
     <>
@@ -58,6 +65,7 @@ const Document = () => {
             handlePageChange={(page) => {
               handlePageChangeEkspor(page);
               handlePageChangeSop(page);
+              handlePageChangeCommodity(page);
             }}
           />
           {selectTable === "sop" ? (
@@ -65,10 +73,15 @@ const Document = () => {
               sopDeleteOne={sopDeleteOne}
               sopFileFindMany={sopFileFindMany}
             />
-          ) : (
+          ) : selectTable === "ekspor" ? (
             <EksporTable
               eksporDeleteOne={eksporDeleteOne}
               eksporFindMany={eksporFindMany}
+            />
+          ) : (
+            <CommodtyTable
+              commodityFindMany={commodityFindMany}
+              commodityDeleteOne={commodityDeleteOne}
             />
           )}
           <Footer
@@ -390,6 +403,128 @@ const EksporTable = ({
   );
 };
 
+const CommodtyTable = ({
+  commodityFindMany,
+  commodityDeleteOne,
+}: {
+  commodityFindMany: QueryResult<LocalCommodityFindManyQuery>;
+  commodityDeleteOne: any;
+}) => {
+  return (
+    <>
+      {commodityFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{commodityFindMany.error.message}</h3>
+        </div>
+      ) : commodityFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className=" min-w-200px">TITLE</th>
+            <th className="text-end min-w-200px">Informasi</th>
+            <th className="text-end min-w-200px">Instruksi</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            <th className="text-end min-w-150px">FILE</th>
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle fw-bold">
+            {commodityFindMany.data?.localCommodityFindMany?.map((document) => {
+              return (
+                <tr key={document.id}>
+                  <td className="min-w-200px">{document.name}</td>
+                  <td className="text-end text-muted min-w-200px">
+                    <p className="text-truncate" style={{ maxWidth: "200px" }}>
+                      {document.description}
+                    </p>
+                  </td>
+                  <td className="text-end text-muted min-w-200px">
+                    <p className="text-truncate" style={{ maxWidth: "200px" }}>
+                      {document.instructionsForUse}
+                    </p>
+                  </td>
+                  <td className="text-end text-muted min-w-200px">
+                    {formatDate(document.createdAt)}
+                  </td>
+                  <td className="min-w-100px text-end fw-bold text-muted">
+                    <Link
+                      href={`${document.fileUrl}`}
+                      target="_blank"
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {document.fileUrl}
+                    </Link>
+                  </td>
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        {/* <li>
+                          <Link
+                            href={`/admin/documents/edit/${document.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li> */}
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await commodityDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: document.id,
+                                    },
+                                  },
+                                });
+                                await commodityFindMany.refetch();
+                                //   await articleLength.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+
 const Head = ({
   selectTable,
   setDocumentFindSkip,
@@ -430,6 +565,7 @@ const Head = ({
             options={[
               { label: "SOP", value: "sop" },
               { label: "Ekspor Dokumen", value: "ekspor" },
+              { label: "Komoditas", value: "komoditas" },
             ]}
             onValueChange={(e) => {
               setSelectTable(e as string);
