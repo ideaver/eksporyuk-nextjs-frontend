@@ -1,0 +1,21 @@
+query LocalCommodityFindMany(
+  $where: LocalCommodityWhereInput
+  $orderBy: [LocalCommodityOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  localCommodityFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    name
+    description
+    instructionsForUse
+    createdAt
+    updatedAt
+    fileUrl
+  }
+}

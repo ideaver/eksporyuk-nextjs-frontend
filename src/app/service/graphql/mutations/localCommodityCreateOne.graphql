@@ -1,0 +1,11 @@
+mutation LocalCommodityCreateOne($data: LocalCommodityCreateInput!) {
+  localCommodityCreateOne(data: $data) {
+    id
+    name
+    description
+    instructionsForUse
+    createdAt
+    updatedAt
+    fileUrl
+  }
+}
