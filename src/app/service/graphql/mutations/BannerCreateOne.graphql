@@ -1,0 +1,17 @@
+mutation BannerCreateOne($data: BannerCreateInput!) {
+  bannerCreateOne(data: $data) {
+    id
+    title
+    content
+    footer
+    firstContentData
+    secondContentData
+    target
+    isPublished
+    bannerImage
+    createdByAdminId
+    notificationId
+    createdAt
+    updatedAt
+  }
+}

@@ -10,6 +10,7 @@ import {
   useArticleCategoryCreateOneMutation,
   useArticleCategoryFindManyQuery,
   useArticleCreateOneMutation,
+  useBannerCreateOneMutation,
   useFileCreateOneMutation,
   useMaterialPromotionPlatformCreateOneMutation,
   useNewsCreateOneMutation,
@@ -643,6 +644,92 @@ export const useNewsForm = ({ fileImage }: { fileImage: File | null }) => {
   };
 };
 
+const useBannerForm = ({ fileImage }: { fileImage: File | null }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const [bannerTarget, setBannerTarget] = useState<UserRoleEnum[]>([]);
+  const [isLoadingBanner, setIsLoadingBanner] = useState<boolean>(false);
+  const status = useSelector((state: RootState) => state.article.status);
+
+  const bannerSchema = Yup.object().shape({
+    titleBanner: Yup.string()
+      .min(4, "Minimal 4 simbol")
+      .max(100, "Maksimal 100 simbol")
+      .required("Title diperlukan"),
+    content: Yup.string().optional(),
+    // firstContent: Yup.string().optional(),
+    // secondContent: Yup.string().optional()
+  });
+
+  const uploadFile = async () => {
+    try {
+      const form = {
+        file: fileImage,
+        userId: session?.user?.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body: form,
+        isMultipartRequest: true,
+      });
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const [bannerCreateOne] = useBannerCreateOneMutation();
+
+  const bannerForm = useFormik({
+    initialValues: {
+      titleBanner: "",
+      content: "",
+    },
+    validationSchema: bannerSchema,
+    onSubmit: async (values) => {
+      setIsLoadingBanner(true);
+      try {
+        const response = await uploadFile();
+        await bannerCreateOne({
+          variables: {
+            data: {
+              title: values.titleBanner,
+              content: values.content,
+              createdByAdmin: {
+                connect: {
+                  id: session?.user.id,
+                },
+              },
+              banner: {
+                connect: {
+                  path: response?.data,
+                },
+              },
+              target: {
+                set: bannerTarget,
+              },
+              isPublished: status == "published" ? true : false,
+            },
+          },
+        });
+        await router.push("/admin/articles");
+        router.reload();
+      } catch (error) {
+        console.log(error);
+        setIsLoadingBanner(false);
+      }
+    },
+  });
+  return {
+    bannerTarget,
+    setBannerTarget,
+    bannerForm,
+    isLoadingBanner,
+    setIsLoadingBanner,
+  };
+};
+
 const useInformationViewModel = () => {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
@@ -682,6 +769,14 @@ const useInformationViewModel = () => {
   const { resetNewsState, newsForm, isLoadingNews } = useNewsForm({
     fileImage: file,
   });
+
+  const {
+    setBannerTarget,
+    bannerTarget,
+    bannerForm,
+    isLoadingBanner,
+    setIsLoadingBanner,
+  } = useBannerForm({ fileImage: file });
 
   // create article
 
@@ -754,6 +849,11 @@ const useInformationViewModel = () => {
     newsForm,
     isLoadingNews,
     resetNewsState,
+    bannerTarget,
+    setBannerTarget,
+    bannerForm,
+    isLoadingBanner,
+    setIsLoadingBanner,
   };
 };
 

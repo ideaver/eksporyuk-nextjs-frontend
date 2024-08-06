@@ -1,53 +1,34 @@
 import { PageTitle } from "@/_metronic/layout/core";
-import useDetailArticleViewModel, {
-  IDetailArticle,
-  breadcrumbs,
-} from "./DetailArticle-view-model";
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import { useRouter } from "next/router";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import Link from "next/link";
+import useDetailBannerViewModel, {
+  breadcrumbs,
+  IDetailBanner,
+} from "./DetailBanner-view-model";
 
-const DetailArticle = ({ id, data }: IDetailArticle) => {
-  const {
-    thumbnail,
-    content,
-    title,
-    status,
-    category,
-    target,
-    urlVideo,
-    articleType,
-  } = useDetailArticleViewModel({
-    id,
-    data,
-  });
+const DetailBanner = ({ id, data }: IDetailBanner) => {
+  const { content, title, target, image, isPublished } =
+    useDetailBannerViewModel({
+      id,
+      data,
+    });
   const router = useRouter();
   return (
     <>
-      <PageTitle breadcrumbs={breadcrumbs}>Detail Artikel</PageTitle>
+      <PageTitle breadcrumbs={breadcrumbs}>Detail Banner</PageTitle>
       <div className="row gx-8">
-        <Aside
-          status={status}
-          category={category ?? [{ value: 0, label: "none" }]}
-          thumbnail={thumbnail}
-        />
+        <Aside status={isPublished} category={target ?? []} thumbnail={image} />
         <div className="col-lg-8">
           <KTCard className="">
             <KTCardBody>
-              <h3 className="mb-5">Detail Artikel</h3>
-              <h4 className="">Judul Artikel</h4>
+              <h3 className="mb-5">Detail Banner</h3>
+              <h4 className="">Judul Banner</h4>
               <h5 className="my-4 mx-4">{title}</h5>
-              <h4 className="">Tipe Artikel</h4>
-              <h5 className="my-4 mx-4">{articleType}</h5>
-              <h4 className="">URL Video</h4>
-              <Link href={urlVideo as string} className="m-4">
-                {urlVideo}
-              </Link>
-              {/* <h4 className="mt-5">Target Artikel</h4>
+              <h4 className="mt-5">Target Banner</h4>
               <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-                {target?.map((e: any, index) => (
+                {target?.map((e, index) => (
                   <Buttons
                     key={index}
                     classNames="fit-content"
@@ -56,8 +37,8 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
                     <span>{e}</span>
                   </Buttons>
                 ))}
-              </div> */}
-              <h4 className="mt-5">Konten Artikel</h4>
+              </div>
+              <h4 className="mt-5">Konten Banner</h4>
               <div className="my-2 mx-4">
                 <div dangerouslySetInnerHTML={{ __html: content as string }} />
               </div>
@@ -74,7 +55,7 @@ const DetailArticle = ({ id, data }: IDetailArticle) => {
             </Buttons>
             <Buttons
               onClick={() => {
-                router.push(`/admin/articles/edit/${id}`);
+                router.push(`/admin/articles/banner/edit/${id}`);
               }}
             >
               Edit
@@ -91,20 +72,15 @@ const Aside = ({
   category,
   thumbnail,
 }: {
-  thumbnail:
-    | {
-        __typename?: "File" | undefined;
-        path: string;
-      }
-    | undefined;
+  thumbnail: string | undefined;
   status: boolean | undefined;
-  category: { value: any; label: any }[];
+  category: string[];
 }) => {
   return (
     <div className="col-lg-4">
       <KTCard>
         <KTCardBody className="d-flex flex-column">
-          <h3>Thumbnail</h3>
+          <h3>Banner</h3>
 
           <input
             type="file"
@@ -125,7 +101,7 @@ const Aside = ({
             ></div>
             <div className="card-body">
               <img
-                src={thumbnail?.path ?? "/media/svg/files/blank-image.svg"}
+                src={thumbnail ?? "/media/svg/files/blank-image.svg"}
                 alt="thumbnail"
                 className="img-fluid rounded object-fit-cover"
               />
@@ -133,45 +109,7 @@ const Aside = ({
           </label>
         </KTCardBody>
       </KTCard>
-      <KTCard className="mt-5">
-        <KTCardBody className="d-flex flex-column">
-          <h3 className="mb-5">Kategori</h3>
-          <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
-            {category?.map((e: any, index) => (
-              <Buttons
-                key={e.value + index}
-                classNames="fit-content"
-                // icon="cross"
-                buttonColor="secondary"
-                // showIcon
-                // onClick={() => {
-                //   handleCategoryChange(
-                //     category.filter((v) => v.value !== e.value)
-                //   );
-                // }}
-              >
-                <span>{e?.label}</span>
-              </Buttons>
-            ))}
-          </div>
 
-          {/* <Dropdown
-                options={typeOption}
-                value={category}
-                onValueChange={(value) => handleCategoryChange(value as string)}
-              ></Dropdown> */}
-          <p className="text-muted fw-bold mt-5">Semua Kategori</p>
-          {/* <Buttons
-            showIcon={true}
-            mode="light"
-            data-bs-toggle="modal"
-            data-bs-target="#kt_add_category_modal"
-            classNames="mt-5 text-start"
-          >
-            Tambah Kategori
-          </Buttons> */}
-        </KTCardBody>
-      </KTCard>
       <KTCard className="mt-5">
         <KTCardBody className="d-flex flex-column">
           <h3 className="mb-5">Status</h3>
@@ -198,4 +136,4 @@ const Aside = ({
   );
 };
 
-export default DetailArticle;
+export default DetailBanner;

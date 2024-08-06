@@ -1,0 +1,46 @@
+query BannerFindOne($where: BannerWhereUniqueInput!) {
+  bannerFindOne(where: $where) {
+    id
+    title
+    content
+    footer
+    firstContentData
+    secondContentData
+    target
+    isPublished
+    bannerImage
+    createdByAdminId
+    notificationId
+    createdAt
+    updatedAt
+    createdByAdmin {
+      id
+      createdAt
+      modifyPlatformSettingId
+      user {
+        id
+        name
+        email
+        username
+        couponCodeRegister
+        emailVerifiedAt
+        referralCode
+        password
+        passwordUpdatedAt
+        birthDate
+        personalId
+        npwpId
+        createdAt
+        updatedAt
+        deletedAt
+        deletedReason
+        phoneId
+        referredById
+        role
+        gender
+        avatarImageId
+        referralLinkId
+      }
+    }
+  }
+}

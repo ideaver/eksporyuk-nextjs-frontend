@@ -1,0 +1,10 @@
+query BannerFindLength(
+  $where: BannerWhereInput
+  $take: Int
+  $skip: Int
+  $orderBy: [BannerOrderByWithRelationInput!]
+) {
+  bannerFindMany(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+    id
+  }
+}

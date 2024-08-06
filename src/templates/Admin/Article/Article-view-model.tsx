@@ -12,6 +12,9 @@ import {
   useArticleDeleteOneMutation,
   useArticleFindLengthQuery,
   useArticleFindManyQuery,
+  useBannerDeleteOneMutation,
+  useBannerFindLengthQuery,
+  useBannerFindManyQuery,
   useMaterialPromotionPlatformDeleteOneMutation,
   useMaterialPromotionPlatformFindLengthQuery,
   useMaterialPromotionPlatformFindManyQuery,
@@ -290,6 +293,56 @@ const usePaginationNews = ({
   };
 };
 
+const usePaginationBanner = ({
+  articleFindTake,
+  articleFindSkip,
+  articleFindSearch,
+  setArticleFindSkip,
+  setArticleFindTake,
+}: {
+  articleFindTake: number;
+  articleFindSkip: number;
+  articleFindSearch: string;
+  setArticleFindSkip: Dispatch<SetStateAction<number>>;
+  setArticleFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPageBanner, setCurrentPageBanner] = useState(1);
+
+  const bannerLength = useBannerFindLengthQuery({
+    variables: {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: articleFindSearch,
+              mode: QueryMode.Insensitive,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const handlePageChangeBanner = (page: number) => {
+    setCurrentPageBanner(page);
+    setArticleFindSkip((page - 1) * articleFindTake);
+  };
+
+  const calculateTotalPageBanner = () => {
+    return Math.ceil(
+      (bannerLength?.data?.bannerFindMany?.length ?? 0) / articleFindTake
+    );
+  };
+
+  return {
+    currentPageBanner,
+    calculateTotalPageBanner,
+    bannerLength,
+    handlePageChangeBanner,
+    setCurrentPageBanner,
+  };
+};
+
 export const useCategoriesDropdown = () => {
   const getCategory = useArticleCategoryFindManyQuery({
     variables: {
@@ -544,6 +597,23 @@ const useArticleViewModel = () => {
   });
   const [newsDeleteOne] = useNewsDeleteOneMutation();
 
+  const bannerFindMany = useBannerFindManyQuery({
+    variables: {
+      take: parseInt(articleFindTake.toString()),
+      skip: articleFindSkip,
+      orderBy: {
+        createdAt: articleOrderBy,
+      },
+      where: {
+        title: {
+          contains: articleFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+  const [bannerDeleteOne] = useBannerDeleteOneMutation();
+
   const {
     currentPage,
     setCurrentPage,
@@ -595,6 +665,20 @@ const useArticleViewModel = () => {
     calculateTotalPageNews,
     newsLength,
   } = usePaginationNews({
+    articleFindTake,
+    articleFindSkip,
+    setArticleFindSkip,
+    setArticleFindTake,
+    articleFindSearch,
+  });
+
+  const {
+    currentPageBanner,
+    setCurrentPageBanner,
+    handlePageChangeBanner,
+    bannerLength,
+    calculateTotalPageBanner,
+  } = usePaginationBanner({
     articleFindTake,
     articleFindSkip,
     setArticleFindSkip,
@@ -676,6 +760,13 @@ const useArticleViewModel = () => {
     setArticleOrderBy,
     materialPromotionFindType,
     setMaterialPromotionFindType,
+    currentPageBanner,
+    setCurrentPageBanner,
+    handlePageChangeBanner,
+    bannerLength,
+    calculateTotalPageBanner,
+    bannerFindMany,
+    bannerDeleteOne,
   };
 };
 export default useArticleViewModel;

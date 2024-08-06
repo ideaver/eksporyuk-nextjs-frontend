@@ -6,6 +6,7 @@ import {
   ArticleTypeEnum,
   MaterialPromotionPlatformTypeEnum,
   NewsTypeEnum,
+  UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { RootState } from "@/app/store/store";
 import {
@@ -106,6 +107,11 @@ const InformationPage = () => {
     isLoadingNews,
     resetNewsState,
     handleArticleTypeChange,
+    bannerForm,
+    isLoadingBanner,
+    setIsLoadingBanner,
+    bannerTarget,
+    setBannerTarget,
   } = useInformationViewModel();
 
   const { loadOptions } = useCoursesDropdown();
@@ -133,7 +139,8 @@ const InformationPage = () => {
           isLoading ||
           isLoadingAnnouncement ||
           isLoadingMaterialPromotion ||
-          isLoadingNews
+          isLoadingNews ||
+          isLoadingBanner
         }
         spinner
       >
@@ -185,6 +192,16 @@ const InformationPage = () => {
                 }}
               >
                 Material Promotion
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  dispatch(changeToogleForm("Banner"));
+                }}
+              >
+                Banner
               </button>
             </li>
           </ul>
@@ -652,6 +669,162 @@ const InformationPage = () => {
               </div>
             </div>
           </form>
+        ) : formToogle === "Banner" ? (
+          <form onSubmit={bannerForm.handleSubmit}>
+            <div className="row gx-8">
+              <Aside
+                formToggle={formToogle}
+                handleCategoryChange={handleCategoryChange}
+                category={category}
+                thumbnail={thumbnail}
+                handleFileChange={handleFileChange}
+                handleStatusChange={handleStatusChange}
+                status={status}
+              />
+              <div className={"col-lg-8"}>
+                <KTCard className="">
+                  <KTCardBody>
+                    <h3 className="mb-5">Tulis Banner</h3>
+
+                    <h5 className="required">Judul</h5>
+                    <TextField
+                      placeholder="Masukan judul"
+                      classNames={clsx(
+                        {
+                          "is-invalid":
+                            bannerForm.touched.titleBanner &&
+                            bannerForm.errors.titleBanner,
+                        },
+                        {
+                          "is-valid":
+                            bannerForm.touched.titleBanner &&
+                            !bannerForm.errors.titleBanner,
+                        }
+                      )}
+                      props={{
+                        ...bannerForm.getFieldProps("titleBanner"),
+                        value: bannerForm.values.titleBanner,
+                        onChange: (e: any) => {
+                          bannerForm.setFieldValue(
+                            "titleBanner",
+                            e.target.value
+                          );
+                        },
+                      }}
+                    />
+                    {bannerForm.touched.titleBanner &&
+                      bannerForm.errors.titleBanner && (
+                        <div className="fv-plugins-message-container">
+                          <span role="alert">
+                            {bannerForm.errors.titleBanner}
+                          </span>
+                        </div>
+                      )}
+                    <h5 className="text-muted mt-3">Masukan judul</h5>
+
+                    <h5 className=" mt-5">Target Banner</h5>
+                    <div className="d-flex flex-wrap gap-1 mx-2 mb-2">
+                      {bannerTarget.map((e, index) => (
+                        <Buttons
+                          key={index}
+                          classNames="fit-content"
+                          icon="cross"
+                          buttonColor="secondary"
+                          showIcon
+                          onClick={() => {
+                            setBannerTarget((prev) =>
+                              prev.filter((val) => val != e)
+                            );
+                          }}
+                        >
+                          <span>{e}</span>
+                        </Buttons>
+                      ))}
+                    </div>
+                    <Dropdown
+                      options={[
+                        {
+                          value: UserRoleEnum.Student,
+                          label: "Student",
+                        },
+                        {
+                          value: UserRoleEnum.Affiliator,
+                          label: "Affiliator",
+                        },
+                        {
+                          value: UserRoleEnum.Mentor,
+                          label: "Mentor",
+                        },
+                        {
+                          value: UserRoleEnum.Customer,
+                          label: "Customer",
+                        },
+                      ]}
+                      onValueChange={(val) => {
+                        setBannerTarget((prev) => [
+                          ...prev,
+                          val as UserRoleEnum,
+                        ]);
+                      }}
+                    />
+
+                    <h5 className=" mt-5">Konten</h5>
+                    <div
+                      style={{
+                        height: "220px",
+                        resize: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <ReactQuill
+                        modules={{
+                          toolbar: [
+                            [{ header: [1, 2, false] }],
+                            [
+                              "link",
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strike",
+                              "blockquote",
+                            ],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                            [{ align: [] }],
+                            ["clean"],
+                          ],
+                        }}
+                        theme="snow"
+                        value={bannerForm.values.content}
+                        style={{ height: "100%" }}
+                        onChange={(e) => {
+                          bannerForm.setFieldValue("content", e);
+                        }}
+                      />
+                    </div>
+
+                    <h5 className="text-muted mt-3">Masukan konten</h5>
+                  </KTCardBody>
+                </KTCard>
+
+                <div className="d-flex flex-end mt-6 gap-4">
+                  <Buttons
+                    buttonColor="secondary"
+                    onClick={() => {
+                      router.back();
+                    }}
+                  >
+                    Batal
+                  </Buttons>
+                  <Buttons
+                    type="submit"
+                    disabled={!materialPromotionForm.isValid.valueOf()}
+                  >
+                    Simpan
+                  </Buttons>
+                </div>
+              </div>
+            </div>
+          </form>
         ) : (
           <form onSubmit={materialPromotionForm.handleSubmit}>
             <div className="row gx-8">
@@ -941,7 +1114,7 @@ const Aside = ({
         </KTCardBody>
       </KTCard>
 
-      {formToggle !== "Article" ? null : (
+      {formToggle != "Article" ? null : (
         <>
           <KTCard className="mt-5">
             <KTCardBody className="d-flex flex-column">
@@ -984,6 +1157,26 @@ const Aside = ({
               </Buttons>
             </KTCardBody>
           </KTCard>
+          <KTCard className="mt-5">
+            <KTCardBody className="d-flex flex-column">
+              <h3 className="mb-5">Status</h3>
+              <Dropdown
+                options={[
+                  { value: "published", label: "Published" },
+                  { value: "private", label: "Private" },
+                ]}
+                value={status}
+                onValueChange={(value) => handleStatusChange(value as string)}
+              ></Dropdown>
+              <p className="text-muted fw-bold mt-5">Atur Status</p>
+            </KTCardBody>
+          </KTCard>
+        </>
+      )}
+
+      {/* banner */}
+      {formToggle != "Banner" ? null : (
+        <>
           <KTCard className="mt-5">
             <KTCardBody className="d-flex flex-column">
               <h3 className="mb-5">Status</h3>
