@@ -83,7 +83,7 @@ const useAuthViewModel = () => {
         const data = await handleAuthLoginMutation(email!, password!);
         const fetchResult = data.data;
         if (
-          fetchResult?.authLogin?.user.admin !== undefined
+          fetchResult?.authLogin?.user.admin !== null
           // fetchResult.authLogin.user.role === UserRoleEnum.Admin
         ) {
           const result = await handleSignIn(data, password!);
