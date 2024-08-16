@@ -541,7 +541,7 @@ const useComissionViewModel = () => {
   const [exportData] = useExportDataTransactionMutation();
   // export commision
   const [isLoading, setIsLoading] = useState(false);
-  const [exportModalState, setExportModalState] = useState<any>([
+  const [exportModalState, setExportModalState] = useState([
     new Date(),
     new Date(),
   ]);
