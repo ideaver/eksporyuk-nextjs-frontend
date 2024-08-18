@@ -285,7 +285,7 @@ const EditBuyer = ({ id, data }: IEditBuyer) => {
                   ...formik.getFieldProps("quantity"),
                   value: formik.values.quantity,
                   onChange: (e: any) => {
-                    formik.setFieldValue("demandQuantity", e.target.value);
+                    formik.setFieldValue("quantity", e.target.value);
                     setQuantity(e.target.value);
                   },
                 }}
