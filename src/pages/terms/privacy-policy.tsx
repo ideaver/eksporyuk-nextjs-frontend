@@ -17,8 +17,8 @@ const PrivacyPolicy: React.FC = () => {
       <body>
         <strong>Privacy Policy</strong>
         <p>
-          This privacy policy applies to the EksporYuk app (hereby referred to
-          as "Application") for mobile devices that was created by EksporYuk
+          This privacy policy applies to the Ekspor Yuk app (hereby referred to
+          as "Application") for mobile devices that was created by Ekspor Yuk
           (hereby referred to as "Service Provider") as a Free service. This
           service is intended for use "AS IS".
         </p>
@@ -167,7 +167,7 @@ const PrivacyPolicy: React.FC = () => {
           The Service Provider will retain User Provided data for as long as you
           use the Application and for a reasonable time thereafter. If you'd
           like them to delete User Provided Data that you have provided via the
-          Application, please contact them at eksporyukapp@gmail.com and they
+          Application, please contact them at Ekspor Yukapp@gmail.com and they
           will respond in a reasonable time.
         </p>
         <br />
@@ -186,7 +186,7 @@ const PrivacyPolicy: React.FC = () => {
             personal information, the Service Provider will immediately delete
             this from their servers. If you are a parent or guardian and you are
             aware that your child has provided us with personal information,
-            please contact the Service Provider (eksporyukapp@gmail.com) so that
+            please contact the Service Provider (Ekspor Yukapp@gmail.com) so that
             they will be able to take the necessary actions.
           </p>
         </div>
@@ -221,7 +221,7 @@ const PrivacyPolicy: React.FC = () => {
         <p>
           If you have any questions regarding privacy while using the
           Application, or have questions about the practices, please contact the
-          Service Provider via email at eksporyukapp@gmail.com.
+          Service Provider via email at Ekspor Yukapp@gmail.com.
         </p>
       </body>
     </html>
