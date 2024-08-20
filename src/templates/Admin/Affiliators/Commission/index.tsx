@@ -153,29 +153,46 @@ const CommissionPage = ({}: ComissionPageProps) => {
         onClick={async () => {
           setIsLoading(true);
           try {
-            const response = await exportData({
-              variables: {
-                exportTransaction: {
-                  adminId: `${session?.user.id}`,
-                  startDate: exportModalState[0],
-                  endDate: exportModalState[1],
-                  where: {
-                    transactionCategory: {
-                      equals: TransactionCategoryEnum.Comission,
-                    },
-                    status: {
-                      equals:
-                        filterExportStatus === "all"
-                          ? null
-                          : filterExportStatus,
+            if (filterExportStatus === "all") {
+              const response = await exportData({
+                variables: {
+                  exportTransaction: {
+                    adminId: `${session?.user.id}`,
+                    startDate: exportModalState[0].toISOString(),
+                    endDate: exportModalState[1].toISOString(),
+                    where: {
+                      transactionCategory: {
+                        equals: TransactionCategoryEnum.Comission,
+                      },
                     },
                   },
                 },
-              },
-            });
-            const link = document.createElement("a");
-            link.href = response.data?.exportTransaction?.fileURL as string;
-            link.click();
+              });
+              const link = document.createElement("a");
+              link.href = response.data?.exportTransaction?.fileURL as string;
+              link.click();
+            } else {
+              const response = await exportData({
+                variables: {
+                  exportTransaction: {
+                    adminId: `${session?.user.id}`,
+                    startDate: exportModalState[0].toISOString(),
+                    endDate: exportModalState[1].toISOString(),
+                    where: {
+                      transactionCategory: {
+                        equals: TransactionCategoryEnum.Comission,
+                      },
+                      status: {
+                        equals: filterExportStatus,
+                      },
+                    },
+                  },
+                },
+              });
+              const link = document.createElement("a");
+              link.href = response.data?.exportTransaction?.fileURL as string;
+              link.click();
+            }
           } catch (error) {
             console.log(error);
           } finally {
@@ -480,7 +497,7 @@ const PendingCommissionBody = ({ data }: { data: any }) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       setShowDetailModal(true);
-                      setComissionPendingId(user?.order?.id)
+                      setComissionPendingId(user?.order?.id);
                     }}
                   >
                     {user.productName}
@@ -592,8 +609,8 @@ const ExportModal = ({
   onClick,
 }: {
   loading: boolean;
-  date: Date;
-  onChange: (value: any) => void;
+  date: Date[];
+  onChange: (value: Date[]) => void;
   onClose: () => void;
   setFilterExportStatus: Dispatch<
     SetStateAction<TransactionStatusEnum | "all">

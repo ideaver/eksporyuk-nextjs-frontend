@@ -1,0 +1,3 @@
+mutation BannerDeleteOne($where: BannerWhereUniqueInput!) {
+  bannerDeleteOne(where: $where)
+}

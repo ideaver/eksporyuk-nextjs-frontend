@@ -7,6 +7,7 @@ import {
   AnnouncementTypeEnum,
   ArticleFindLengthQuery,
   ArticleFindManyQuery,
+  BannerFindManyQuery,
   MaterialPromotionPlatformFindManyQuery,
   MaterialPromotionPlatformTypeEnum,
   NewsFindManyQuery,
@@ -69,6 +70,9 @@ const ArticlePage = () => {
     calculateTotalPageNews,
     setNewsFindType,
     newsFindType,
+    bannerDeleteOne,
+    bannerFindMany,
+    calculateTotalPageBanner,
   } = useArticleViewModel();
   // console.log("Article", calculateTotalPage());
   // console.log("announcement", calculateTotalPageAnnouncement());
@@ -125,6 +129,12 @@ const ArticlePage = () => {
               newsFindMany={newsFindMany}
               formatWIB={formatWIB}
             />
+          ) : selectedTable === "banner" ? (
+            <BannerTable
+              bannerFindMany={bannerFindMany}
+              bannerDeleteOne={bannerDeleteOne}
+              formatWIB={formatWIB}
+            />
           ) : (
             <MaterialPromotionTable
               materialPromotionFindMany={materialPromotionFindMany}
@@ -141,6 +151,8 @@ const ArticlePage = () => {
                 ? calculateTotalPageAnnouncement()
                 : selectedTable === "news"
                 ? calculateTotalPageNews()
+                : selectedTable === "banner"
+                ? calculateTotalPageBanner()
                 : calculateTotalPageMaterialPromotion()
             }
             currentPage={currentPage}
@@ -787,6 +799,139 @@ const NewsTable = ({
   );
 };
 
+const BannerTable = ({
+  bannerDeleteOne,
+  bannerFindMany,
+  formatWIB,
+}: {
+  bannerFindMany: QueryResult<BannerFindManyQuery>;
+  bannerDeleteOne: any;
+  formatWIB: (createdAt: string) => string;
+}) => {
+  return (
+    <>
+      {bannerFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{bannerFindMany.error.message}</h3>
+        </div>
+      ) : bannerFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">
+              <p className="mb-0">JUDUL</p>
+            </th>
+            <th className="text-end min-w-200px">PENULIS</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            {/* <th className="text-end min-w-150px">STATUS</th> */}
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {bannerFindMany?.data?.bannerFindMany?.map((banner) => {
+              return (
+                <tr key={banner.id} className="">
+                  <td className="">
+                    <Link
+                      // href={`/admin/articles/detail/${article.id}`}
+                      href={`/admin/articles/banner/detail/${banner.id}`}
+                      className="fw-bold mb-0 text-dark text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {banner.title}
+                    </Link>
+                  </td>
+
+                  <td className="min-w-250px text-end fw-bold text-muted">
+                    <img
+                      className="symbol-label bg-gray-600 rounded-circle mx-3"
+                      src={
+                        banner.createdByAdmin?.user.avatarImageId ??
+                        "/media/avatars/blank.png"
+                      }
+                      width={40}
+                      height={40}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">
+                      {banner.createdByAdmin?.user.name}
+                    </span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{formatDate(banner.createdAt)}</span>
+                      <span>{formatWIB(banner.createdAt)}</span>
+                    </div>
+                  </td>
+
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link
+                            href={`/admin/articles/banner/edit/${banner.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li>
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await bannerDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: banner.id,
+                                    },
+                                  },
+                                });
+                                await bannerFindMany.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+
 const Head = ({
   onSearch,
   setStatus,
@@ -910,7 +1055,7 @@ const Head = ({
               }}
             />
           </div>
-        ) : (
+        ) : selectedTable === "materialPromotion" ? (
           <div className="col-lg-auto">
             <Dropdown
               styleType="solid"
@@ -933,7 +1078,7 @@ const Head = ({
               }}
             />
           </div>
-        )}
+        ) : null}
 
         <div className="col-lg-auto">
           <Dropdown
@@ -944,6 +1089,7 @@ const Head = ({
               { label: "Article (Student)", value: "news" },
               { label: "Announcement", value: "announcement" },
               { label: "Material Promotion", value: "materialPromotion" },
+              { label: "Banner", value: "banner" },
             ]}
             onValueChange={(e) => {
               selectTable(e);

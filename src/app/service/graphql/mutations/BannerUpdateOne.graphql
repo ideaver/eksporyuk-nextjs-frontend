@@ -1,0 +1,20 @@
+mutation BannerUpdateOne(
+  $data: BannerUpdateInput!
+  $where: BannerWhereUniqueInput!
+) {
+  bannerUpdateOne(data: $data, where: $where) {
+    id
+    title
+    content
+    footer
+    firstContentData
+    secondContentData
+    target
+    isPublished
+    bannerImage
+    createdByAdminId
+    notificationId
+    createdAt
+    updatedAt
+  }
+}

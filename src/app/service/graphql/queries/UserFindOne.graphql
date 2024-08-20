@@ -102,5 +102,10 @@ query UserFindOne($where: UserWhereUniqueInput!) {
       description
       id
     }
+    admin {
+      id
+      createdAt
+      modifyPlatformSettingId
+    }
   }
 }
