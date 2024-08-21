@@ -8,7 +8,7 @@ const useDeleteUser = () => {
   const [delteUserError, setDeleteUserError] = useState("");
   const userSoftDeleteMutation = useUserSoftDeleteForAdminMutation();
 
-  const handleDeleteUser = async (id: string, deleteReason: string) => {
+  const handleDeleteUser = async (id: string, deleteReason: string): Promise<boolean> => {
     setDeleteUserModalLoading(true);
     try {
       const response = await userSoftDeleteMutation[0]({
@@ -31,16 +31,18 @@ const useDeleteUser = () => {
         setTimeout(() => {
           setDeleteUserSuccess(false);
         }, 5000);
+        return true;
       }
     } catch (error: any) {
-      console.log(error);
       setDeleteUserModalLoading(false);
       setShowDeleteUserModal(false);
       setDeleteUserError(error.toString());
       setTimeout(() => {
         setDeleteUserSuccess(false);
       }, 5000);
+      return false;
     }
+    return false;
   };
 
   return {
