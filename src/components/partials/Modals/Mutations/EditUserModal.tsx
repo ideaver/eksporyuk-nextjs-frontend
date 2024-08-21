@@ -147,11 +147,11 @@ const EditUserModal = ({
                   value:
                     (userData?.deletedReason || userData?.deletedAt) === null
                       ? "active"
-                      : "nonactive" ?? "active",
+                      : "nonactive",
                   label:
                     (userData?.deletedReason || userData?.deletedAt) === null
                       ? "Aktif"
-                      : "Non Aktif" ?? "Aktif",
+                      : "Non Aktif",
                 },
                 phoneNumber: userData?.phone?.phoneNumber.toString(),
                 birthDate: new Date(Date.parse(userData?.birthDate ?? "")),
@@ -162,7 +162,6 @@ const EditUserModal = ({
             }
             validationSchema={validationSchema}
             onSubmit={(values) => {
-              console.log(values);
               handleSubmit(values, selectedFile);
             }}
           >
