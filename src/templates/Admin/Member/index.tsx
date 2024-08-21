@@ -242,7 +242,7 @@ const Body = ({
 
   const [selectedStudentEmail, setSelectedStudentEmailEmail] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
-
+  const [showEditPassword, setShowEditPassword] = useState(false);
   return (
     <>
       {studentFindMany.error ? (
