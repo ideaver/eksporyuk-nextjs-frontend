@@ -14,13 +14,13 @@ import DeleteUserModal from "@/components/partials/Modals/Mutations/DeleteUserMo
 import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
-import { CheckBoxInput } from "@/stories/molecules/Forms/Advance/CheckBox/CheckBox";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { TextField } from "@/stories/molecules/Forms/Input/TextField";
 import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
+import Swal from "sweetalert2";
 import useMemberViewModel, { breadcrumbs } from "./Member-view-model";
 
 const MemberPage = ({}) => {
@@ -229,15 +229,19 @@ const Body = ({
     editUserModalLoading,
     handleUserUpdate,
     setShowEditUserModal,
+    editUserError,
   } = useUserEdit();
   const {
     deleteUserLoading,
     handleDeleteUser,
     setShowDeleteUserModal,
     showDeleteUserModal,
+    delteUserError
   } = useDeleteUser();
+
   const [selectedStudentEmail, setSelectedStudentEmailEmail] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
+
   return (
     <>
       {studentFindMany.error ? (
@@ -421,6 +425,7 @@ const Body = ({
           </KTTable>
         </>
       )}
+
       <ForgotPasswordModal
         handleClose={() => setShowForgotPasswordModal(false)}
         show={showForgotPasswordModal}
@@ -431,15 +436,43 @@ const Body = ({
         handleClose={() => setShowEditUserModal(false)}
         show={showEditUserModal}
         userId={selectedStudentId}
-        handleSubmit={(value, file) =>
-          handleUserUpdate(selectedStudentId, value, file)
-        }
+        handleSubmit={async (value, file) => {
+          const res = await handleUserUpdate(selectedStudentId, value, file);
+          if (res) {
+            Swal.fire({
+              title: "Berhasil",
+              text: "User berhasil diupdate",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Pesan error: " + editUserError,
+              icon: "error",
+            });
+          }
+        }}
         isLoading={editUserModalLoading}
       />
       <DeleteUserModal
         handleClose={() => setShowDeleteUserModal(false)}
         show={showDeleteUserModal}
-        handleSubmit={(reason) => handleDeleteUser(selectedStudentId, reason)}
+        handleSubmit={async (reason) => {
+          const res = await handleDeleteUser(selectedStudentId, reason);
+          if (res) {
+            Swal.fire({
+              title: "Berhasil",
+              text: "User berhasil dihapus",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Pesan error: " + delteUserError,
+              icon: "error",
+            });
+          }
+        }}
         isLoading={deleteUserLoading}
       />
     </>

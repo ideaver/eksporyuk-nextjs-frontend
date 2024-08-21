@@ -20,6 +20,7 @@ import { Pagination } from "@/stories/organism/Paginations/Pagination";
 import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
+import Swal from "sweetalert2";
 import { dateFormatter } from "../Affiliators/AffiliatorManagement/Affiliator-view-model";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
@@ -232,12 +233,14 @@ const Body = ({
     editUserModalLoading,
     handleUserUpdate,
     setShowEditUserModal,
+    editUserError,
   } = useUserEdit();
   const {
     deleteUserLoading,
     handleDeleteUser,
     setShowDeleteUserModal,
     showDeleteUserModal,
+    delteUserError,
   } = useDeleteUser();
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -422,15 +425,42 @@ const Body = ({
         show={showEditUserModal}
         userId={selectedUserId}
         handleSubmit={async (value, file) => {
-          await handleUserUpdate(selectedUserId, value, file);
-          await mentorFindMany.refetch();
+          const res = await handleUserUpdate(selectedUserId, value, file);
+          if (res) {
+            Swal.fire({
+              title: "Berhasil",
+              text: "User berhasil diupdate",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Pesan error: " + editUserError,
+              icon: "error",
+            });
+          }
         }}
         isLoading={editUserModalLoading}
       />
       <DeleteUserModal
         handleClose={() => setShowDeleteUserModal(false)}
         show={showDeleteUserModal}
-        handleSubmit={(reason) => handleDeleteUser(selectedUserId, reason)}
+        handleSubmit={async (reason) => {
+          const res = await handleDeleteUser(selectedUserId, reason);
+          if (res) {
+            Swal.fire({
+              title: "Berhasil",
+              text: "User berhasil dihapus",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Pesan error: " + delteUserError,
+              icon: "error",
+            });
+          }
+        }}
         isLoading={deleteUserLoading}
       />
     </>

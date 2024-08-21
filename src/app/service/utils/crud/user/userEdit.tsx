@@ -14,7 +14,7 @@ const useUserEdit = () => {
     id: string,
     data: IValidationSchema,
     file: File | undefined
-  ) => {
+  ): Promise<boolean> => {
     setEditUserModalLoading(true);
     try {
       let uploadedUrl = null;
@@ -99,12 +99,15 @@ const useUserEdit = () => {
         setShowEditUserModal(false);
         setEditUserSuccess(true);
         setEditUserModalLoading(false);
+        return true;
       }
     } catch (error: any) {
       setShowEditUserModal(false);
       setEditUserModalLoading(false);
       setEditUserError(error.toString());
+      return false;
     }
+    return false;
   };
 
   return {
