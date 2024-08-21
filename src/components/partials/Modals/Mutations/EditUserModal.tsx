@@ -44,6 +44,7 @@ interface IEditUserModal {
   error?: any;
   handleClose: () => void;
   handleSubmit: (value: IValidationSchema, file: File | undefined) => void;
+  handleShowEditPassword?: () => void;
 }
 
 const validationSchema = Yup.object<IValidationSchema>().shape({
@@ -71,6 +72,7 @@ const EditUserModal = ({
   userId,
   error,
   show,
+  handleShowEditPassword = () => {},
 }: IEditUserModal) => {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
@@ -287,14 +289,21 @@ const EditUserModal = ({
                           </div>
                           <div className="w-100 mt-5 mt-lg-0">
                             <h5 className="text-muted">Password</h5>
-                            <TextField
+                            {/* <TextField
                               props={{
                                 value: values.password,
                                 onChange: (e: ChangeEvent<HTMLInputElement>) =>
                                   setFieldValue("password", e.target.value),
                               }}
                               type="password"
-                            ></TextField>
+                            ></TextField> */}
+                            <Buttons
+                              buttonColor="secondary"
+                              classNames="w-100"
+                              onClick={handleShowEditPassword}
+                            >
+                              Ubah Password
+                            </Buttons>
                             <ErrorMessage
                               className="text-danger"
                               name="password"

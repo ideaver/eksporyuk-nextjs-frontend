@@ -23,6 +23,7 @@ import { useState } from "react";
 import { dateFormatter } from "../Affiliators/AffiliatorManagement/Affiliator-view-model";
 import useMentorViewModel, { breadcrumbs } from "./Mentor-view-model";
 import SelectMentorModal from "./component/SelectMentorModal";
+import EditPasswordModal from "@/components/partials/Modals/Mutations/EditPassword";
 
 const MentorPage = ({}) => {
   const {
@@ -241,6 +242,8 @@ const Body = ({
   } = useDeleteUser();
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [showEditPassword, setShowEditPassword] = useState(false);
+
   return (
     <>
       {mentorFindMany.error ? (
@@ -426,6 +429,15 @@ const Body = ({
           await mentorFindMany.refetch();
         }}
         isLoading={editUserModalLoading}
+        handleShowEditPassword={() => setShowEditPassword(true)}
+      />
+      <EditPasswordModal
+        show={showEditPassword}
+        handleClose={() => {
+          setShowEditPassword(false);
+        }}
+        userId={selectedUserId}
+        isLoading={false}
       />
       <DeleteUserModal
         handleClose={() => setShowDeleteUserModal(false)}

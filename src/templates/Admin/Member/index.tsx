@@ -22,6 +22,7 @@ import { QueryResult } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
 import useMemberViewModel, { breadcrumbs } from "./Member-view-model";
+import EditPasswordModal from "@/components/partials/Modals/Mutations/EditPassword";
 
 const MemberPage = ({}) => {
   const {
@@ -238,6 +239,7 @@ const Body = ({
   } = useDeleteUser();
   const [selectedStudentEmail, setSelectedStudentEmailEmail] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [showEditPassword, setShowEditPassword] = useState(false);
   return (
     <>
       {studentFindMany.error ? (
@@ -431,11 +433,22 @@ const Body = ({
         handleClose={() => setShowEditUserModal(false)}
         show={showEditUserModal}
         userId={selectedStudentId}
-        handleSubmit={(value, file) =>
-          handleUserUpdate(selectedStudentId, value, file)
+        handleShowEditPassword={() => setShowEditPassword(true)}
+        handleSubmit={
+          (value, file) => handleUserUpdate(selectedStudentId, value, file)
+          // setShowEditPassword(true)
         }
         isLoading={editUserModalLoading}
       />
+      <EditPasswordModal
+        show={showEditPassword}
+        handleClose={() => {
+          setShowEditPassword(false);
+        }}
+        userId={selectedStudentId}
+        isLoading={false}
+      />
+
       <DeleteUserModal
         handleClose={() => setShowDeleteUserModal(false)}
         show={showDeleteUserModal}
