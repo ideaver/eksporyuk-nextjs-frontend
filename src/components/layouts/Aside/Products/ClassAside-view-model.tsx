@@ -144,16 +144,33 @@ const useCreateCourse = () => {
       userData?.userFindOne?.id,
       randomName
     );
-    const courseIntro = fileCreateOne({
-      variables: {
-        data: {
-          path: currentCourseSelector.introVideo,
-          fileType: FileTypeEnum.Mp4,
-        },
-      },
-    });
 
-    console.log("INI COURSE INTRO", (await courseIntro).data?.fileCreateOne);
+    const courseIntroHandler = async () => {
+      try {
+        const courseIntro = fileCreateOne({
+          variables: {
+            data: {
+              path: currentCourseSelector.introVideo,
+              fileType: FileTypeEnum.Mp4,
+            },
+          },
+        });
+        return (await courseIntro).data?.fileCreateOne?.path;
+      } catch (error) {
+        return currentCourseSelector.introVideo;
+      }
+    };
+
+    // const courseIntro = await fileCreateOne({
+    //   variables: {
+    //     data: {
+    //       path: currentCourseSelector.introVideo,
+    //       fileType: FileTypeEnum.Mp4,
+    //     },
+    //   },
+    // });
+
+    // console.log("INI COURSE INTRO", (await courseIntro).data?.fileCreateOne);
 
     const courseVideosHandle = async (lessons: ILessonBasic[]) => {
       return lessons.map(async (lesson, index) => {
@@ -282,7 +299,7 @@ const useCreateCourse = () => {
         duration: currentCourseSelector.courseDuration,
         videoUrl: {
           connect: {
-            path: (await courseIntro).data?.fileCreateOne?.path,
+            path: await courseIntroHandler(),
           },
         },
         mentors: {
