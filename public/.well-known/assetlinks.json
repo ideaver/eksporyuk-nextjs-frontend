@@ -6,8 +6,7 @@
       "package_name": "com.eksporyuk.mobile_member",
       "sha256_cert_fingerprints": [
         "FC:DE:C6:31:EB:7D:77:71:14:01:2E:6E:EE:0B:18:D3:5A:B6:D2:79:DB:AA:16:0E:35:09:23:D7:22:9E:CF:5C",
-        "43:7F:B9:9F:99:04:9B:C2:7B:9F:35:89:27:84:D7:15:68:94:92:4D:DB:1F:29:55:45:BF:CC:32:D2:87:2E:58",
-        "33:49:6F:75:2C:EE:A4:66:D1:F0:31:E0:EE:79:26:0A:37:38:D3:B9:A5:93:23:C9:8B:E3:EF:F8:7D:18:91:ED"
+        "A1:D9:0F:EC:3E:64:7F:C0:E8:82:39:74:E0:4A:BA:0B:27:EE:F5:83:67:6B:F5:95:92:FB:DA:EE:AA:84:87:2E"
       ]
     }
   },
@@ -17,9 +16,8 @@
       "namespace": "android_app",
       "package_name": "com.eksporyuk.mobile_affiliator",
       "sha256_cert_fingerprints": [
-        "43:7F:B9:9F:99:04:9B:C2:7B:9F:35:89:27:84:D7:15:68:94:92:4D:DB:1F:29:55:45:BF:CC:32:D2:87:2E:58",
         "FC:DE:C6:31:EB:7D:77:71:14:01:2E:6E:EE:0B:18:D3:5A:B6:D2:79:DB:AA:16:0E:35:09:23:D7:22:9E:CF:5C",
-        "F8:CF:40:47:87:FF:7E:B3:FE:85:88:70:43:EC:4F:4D:39:82:50:69:84:9C:31:F2:27:65:7B:C7:B8:95:54:C8"
+        "A1:D9:0F:EC:3E:64:7F:C0:E8:82:39:74:E0:4A:BA:0B:27:EE:F5:83:67:6B:F5:95:92:FB:DA:EE:AA:84:87:2E"
       ]
     }
   }
