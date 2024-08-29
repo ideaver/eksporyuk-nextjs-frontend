@@ -137,8 +137,8 @@ const usePagination = () => {
   const [findTake, setFindTake] = useState(10);
   const affiliatorLength = useAdminFindManyAffiliatorQueryQuery({
     variables: {
-      adminFindManyAffiliatorArgs: {}
-    }
+      adminFindManyAffiliatorArgs: {},
+    },
   });
 
   const handlePageChange = (page: number) => {
@@ -148,7 +148,8 @@ const usePagination = () => {
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (affiliatorLength.data?.adminFindManyAffiliatorQuery?.length ?? 0) / findTake
+      (affiliatorLength.data?.adminFindManyAffiliatorQuery?.length ?? 0) /
+        findTake
     );
   };
   return {
@@ -230,6 +231,7 @@ const useAffiliatorViewModel = () => {
       adminFindManyAffiliatorArgs: {
         take: parseInt(findTake.toString()),
         skip: findSkip,
+        commissionSortOrder: orderBy,
         where: {
           OR: [
             {
@@ -258,10 +260,10 @@ const useAffiliatorViewModel = () => {
                 mode: QueryMode.Insensitive,
               },
             },
-          ]
-        }
+          ],
+        },
       },
-    }
+    },
   });
 
   const { selectAll, checkedItems, handleSingleCheck, handleSelectAllCheck } =

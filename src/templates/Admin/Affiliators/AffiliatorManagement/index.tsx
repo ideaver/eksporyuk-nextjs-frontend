@@ -126,8 +126,8 @@ const Head = ({
           <Dropdown
             styleType="solid"
             options={[
-              { label: "Terbaru", value: SortOrder.Desc },
-              { label: "Terlama", value: SortOrder.Asc },
+              { label: "Komisi Terbesar", value: SortOrder.Desc },
+              { label: "Komisi Terkecil", value: SortOrder.Asc },
             ]}
             onValueChange={(e) => {
               setOrderBy(e as SortOrder);
