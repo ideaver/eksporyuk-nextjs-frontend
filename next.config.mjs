@@ -1,15 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  async redirect() {
-    return [
-      {
-        source: "/.well-known/:file",
-        destination: "/api/.well-known/:file",
-        permanent: false,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

@@ -22,7 +22,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/((?!public|images|media|terms|account|\\.well-known|api/\\.well-known).*)",
+    "/((?!public|images|media|terms|account|\\.well-known|api/\\.well-known|applinks/member.*|msl.*).*)",
     "/auth",
   ],
 };

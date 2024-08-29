@@ -1,0 +1,29 @@
+query ReferralLinkFindMany(
+  $where: ReferralLinkWhereInput
+  $take: Int
+  $skip: Int
+  $orderBy: [ReferralLinkOrderByWithRelationInput!]
+) {
+  referralLinkFindMany(
+    where: $where
+    take: $take
+    skip: $skip
+    orderBy: $orderBy
+  ) {
+    link
+    shortenLink
+    isActive
+    clicks
+    sales
+    conversion
+    SocialMediaType
+    platformParameter
+    platformParameterId
+    couponParameter
+    deepLink
+    createdById
+    createdAt
+    updatedAt
+    courseId
+  }
+}
