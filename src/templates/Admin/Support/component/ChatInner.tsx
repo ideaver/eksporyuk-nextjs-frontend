@@ -1,13 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { MessageModel } from "@/_metronic/helpers";
+import { KTIcon, MessageModel } from "@/_metronic/helpers";
 import {
   ChatRoomFindOneQuery,
+  FileTypeEnum,
   useMessageCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { formatTime } from "@/app/service/utils/timeFormatter";
 import clsx from "clsx";
 import { Session } from "next-auth";
 import { FC, useEffect, useRef, useState } from "react";
+import UploadFileModal from "./UploadFileImageModal";
+import { postDataAPI } from "@/app/service/api/rest-service";
+import { useRouter } from "next/router";
+import { Buttons } from "@/stories/molecules/Buttons/Buttons";
+import UploadFileDocumentModal from "./UploadFileDocumentModal";
 
 type Props = {
   isDrawer?: boolean;
@@ -15,13 +21,55 @@ type Props = {
   session: Session;
 };
 
+const truncateFileName = (fileName: string, maxLength = 20) => {
+  if (fileName.length <= maxLength) return fileName;
+
+  const extension = fileName.slice(fileName.lastIndexOf("."));
+  const fileNameWithoutExt = fileName.slice(0, fileName.lastIndexOf("."));
+
+  const charsToShow = maxLength - extension.length - 3; // Mengurangi 3 untuk '...'
+  const frontChars = Math.ceil(charsToShow / 2);
+  const backChars = Math.floor(charsToShow / 2);
+
+  return (
+    fileNameWithoutExt.slice(0, frontChars) +
+    "..." +
+    fileNameWithoutExt.slice(fileNameWithoutExt.length - backChars) +
+    extension
+  );
+};
+
 const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
+  const router = useRouter();
+
   const [chatUpdateFlag, toggleChatUpdateFlat] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageModel[]>([]);
   const [messageCreateOneMutation, { data, loading, error }] =
     useMessageCreateOneMutation();
   const bottomChatRef = useRef<null | HTMLDivElement>(null);
+
+  // iamge upload
+  const [image, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const uploadFile = async (file: File) => {
+    try {
+      const form = {
+        file: file,
+        userId: session?.user?.id,
+      };
+      const response = await postDataAPI({
+        endpoint: "upload/file",
+        body: form,
+        isMultipartRequest: true,
+      });
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
 
   useEffect(() => {
     if (chatRoom) {
@@ -44,6 +92,8 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
                 },
                 type: message.senderId == session.user.id ? "out" : "in",
                 text: message.content,
+                image: message.files?.[0]?.path,
+                fileType: message.files?.[0]?.fileType,
                 time: formatTime(message.updatedAt),
               } as MessageModel)
           );
@@ -156,7 +206,10 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
                   {message.type === "in" ? (
                     <>
                       <div className="symbol  symbol-35px symbol-circle ">
-                        <img alt="Pic" src={userInfo.avatar ?? "/media/avatars/blank.png"} />
+                        <img
+                          alt="Pic"
+                          src={userInfo.avatar ?? "/media/avatars/blank.png"}
+                        />
                       </div>
                       <div className="ms-3">
                         <a
@@ -190,6 +243,39 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
                   )}
                 </div>
 
+                {message.image && // Check if image exists
+                message.fileType !== FileTypeEnum.Jpg &&
+                message.fileType !== FileTypeEnum.Png ? (
+                  <div className="mt-2">
+                    <a
+                      href={message.image}
+                      download={message.image}
+                      className="btn btn-primary"
+                      data-bs-toggle="tooltip"
+                      title="Kilk untuk download"
+                    >
+                      <KTIcon
+                        iconName="arrow-down"
+                        className="fs-4 fw-1 text-white"
+                      />
+                      {truncateFileName(
+                        message.image.split("/").at(-1) ?? "",
+                        30
+                      )}
+                    </a>
+                  </div>
+                ) : null}
+
+                <img
+                  src={message.image}
+                  alt=""
+                  className="rounded"
+                  style={{
+                    maxWidth: "500px",
+                    maxHeight: "400px",
+                    objectFit: "cover",
+                  }}
+                />
                 <div
                   className={clsx(
                     "p-5 rounded",
@@ -230,18 +316,27 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
             <button
               className="btn btn-sm btn-icon btn-active-light-primary me-1"
               type="button"
-              data-bs-toggle="tooltip"
-              title="Coming soon"
+              data-bs-toggle="modal"
+              data-bs-target="#kt_upload_file_document"
             >
-              <i className="bi bi-paperclip fs-3"></i>
+              <i
+                className="bi bi-paperclip fs-3"
+                data-bs-toggle="tooltip"
+                title="Upload File"
+              ></i>
             </button>
             <button
               className="btn btn-sm btn-icon btn-active-light-primary me-1"
               type="button"
-              data-bs-toggle="tooltip"
-              title="Coming soon"
+              data-bs-toggle="modal"
+              data-bs-target="#kt_upload_file"
+              onClick={() => {}}
             >
-              <i className="bi bi-upload fs-3"></i>
+              <i
+                className="bi bi-upload fs-3"
+                data-bs-toggle="tooltip"
+                title="Upload Gambar"
+              ></i>
             </button>
           </div>
           <button
@@ -254,6 +349,99 @@ const ChatInner: FC<Props> = ({ isDrawer = false, chatRoom, session }) => {
           </button>
         </div>
       </div>
+      <UploadFileModal
+        errorMessage={errorMessage}
+        loading={isLoading}
+        handleSend={async (messageModal) => {
+          try {
+            setIsLoading(true);
+            const response = await uploadFile(image!);
+            await messageCreateOneMutation({
+              variables: {
+                data: {
+                  content: messageModal,
+                  sender: {
+                    connect: {
+                      id: session.user.id,
+                    },
+                  },
+                  chatRoom: {
+                    connect: {
+                      id: chatRoom?.id,
+                    },
+                  },
+                  files: {
+                    connect: [
+                      {
+                        path: response?.data,
+                      },
+                    ],
+                  },
+                },
+              },
+            });
+            router.reload();
+
+            // setIsLoading(false);
+          } catch (error) {
+            setErrorMessage("Something error. Please try again");
+            setIsLoading(false);
+            console.log(error);
+          } finally {
+            bottomChatRef.current?.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+        onImageUpload={(fileImage) => {
+          setImage(fileImage);
+        }}
+      />
+
+      <UploadFileDocumentModal
+        errorMessage={errorMessage}
+        loading={isLoading}
+        handleSend={async (messageModal) => {
+          try {
+            setIsLoading(true);
+            const response = await uploadFile(image!);
+            await messageCreateOneMutation({
+              variables: {
+                data: {
+                  content: messageModal,
+                  sender: {
+                    connect: {
+                      id: session.user.id,
+                    },
+                  },
+                  chatRoom: {
+                    connect: {
+                      id: chatRoom?.id,
+                    },
+                  },
+                  files: {
+                    connect: [
+                      {
+                        path: response?.data,
+                      },
+                    ],
+                  },
+                },
+              },
+            });
+            router.reload();
+
+            // setIsLoading(false);
+          } catch (error) {
+            setErrorMessage("Something error. Please try again");
+            setIsLoading(false);
+            console.log(error);
+          } finally {
+            bottomChatRef.current?.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+        onImageUpload={(fileImage) => {
+          setImage(fileImage);
+        }}
+      />
     </div>
   );
 };

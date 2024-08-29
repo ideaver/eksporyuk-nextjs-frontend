@@ -425,7 +425,8 @@ const Body = ({ data }: { data: QueryResult<TransactionFindManyQuery> }) => {
                 </td>
                 <td className="fw-bold text-muted text-end">
                   {formatToIDR(
-                    String(user.payment?.invoice?.paymentForGateway?.amount)
+                    // String(user.payment?.invoice?.paymentForGateway?.amount)
+                    String(user.amount)
                   )}
                 </td>
                 <td className="text-end">
