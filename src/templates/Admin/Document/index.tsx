@@ -10,6 +10,7 @@ import {
   LocalCommodityFindManyQuery,
   SopFileFindManyQuery,
   SortOrder,
+  TermOrFaqFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { Dispatch, DispatchWithoutAction, SetStateAction } from "react";
 import { KTTable } from "@/_metronic/helpers/components/KTTable";
@@ -48,6 +49,12 @@ const Document = () => {
     handlePageChangeCommodity,
     setCurrentPageCommodity,
     commodityDeleteOne,
+    termOrFaqFindMany,
+    termOrFaqDeleteOne,
+    handlePageChangeTermOrFaq,
+    calculateTotalPageTermOrFaq,
+    setCurrentPageTermOrFaq,
+    currentPageTermOrFaq,
   } = useDocumentViewModel();
   return (
     <>
@@ -78,6 +85,11 @@ const Document = () => {
               eksporDeleteOne={eksporDeleteOne}
               eksporFindMany={eksporFindMany}
             />
+          ) : selectTable === "termOrFaq" ? (
+            <TermOdFaqTable
+              termOrFaqDeleteOne={termOrFaqDeleteOne}
+              termOrFaqFindMany={termOrFaqFindMany}
+            ></TermOdFaqTable>
           ) : (
             <CommodtyTable
               commodityFindMany={commodityFindMany}
@@ -88,7 +100,11 @@ const Document = () => {
             pageLength={
               selectTable === "sop"
                 ? calculateTotalPageSop()
-                : calculateTotalPageEkspor()
+                : selectTable === "ekspor"
+                ? calculateTotalPageEkspor()
+                : selectTable === "termOrFaq"
+                ? calculateTotalPageTermOrFaq()
+                : calculateTotalPageCommodity()
             }
             currentPage={currentPageSop}
             setCurrentPage={(val) => {
@@ -258,6 +274,158 @@ const SopTable = ({
     </>
   );
 };
+
+const TermOdFaqTable = ({
+  termOrFaqFindMany,
+  termOrFaqDeleteOne,
+}: //   sopLength,
+{
+  termOrFaqFindMany: QueryResult<TermOrFaqFindManyQuery>;
+  //   sopLength: number;
+  termOrFaqDeleteOne: any;
+}) => {
+  return (
+    <>
+      {termOrFaqFindMany.error ? (
+        <div className="d-flex justify-content-center align-items-center h-500px flex-column">
+          <h3 className="text-center">{termOrFaqFindMany.error.message}</h3>
+        </div>
+      ) : termOrFaqFindMany.loading ? (
+        <div className="d-flex justify-content-center align-items-center h-500px">
+          <h3 className="text-center">Loading....</h3>
+        </div>
+      ) : (
+        <KTTable
+          utilityGY={5}
+          utilityGX={8}
+          responsive="table-responsive my-10"
+          className="fs-6"
+        >
+          <KTTableHead
+            textColor="muted"
+            fontWeight="bold"
+            className="text-uppercase align-middle"
+          >
+            <th className="min-w-200px">JUDUL</th>
+
+            <th className="min-w-200px">
+              <p className="mb-0">content</p>
+            </th>
+            <th className="text-end min-w-200px">PENULIS</th>
+            <th className="text-end min-w-250px">TANGGAL</th>
+            {/* <th className="text-end min-w-150px">FILE</th> */}
+            <th className="text-end min-w-125px">ACTION</th>
+          </KTTableHead>
+          <tbody className="align-middle">
+            {termOrFaqFindMany?.data?.termOrFaqFindMany?.map((document) => {
+              return (
+                <tr key={document.id} className="">
+                  <td className="text-muted">{document.title ?? "-"}</td>
+                  <td className="">
+                    <p
+                      //   href={`/admin/documents/detail/${document.id}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                        maxHeight: "40px",
+                      }}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: document.content as string,
+                        }}
+                      />
+                    </p>
+                  </td>
+
+                  <td className="min-w-250px text-end fw-bold text-muted">
+                    <img
+                      className="symbol-label bg-gray-600 rounded-circle mx-3"
+                      src={
+                        document.createdBy.avatarImageId ??
+                        "/media/avatars/blank.png"
+                      }
+                      width={40}
+                      height={40}
+                      alt="flag"
+                    />
+                    <span className="text-muted fw-bold">
+                      {document.createdBy.name}
+                    </span>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{formatDate(document.updatedAt)}</span>
+                    </div>
+                  </td>
+                  {/* <td className="min-w-100px text-end fw-bold text-muted">
+                    <Link
+                      href={`${document.fileId}`}
+                      className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
+                      style={{
+                        maxWidth: "200px",
+                        display: "inline-block",
+                      }}
+                    >
+                      {document.fileId}
+                    </Link>
+                  </td> */}
+
+                  <td className="text-end ">
+                    <div className="dropdown ps-15 pe-0">
+                      <button
+                        className="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        Actions
+                      </button>
+                      <ul className="dropdown-menu">
+                        {/* <li>
+                          <Link
+                            href={`/admin/documents/edit/${document.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                        </li> */}
+                        <li></li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              try {
+                                await termOrFaqDeleteOne({
+                                  variables: {
+                                    where: {
+                                      id: document.id,
+                                    },
+                                  },
+                                });
+                                await termOrFaqFindMany.refetch();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </KTTable>
+      )}
+    </>
+  );
+};
+
 const EksporTable = ({
   eksporFindMany,
   eksporDeleteOne,
@@ -566,6 +734,7 @@ const Head = ({
               { label: "SOP", value: "sop" },
               { label: "Ekspor Dokumen", value: "ekspor" },
               { label: "Komoditas", value: "komoditas" },
+              { label: "TermOrFaq", value: "termOrFaq" },
             ]}
             onValueChange={(e) => {
               setSelectTable(e as string);

@@ -1,0 +1,15 @@
+query TermOrFaqFindLength(
+  $where: TermOrFaqWhereInput
+  $orderBy: [TermOrFaqOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  termOrFaqFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+  }
+}

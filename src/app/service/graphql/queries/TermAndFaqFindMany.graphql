@@ -1,0 +1,46 @@
+query TermOrFaqFindMany(
+  $where: TermOrFaqWhereInput
+  $orderBy: [TermOrFaqOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  termOrFaqFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    type
+    createdById
+    couponId
+    createdBy {
+      id
+      name
+      email
+      username
+      couponCodeRegister
+      emailVerifiedAt
+      referralCode
+      password
+      passwordUpdatedAt
+      birthDate
+      personalId
+      npwpId
+      createdAt
+      updatedAt
+      deletedAt
+      deletedReason
+      phoneId
+      referredById
+      role
+      gender
+      avatarImageId
+      referralLinkId
+    }
+  }
+}

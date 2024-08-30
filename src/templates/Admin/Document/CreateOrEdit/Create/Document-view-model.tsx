@@ -1,8 +1,10 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
+  TermOrFaqTypeEnum,
   useEksporDocumentCreateOneMutation,
   useLocalCommodityCreateOneMutation,
   useSopFileCreateOneMutation,
+  useTermOrFaqCreateOneMutation,
 } from "@/app/service/graphql/gen/graphql";
 import { ApolloError } from "@apollo/client";
 import { useSession } from "next-auth/react";
@@ -50,11 +52,19 @@ const useCreateDocumentViewModel = () => {
     string | null
   >(null);
 
+  // state terms or faq
+  const [titleTermOrFaq, setTitleTermOrFaq] = useState<string | null>(null);
+  const [contentTermOrFaq, setContentTermOrFaq] = useState<string | null>(null);
+  const [termOrFaqType, setTermOrFaqType] = useState<TermOrFaqTypeEnum>(
+    TermOrFaqTypeEnum.Faq
+  );
+
   const [swalProps, setSwalProps] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const [SOPFileCreateOne] = useSopFileCreateOneMutation();
   const [eksporDocumentCreateOne] = useEksporDocumentCreateOneMutation();
+  const [termOrFaqCreateOne] = useTermOrFaqCreateOneMutation();
 
   const uploadFile = async (fileImage: File | undefined) => {
     try {
@@ -243,7 +253,50 @@ const useCreateDocumentViewModel = () => {
     }
   };
 
+  const handleTermOrFaqCreteOne = async () => {
+    setIsLoading(true);
+    try {
+      await termOrFaqCreateOne({
+        variables: {
+          data: {
+            createdBy: {
+              connect: {
+                id: session?.user.id,
+              },
+            },
+            title: titleTermOrFaq ?? "Term Or Faq Eksporyuk",
+            content: contentTermOrFaq ?? "",
+            type: termOrFaqType,
+          },
+        },
+      });
+
+      setSwalProps({
+        show: true,
+        title: "Berhasil",
+        text: "Term Or Faq Baru berhasil ditambahkan",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      setSwalProps({
+        show: true,
+        title: "Terjadi kesalahan",
+        text: (error as ApolloError).message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      setIsLoading(false);
+    }
+  };
+
   return {
+    titleTermOrFaq,
+    setTitleTermOrFaq,
+    contentTermOrFaq,
+    setContentTermOrFaq,
+    termOrFaqType,
+    setTermOrFaqType,
     titleEkspor,
     setTitleEkspor,
     isLoading,
@@ -273,6 +326,7 @@ const useCreateDocumentViewModel = () => {
     instructionCommodity,
     setInstructionCommodity,
     handleCommodityCreateOne,
+    handleTermOrFaqCreteOne,
   };
 };
 

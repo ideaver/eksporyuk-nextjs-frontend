@@ -1,0 +1,12 @@
+mutation TermOrFaqCreateOne($data: TermOrFaqCreateInput!) {
+  termOrFaqCreateOne(data: $data) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    type
+    createdById
+    couponId
+  }
+}

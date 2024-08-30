@@ -11,6 +11,8 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import SweetAlert2 from "react-sweetalert2";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useRouter } from "next/router";
+import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
+import { TermOrFaqTypeEnum } from "@/app/service/graphql/gen/graphql";
 
 const CreateDocument = () => {
   const router = useRouter();
@@ -46,6 +48,13 @@ const CreateDocument = () => {
     instructionCommodity,
     setInstructionCommodity,
     handleCommodityCreateOne,
+    titleTermOrFaq,
+    setTitleTermOrFaq,
+    contentTermOrFaq,
+    setContentTermOrFaq,
+    termOrFaqType,
+    setTermOrFaqType,
+    handleTermOrFaqCreteOne,
   } = useCreateDocumentViewModel();
   return (
     <>
@@ -380,6 +389,85 @@ const CreateDocument = () => {
                 onClick={handleCommodityCreateOne}
               >
                 Tambah komoditas ekspor
+              </Buttons>
+            </div>
+          </KTCardBody>
+        </KTCard>
+
+        <KTCard className="mt-5">
+          <KTCardBody>
+            {/* <h4 className="fw-bold text-gray-700">Judul SOP</h4>
+          <TextField placeholder="Judul SOP" />
+          <h5 className="text-muted mt-2 mb-5">Masukan judul SOP</h5> */}
+            <h2 className="mb-5">Term Or FAQ</h2>
+            <h4>Judul Term Or FAQ</h4>
+            <TextField
+              placeholder="masukan judul"
+              props={{
+                value: titleTermOrFaq,
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  setTitleTermOrFaq(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan judul terms or FAQ</h5>
+
+            <h4 className="fw-bold text-gray-700 mt-5">Konten Term Or FAQ</h4>
+            <div
+              style={{
+                height: "225px",
+              }}
+            >
+              <ReactQuill
+                modules={{
+                  toolbar: [
+                    [{ header: [1, 2, false] }],
+                    [
+                      "link",
+                      "bold",
+                      "italic",
+                      "underline",
+                      "strike",
+                      "blockquote",
+                    ],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    [{ align: [] }],
+                    ["clean"],
+                  ],
+                }}
+                theme="snow"
+                value={contentTermOrFaq}
+                style={{ height: "70%" }}
+                onChange={(e) => {
+                  setContentTermOrFaq(e);
+                }}
+              />
+            </div>
+            <h5 className="text-muted mb-5">Masukan content term or FAQ</h5>
+
+            <h4 className="fw-bold text-gray-700 mt-5">Tipe Term Or FAQ</h4>
+            <Dropdown
+              value={termOrFaqType}
+              options={[
+                { value: TermOrFaqTypeEnum.Faq, label: "FAQ" },
+                { value: TermOrFaqTypeEnum.Term, label: "Term" },
+                {
+                  value: TermOrFaqTypeEnum.PrivacyPolicy,
+                  label: "Privacy Policy",
+                },
+              ]}
+              onValueChange={(value) =>
+                setTermOrFaqType(value as TermOrFaqTypeEnum)
+              }
+            ></Dropdown>
+            <h5 className="text-muted mb-5 mt-5">Pilih tipe term or FAQ</h5>
+
+            <div className="d-flex justify-content-end align-content-center mt-5">
+              <Buttons
+                disabled={!titleTermOrFaq}
+                onClick={handleTermOrFaqCreteOne}
+              >
+                Tambah Term or FAQ
               </Buttons>
             </div>
           </KTCardBody>

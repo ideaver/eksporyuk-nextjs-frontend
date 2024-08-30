@@ -10,6 +10,9 @@ import {
   useSopFileDeleteOneMutation,
   useSopFileFimdLengthQuery,
   useSopFileFindManyQuery,
+  useTermOrFaqDeleteOneMutation,
+  useTermOrFaqFindLengthQuery,
+  useTermOrFaqFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -162,13 +165,57 @@ const usePaginationCommodity = ({
   };
 };
 
+const usePaginationTermOrFaq = ({
+  documentFindTake,
+  documentFindSkip,
+  documentFindSearch,
+  setDocumentFindSkip,
+  setDocumentFindTake,
+}: {
+  documentFindTake: number;
+  documentFindSkip: number;
+  documentFindSearch: string;
+  setDocumentFindSkip: Dispatch<SetStateAction<number>>;
+  setDocumentFindTake: Dispatch<SetStateAction<number>>;
+}) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ternOrFaqLength = useTermOrFaqFindLengthQuery({
+    variables: {
+      where: {
+        title: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setDocumentFindSkip((currentPage - 1) * documentFindTake);
+  };
+
+  const calculateTotalPage = () => {
+    return Math.ceil(
+      (ternOrFaqLength.data?.termOrFaqFindMany?.length ?? 0) / documentFindTake
+    );
+  };
+  return {
+    currentPage,
+    setCurrentPage,
+    handlePageChange,
+    calculateTotalPage,
+  };
+};
+
 const useDocumentViewModel = () => {
   const [selectTable, setSelectTable] = useState("sop");
   const [documentFindSkip, setDocumentFindSkip] = useState(0);
   const [documentFindTake, setDocumentFindTake] = useState(10);
   const [orderBy, setOrderBy] = useState(SortOrder.Desc);
-
   const [documentFindSearch, setDocumentFindSearch] = useState("");
+
   const sopFileFindMany = useSopFileFindManyQuery({
     variables: {
       skip: documentFindSkip,
@@ -274,6 +321,26 @@ const useDocumentViewModel = () => {
     },
   });
 
+  const termOrFaqFindMany = useTermOrFaqFindManyQuery({
+    variables: {
+      take: parseInt(documentFindTake.toString()),
+      skip: documentFindSkip,
+      orderBy: [
+        {
+          createdAt: orderBy,
+        },
+      ],
+      where: {
+        title: {
+          contains: documentFindSearch,
+          mode: QueryMode.Insensitive,
+        },
+      },
+    },
+  });
+
+  const [termOrFaqDeleteOne] = useTermOrFaqDeleteOneMutation();
+
   // pagination
   const {
     currentPage: currentPageSop,
@@ -312,6 +379,19 @@ const useDocumentViewModel = () => {
     setDocumentFindSkip,
     setDocumentFindTake,
   });
+
+  const {
+    currentPage: currentPageTermOrFaq,
+    setCurrentPage: setCurrentPageTermOrFaq,
+    handlePageChange: handlePageChangeTermOrFaq,
+    calculateTotalPage: calculateTotalPageTermOrFaq,
+  } = usePaginationTermOrFaq({
+    documentFindSearch,
+    documentFindSkip,
+    documentFindTake,
+    setDocumentFindSkip,
+    setDocumentFindTake,
+  });
   // useEffect(() => {
   //   if (documentFindSearch.length !== 0) {
   //     setCurrentPageSop(1);
@@ -323,6 +403,10 @@ const useDocumentViewModel = () => {
 
   return {
     sopDeleteOne,
+    handlePageChangeTermOrFaq,
+    calculateTotalPageTermOrFaq,
+    setCurrentPageTermOrFaq,
+    currentPageTermOrFaq,
     eksporDeleteOne,
     commodityDeleteOne,
     eksporFindMany,
@@ -350,6 +434,8 @@ const useDocumentViewModel = () => {
     setCurrentPageCommodity,
     handlePageChangeCommodity,
     calculateTotalPageCommodity,
+    termOrFaqFindMany,
+    termOrFaqDeleteOne,
   };
 };
 
