@@ -12,7 +12,10 @@ import SweetAlert2 from "react-sweetalert2";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { useRouter } from "next/router";
 import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
-import { TermOrFaqTypeEnum } from "@/app/service/graphql/gen/graphql";
+import {
+  CompanyDocumentTypeEnum,
+  TermOrFaqTypeEnum,
+} from "@/app/service/graphql/gen/graphql";
 
 const CreateDocument = () => {
   const router = useRouter();
@@ -55,6 +58,14 @@ const CreateDocument = () => {
     termOrFaqType,
     setTermOrFaqType,
     handleTermOrFaqCreteOne,
+    documentEksporType,
+    setDocumentEksporType,
+    descriptionEkspor,
+    setDescriptionEkspor,
+    instructionEkspor,
+    setInstructionEkspor,
+    mainFunction,
+    setMainFunction,
   } = useCreateDocumentViewModel();
   return (
     <>
@@ -271,6 +282,117 @@ const CreateDocument = () => {
                 )}
               </div>
             </div>
+
+            <h4 className="mt-5">Tipe Dokumen</h4>
+            <Dropdown
+              styleType="solid"
+              value={documentEksporType}
+              options={[
+                {
+                  label: "Additional",
+                  value: CompanyDocumentTypeEnum.Additional,
+                },
+                { label: "Customs", value: CompanyDocumentTypeEnum.Customs },
+                {
+                  label: "Financial",
+                  value: CompanyDocumentTypeEnum.Financial,
+                },
+                {
+                  label: "Regulatory",
+                  value: CompanyDocumentTypeEnum.Regulatory,
+                },
+                {
+                  label: "Sales And Invoice",
+                  value: CompanyDocumentTypeEnum.SalesAndInvoice,
+                },
+                {
+                  label: "Transportation",
+                  value: CompanyDocumentTypeEnum.Transportation,
+                },
+                { label: "Other", value: CompanyDocumentTypeEnum.Other },
+              ]}
+              onValueChange={(e) => {
+                setDocumentEksporType(e as CompanyDocumentTypeEnum);
+              }}
+            />
+            <h5 className="text-muted mt-1">Masukan tipe ekspor dokumen</h5>
+
+            <h4 className="mt-5">Deskripsi</h4>
+            <Textarea
+              placeholder="masukan judul"
+              props={{
+                value: descriptionEkspor,
+                onChange: (e: any) => {
+                  setDescriptionEkspor(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">
+              Masukan deskripsi ekspor dokumen
+            </h5>
+
+            <h4 className="mt-5">Instruksi</h4>
+            <Textarea
+              placeholder="masukan judul"
+              props={{
+                value: instructionEkspor,
+                onChange: (e: any) => {
+                  setInstructionEkspor(e.target.value);
+                },
+              }}
+            />
+            <h5 className="text-muted mt-1">
+              Masukan deskripsi ekspor dokumen
+            </h5>
+            <h4 className="mt-5">Fungsi Utama</h4>
+
+            {mainFunction.map((value, index) => {
+              return (
+                <div className="d-flex mt-5" key={index}>
+                  <div className="w-100">
+                    <TextField
+                      placeholder="masukan fungsi"
+                      props={{
+                        value: value,
+                        onChange: (e: any) => {
+                          setMainFunction((prev) =>
+                            prev.map((val, i) =>
+                              i === index ? e.target.value : val
+                            )
+                          );
+                        },
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="ms-5">
+                    <Buttons
+                      icon="cross"
+                      buttonColor="danger"
+                      showIcon={true}
+                      onClick={() =>
+                        setMainFunction((prev) =>
+                          prev.filter((e, i) => i != index)
+                        )
+                      }
+                    ></Buttons>
+                  </div>
+                </div>
+              );
+            })}
+            <Buttons
+              showIcon={true}
+              mode="light"
+              classNames="mt-5 mb-5"
+              onClick={() => {
+                setMainFunction((prev) => [...prev, ""]);
+              }}
+            >
+              Tambahkan Fungsi Utama
+            </Buttons>
+            <h5 className="text-muted mt-1">
+              Masukan fungsi utama ekspor dokumen
+            </h5>
+
             <div className="d-flex justify-content-end align-content-center mt-5">
               <Buttons
                 disabled={!filePDFEkspor}

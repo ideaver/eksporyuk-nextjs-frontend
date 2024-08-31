@@ -1,6 +1,10 @@
 import {
+  CompanyDocumentTypeEnum,
   QueryMode,
   SortOrder,
+  useCompanyDocumentDeleteOneMutation,
+  useCompanyDocumentFindLengthQuery,
+  useCompanyDocumentFindManyQuery,
   useEksporDocumentDeleteOneMutation,
   useEksporDocumentFindLengthQuery,
   useEksporDocumentFindManyQuery,
@@ -90,10 +94,10 @@ const usePaginationEkspor = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const eksporLength = useEksporDocumentFindLengthQuery({
+  const eksporLength = useCompanyDocumentFindLengthQuery({
     variables: {
       where: {
-        title: {
+        name: {
           contains: documentFindSearch,
           mode: QueryMode.Insensitive,
         },
@@ -108,7 +112,7 @@ const usePaginationEkspor = ({
 
   const calculateTotalPage = () => {
     return Math.ceil(
-      (eksporLength.data?.eksporDocumentFindMany?.length ?? 0) /
+      (eksporLength.data?.companyDocumentFindMany?.length ?? 0) /
         documentFindTake
     );
   };
@@ -215,6 +219,9 @@ const useDocumentViewModel = () => {
   const [documentFindTake, setDocumentFindTake] = useState(10);
   const [orderBy, setOrderBy] = useState(SortOrder.Desc);
   const [documentFindSearch, setDocumentFindSearch] = useState("");
+  const [eksporDocumentType, setEksporDocumentType] = useState<
+    "all" | CompanyDocumentTypeEnum
+  >("all");
 
   const sopFileFindMany = useSopFileFindManyQuery({
     variables: {
@@ -258,7 +265,7 @@ const useDocumentViewModel = () => {
     },
   });
 
-  const eksporFindMany = useEksporDocumentFindManyQuery({
+  const eksporFindMany = useCompanyDocumentFindManyQuery({
     variables: {
       skip: documentFindSkip,
       take: parseInt(documentFindTake.toString()),
@@ -270,31 +277,19 @@ const useDocumentViewModel = () => {
       where: {
         OR: [
           {
-            title: {
+            name: {
               contains: documentFindSearch,
               mode: QueryMode.Insensitive,
             },
-          },
-          {
-            content: {
-              contains: documentFindSearch,
-              mode: QueryMode.Insensitive,
+            companyDocumentTypeEnum: {
+              equals: eksporDocumentType === "all" ? null : eksporDocumentType,
             },
           },
-          {
-            createdBy: {
-              is: {
-                user: {
-                  is: {
-                    name: {
-                      contains: documentFindSearch,
-                      mode: QueryMode.Insensitive,
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // {
+          // companyDocumentTypeEnum: {
+          //   equals: eksporDocumentType === "all" ? null : eksporDocumentType,
+          // },
+          // },
         ],
       },
     },
@@ -302,6 +297,7 @@ const useDocumentViewModel = () => {
   const [sopDeleteOne] = useSopFileDeleteOneMutation();
   const [eksporDeleteOne] = useEksporDocumentDeleteOneMutation();
   const [commodityDeleteOne] = useLocalCommodityDeleteOneMutation();
+  const [companyDocumentDeleteOne] = useCompanyDocumentDeleteOneMutation();
 
   const commodityFindMany = useLocalCommodityFindManyQuery({
     variables: {
@@ -402,6 +398,7 @@ const useDocumentViewModel = () => {
   // }, [documentFindSearch, setCurrentPageEkspor, setCurrentPageSop]);
 
   return {
+    companyDocumentDeleteOne,
     sopDeleteOne,
     handlePageChangeTermOrFaq,
     calculateTotalPageTermOrFaq,
@@ -436,6 +433,8 @@ const useDocumentViewModel = () => {
     calculateTotalPageCommodity,
     termOrFaqFindMany,
     termOrFaqDeleteOne,
+    eksporDocumentType,
+    setEksporDocumentType,
   };
 };
 

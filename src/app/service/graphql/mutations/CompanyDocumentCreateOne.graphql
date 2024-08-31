@@ -1,0 +1,14 @@
+mutation CompanyDocumentCreateOne($data: CompanyDocumentCreateInput!) {
+  companyDocumentCreateOne(data: $data) {
+    id
+    name
+    description
+    instructionsForUse
+    mainFunction
+    companyDocumentTypeEnum
+    createdAt
+    updatedAt
+    fileUrl
+    companyId
+  }
+}

@@ -1,0 +1,15 @@
+query CompanyDocumentFindLength(
+  $where: CompanyDocumentWhereInput
+  $orderBy: [CompanyDocumentOrderByWithRelationInput!]
+  $take: Int
+  $skip: Int
+) {
+  companyDocumentFindMany(
+    where: $where
+    orderBy: $orderBy
+    take: $take
+    skip: $skip
+  ) {
+    id
+  }
+}

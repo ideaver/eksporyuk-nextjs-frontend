@@ -6,6 +6,8 @@ import { Dropdown } from "@/stories/molecules/Forms/Dropdown/Dropdown";
 import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 import Link from "next/link";
 import {
+  CompanyDocumentFindManyQuery,
+  CompanyDocumentTypeEnum,
   EksporDocumentFindManyQuery,
   LocalCommodityFindManyQuery,
   SopFileFindManyQuery,
@@ -55,6 +57,9 @@ const Document = () => {
     calculateTotalPageTermOrFaq,
     setCurrentPageTermOrFaq,
     currentPageTermOrFaq,
+    companyDocumentDeleteOne,
+    eksporDocumentType,
+    setEksporDocumentType,
   } = useDocumentViewModel();
   return (
     <>
@@ -63,6 +68,8 @@ const Document = () => {
       <KTCard>
         <KTCardBody>
           <Head
+            eksporDocumentType={eksporDocumentType}
+            setEksporDocumentType={setEksporDocumentType}
             selectTable={selectTable}
             setDocumentFindSkip={setDocumentFindSkip}
             setDocumentFindSearch={setDocumentFindSearch}
@@ -82,7 +89,7 @@ const Document = () => {
             />
           ) : selectTable === "ekspor" ? (
             <EksporTable
-              eksporDeleteOne={eksporDeleteOne}
+              eksporDeleteOne={companyDocumentDeleteOne}
               eksporFindMany={eksporFindMany}
             />
           ) : selectTable === "termOrFaq" ? (
@@ -431,7 +438,7 @@ const EksporTable = ({
   eksporDeleteOne,
 }: //   sopLength,
 {
-  eksporFindMany: QueryResult<EksporDocumentFindManyQuery>;
+  eksporFindMany: QueryResult<CompanyDocumentFindManyQuery>;
   //   sopLength: number;
   eksporDeleteOne: any;
 }) => {
@@ -457,19 +464,20 @@ const EksporTable = ({
             fontWeight="bold"
             className="text-uppercase align-middle"
           >
-            <th className="min-w-200px">
+            {/* <th className="min-w-200px">
               <p className="mb-0">content</p>
-            </th>
-            <th className="text-end min-w-200px">TITLE</th>
-            <th className="text-end min-w-250px">TANGGAL</th>
+            </th> */}
+            <th className="text- min-w-100px">NAMA</th>
+            <th className="text-end min-w-100px">TIPE</th>
+            <th className="text-end min-w-200px">TANGGAL</th>
             <th className="text-end min-w-150px">FILE</th>
             <th className="text-end min-w-125px">ACTION</th>
           </KTTableHead>
           <tbody className="align-middle">
-            {eksporFindMany?.data?.eksporDocumentFindMany?.map((document) => {
+            {eksporFindMany?.data?.companyDocumentFindMany?.map((document) => {
               return (
                 <tr key={document.id} className="">
-                  <td className="">
+                  {/* <td className="">
                     <p
                       //   href={`/admin/documents/detail/${document.id}`}
                       className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
@@ -481,9 +489,9 @@ const EksporTable = ({
                     >
                       {document.title}
                     </p>
-                  </td>
+                  </td> */}
 
-                  <td className="min-w-250px text-end fw-bold text-muted">
+                  {/* <td className="min-w-250px text-end fw-bold text-muted">
                     <img
                       className="symbol-label bg-gray-600 rounded-circle mx-3"
                       src={
@@ -497,6 +505,16 @@ const EksporTable = ({
                     <span className="text-muted fw-bold">
                       {document.createdBy.user.name}
                     </span>
+                  </td> */}
+                  <td className="min-w-100px fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{document.name}</span>
+                    </div>
+                  </td>
+                  <td className="min-w-200px text-end fw-bold text-muted">
+                    <div className="d-flex flex-column">
+                      <span>{document.companyDocumentTypeEnum}</span>
+                    </div>
                   </td>
                   <td className="min-w-200px text-end fw-bold text-muted">
                     <div className="d-flex flex-column">
@@ -505,14 +523,14 @@ const EksporTable = ({
                   </td>
                   <td className="min-w-100px text-end fw-bold text-muted">
                     <Link
-                      href={`${document.fileId}`}
+                      href={`${document.fileUrl}`}
                       className="fw-bold mb-0 text-muted text-hover-primary text-truncate"
                       style={{
                         maxWidth: "200px",
                         display: "inline-block",
                       }}
                     >
-                      {document.fileId}
+                      {document.fileUrl}
                     </Link>
                   </td>
 
@@ -701,6 +719,8 @@ const Head = ({
   setOrder,
   documentFindSearch,
   setDocumentFindSearch,
+  eksporDocumentType,
+  setEksporDocumentType,
 }: {
   selectTable: string;
   setDocumentFindSkip: Dispatch<SetStateAction<number>>;
@@ -709,6 +729,10 @@ const Head = ({
   setOrder: Dispatch<SetStateAction<SortOrder>>;
   documentFindSearch: string;
   setDocumentFindSearch: Dispatch<SetStateAction<string>>;
+  eksporDocumentType: "all" | CompanyDocumentTypeEnum;
+  setEksporDocumentType: Dispatch<
+    SetStateAction<"all" | CompanyDocumentTypeEnum>
+  >;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -743,6 +767,41 @@ const Head = ({
             }}
           />
         </div>
+        {selectTable === "ekspor" ? (
+          <div className="col-lg-auto">
+            <Dropdown
+              styleType="solid"
+              options={[
+                { label: "Semua", value: "all" },
+                {
+                  label: "Additional",
+                  value: CompanyDocumentTypeEnum.Additional,
+                },
+                { label: "Customs", value: CompanyDocumentTypeEnum.Customs },
+                {
+                  label: "Financial",
+                  value: CompanyDocumentTypeEnum.Financial,
+                },
+                {
+                  label: "Regulatory",
+                  value: CompanyDocumentTypeEnum.Regulatory,
+                },
+                {
+                  label: "Sales And Invoice",
+                  value: CompanyDocumentTypeEnum.SalesAndInvoice,
+                },
+                {
+                  label: "Transportation",
+                  value: CompanyDocumentTypeEnum.Transportation,
+                },
+                { label: "Other", value: CompanyDocumentTypeEnum.Other },
+              ]}
+              onValueChange={(e) => {
+                setEksporDocumentType(e as "all" | CompanyDocumentTypeEnum);
+              }}
+            />
+          </div>
+        ) : null}
         <div className="col-lg-auto">
           <Dropdown
             styleType="solid"

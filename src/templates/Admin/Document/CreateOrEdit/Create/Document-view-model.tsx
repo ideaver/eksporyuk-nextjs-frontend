@@ -1,6 +1,8 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
+  CompanyDocumentTypeEnum,
   TermOrFaqTypeEnum,
+  useCompanyDocumentCreateOneMutation,
   useEksporDocumentCreateOneMutation,
   useLocalCommodityCreateOneMutation,
   useSopFileCreateOneMutation,
@@ -38,6 +40,11 @@ const useCreateDocumentViewModel = () => {
   >();
   const [filePDFEkspor, setFilePDFEkspor] = useState<File | undefined>();
   const [titleEkspor, setTitleEkspor] = useState<string | null>(null);
+  const [documentEksporType, setDocumentEksporType] =
+    useState<CompanyDocumentTypeEnum>(CompanyDocumentTypeEnum.Additional);
+  const [descriptionEkspor, setDescriptionEkspor] = useState<string>("");
+  const [instructionEkspor, setInstructionEkspor] = useState<string>("");
+  const [mainFunction, setMainFunction] = useState<string[]>([]);
 
   // state Komoditas ekspor
   const [filePDFPreviewCommodity, setFilePDFPreviewCommodity] = useState<
@@ -64,6 +71,7 @@ const useCreateDocumentViewModel = () => {
 
   const [SOPFileCreateOne] = useSopFileCreateOneMutation();
   const [eksporDocumentCreateOne] = useEksporDocumentCreateOneMutation();
+  const [companyDocumentCreateOne] = useCompanyDocumentCreateOneMutation();
   const [termOrFaqCreateOne] = useTermOrFaqCreateOneMutation();
 
   const uploadFile = async (fileImage: File | undefined) => {
@@ -158,16 +166,22 @@ const useCreateDocumentViewModel = () => {
     setIsLoading(true);
     try {
       const response = await uploadFile(filePDFEkspor);
-      await eksporDocumentCreateOne({
+      await companyDocumentCreateOne({
         variables: {
           data: {
-            createdBy: {
-              connect: {
-                id: session?.user.id,
-              },
-            },
+            // createdBy: {
+            //   connect: {
+            //     id: session?.user.id,
+            //   },
+            // },
             // content: content,
-            title: titleEkspor,
+            name: titleEkspor ?? "Ekspor Dokumen",
+            companyDocumentTypeEnum: documentEksporType,
+            description: descriptionEkspor,
+            instructionsForUse: instructionEkspor,
+            mainFunction: {
+              set: [...mainFunction],
+            },
             file: {
               connect: {
                 path: response?.data,
@@ -291,6 +305,14 @@ const useCreateDocumentViewModel = () => {
   };
 
   return {
+    documentEksporType,
+    setDocumentEksporType,
+    descriptionEkspor,
+    setDescriptionEkspor,
+    instructionEkspor,
+    setInstructionEkspor,
+    mainFunction,
+    setMainFunction,
     titleTermOrFaq,
     setTitleTermOrFaq,
     contentTermOrFaq,
