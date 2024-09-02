@@ -314,6 +314,7 @@ const useCreateCourse = () => {
             })) || [],
         },
         basePrice: parseInt(currentCourseSelector.price),
+        salePrice: parseInt(currentCourseSelector.discountPrice ?? "0"),
         level: currentCourseSelector.courseLevel,
 
         affiliateCommission: currentCourseSelector.affiliateCommission,
