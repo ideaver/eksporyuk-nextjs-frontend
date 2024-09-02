@@ -176,15 +176,19 @@ const useCreateCourse = () => {
       return lessons.map(async (lesson, index) => {
         let material;
         if (lesson.lessonType === "Video") {
-          const res = await fileCreateOne({
-            variables: {
-              data: {
-                path: (lesson.content as ILessonVideoContent).videoUrl,
-                fileType: FileTypeEnum.Mp4,
+          try {
+            const res = await fileCreateOne({
+              variables: {
+                data: {
+                  path: (lesson.content as ILessonVideoContent).videoUrl,
+                  fileType: FileTypeEnum.Mp4,
+                },
               },
-            },
-          });
-          material = res.data?.fileCreateOne?.path;
+            });
+            material = res.data?.fileCreateOne?.path;
+          } catch (error) {
+            material = (lesson.content as ILessonVideoContent).videoUrl;
+          }
         } else {
           try {
             material = await convertFile(
@@ -237,8 +241,9 @@ const useCreateCourse = () => {
 
     const sectionData = await Promise.all(
       currentCourseSelector.sections.map(async (section, index) => {
+        const reverseLessons = section.lessons;
         const lessons = await Promise.all(
-          await courseVideosHandle(section.lessons)
+          await courseVideosHandle(reverseLessons)
         );
         const resourcesFile = await Promise.all(
           await courseResourceFileHanlder(section.resources)
@@ -249,7 +254,7 @@ const useCreateCourse = () => {
           description: section.description,
           orderIndex: index + 1,
           lessons: {
-            create: lessons,
+            create: lessons.slice().sort((a, b) => b.orderIndex - a.orderIndex),
           },
           quizzes: {
             create: section.quizs.map((quiz, index) => ({
