@@ -331,7 +331,9 @@ const useCreateCourse = () => {
           set: currentCourseSelector.objective,
         },
         sections: {
-          create: sectionData,
+          create: sectionData
+            .slice()
+            .sort((a, b) => a.orderIndex - b.orderIndex),
         },
       },
     };
