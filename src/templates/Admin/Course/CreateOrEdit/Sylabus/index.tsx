@@ -143,8 +143,8 @@ const CourseSylabusPage = () => {
         lessons: courseSection.lessons?.filter((_, i) => i !== index),
       };
     });
+    
     dispatch(changeSections(newLessons));
-    dispatch(deleteLesson(newLessons[index]?.id));
   };
 
   const handleEditLesson = (
@@ -452,6 +452,7 @@ const CourseSylabusPage = () => {
                                                           ...provided.dragHandleProps,
                                                         }}
                                                         onRemove={() => {
+                                                          dispatch(deleteLesson(lesson.id));
                                                           handleRemoveLesson(
                                                             index
                                                           );
@@ -548,13 +549,14 @@ const CourseSylabusPage = () => {
                                                 if (isDetail) {
                                                   return;
                                                 }
+                                                dispatch(
+                                                  deleteResource(resource.id)
+                                                );
                                                 const newResources =
                                                   courseSection.resources.filter(
                                                     (_, i) => i !== index
                                                   );
-                                                dispatch(
-                                                  deleteResource(resource.id)
-                                                );
+                                               
                                                 dispatch(
                                                   changeSections(
                                                     currentCourseSectionSelector.map(

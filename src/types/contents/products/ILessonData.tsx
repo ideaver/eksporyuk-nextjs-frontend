@@ -12,6 +12,7 @@ export interface ILessonPDFContent {
 export interface ILessonBasic {
   id: string;
   title: string;
+  orderIndex: number;
   lessonType: "Video" | "PDF";
   content: ILessonVideoContent | ILessonPDFContent;
 }
@@ -33,6 +34,7 @@ export const createDefaultLessonData = (): ILessonBasic => ({
   id: Math.random().toString(36).substring(2),
   title: "",
   lessonType: "Video",
+  orderIndex: 0,
   content: {
     content: "",
     videoUrl: "",
