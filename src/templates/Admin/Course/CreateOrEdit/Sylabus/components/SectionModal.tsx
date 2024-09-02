@@ -86,6 +86,7 @@ const SectionModal = ({ show, isEdit, handleClose, handleSubmit }: Props) => {
                     : Math.random().toString(36).substring(2),
                 title: title,
                 description: description,
+                orderIndex: 0,
                 quizs: [],
                 lessons: [],
                 resources: [],
