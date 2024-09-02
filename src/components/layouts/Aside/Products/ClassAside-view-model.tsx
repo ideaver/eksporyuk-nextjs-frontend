@@ -1,12 +1,22 @@
 import { postDataAPI } from "@/app/service/api/rest-service";
 import {
+  CourseSectionCreateWithoutCourseInput,
+  CourseSectionScalarWhereInput,
   CourseSectionUpdateWithWhereUniqueWithoutCourseInput,
   // CourseDurationTypeEnum,
   CourseStatusEnum,
   FileTypeEnum,
+  LessonCreateWithoutSectionInput,
+  LessonScalarWhereInput,
   LessonUpdateManyWithoutSectionNestedInput,
   LessonUpdateWithWhereUniqueWithoutSectionInput,
   QuestionTypeEnum,
+  QuizCreateWithoutSectionInput,
+  QuizScalarWhereInput,
+  QuizUpdateManyWithoutSectionNestedInput,
+  QuizUpdateWithWhereUniqueWithoutSectionInput,
+  ResourceCreateWithoutSectionInput,
+  ResourceScalarWhereInput,
   ResourceUpdateManyWithoutSectionNestedInput,
   ResourceUpdateWithWhereUniqueWithoutSectionInput,
   useCourseCreateOneMutation,
@@ -24,12 +34,14 @@ import {
   changeThumbnail,
   resetCourse,
 } from "@/features/reducers/course/courseReducer";
+import { ICourseSectionData } from "@/types/contents/course/ICourseData";
 import { IResourceData } from "@/types/contents/course/IResourceData";
 import {
   ILessonBasic,
   ILessonPDFContent,
   ILessonVideoContent,
 } from "@/types/contents/products/ILessonData";
+import { ICreateQuizData } from "@/types/contents/products/IQuizData";
 import { ApolloError } from "@apollo/client";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -70,7 +82,7 @@ const convertFile = async (file: any, session: any, filename: string) => {
     const url = response?.data;
     return url;
   } catch (error) {
-    return null;
+    throw error;
   }
 };
 
@@ -207,7 +219,7 @@ const useCreateCourse = () => {
           orderIndex: index + 1,
           accessibility: VisibilityEnum.Public,
           duration:
-            (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ?? 0,
+            (lesson.content as ILessonVideoContent)?.duration * 60 * 1000,
           ...(material ? { material: { connect: { path: material } } } : {}),
         };
       });
@@ -355,7 +367,6 @@ const useCreateCourse = () => {
   };
   return { createCourse, loading, error, data, currentCourseSelector };
 };
-
 const useEditCourse = () => {
   const {
     currentCourseSelector,
@@ -371,6 +382,7 @@ const useEditCourse = () => {
   const [updateCourseMutation, { data, error, loading }] =
     useCourseUpdateOneMutation();
 
+  // Main function to edit the course
   const editCourse = async () => {
     if (isLoggedIn) {
       console.log(isLoggedIn);
@@ -384,6 +396,7 @@ const useEditCourse = () => {
       Date.now().toString(36) +
       ".png";
 
+    // Handles the thumbnail conversion
     const thumbnailHandler = async () => {
       try {
         const thumbnail = await convertFile(
@@ -397,6 +410,7 @@ const useEditCourse = () => {
       }
     };
 
+    // Handles the course intro video upload
     const courseIntroHandler = async () => {
       try {
         const courseIntro = fileCreateOne({
@@ -413,22 +427,12 @@ const useEditCourse = () => {
       }
     };
 
-    // const courseIntro = fileCreateOne({
-    //   variables: {
-    //     data: {
-    //       path: currentCourseSelector.introVideo,
-    //       fileType: FileTypeEnum.Mp4,
-    //     },
-    //   },
-    // });
-
-    // console.log("INI COURSE INTRO", (await courseIntro).data?.fileCreateOne);
-
-    const courseVideosHandler: (
-      lessons: ILessonBasic[]
-    ) => Promise<LessonUpdateWithWhereUniqueWithoutSectionInput[]> = async (
-      lessons: ILessonBasic[]
-    ) => {
+    // Handles the course videos upload and update
+    const courseVideosHandler: (lessons: ILessonBasic[]) => Promise<{
+      update: LessonUpdateWithWhereUniqueWithoutSectionInput[] | null;
+      create: LessonCreateWithoutSectionInput[] | null;
+      deleteMany: LessonScalarWhereInput[] | null;
+    }> = async (lessons: ILessonBasic[]) => {
       const lessonsPromises = lessons.map(async (lesson, index) => {
         let material;
         if (lesson.lessonType === "Video") {
@@ -443,7 +447,6 @@ const useEditCourse = () => {
             });
             material = res.data?.fileCreateOne?.path;
           } catch (error) {
-            console.log("BAGAIMANA BISA INI ERROR", error);
             material = (lesson.content as ILessonVideoContent).videoUrl;
           }
         } else {
@@ -454,19 +457,15 @@ const useEditCourse = () => {
               (lesson.content as ILessonPDFContent).fileName
             );
           } catch (error) {
-            console.log(
-              "CATCH ERROR LESSON PDF",
-              lesson.content as ILessonPDFContent
-            );
             material =
-              (lesson.content as ILessonPDFContent).file ??
+              (lesson.content as ILessonPDFContent).file ?? 
               (lesson.content as ILessonPDFContent).content;
           }
         }
-        console.log("INI MATERIAL", material);
-        const lessonUpdate = {
+
+        const lessonUpdate: LessonUpdateWithWhereUniqueWithoutSectionInput = {
           where: {
-            id: parseInt(lesson.id),
+            id: /^\d+$/.test(lesson.id) ? parseInt(lesson.id) : 0,
           },
           data: {
             title: {
@@ -483,28 +482,64 @@ const useEditCourse = () => {
             },
             duration: {
               set: Math.round(
-                (lesson.content as ILessonVideoContent)?.duration * 60 * 1000 ??
-                  0
+                (lesson.content as ILessonVideoContent)?.duration * 60 * 1000
               ),
             },
             ...(material ? { material: { connect: { path: material } } } : {}),
           },
         };
-        console.log("THIS IS LESSON UPDATE", lessonUpdate);
-        return lessonUpdate;
+
+        const lessonCreate: LessonCreateWithoutSectionInput = {
+          title: lesson.title,
+          description: lesson.content.content,
+          orderIndex: index,
+          accessibility: VisibilityEnum.Public,
+          duration: Math.round(
+            (lesson.content as ILessonVideoContent)?.duration * 60 * 1000
+          ),
+          ...(material ? { material: { connect: { path: material } } } : {}),
+        };
+
+        return {
+          update: /^\d+$/.test(lesson.id) ? lessonUpdate : null,
+          create: !/^\d+$/.test(lesson.id) ? lessonCreate : null,
+          deleteMany: currentDeletedCourseSelector.lessonsId.map((id) => {
+            return {
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            };
+          }),
+        };
       });
-      return Promise.all(lessonsPromises);
+
+      const results = await Promise.all(lessonsPromises);
+      return {
+        update: results
+          .filter((result) => result.update !== null)
+          .map(
+            (result) => result.update
+          ) as LessonUpdateWithWhereUniqueWithoutSectionInput[],
+        create: results
+          .filter((result) => result.create !== null)
+          .map((result) => result.create) as LessonCreateWithoutSectionInput[],
+        deleteMany: results
+          .filter((result) => result.deleteMany !== null)
+          .map((result) => result.deleteMany) as LessonScalarWhereInput[],
+      };
     };
 
-    const courseResourceFileHandler: (
-      resources: IResourceData[]
-    ) => Promise<ResourceUpdateWithWhereUniqueWithoutSectionInput[]> = async (
-      resources: IResourceData[]
-    ) => {
+    // Handles the course resource files upload and update
+    const courseResourceFileHandler: (resources: IResourceData[]) => Promise<{
+      update: ResourceUpdateWithWhereUniqueWithoutSectionInput[] | null;
+      create: ResourceCreateWithoutSectionInput[] | null;
+      deleteMany: ResourceScalarWhereInput[] | null;
+    }> = async (resources: IResourceData[]) => {
       const resourcePromises = resources.map(async (resource, index) => {
-        const files = await Promise.all(
+        const filesUpdate = await Promise.all(
           resource.files.map(async (file) => {
-            console.log("INI FILE RESOURCE UPDATE", file);
             try {
               const uploadedPath = await convertFile(
                 file.fileUrl,
@@ -535,10 +570,10 @@ const useEditCourse = () => {
             }
           })
         );
-        console.log("INI FILES RESOURCE  UPDATE", files);
-        return {
+
+        const resourceUpdate = {
           where: {
-            id: parseInt(resource.id),
+            id: /^\d+$/.test(resource.id) ? parseInt(resource.id) : 0,
           },
           data: {
             name: {
@@ -548,44 +583,236 @@ const useEditCourse = () => {
               set: resource.description,
             },
             files: {
-              update: files,
+              update: filesUpdate,
+              disconnect: currentDeletedCourseSelector.resourcesId.map(
+                (id) => ({
+                  id: {
+                    equals: !isNaN(id as number)
+                      ? parseInt(id as string)
+                      : (id as number),
+                  },
+                })
+              ),
             },
           },
         };
+
+        const resourceCreate = {
+          name: resource.title,
+          description: resource.description,
+          files: {
+            connect: filesUpdate.map((file) => ({ path: file.data.path.set })),
+          },
+        };
+
+        return {
+          update: /^\d+$/.test(resource.id) ? resourceUpdate : null,
+          create: !/^\d+$/.test(resource.id) ? resourceCreate : null,
+          deleteMany: currentDeletedCourseSelector.resourcesId.map((id) => {
+            return {
+              id: {
+                equals: !isNaN(id as number)
+                  ? parseInt(id as string)
+                  : (id as number),
+              },
+            };
+          }),
+        };
       });
-      return Promise.all(resourcePromises);
+
+      const results = await Promise.all(resourcePromises);
+      return {
+        update: results
+          .filter((result) => result.update !== null)
+          .map(
+            (result) => result.update
+          ) as ResourceUpdateWithWhereUniqueWithoutSectionInput[],
+        create: results
+          .filter((result) => result.create !== null)
+          .map(
+            (result) => result.create
+          ) as ResourceCreateWithoutSectionInput[],
+        deleteMany: results
+          .filter((result) => result.deleteMany !== null)
+          .map((result) => result.deleteMany) as ResourceScalarWhereInput[],
+      };
     };
 
-    const sectionColumn: CourseSectionUpdateWithWhereUniqueWithoutCourseInput[] =
-      await Promise.all(
-        currentCourseSelector.sections.map(async (section, index) => {
-          const lessons: LessonUpdateManyWithoutSectionNestedInput = {
-            update: await Promise.all(
-              await courseVideosHandler(section.lessons)
-            ),
-            deleteMany: currentDeletedCourseSelector.lessonsId.map((id) => ({
-              id: {
-                equals: !isNaN(id as number)
-                  ? parseInt(id as string)
-                  : (id as number),
+    // Handles the course quizzes upload and update
+    // TODO: Fix this when update Quiz
+    const courseQuizHandler: (quizzes: ICreateQuizData[]) => Promise<{
+      update: QuizUpdateWithWhereUniqueWithoutSectionInput[] | null;
+      create: QuizCreateWithoutSectionInput[] | null;
+      deleteMany: QuizScalarWhereInput[] | null;
+    }> = async (quizzes: ICreateQuizData[]) => {
+      const quizPromises = quizzes.map(async (quiz, index) => {
+        const questions = quiz.quizSylabus.quizs.map((question, index) => ({
+          where: {
+            id: parseInt(question.id),
+          },
+          data: {
+            text: {
+              set: question.quizDescription,
+            },
+            type: {
+              set:
+                quiz.quizBasic.quizType === "Pilihan Ganda"
+                  ? QuestionTypeEnum.TrueFalse
+                  : QuestionTypeEnum.MultipleChoice,
+            },
+            options: {
+              update: question.quizQuestion.map((answer) => ({
+                where: {
+                  id: parseInt(answer.id),
+                },
+                data: {
+                  optionText: {
+                    set: answer.option,
+                  },
+                  isCorrect: {
+                    set: answer.isCorrect,
+                  },
+                },
+              })),
+              deleteMany: currentDeletedCourseSelector.questionsId.map(
+                (id) => ({
+                  id: {
+                    equals: !isNaN(id as number)
+                      ? parseInt(id as string)
+                      : (id as number),
+                  },
+                })
+              ),
+            },
+          },
+        }));
+
+        const quizUpdate: QuizUpdateWithWhereUniqueWithoutSectionInput = {
+          where: {
+            id: parseInt(quiz.id),
+          },
+          data: {
+            title: {
+              set: quiz.quizBasic.quizName,
+            },
+            description: {
+              set: quiz.quizSylabus.quizDescription,
+            },
+            questions: {
+              update: questions,
+              deleteMany: currentDeletedCourseSelector.quizsId.map((id) => ({
+                id: {
+                  equals: !isNaN(id as number)
+                    ? parseInt(id as string)
+                    : (id as number),
+                },
+              })),
+            },
+          },
+        };
+
+        const quizCreate: QuizCreateWithoutSectionInput = {
+          title: quiz.quizBasic.quizName,
+          description: quiz.quizSylabus.quizDescription,
+          questions: {
+            create: quiz.quizSylabus.quizs.map((question, index) => ({
+              text: question.quizDescription,
+              type:
+                quiz.quizBasic.quizType === "Pilihan Ganda"
+                  ? QuestionTypeEnum.TrueFalse
+                  : QuestionTypeEnum.MultipleChoice,
+              options: {
+                create: question.quizQuestion.map((answer) => ({
+                  optionText: answer.option,
+                  isCorrect: answer.isCorrect,
+                })),
               },
             })),
-          };
-          const resourcesFile: ResourceUpdateManyWithoutSectionNestedInput = {
-            update: await Promise.all(
-              await courseResourceFileHandler(section.resources)
-            ),
-            deleteMany: currentDeletedCourseSelector.resourcesId.map((id) => ({
-              id: {
-                equals: !isNaN(id as number)
-                  ? parseInt(id as string)
-                  : (id as number),
-              },
-            })),
-          };
-          console.log("INI LESSONS", index, lessons);
-          console.log("INI RESOURCES", index, resourcesFile);
-          return {
+          },
+        };
+
+        return {
+          update: /^\d+$/.test(quiz.id) ? quizUpdate : null,
+          create: !/^\d+$/.test(quiz.id) ? quizCreate : null,
+          deleteMany: currentDeletedCourseSelector.quizsId.map((id) => ({
+            id: {
+              equals: !isNaN(id as number)
+                ? parseInt(id as string)
+                : (id as number),
+            },
+          })),
+        };
+      });
+
+      const results = await Promise.all(quizPromises);
+      return {
+        update: results
+          .filter((result) => result.update !== null)
+          .map(
+            (result) => result.update
+          ) as QuizUpdateWithWhereUniqueWithoutSectionInput[],
+        create: results
+          .filter((result) => result.create !== null)
+          .map((result) => result.create) as QuizCreateWithoutSectionInput[],
+        deleteMany: results
+          .filter((result) => result.deleteMany !== null)
+          .map((result) => result.deleteMany)
+          .flat() as QuizScalarWhereInput[],
+      };
+    };
+
+    // Handles the course sections upload and update
+    const courseSectionHandler: (sections: ICourseSectionData[]) => Promise<{
+      update: CourseSectionUpdateWithWhereUniqueWithoutCourseInput[] | null;
+      create: CourseSectionCreateWithoutCourseInput[] | null;
+      deleteMany: CourseSectionScalarWhereInput[] | null;
+    }> = async (sections: ICourseSectionData[]) => {
+      const sectionPromises = sections.map(async (section, index) => {
+        const { update: updateLessons, create: createLessons } =
+          await courseVideosHandler(section.lessons);
+        const { update: updateResources, create: createResources } =
+          await courseResourceFileHandler(section.resources);
+        const { update: updateQuizzes, create: createQuizzes } =
+          await courseQuizHandler(section.quizs);
+
+        const lessons: LessonUpdateManyWithoutSectionNestedInput = {
+          update: updateLessons,
+          create: createLessons,
+          deleteMany: currentDeletedCourseSelector.lessonsId.map((id) => ({
+            id: {
+              equals: !isNaN(id as number)
+                ? parseInt(id as string)
+                : (id as number),
+            },
+          })),
+        };
+
+        const resourcesFile: ResourceUpdateManyWithoutSectionNestedInput = {
+          update: updateResources,
+          create: createResources,
+          deleteMany: currentDeletedCourseSelector.resourcesId.map((id) => ({
+            id: {
+              equals: !isNaN(id as number)
+                ? parseInt(id as string)
+                : (id as number),
+            },
+          })),
+        };
+
+        const quizzes: QuizUpdateManyWithoutSectionNestedInput = {
+          update: updateQuizzes,
+          create: createQuizzes,
+          deleteMany: currentDeletedCourseSelector.quizsId.map((id) => ({
+            id: {
+              equals: !isNaN(id as number)
+                ? parseInt(id as string)
+                : (id as number),
+            },
+          })),
+        };
+
+        const sectionUpdate: CourseSectionUpdateWithWhereUniqueWithoutCourseInput =
+          {
             where: {
               id: parseInt(section.id),
             },
@@ -604,83 +831,67 @@ const useEditCourse = () => {
               },
               lessons: lessons,
               resources: resourcesFile,
-              quizzes: {
-                update: section.quizs.map((quiz, index) => ({
-                  where: {
-                    id: parseInt(quiz.id),
-                  },
-                  data: {
-                    title: {
-                      set: quiz.quizBasic.quizName,
-                    },
-                    description: {
-                      set: quiz.quizSylabus.quizDescription,
-                    },
-                    questions: {
-                      update: quiz.quizSylabus.quizs.map((question, index) => ({
-                        where: {
-                          id: parseInt(question.id),
-                        },
-                        data: {
-                          text: {
-                            set: question.quizDescription,
-                          },
-                          type: {
-                            set:
-                              quiz.quizBasic.quizType === "Pilihan Ganda"
-                                ? QuestionTypeEnum.TrueFalse
-                                : QuestionTypeEnum.MultipleChoice,
-                          },
-                          options: {
-                            update: question.quizQuestion.map((answer) => ({
-                              where: {
-                                id: parseInt(answer.id),
-                              },
-                              data: {
-                                optionText: {
-                                  set: answer.option,
-                                },
-                                isCorrect: {
-                                  set: answer.isCorrect,
-                                },
-                              },
-                            })),
-                            deleteMany:
-                              currentDeletedCourseSelector.questionsId.map(
-                                (id) => {
-                                  return {
-                                    id: {
-                                      equals: !isNaN(id as number)
-                                        ? parseInt(id as string)
-                                        : (id as number),
-                                    },
-                                  };
-                                }
-                              ),
-                          },
-                        },
-                      })),
-                      deleteMany: currentDeletedCourseSelector.quizsId.map(
-                        (id) => {
-                          return {
-                            id: {
-                              equals: !isNaN(id as number)
-                                ? parseInt(id as string)
-                                : (id as number),
-                            },
-                          };
-                        }
-                      ),
-                    },
-                  },
-                })),
-              },
+              quizzes: quizzes,
             },
           };
-        })
-      );
+
+        const sectionCreate: CourseSectionCreateWithoutCourseInput = {
+          name: section.title,
+          description: section.description,
+          accessibility: VisibilityEnum.Public,
+          orderIndex: index,
+          lessons: {
+            create: createLessons,
+          },
+          resources: {
+            create: createResources,
+          },
+          quizzes: {
+            create: createQuizzes,
+          },
+        };
+
+        return {
+          update: /^\d+$/.test(section.id) ? sectionUpdate : null,
+          create: !/^\d+$/.test(section.id) ? sectionCreate : null,
+          deleteMany: currentDeletedCourseSelector.sectionsId.map((id) => ({
+            id: {
+              equals: !isNaN(id as number)
+                ? parseInt(id as string)
+                : (id as number),
+            },
+          })),
+        };
+      });
+
+      const results = await Promise.all(sectionPromises);
+      return {
+        update: results
+          .filter((result) => result.update !== null)
+          .map(
+            (result) => result.update
+          ) as CourseSectionUpdateWithWhereUniqueWithoutCourseInput[],
+        create: results
+          .filter((result) => result.create !== null)
+          .map(
+            (result) => result.create
+          ) as CourseSectionCreateWithoutCourseInput[],
+        deleteMany: results
+          .filter((result) => result.deleteMany !== null)
+          .map((result) => result.deleteMany)
+          .flat() as CourseSectionScalarWhereInput[],
+      };
+    };
+
+    // Extract and handle sections, lessons, resources, and quizzes
+    const {
+      update: sectionColumn,
+      create: newSections,
+      deleteMany: deleteSections,
+    } = await courseSectionHandler(currentCourseSelector.sections);
 
     try {
+      // Update the course with the new data
       const result = await updateCourseMutation({
         variables: {
           where: {
@@ -748,18 +959,12 @@ const useEditCourse = () => {
             },
             sections: {
               update: sectionColumn,
-              deleteMany: currentDeletedCourseSelector.sectionsId.map((id) => ({
-                id: {
-                  equals: !isNaN(id as number)
-                    ? parseInt(id as string)
-                    : (id as number),
-                },
-              })),
+              create: newSections,
+              deleteMany: deleteSections,
             },
           },
         },
       });
-      console.log("DATA FROM UPDATE COURSE DATA", result.data);
       if (result.data) {
         return Promise.resolve(result.data);
       } else {

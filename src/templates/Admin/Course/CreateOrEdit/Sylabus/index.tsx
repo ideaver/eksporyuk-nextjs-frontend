@@ -9,6 +9,7 @@ import {
   deleteLesson,
   deleteQuiz,
   deleteResource,
+  deleteResourceFilePath,
   deleteSection,
 } from "@/features/reducers/course/deletedCourseReducer";
 import {
@@ -273,17 +274,32 @@ const CourseSylabusPage = () => {
     if (isDetail) {
       return;
     }
+
     const filterSelectedCourseSection = currentCourseSectionSelector.filter(
       (section) => section.id === selectedCourseSectionId
     )[0];
 
-    const newResource = filterSelectedCourseSection.resources.some(
+    const existingResources = filterSelectedCourseSection.resources;
+    const newResource = existingResources.some(
       (resource) => resource.id === data.id
     )
-      ? filterSelectedCourseSection.resources.map((resource) =>
+      ? existingResources.map((resource) =>
           resource.id === data.id ? data : resource
         )
-      : filterSelectedCourseSection.resources.concat(data);
+      : existingResources.concat(data);
+
+    // Identify deleted resources
+    const deletedResources = existingResources.filter(
+      (resource) => !newResource.some((newRes) => newRes.id === resource.id)
+    );
+
+    // Dispatch deleteResourceFilePath for each deleted resource
+    deletedResources.forEach((resource) => {
+      resource.files.forEach((file) => {
+        dispatch(deleteResourceFilePath(file.fileUrl));
+      });
+    });
+
     dispatch(
       changeSections(
         currentCourseSectionSelector.map((section) =>
@@ -293,6 +309,7 @@ const CourseSylabusPage = () => {
         )
       )
     );
+
     setShowResourceModal(false);
     setIsEdit(false);
   };

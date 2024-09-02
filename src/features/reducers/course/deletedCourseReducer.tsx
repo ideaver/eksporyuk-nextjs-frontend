@@ -6,6 +6,7 @@ interface DeletedCourseState {
   quizsId: Array<string | number>;
   questionsId: Array<string | number>;
   resourcesId: Array<string | number>;
+  resorucesFilePath: Array<string | number>;
 }
 
 const initialState: DeletedCourseState = {
@@ -14,6 +15,7 @@ const initialState: DeletedCourseState = {
   quizsId: [],
   questionsId: [],
   resourcesId: [],
+  resorucesFilePath: [],
 };
 
 export const deletedCourseSlice = createSlice({
@@ -36,6 +38,9 @@ export const deletedCourseSlice = createSlice({
     deleteResource: (state, action: PayloadAction<string | number>) => {
       state.resourcesId.push(action.payload);
     },
+    deleteResourceFilePath: (state, action: PayloadAction<string | number>) => {
+      state.resorucesFilePath.push(action.payload);
+    }
   },
 });
 
@@ -46,6 +51,7 @@ export const {
   deleteQuiz,
   deleteResource,
   deleteQuestion,
+  deleteResourceFilePath,
 } = deletedCourseSlice.actions;
 
 export default deletedCourseSlice.reducer;
