@@ -3,62 +3,340 @@ query UserFindOne($where: UserWhereUniqueInput!) {
     id
     name
     email
+    username
+    couponCodeRegister
     emailVerifiedAt
     referralCode
     password
     passwordUpdatedAt
     birthDate
+    personalId
+    npwpId
     createdAt
     updatedAt
     deletedAt
+    deletedReason
+    phoneId
+    referredById
+    accounts {
+      accountInquiryId
+      accountInquiry {
+        bank {
+          bankLogo {
+            path
+          }
+          bankLogoPath
+          name
+        }
+        accountNumber
+        accountHolder
+        bankCode
+        id
+        inquiryKey
+        inquiryStatus
+      }
+      accountNumber
+      name
+      userId
+    }
+    addresses {
+      id
+      name
+      latitude
+      longitude
+      label
+      isMain
+      createdAt
+      updatedAt
+      userId
+      subdistrict {
+        id
+        name
+        postalCode
+        updatedAt
+        district {
+          id
+          name
+          updatedAt
+          city {
+            id
+            name
+            updatedAt
+            province {
+              id
+              name
+              stateCode
+              latitude
+              longitude
+              updatedAt
+              country {
+                id
+                name
+                iso3
+                iso2
+                numericCode
+                phoneCode
+                capital
+                currency
+                currencyName
+                currencySymbol
+                tld
+                native
+                latitude
+                longitude
+                flagEmoji
+                emojiU
+                updatedAt
+                region
+                region_id
+                subregion
+                subregion_id
+                nationality
+              }
+            }
+          }
+        }
+      }
+    }
     role
     gender
-    createdFavorites {
-      mentorId
+    avatarImageId
+    referralLinkId
+    socialMedia {
+      id
+      instagramUrl
+      facebookUrl
+      twitterUrl
+      linkedinUrl
+      youtubeUrl
+      tiktokUrl
+      websiteUrl
+      githubUrl
+    }
+    _count {
+      orders
+    }
+    orders {
+      id
+      platformFee
+      createdAt
+      updatedAt
+      cartId
+      createdByUserId
+      couponId
+      referralLinkId
+      createdByUser {
+        email
+        username
+        phoneId
+        name
+      }
+      coupon {
+        affiliatorCoupon {
+          code
+        }
+      }
+      cart {
+        id
+        adminFee
+        totalQuantity
+        totalPrice
+        totalCost
+        createdAt
+        updatedAt
+        cartItems {
+          bundle {
+            id
+            name
+            cost
+            basePrice
+            salePrice
+            description
+            isActive
+            createdAt
+            updatedAt
+          }
+          cost
+          course {
+            id
+            title
+            description
+            prerequisites
+            objective
+            outcome
+            startDate
+            endDate
+            maxEnrollment
+            deepLink
+            isCertificationProvided
+            basePrice
+            salePrice
+            createdAt
+            updatedAt
+            status
+            level
+            duration
+            categoryId
+            createdById
+            videoUrlId
+          }
+          courseEnrollment {
+            id
+            createdAt
+            updatedAt
+            completedAt
+            progress
+            completionStatus
+            courseId
+            studentId
+            orderId
+            certificateId
+          }
+          membership {
+            id
+            name
+            description
+            durationDay
+            benefits
+            price
+            benefitCourses {
+              id
+              title
+              description
+              prerequisites
+              objective
+              outcome
+              startDate
+              endDate
+              maxEnrollment
+              deepLink
+              isCertificationProvided
+              basePrice
+              salePrice
+              affiliateCommission
+              createdAt
+              updatedAt
+              status
+              level
+              duration
+              categoryId
+              createdById
+              videoUrlId
+            }
+            affiliateFirstCommission
+            affiliateCommission
+            createdAt
+            updatedAt
+            createdById
+          }
+          id
+          product {
+            id
+            name
+            cost
+            basePrice
+            salePrice
+            description
+            isActive
+            isOnSale
+            isBundle
+            platformFee
+            industryId
+            factoryId
+            supplierId
+            agentId
+            unitOfMeasureId
+            hsCodeId
+          }
+          productService {
+            id
+            name
+            basePrice
+            salePrice
+            description
+            benefits
+            purchaseCount
+            isActive
+            isOnSale
+            isBundle
+            portofolio
+            productServiceCategory
+          }
+          quantity
+          price
+          totalPrice
+          type
+          courseEnrollmentId
+        }
+      }
+      invoices {
+        id
+        adminFee
+        amount
+        uniqueCode
+        createdAt
+        updatedAt
+        status
+        orderId
+        paymentForGatewayId
+        paymentId
+      }
+      statuses {
+        id
+        createdAt
+        status
+        changedById
+        orderId
+      }
+    }
+    identification {
+      id
+      personalId
+      personalAddressId
+      personalDocumentIdPath
+      isVerified
+      phoneNumber
+      identificationStatus
+      rejectedReason
+      verifiedAt
+      createdAt
+      updatedAt
+      userId
+      verifiedById
     }
     student {
-      _count {
-        enrollments
+      creditCards {
+        cardNumber
+        cardHolderName
+        createdAt
+        customerId
+        id
+        isAccepted
       }
       enrollments {
         id
-        courseId
-      }
-    }
-    referredBy {
-      name
-    }
-    avatarImage {
-      path
-    }
-    accounts {
-      balance
-      accountCategory
-    }
-    orders {
-      _count {
-        invoices
-      }
-    }
-    membership {
-      id
-      startDate
-      endDate
-      membershipCategory {
-        id
-        name
-        description
-        affiliateCommission
-        affiliateFirstCommission
-        durationDay
-        benefits
-        price
-        affiliateFirstCommission
-        affiliateCommission
         createdAt
         updatedAt
-        createdById
-        benefitCourses {
+        completedAt
+        progress
+        completionStatus
+        courseId
+        studentId
+        orderId
+        certificateId
+        _count {
+          lessonProgresses
+          quizAttempts
+          assignmentResponses
+          cartItems
+        }
+        lessonProgresses {
+          id
+          isCompleted
+          lessonId
+          enrollmentId
+        }
+        course {
           id
           title
           description
@@ -72,8 +350,6 @@ query UserFindOne($where: UserWhereUniqueInput!) {
           isCertificationProvided
           basePrice
           salePrice
-          affiliateCommissionType
-          affiliateCommission
           createdAt
           updatedAt
           status
@@ -81,23 +357,17 @@ query UserFindOne($where: UserWhereUniqueInput!) {
           duration
           categoryId
           createdById
-          certificateTemplateId
           videoUrlId
         }
       }
+      _count {
+        reviewedCourses
+        enrollments
+        certificates
+        creditCards
+      }
     }
-    username
-    couponCodeRegister
-    personalId
-    npwpId
-    deletedReason
-    phoneId
-    referredById
-    avatarImageId
-    referralLinkId
-    phone {
-      phoneNumber
-    }
+    
     mentor {
       description
       id

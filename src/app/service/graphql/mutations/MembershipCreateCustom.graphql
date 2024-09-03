@@ -1,0 +1,11 @@
+mutation MembershipCreateCustom($data: MembershipCreateInput!) {
+  membershipCreateCustom(data: $data) {
+    id
+    startDate
+    endDate
+    isActive
+    orderId
+    userId
+    membershipCategoryId
+  }
+}

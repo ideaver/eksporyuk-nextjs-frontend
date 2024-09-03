@@ -1,4 +1,4 @@
-import { useStudentFindOneQuery } from "@/app/service/graphql/gen/graphql";
+import { useStudentFindOneQuery, useUserFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import ProfileHeader from "@/components/layouts/Header/Member/ProfileHeader";
 import LoadingUI from "@/components/partials/Handler/LoadingUI";
 import OrderPage from "@/templates/Admin/Member/Detail/Order";
@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 const DetailOrderMember: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data, loading, error } = useStudentFindOneQuery({
+  const { data, loading, error } = useUserFindOneQuery({
     variables: {
       where: {
         id: id as string,
@@ -18,10 +18,10 @@ const DetailOrderMember: NextPage = () => {
   return (
     <>
       {data == null && <LoadingUI error={error?.message} loading={loading} />}
-      {data?.studentFindOne && (
+      {data?.userFindOne && (
         <>
-          <ProfileHeader id={id} data={data.studentFindOne} />
-          <OrderPage data={data.studentFindOne} />
+          <ProfileHeader id={id} data={data.userFindOne} />
+          <OrderPage data={data.userFindOne} />
         </>
       )}
     </>

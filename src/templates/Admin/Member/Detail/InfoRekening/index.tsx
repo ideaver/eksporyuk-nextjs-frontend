@@ -1,9 +1,9 @@
-import { StudentFindOneQuery } from "@/app/service/graphql/gen/graphql";
+import { StudentFindOneQuery, UserFindOneQuery } from "@/app/service/graphql/gen/graphql";
 
 const InfoRekening = ({
   data,
 }: {
-  data: StudentFindOneQuery | undefined;
+  data: UserFindOneQuery['userFindOne'] | undefined;
 }) => {
   return (
     <>
@@ -15,7 +15,7 @@ const InfoRekening = ({
         </div>
 
         <div className="card-body p-9 d-flex flex-wrap gap-2">
-          {data?.studentFindOne?.user?.accounts?.map((item, index) => {
+          {data?.accounts?.map((item, index) => {
             return (
               <div
                 className="card-body d-flex justify-content-start gap-5 align-items-center p-9 border border-secondary border-dashed rounded"

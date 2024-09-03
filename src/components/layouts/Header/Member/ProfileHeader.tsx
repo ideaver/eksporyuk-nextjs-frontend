@@ -12,11 +12,11 @@ const ProfileHeader = ({id, data}: IMemberProfileHeaderViewModel) => {
         id, data
     });
 
-const totalOrdersAmount = data?.user?.orders?.reduce((total, order) => {
+const totalOrdersAmount = data?.orders?.reduce((total, order) => {
   const orderTotal = order?.invoices?.reduce((orderTotal, invoice) => orderTotal + invoice.amount, 0);
   return total + (orderTotal ?? 0);
 }, 0);
-const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => { 
+const totalOrdersQuantity = data?.orders?.reduce((total, order) => { 
   const orderQuantity = order?.cart.cartItems?.reduce((orderQuantity, cart) => orderQuantity + cart.quantity, 0);
   return total + (orderQuantity ?? 0);
 } , 0);
@@ -30,7 +30,7 @@ const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => {
     <div className='d-flex flex-wrap flex-sm-nowrap mb-3'>
       <div className='me-7 mb-4'>
         <div className='symbol symbol-100px symbol-lg-160px symbol-fixed position-relative'>
-          <img src={data?.user.avatarImageId ?? '/media/avatars/blank.png'} alt='Metornic' />
+          <img src={data?.avatarImageId ?? '/media/avatars/blank.png'} alt='Metornic' />
         </div>
       </div>
 
@@ -39,7 +39,7 @@ const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => {
           <div className='d-flex flex-column'>
             <div className='d-flex align-items-center mb-2'>
               <p className='text-gray-800 fs-2 fw-bolder me-1 mb-0'>
-                {data?.user.name}
+                {data?.name}
               </p>
             
             </div>
@@ -50,13 +50,13 @@ const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => {
                 className='d-flex align-items-center text-gray-400  me-5 mb-2'
               >
                 <KTIcon iconName='profile-circle' className='fs-4 me-1' />
-                Member
+                {data?.student === null ? 'Non-Member' : 'Member'}
               </p>
               <p
                 className='d-flex align-items-center text-gray-400  me-5 mb-2'
               >
                 <KTIcon iconName='geolocation' className='fs-4 me-1' />
-                {formatAddress(data?.user.addresses?.find((a) => a.isMain === true))}
+                {formatAddress(data?.addresses?.find((a) => a.isMain === true))}
               </p>
             </div>
           </div>
@@ -84,7 +84,7 @@ const totalOrdersQuantity = data?.user?.orders?.reduce((total, order) => {
 
               <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                 <div className='d-flex align-items-center'>
-                  <div className='fs-2 fw-bolder'>{data?.enrollments?.length}</div>
+                  <div className='fs-2 fw-bolder'>{data?.student?.enrollments?.length ?? 0}</div>
                 </div>
 
                 <div className='fw-bold fs-6 text-gray-400'>Kelas Terdaftar</div>

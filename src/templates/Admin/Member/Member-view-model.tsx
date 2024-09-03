@@ -3,7 +3,7 @@ import {
   SortOrder,
   StudentFindManyQuery,
   useStudentFindLengthQuery,
-  useStudentFindManyQuery,
+  useUserFindManyQuery
 } from "@/app/service/graphql/gen/graphql";
 import { QueryResult } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -84,9 +84,9 @@ const useCheckbox = (studentFindMany: QueryResult<StudentFindManyQuery>) => {
     setCheckedItems(
       Array.isArray(studentFindMany.data?.studentFindMany)
         ? studentFindMany.data?.studentFindMany?.map((item) => ({
-            id: item.id,
-            value: !selectAll,
-          }))
+          id: item.id,
+          value: !selectAll,
+        }))
         : []
     );
   };
@@ -114,8 +114,9 @@ const useMemberViewModel = () => {
   } = usePagination();
   const [studentFindSearch, setStudentFindSearch] = useState("");
   const [orderBy, setOrderBy] = useState<SortOrder>(SortOrder.Desc);
+  const [memberType, setMemberType] = useState<"registered" | "unregistered">("registered");
 
-  const studentFindMany = useStudentFindManyQuery({
+  const studentFindMany = useUserFindManyQuery({
     variables: {
       take: parseInt(studentFindTake.toString()),
       skip: studentFindSkip,
@@ -125,33 +126,50 @@ const useMemberViewModel = () => {
         },
       ],
       where: {
-        OR: [
+        AND: [
           {
-            user: {
-              is: {
+            OR: [
+              {
                 name: {
                   contains: studentFindSearch,
                   mode: QueryMode.Insensitive,
                 },
               },
-            },
-          },
-          {
-            user: {
-              is: {
+              {
                 email: {
                   contains: studentFindSearch,
                   mode: QueryMode.Insensitive,
                 },
               },
-            },
+              {
+                id: {
+                  contains: studentFindSearch,
+                  mode: QueryMode.Insensitive,
+                },
+              },
+            ],
           },
-          {
-            id: {
-              contains: studentFindSearch,
-              mode: QueryMode.Insensitive,
+          memberType === "registered"
+            ? {
+              student: {
+                is: {
+                  id: {
+                    contains: studentFindSearch,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
+            }
+            : {
+              student: {
+                isNot: {
+                  id: {
+                    contains: studentFindSearch,
+                    mode: QueryMode.Insensitive,
+                  },
+                },
+              },
             },
-          },
         ],
       },
     },
@@ -162,7 +180,9 @@ const useMemberViewModel = () => {
 
   return {
     orderBy,
+    memberType,
     setOrderBy,
+    setMemberType,
     studentFindMany,
     studentFindTake,
     setStudentFindTake,

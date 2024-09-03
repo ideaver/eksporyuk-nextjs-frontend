@@ -5,12 +5,14 @@ import { PageTitle } from "@/_metronic/layout/core";
 import {
   SortOrder,
   StudentFindManyQuery,
+  UserFindManyQuery,
 } from "@/app/service/graphql/gen/graphql";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
 import useDeleteUser from "@/app/service/utils/crud/user/userDelete";
 import useUserEdit from "@/app/service/utils/crud/user/userEdit";
 import { formatDate } from "@/app/service/utils/dateFormatter";
 import DeleteUserModal from "@/components/partials/Modals/Mutations/DeleteUserModal";
+import EditPasswordModal from "@/components/partials/Modals/Mutations/EditPassword";
 import EditUserModal from "@/components/partials/Modals/Mutations/EditUserModal";
 import ForgotPasswordModal from "@/components/partials/Modals/Mutations/ForgotPasswordModal";
 import { Badge } from "@/stories/atoms/Badge/Badge";
@@ -22,9 +24,8 @@ import Link from "next/link";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import useMemberViewModel, { breadcrumbs } from "./Member-view-model";
-import EditPasswordModal from "@/components/partials/Modals/Mutations/EditPassword";
 
-const MemberPage = ({}) => {
+const MemberPage = ({ }) => {
   const {
     setStudentFindSearch,
     studentFindMany,
@@ -39,6 +40,7 @@ const MemberPage = ({}) => {
     orderBy,
     setOrderBy,
     studentFindTake,
+    memberType, setMemberType
   } = useMemberViewModel();
   return (
     <>
@@ -48,8 +50,12 @@ const MemberPage = ({}) => {
           <Head
             onSearch={(value) => setStudentFindSearch(value)}
             orderBy={orderBy}
+            memberType={memberType}
             setOrderBy={(e) => {
               setOrderBy(e);
+            }}
+            setMemberType={(e) => {
+              setMemberType(e);
             }}
           />
           <Body
@@ -63,7 +69,7 @@ const MemberPage = ({}) => {
             pageLength={calculateTotalPage()}
             currentPage={currentPage}
             setCurrentPage={(val) => handlePageChange(val)}
-            setStudentFindSkip={(val) => {}}
+            setStudentFindSkip={(val) => { }}
             setStudentFindTake={(val) => {
               setStudentFindTake(val);
             }}
@@ -78,11 +84,15 @@ const MemberPage = ({}) => {
 const Head = ({
   onSearch,
   orderBy,
+  memberType,
   setOrderBy,
+  setMemberType,
 }: {
   onSearch: (value: string) => void;
   orderBy: SortOrder;
+  memberType: "registered" | "unregistered";
   setOrderBy: (e: SortOrder) => void;
+  setMemberType: (e: "registered" | "unregistered") => void;
 }) => {
   return (
     <div className="row justify-content-between gy-5">
@@ -108,6 +118,19 @@ const Head = ({
             ]}
             onValueChange={(val) => {
               setOrderBy(val as SortOrder);
+            }}
+          />
+        </div>
+        <div className="col-lg-auto">
+          <Dropdown
+            styleType="solid"
+            value={memberType}
+            options={[
+              { label: "Member Terdaftar", value: "registered" },
+              { label: "Member Tidak Terdaftar", value: "unregistered" },
+            ]}
+            onValueChange={(val) => {
+              setMemberType(val as "registered" | "unregistered");
             }}
           />
         </div>
@@ -213,7 +236,7 @@ const Body = ({
   checkedItems,
   selectAll,
 }: {
-  studentFindMany: QueryResult<StudentFindManyQuery>;
+  studentFindMany: QueryResult<UserFindManyQuery>;
   handleSelectAllCheck: () => void;
   handleSingleCheck: (index: number) => void;
   checkedItems: { id: string; value: boolean }[];
@@ -281,7 +304,7 @@ const Body = ({
               <th className="text-end min-w-150px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
-            {studentFindMany.data?.studentFindMany?.map((student, index) => (
+            {studentFindMany.data?.userFindMany?.map((student, index) => (
               <tr key={index}>
                 {/* <td className="align-middle">
                   <CheckBoxInput
@@ -314,7 +337,7 @@ const Body = ({
                         <img
                           className="symbol-label bg-gray-600"
                           src={
-                            student.user.avatarImageId ??
+                            student.avatarImageId ??
                             "/media/avatars/blank.png"
                           }
                           width={50}
@@ -325,10 +348,10 @@ const Body = ({
                     </div>
                     <div className="d-flex flex-column">
                       <span className="text-dark text-hover-primary cursor-pointer fs-6 fw-bold">
-                        {student.user.name}
+                        {student.name}
                       </span>
                       <span className="fw-bold text-muted">
-                        {student.user.email}
+                        {student.email}
                       </span>
                     </div>
                   </Link>
@@ -340,7 +363,7 @@ const Body = ({
                       <img
                         className="symbol-label bg-gray-600"
                         src={
-                          student.user.avatarImageId ??
+                          student.avatarImageId ??
                           "/media/avatars/blank.png"
                         }
                         width={50}
@@ -356,20 +379,20 @@ const Body = ({
                   </div>
                 </td> */}
                 <td className="align-middle text-end text-muted fw-bold w-150px">
-                  {formatDate(student.user.createdAt)}
+                  {formatDate(student.createdAt)}
                 </td>
                 <td className="align-middle text-end text-muted fw-bold w-150px">
-                  {student._count.enrollments}
+                  {student?.student?._count.enrollments ?? "Tidak ada data"}
                 </td>
                 <td className="align-middle text-end">
                   <p className="mb-0">
                     {" "}
                     <Badge
                       label={
-                        student.user.deletedAt != null ? "Nonaktif" : "Aktif"
+                        student.deletedAt != null ? "Nonaktif" : "Aktif"
                       }
                       badgeColor={
-                        student.user.deletedAt != null ? "danger" : "success"
+                        student.deletedAt != null ? "danger" : "success"
                       }
                     />{" "}
                   </p>
@@ -389,7 +412,7 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() => {
-                            setSelectedStudentEmailEmail(student.user.email);
+                            setSelectedStudentEmailEmail(student.email);
                             setShowForgotPasswordModal(true);
                           }}
                         >
@@ -400,7 +423,7 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() => {
-                            setSelectedStudentId(student.user.id);
+                            setSelectedStudentId(student.id);
                             setShowEditUserModal(true);
                           }}
                         >
@@ -411,7 +434,7 @@ const Body = ({
                         <button
                           className="dropdown-item"
                           onClick={() => {
-                            setSelectedStudentId(student.user.id);
+                            setSelectedStudentId(student.id);
                             setShowDeleteUserModal(true);
                           }}
                         >

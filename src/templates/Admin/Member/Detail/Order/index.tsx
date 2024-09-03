@@ -7,6 +7,7 @@ import {
   StudentFindOneQuery,
   useFollowUpDeleteOneMutation,
   useFollowUpFindManyQuery,
+  UserFindOneQuery,
   UserRoleEnum,
 } from "@/app/service/graphql/gen/graphql";
 import { formatDate } from "@/app/service/utils/dateFormatter";
@@ -39,7 +40,7 @@ import { useDispatch, useSelector } from "react-redux";
 const OrderPage = ({
   data,
 }: {
-  data: StudentFindOneQuery["studentFindOne"];
+  data: UserFindOneQuery["userFindOne"];
 }) => {
   const dispatch = useDispatch();
   const followUpState = useSelector((state: RootState) => state.followUp);
@@ -192,7 +193,7 @@ const OrderPage = ({
               <th className="text-end min-w-150px">Status</th>
               <th className="text-end min-w-100px">Actions</th>
             </KTTableHead>
-            {data?.user.orders?.map((order, index) => {
+            {data?.orders?.map((order, index) => {
               const latestInvoices = order?.invoices?.sort(
                 (a, b) =>
                   new Date(b.createdAt).getTime() -

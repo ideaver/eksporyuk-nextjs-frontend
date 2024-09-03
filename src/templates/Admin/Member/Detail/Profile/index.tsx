@@ -2,7 +2,7 @@
 import { KTIcon } from "@/_metronic/helpers";
 import {
   IdentificationStatusEnum,
-  StudentFindOneQuery,
+  UserFindOneQuery
 } from "@/app/service/graphql/gen/graphql";
 import { formatAddress } from "@/app/service/utils/addressFormatter";
 import useForgotPassword from "@/app/service/utils/auth/forgotPasswordHook";
@@ -15,9 +15,9 @@ import { Buttons } from "@/stories/molecules/Buttons/Buttons";
 const ProfilePage = ({
   data,
 }: {
-  data: StudentFindOneQuery["studentFindOne"];
+  data: UserFindOneQuery["userFindOne"];
 }) => {
-  const userData = data?.user;
+  const userData = data;
   const userAddress = userData?.addresses?.find((a) => a.isMain === true);
 
   // const handleDownloadIdentificationCard = async (
@@ -132,11 +132,11 @@ const ProfilePage = ({
 
             <div className="col-lg-8 fv-row">
               <span className="fw-bolder fs-6 text-dark">
-                {data?.creditCards?.[0]?.cardNumber ?? "Tidak Ada Rekening"}
+                {data?.student?.creditCards?.[0]?.cardNumber ?? "Tidak Ada Rekening"}
               </span>
             </div>
           </div>
-          {data?.user.identification ? (
+          {userData?.identification ? (
             <div
               className="notice d-flex bg-light-primary justify-content-end align-content-end rounded border-primary border mb-5 p-2"
               style={{ width: "fit-content" }}
@@ -150,9 +150,9 @@ const ProfilePage = ({
                 classNames="me-2"
                 onClick={
                   () => {
-                    if (data?.user?.identification?.personalDocumentIdPath) {
+                    if (userData?.identification?.personalDocumentIdPath) {
                       window.open(
-                        data.user.identification.personalDocumentIdPath,
+                        userData.identification.personalDocumentIdPath,
                         "_blank"
                       );
                     }
@@ -202,12 +202,12 @@ const ProfilePage = ({
         isLoading={forgotPasswordModalLoading}
       />
       <EditIdentificationModal
-        id={data?.user?.identification?.id as number}
+        id={userData?.identification?.id as number}
         defaultStatus={
-          data?.user.identification
+          userData?.identification
             ?.identificationStatus as IdentificationStatusEnum
         }
-        onClick={() => {}}
+        onClick={() => { }}
       />
     </>
   );

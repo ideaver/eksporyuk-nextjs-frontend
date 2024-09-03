@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { StudentFindOneQuery } from "@/app/service/graphql/gen/graphql";
+import { UserFindOneQuery } from "@/app/service/graphql/gen/graphql";
 import Link from "next/link";
 
 const SocialPage = ({
   data,
 }: {
-  data: StudentFindOneQuery["studentFindOne"];
+  data: UserFindOneQuery["userFindOne"];
 }) => {
-  const social = data?.user.socialMedia;
+  const social = data?.socialMedia;
   return (
     <>
       <div className="card mb-5 mb-xl-10" id="kt_profile_details_view">

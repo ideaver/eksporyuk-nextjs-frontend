@@ -2,7 +2,7 @@
 import { KTCard, KTCardBody } from "@/_metronic/helpers";
 import {
   CompletionStatusEnum,
-  StudentFindOneQuery,
+  UserFindOneQuery
 } from "@/app/service/graphql/gen/graphql";
 import { CardInfo } from "@/stories/molecules/Cards/CardInfo/CardInfo";
 import { ColorList } from "@/types/general/utilities";
@@ -10,7 +10,7 @@ import { ColorList } from "@/types/general/utilities";
 const CoursePage = ({
   data,
 }: {
-  data: StudentFindOneQuery["studentFindOne"];
+  data: UserFindOneQuery["userFindOne"];
 }) => {
   return (
     <>
@@ -21,7 +21,7 @@ const CoursePage = ({
             description="Enrolled Course"
             icon="book-open"
             showBorder
-            title={data?.enrollments?.length.toString() ?? "0"}
+            title={data?.student?.enrollments?.length.toString() ?? "0"}
           />
         </div>
         <div className="col gy-5 gy-lg-0">
@@ -31,7 +31,7 @@ const CoursePage = ({
             icon="bookmark"
             showBorder
             title={
-              data?.enrollments
+              data?.student?.enrollments
                 ?.filter(
                   (e) => e.completionStatus != CompletionStatusEnum.Completed
                 )
@@ -46,7 +46,7 @@ const CoursePage = ({
             icon="brifecase-tick"
             showBorder
             title={
-              data?.enrollments
+              data?.student?.enrollments
                 ?.filter(
                   (e) => e.completionStatus == CompletionStatusEnum.Completed
                 )
@@ -65,12 +65,12 @@ const CoursePage = ({
             <div className="col">
               <ProgressCard
                 img="/media/illustrations/sketchy-1/17.png"
-                progress={Math.round(
-                  ((data?.enrollments?.filter(
+                progress={data?.student == null ? 0 : Math.round(
+                  ((data?.student?.enrollments?.filter(
                     (e) => e.completionStatus == CompletionStatusEnum.Completed
                   ).length ?? 0) /
-                    (data?._count.enrollments ?? 0)) *
-                    100
+                    (data?.student?._count.enrollments ?? 0)) *
+                  100
                 )}
                 subtitle={
                   <>
@@ -78,7 +78,7 @@ const CoursePage = ({
                     Sudah menyelesaikan{" "}
                     <span className="text-black fw-bold">
                       {
-                        data?.enrollments?.filter(
+                        data?.student?.enrollments?.filter(
                           (e) =>
                             e.completionStatus == CompletionStatusEnum.Completed
                         ).length
@@ -86,13 +86,13 @@ const CoursePage = ({
                     </span>{" "}
                     dari{" "}
                     <span className="text-black fw-bold">
-                      {data?._count.enrollments}
+                      {data?.student?._count.enrollments}
                     </span>{" "}
                     Kelas
                   </>
                 }
               />
-              {/* {data?.enrollments?.map((enrollment, index) => {
+              {/* {data?.student?.enrollments?.map((enrollment, index) => {
                 const courseProgress = enrollment.lessonProgresses?.filter(
                   (lp) => lp.isCompleted === true
                 ).length;
@@ -123,7 +123,7 @@ const CoursePage = ({
                   />
                 );
               })} */}
-                 {/* Might be used later */}
+              {/* Might be used later */}
               {/* <div className="mt-5">
           <ProgressCard
                 img="/media/illustrations/sketchy-1/15.png"
