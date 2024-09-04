@@ -8,6 +8,7 @@ import MembershipModal from '@/components/partials/Modals/Mutations/MembershipMo
 import { TabLink } from '@/stories/organism/Links/TabLink/TabLink';
 import Swal from "sweetalert2";
 import useProfileHeaderViewModel, { IMemberProfileHeaderViewModel } from './ProfileHeader-view-model';
+import CourseModal from '@/components/partials/Modals/Mutations/CourseModal';
 
 const ProfileHeader = ({ id, data }: IMemberProfileHeaderViewModel) => {
 
@@ -149,7 +150,9 @@ const ProfileHeader = ({ id, data }: IMemberProfileHeaderViewModel) => {
                   </button>
                   <button
                     className="btn btn-primary"
-                    onClick={() => { }}
+                    onClick={() => { 
+                      setShowCourseModal(true)
+                    }}
                   >
                     Ubah Data Kelas
                   </button>
@@ -172,6 +175,18 @@ const ProfileHeader = ({ id, data }: IMemberProfileHeaderViewModel) => {
           if (membership != undefined) {
             handleUpdateMembership(membership, data?.id ?? '');
           }
+
+        }}
+        isLoading={membershipCreateCustomMutationLoading}
+      />
+      <CourseModal
+        userId={data?.id}
+        handleClose={() => setShowCourseModal(false)}
+        show={showCourseModal}
+        handleSubmit={() => {
+          // if (membership != undefined) {
+          //   handleUpdateMembership(membership, data?.id ?? '');
+          // }
 
         }}
         isLoading={membershipCreateCustomMutationLoading}

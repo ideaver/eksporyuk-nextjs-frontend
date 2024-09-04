@@ -1,0 +1,86 @@
+query EnrollmentFindMany($skip: Int, $take: Int, $orderBy: [EnrollmentOrderByWithRelationInput!], $where: EnrollmentWhereInput) {
+  enrollmentFindMany(skip: $skip, take: $take, orderBy: $orderBy, where: $where) {
+    id
+    createdAt
+    updatedAt
+    completedAt
+    progress
+    isActive
+    expiredAt
+    completionStatus
+    courseId
+    studentId
+    orderId
+    certificateId
+    lessonProgresses {
+      id
+      isCompleted
+      lessonId
+      enrollmentId
+    }
+    course {
+      id
+      title
+      description
+      prerequisites
+      objective
+      outcome
+      startDate
+      endDate
+      maxEnrollment
+      deepLink
+      isCertificationProvided
+      basePrice
+      salePrice
+      affiliateCommissionType
+      affiliateCommission
+      createdAt
+      updatedAt
+      status
+      level
+      duration
+      categoryId
+      createdById
+      certificateTemplateId
+      subscriberListId
+      videoUrlId
+      images {
+        path
+      }
+    }
+    certificate {
+      id
+      name
+      imagePathId
+      description
+      instructionsForUse
+      createdAt
+      updatedAt
+      courseId
+      studentId
+      templateId
+    }
+    _count {
+      lessonProgresses
+      quizAttempts
+      assignmentResponses
+      cartItems
+    }
+    assignmentResponses {
+      id
+      content
+      createdAt
+      updatedAt
+      enrollmentId
+      assignmentId
+    }
+    quizAttempts {
+      id
+      startTime
+      endTime
+      completedQuiz
+      quizId
+      enrollmentId
+    }
+  }
+}
