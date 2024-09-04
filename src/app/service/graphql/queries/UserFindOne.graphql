@@ -17,6 +17,9 @@ query UserFindOne($where: UserWhereUniqueInput!) {
     deletedAt
     deletedReason
     phoneId
+    phone {
+      phoneNumber
+    }
     referredById
     accounts {
       accountInquiryId

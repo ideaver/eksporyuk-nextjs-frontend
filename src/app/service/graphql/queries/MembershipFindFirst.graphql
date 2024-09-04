@@ -1,0 +1,56 @@
+query MembershipFindFirst($skip: Int, $take: Int, $where: MembershipWhereInput, $orderBy: [MembershipOrderByWithRelationInput!]) {
+  membershipFindFirst(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    id
+    startDate
+    endDate
+    isActive
+    orderId
+    userId
+    membershipCategoryId
+    membershipCategory {
+      id
+      name
+      description
+      durationDay
+      benefits
+      price
+      isActive
+      orderIndex
+      affiliateFirstCommission
+      affiliateCommission
+      subscriberListId
+      membershipBenefitServiceEnum
+      createdAt
+      updatedAt
+      deletedAt
+      createdById
+      benefitCourses {
+        id
+        title
+        description
+        prerequisites
+        objective
+        outcome
+        startDate
+        endDate
+        maxEnrollment
+        deepLink
+        isCertificationProvided
+        basePrice
+        salePrice
+        affiliateCommissionType
+        affiliateCommission
+        createdAt
+        updatedAt
+        status
+        level
+        duration
+        categoryId
+        createdById
+        certificateTemplateId
+        subscriberListId
+        videoUrlId
+      }
+    }
+  }
+}

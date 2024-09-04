@@ -1,10 +1,13 @@
 import { UserFindOneQuery } from "@/app/service/graphql/gen/graphql";
+import { useState } from "react";
 
 export interface IMemberProfileHeaderViewModel {
   id: string | string[] | undefined;
   data: UserFindOneQuery['userFindOne']
 }
 const useProfileHeaderViewModel = ({ id }: IMemberProfileHeaderViewModel) => {
+  const [showMembershipModal, setShowMembershipModal] = useState(false);
+  const [showCourseModal, setShowCourseModal] = useState(false);
   const urls = [
     {
       label: "Profile",
@@ -56,7 +59,7 @@ const useProfileHeaderViewModel = ({ id }: IMemberProfileHeaderViewModel) => {
   ];
 
   return {
-    urls, breadcrumbs
+    urls, breadcrumbs, showMembershipModal, setShowMembershipModal, showCourseModal, setShowCourseModal
   }
 }
 
